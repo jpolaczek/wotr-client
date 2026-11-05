@@ -31,9 +31,20 @@ namespace Wotr.Client
         public static CharacterText Find(string id) => Characters.TryGetValue(id, out var item) ? item : null;
         public static string Edition(string id) => string.IsNullOrEmpty(id) ? "" : FigureGrid.Name(id.Split('.')[0]);
         public static string Name(string id) => Characters.TryGetValue(id, out var item) ? item.Title : FigureGrid.Name(id);
+        // UI-420 (owner): the abilities by their printed titles ("Palantír of Anárion"), never names made from their ids.
         public static string Description(string id) => Characters.TryGetValue(id, out var item)
-            ? item.Title + (item.Level.HasValue ? " · Level " + item.Level : "") + (item.Leadership.HasValue ? " · Leadership " + item.Leadership : "") +
-                "\n" + string.Join(" · ", item.Abilities.Select(FigureGrid.Name)) : Name(id);
+            ? TooltipText.Lines(item.Title + (item.Level.HasValue ? " · Level " + item.Level : "") +
+                (item.Leadership.HasValue ? " · Leadership " + item.Leadership : ""), AbilityTitles(id)) : Name(id);
+
+        private static string AbilityTitles(string id) => TooltipText.Parts(CharacterAbilityLibrary.For(id).Select(a => a.Title).ToArray());
+
+        // UI-420 (owner): one line per printed ability, its title and gist ("Stewardship · With Denethor in Minas Tirith,
+        // …"); only the titles where the card has no summaries.
+        public static string Abilities(string id)
+        {
+            var lines = CharacterAbilitySummaries.Lines(id);
+            return lines.Count > 0 ? TooltipText.Lines(lines.ToArray()) : AbilityTitles(id);
+        }
         public static string ShortName(string id) => id switch
         {
             "base.character.merry" => "Merry",
@@ -51,6 +62,29 @@ namespace Wotr.Client
             "kings.character.shadow-of-mirkwood" => "Mirkwood",
             _ => Name(id).Split(' ')[0]
         };
+        // UI-271: the versions of one Shadow character told apart, the base card beside its Lords alternative.
+        public static string Epithet(string id) => id switch
+        {
+            "base.character.mouth-of-sauron" => "Lieutenant of Barad-dûr",
+            "lords.character.mouth-of-sauron" => "Black Númenórean",
+            "base.character.witch-king" => "the Black Captain",
+            "lords.character.witch-king" => "Chief of the Ringwraiths",
+            _ => ""
+        };
+        public static string ShortEpithet(string id) => id switch
+        {
+            "base.character.mouth-of-sauron" => "Lieutenant",
+            "lords.character.mouth-of-sauron" => "Númenórean",
+            "base.character.witch-king" => "Black Captain",
+            "lords.character.witch-king" => "Chief",
+            // UI-438: Fate's alternate Gimli (UI-270) told apart from Fate's standard one in his window's version tabs.
+            "fate.character.gimli-dwarven-lord" => "Dwarven Lord",
+            _ => ""
+        };
+        public static string FullName(string id) => Epithet(id).Length > 0 ? Name(id) + ", " + Epithet(id) : Name(id);
+        // UI-438: a version's tab in the character's window: "Strider", "Aragorn", and for one character's alternative
+        // cards their epithets ("Lieutenant", "Númenórean").
+        public static string VersionName(string id) => ShortEpithet(id).Length > 0 ? ShortEpithet(id) : ShortName(id);
         public static string Symbol(string id)
         {
             var words = Name(id).Replace('-', ' ').Split(' ').Where(w => w.Length > 0 && w.ToLowerInvariant() != "the" && w.ToLowerInvariant() != "of").ToArray();
@@ -60,12 +94,33 @@ namespace Wotr.Client
         public static string Identity(string id) => Characters.TryGetValue(id, out var item) ? item.Identity : id;
 
         // UI-309: a die ability's history records only its ability id; the one identity whose public abilities list it,
-        // or null when none or several do (the client never guesses the source).
+        // or null when none or several do (the client never guesses the source). UI-344: the commands of the Lords' and
+        // Kings' abilities carry their own ids, named here by the printed ability they use.
         public static string AbilityHolder(string abilityId)
         {
-            var identities = Characters.Values.Where(c => c.Abilities.Contains(abilityId)).Select(c => c.Identity).Distinct().Take(2).ToList();
+            var printed = PrintedAbility(abilityId);
+            var identities = Characters.Values.Where(c => c.Abilities.Contains(printed)).Select(c => c.Identity).Distinct().Take(2).ToList();
             return identities.Count == 1 ? identities[0] : null;
         }
+
+        private static readonly IReadOnlyDictionary<string, string> CommandAbilities = new Dictionary<string, string>
+        {
+            ["activate-balrog"] = "balrog-activation",
+            ["deactivate-balrog"] = "balrog-activation",
+            ["use-balrog"] = "balrog-activation",
+            ["gothmog-recruit"] = "fling-them-into-the-fray",
+            ["gothmog-upgrade"] = "fling-them-into-the-fray",
+            // UI-493 (owner, 2026-11-04): Saruman's printed ability, the source his two commands name.
+            ["voice-recruit"] = "muster-each-isengard-settlement-or-upgrade-two",
+            ["voice-upgrade"] = "muster-each-isengard-settlement-or-upgrade-two"
+        };
+
+        // The Kings' Ruler abilities are recorded as "kings.<ability>".
+        private static string PrintedAbility(string abilityId) =>
+            CommandAbilities.TryGetValue(abilityId, out var printed) ? printed
+            : abilityId.StartsWith(KingsPrefix, System.StringComparison.Ordinal) ? abilityId.Substring(KingsPrefix.Length) : abilityId;
+
+        private const string KingsPrefix = "kings.";
         public static string Version(PlayerView view, string id)
         {
             var definition = view.Characters.Concat(view.OwnCompanions).FirstOrDefault(c => c.Id == id)?.DefinitionId;

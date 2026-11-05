@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
@@ -6,7 +5,10 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // A nation-wide or parameter-wide influence gets one badge at that object, not at every region.
+    // A parameter-wide influence gets one badge at that object, not at every region. UI-413 (owner): a nation-wide one gets
+    // none on the Politics row, where the badge covered the nation's name; the Effects tab still lists it. UI-429 (owner):
+    // a game-wide one gets none either — its badge stood beside the Effects window's close button and only listed again
+    // what the window shows; that header holds only the close button (UI-221).
     internal sealed class EffectsScopeBadges
     {
         private readonly BoardScreen board;
@@ -19,19 +21,8 @@ namespace Wotr.Client
             var scopes = new Dictionary<string, HashSet<string>>();
             foreach (var effect in view.Effects)
                 foreach (var target in effect.Targets)
-                {
-                    if (target.Kind == "Politics")
-                    {
-                        foreach (var nation in board.Presentation.Board.Nations.Where(n => n.Side == Side.FreePeoples))
-                            Add(scopes, "nation:" + nation.Id, effect.SourceId);
-                    }
-                    else if (target.Kind is "Nation" or "NationRegions")
-                        Add(scopes, "nation:" + target.Id, effect.SourceId);
-                    else if (target.Kind == "Fellowship")
+                    if (target.Kind == "Fellowship")
                         Add(scopes, "fellowship", effect.SourceId);
-                    else if (target.Kind == "Global")
-                        Add(scopes, "global", effect.SourceId);
-                }
             foreach (var key in badges.Keys.Where(k => !scopes.ContainsKey(k)).ToList())
             {
                 badges[key].RemoveFromHierarchy();
@@ -53,14 +44,11 @@ namespace Wotr.Client
                     host.Add(badge);
                 }
                 badge.text = "◇" + (scope.Value.Count > 1 ? " " + scope.Value.Count : "");
-                badge.tooltip = string.Join("\n", scope.Value.Select(id => view.Effects.First(e => e.SourceId == id).Title)) + "\nInspect active effects";
+                badge.tooltip = TooltipText.Lines(scope.Value.Select(id => EffectTitle(view, id)).Append("Click to inspect active effects").ToArray());
             }
         }
 
-        private VisualElement Host(string key) => key.StartsWith("nation:", StringComparison.Ordinal)
-            ? board.Nations.Drawer.Q("nation-track-" + key.Substring(7))
-            : key == "fellowship" ? board.Fellowship.Status
-            : board.TableEffects.Root.Q(className: "window-header");
+        private VisualElement Host(string key) => key == "fellowship" ? board.Fellowship.Status : null;
 
         private static void Add(Dictionary<string, HashSet<string>> scopes, string key, string id)
         {
@@ -70,6 +58,13 @@ namespace Wotr.Client
                 scopes.Add(key, ids);
             }
             ids.Add(id);
+        }
+
+        // UI-420: a source without a title is named by its card, as on the map (MapEffectsOverlay).
+        private static string EffectTitle(PlayerView view, string sourceId)
+        {
+            var effect = view.Effects.First(e => e.SourceId == sourceId);
+            return effect.Title.Length > 0 ? effect.Title : CardLibrary.Title(sourceId);
         }
     }
 }

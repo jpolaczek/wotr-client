@@ -316,6 +316,8 @@ User application from 2026-10-15: "let's add (well stylized) region names on the
   - Counted once per session for the entire map, approx. 150 ms. Distances are calculated on
     simplified contours with tolerance 1 units (Douglas-Peucker, c. ¼ points); without this 0,6  s.
   - On the board basic, no name stands in the army's place.
+  - Superseded by UI-422 (2026-10-29): the name keeps clear of the region's stand places, not of a box around the
+    settlement (below).
 - Size grows with an approximation to 15 pt (part of the item, without the layout being
   recalculated). The name is hidden when:
   - is less than 8 pt;
@@ -336,6 +338,36 @@ So, on the whole map of a small screen (1366×768 at 125%) the names of fortress
   where only a force really standing over the name hides it. South Anduin Vale has no room for its name anywhere.
   Tests: EditMode `MapRegionNamePointsTests.ASmallRegionsNameCanBeReadAtTheClosestZoom`; PlayMode
   `MapRegionNamesTests` (Western Mirkwood named up close, `ui363-western-mirkwood-*.png`).
+
+## Names and stand places — UI-422 (2026-10-29)
+
+Every region now has fixed stand places (`MapStandSlots`, TABLETOP_FIGURES_UX "Stand places"), and its name keeps
+clear of them instead of the fixed forces' box around the settlement (`InForcesZone`, removed).
+
+- **What a name keeps clear of** (`MapStandSlots.NameObstacle`): every stand's figure rectangle, of every region, at
+  the scale its region shows figures at in the worst case (`min(1, capacity)`), and every stronghold's fortress (its
+  drawing and its garrison's figures at the gate).
+- **A name's extent** (`MapRegionNames.BoardHalfSize`, `BoardRect`). Up to its reading size a name keeps its size on
+  the board, so at its largest it is as wide as its single line (the `Readable` estimate: 0.72 of a letter height per
+  capital plus the letter spacing) and, when it has a space to break at, as tall as two lines. Where it stands, its room
+  bounds it, since a name larger than its room is hidden.
+- **The search** (`MapRegionNamePoints.For(shape, halfSize, obstacle)`). A name keeps the point it takes on the empty
+  board (the roomiest, below the settlement preferred, as in UI-186) unless a name of its extent there would lie under
+  an obstacle; then the search runs again and a covered point costs its score. `MapRegionNames.Point` keeps the UI-363
+  rule: where the clear point cannot be read even at the closest zoom, the name takes its roomiest point.
+- **The export decides where the places leave room** (`scripts/export_map_stands.py`, which ports the search). Names
+  come first: a region's places keep clear of the rectangles its name's search passes through, so the run-time search
+  ends on the same point (an obstacle can only cost a point, never add one). In a tight region where the group does
+  not fit at scale 1 that way, the places may come first and the name then searches around them, kept only when it
+  still ends on a clear point it can be read at. A neighbour's figures may reach over a name; the name moves around
+  them, and where it would find no clear point it can be read at, every region's places keep clear of it instead. The
+  export checks that every name ends clear of every stand. Today 36 names stand elsewhere than on the empty board,
+  around a fortress, a neighbour's figures or their own region's places; South Anduin Vale still has no readable room.
+- **UI-363 holds**: Western Mirkwood (beside its places now), Rhosgobel and Narrows of the Forest can be read at their
+  points; Eastern Mirkwood keeps its own point.
+- **Tests**: EditMode `MapRegionNamePointsTests` (every name inside its region and clear of every stand,
+  `ANameMovesOnlyOffAnObstacle`, UI-363, the name's extent), `MapStandSlotsTests.FiguresCoverNoSettlementDrawingOrName`
+  and `MapLandmarksTests` (the drawings clear of the names and of every place but their own garrison's).
 
 ## Political view — UI-218 (2026-10-17)
 
@@ -379,7 +411,7 @@ unit or character stands — it is not always obvious".
   travel origin), the armed Nazgûl, a Companion leaving the Fellowship (its origin), a character using an ability (its
   location). The sets are `MapDraftOverlay.SourceRegions`.
 - **No pulse.** It never pulses, so it never reads as "choosable" (the pulsing gold ChoiceGlow). It is distinct from the
-  green and red targets and the pale-blue history outline. A source that is also a target (the Fellowship's stay) shows
+  green and red targets and the gold history outline (UI-378). A source that is also a target (the Fellowship's stay) shows
   both.
 - **Repaints.** The layer repaints only when its regions change. Without a draft nothing is marked; fills, markers and the
   region panel are unchanged.

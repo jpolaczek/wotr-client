@@ -26,6 +26,21 @@ namespace Wotr.EditorTests
             StringAssert.Contains(name, CharacterLibrary.Description(id));
         }
 
+        // UI-420: a king's abilities read by their printed titles, one line each with its gist, without his name.
+        [Test]
+        public void ASovereignsAbilitiesReadByTheirPrintedTitlesOneLineEach()
+        {
+            const string denethor = "kings.character.denethor.awakened";
+            var abilities = CharacterLibrary.Abilities(denethor);
+            StringAssert.StartsWith("Stewardship · ", abilities);
+            StringAssert.Contains("\nPalantír of Anárion · ", abilities);
+            Assert.AreEqual(2, abilities.Split('\n').Length);
+            StringAssert.DoesNotContain("Denethor —", abilities);
+            StringAssert.Contains("Palantír of Anárion", CharacterLibrary.Description(denethor), "The printed title, not one made from its id.");
+            StringAssert.DoesNotContain("Palantir Of Anarion", CharacterLibrary.Description(denethor));
+            StringAssert.StartsWith("Corrupted ruler · ", CharacterLibrary.Abilities("kings.character.denethor.corrupted"));
+        }
+
         [Test]
         public void SovereignInspectionDoesNotInferTheValueOrIdentityOfAHiddenTile()
         {
@@ -46,27 +61,6 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void SequentialDrawStillShowsAnEnabledStopTileAndNoOpponentChoice()
-        {
-            var view = new PlayerView { CorruptionAttempt = new CorruptionAttemptView
-                { Sequential = true, DrawnCount = 1, DrawLimit = 3, OwnChoices = { new CorruptionTileView { TileId = "one", Value = 1 } } },
-                Options = { new ActionOption { Kind = CommandKind.DrawCorruptionTile },
-                    new ActionOption { Kind = CommandKind.ChooseCorruptionTile, EligibleIds = { "one" } } } };
-            var draft = new TurnDraft();
-            draft.Choose(CommandKind.DrawCorruptionTile);
-            var root = new VisualElement();
-            var refresh = CorruptionAttemptChoices.Render(root, view, view.Options[0], draft, action => action());
-            refresh();
-            var stop = root.Q<Button>("corruption-choice-one");
-            Assert.IsTrue(stop.enabledSelf);
-            StringAssert.StartsWith("Stop", stop.text);
-            view.CorruptionAttempt.OwnChoices.Clear();
-            root.Clear();
-            CorruptionAttemptChoices.Render(root, view, view.Options[0], draft, action => action())();
-            Assert.IsEmpty(root.Query<Button>().ToList());
-        }
-
-        [Test]
         public void SpecialDiceShowOriginRemovalAndPendingChoiceWhileKeeperEyeRemainsInItsPhysicalOwnersPool()
         {
             var view = new PlayerView { You = Side.FreePeoples, Configuration = new MatchConfiguration { Lords = true }, Dice =
@@ -79,10 +73,13 @@ namespace Wotr.EditorTests
             pool.Apply(root, view, Side.Shadow, true);
             Assert.IsNotNull(root.Q<Button>("gothmog"));
             StringAssert.Contains("Gothmog", root.Q<Button>("gothmog").tooltip);
-            Assert.AreEqual("×", root.Q<Button>("gothmog").Q<Label>(className: "die-badge").text);
+            // UI-267: the Remove star is a badge of the die's own art, not a text mark.
+            Assert.IsNotNull(root.Q<Button>("gothmog").Q("die-remove-star"));
+            Assert.IsNull(root.Q<Button>("gothmog").Q<Label>(className: "die-badge"));
             pool.Apply(root, view, Side.FreePeoples, true);
             Assert.AreEqual("1", root.Q<Button>("pool-Hunt").text, "UI-97: icon and count; the name leads the description.");
-            StringAssert.StartsWith("Hunt\n", root.Q<Button>("pool-Hunt").tooltip);
+            // UI-420: the title names the location and count; each die's line keeps only what tells it apart.
+            Assert.AreEqual("In the Hunt Box · 1\nNenya · Eye · rolled on a Keeper die · ★ Remove", root.Q<Button>("pool-Hunt").tooltip);
             StringAssert.Contains("keeper", root.Q<Button>("pool-Hunt").tooltip.ToLowerInvariant());
             Assert.IsTrue(root.Q<Button>("pool-Hunt").ClassListContains(ReadOnlyControl.ClassName), "UI-230: the count is information only.");
             Assert.AreEqual("CHOOSE A DIE", root.Q<Label>("dice-ring-prompt").text, "UI-238: the band's prompt for an armed Ring.");

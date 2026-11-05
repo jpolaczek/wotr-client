@@ -47,7 +47,9 @@ namespace Wotr.PlayTests
                         var label = $"{board.View.You}-{width}x{pixels}-{scale:0.00}";
                         var height = board.Console.Root.layout.height;
                         var bottom = board.Root.Q(className: "bottom").layout.height;
+                        var places = Places(board);
                         Check(board, label);
+                        Assert.IsFalse(board.Console.Actions.Cancel.enabledSelf, "UI-455: nothing chosen, Cancel greyed · " + label);
                         LayoutTests.Save(texture, $"ui160-console-{label}.png");
                         var die = board.OwnDice.Query<Button>(className: "die").ToList().FirstOrDefault(b => b.enabledInHierarchy);
                         if (board.View.DecisionOwner == board.View.You && die != null)
@@ -58,6 +60,9 @@ namespace Wotr.PlayTests
                             Assert.AreEqual(height, board.Console.Root.layout.height, 0.01f, "Same console height with a die · " + label);
                             Assert.AreEqual(bottom, board.Root.Q(className: "bottom").layout.height, 0.01f, "Same bottom row · " + label);
                             Check(board, label + " die");
+                            // UI-455 (owner): the chosen die can be cancelled; no control moved for it.
+                            Assert.IsTrue(board.Console.Actions.Cancel.enabledSelf, "A chosen die can be cancelled · " + label);
+                            CollectionAssert.AreEqual(places, Places(board), "Every console control keeps its place · " + label);
                             LayoutTests.Save(texture, $"ui160-console-die-{label}.png");
                             PointerGestureEvents.ClickAt(board.Console.Actions.Back);
                             await room.Settle();
@@ -95,9 +100,24 @@ namespace Wotr.PlayTests
             }
             foreach (var action in new[] { console.Actions.Back, console.Actions.Confirm, console.Actions.Pass, console.Actions.Discard })
                 Target(action, root, label);
+            // UI-455 (owner, 2026-11-03): the small Cancel on its own line under the four, always shown.
+            var cancel = console.Actions.Cancel;
+            Assert.AreEqual(DisplayStyle.Flex, cancel.resolvedStyle.display, "The fixed Cancel · " + label);
+            Inside(cancel, root, label);
+            Assert.GreaterOrEqual(cancel.worldBound.yMin + 0.5f, console.Actions.Pass.worldBound.yMax, "Cancel under the four · " + label);
+            Assert.GreaterOrEqual(cancel.worldBound.xMin + 0.5f, console.Actions.Pass.worldBound.xMin, "Cancel within their column · " + label);
+            Assert.LessOrEqual(cancel.worldBound.xMax, console.Actions.Discard.worldBound.xMax + 0.5f, "Cancel within their column · " + label);
             Assert.IsEmpty(root.Query<ScrollView>().ToList(), label);
             Assert.AreEqual(3, board.View.Rings.Count, "The base game has three Elven Rings · " + label);
             FillsTheScreen(board, label);
+        }
+
+        // UI-455: the places of the console's controls, to compare between states.
+        private static Rect[] Places(BoardScreen board)
+        {
+            var actions = board.Console.Actions;
+            return new[] { actions.Back, actions.Confirm, actions.Pass, actions.Discard, actions.Cancel, board.Console.Status.Plaque, board.Hunt.Tab }
+                .Select(element => element.worldBound).ToArray();
         }
 
         // UI-176: the board takes the whole picture; the dice keep to the left edge, the cards to the right and the
@@ -113,7 +133,11 @@ namespace Wotr.PlayTests
             var dice = board.OwnDice.worldBound;
             var console = board.Console.Root.worldBound;
             var cards = board.Edges.Right.worldBound;
-            Assert.Less(dice.xMin - root.xMin, 12, "The dice keep to the left edge · " + label);
+            // UI-494 (owner): the bottom row stands on the screen's edges, as the top bar and the cards do.
+            Assert.AreEqual(root.xMin, dice.xMin, 1, "The dice stand on the left edge · " + label);
+            Assert.AreEqual(root.yMax, dice.yMax, 1, "The dice stand on the bottom edge · " + label);
+            Assert.AreEqual(root.yMax, console.yMax, 1, "The console stands on the bottom edge · " + label);
+            Assert.AreEqual(root.yMax, cards.yMax, 1, "The cards stand on the bottom edge · " + label);
             Assert.Less(root.xMax - cards.xMax, 12, "The cards keep to the right edge · " + label);
             Assert.GreaterOrEqual(console.xMin, dice.xMax - 1, "The console stands right of the dice · " + label);
             Assert.LessOrEqual(console.xMax, cards.xMin + 1, "The console stands left of the cards · " + label);

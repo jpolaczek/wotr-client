@@ -21,6 +21,9 @@ namespace Wotr.Client.Diagnostics
         private PanelSettings panel;
         private string output;
         private string inputPath;
+        private string dragPath;
+        // UI-407: how long a drag workload may take to lift its figure and start the edge pan before measuring.
+        private const float DragSetupSeconds = 10;
         private Dictionary<string, PlayerView> views;
         private MapProfileScene scene;
         private DesktopProfileInput input;
@@ -45,6 +48,10 @@ namespace Wotr.Client.Diagnostics
             if (inputIndex < 0 || inputIndex + 1 >= args.Length)
                 throw new ArgumentException("--wotr-map-input requires the public scenario projection artifact.");
             review.inputPath = Path.GetFullPath(args[inputIndex + 1]);
+            var dragIndex = Array.IndexOf(args, "--wotr-map-drag");
+            if (dragIndex < 0 || dragIndex + 1 >= args.Length)
+                throw new ArgumentException("--wotr-map-drag requires the recorded drag projections (UI-407).");
+            review.dragPath = Path.GetFullPath(args[dragIndex + 1]);
             Directory.CreateDirectory(review.output);
             review.StartCoroutine(review.GuardedRun());
             return true;
@@ -94,6 +101,7 @@ namespace Wotr.Client.Diagnostics
             foreach (var name in new[] { "base", "fate", "newcities", "captured", "whitehand", "dense", "moved" })
                 if (!views.ContainsKey(name))
                     throw new InvalidOperationException("Missing map profile projection: " + name);
+            AddDragViews();
             bootstrap.ShowFixture();
             var board = bootstrap.BoardScreen;
             var map = board.Map;
@@ -148,11 +156,27 @@ namespace Wotr.Client.Diagnostics
             map.Legend.SetOpen(false);
         }
 
+        // UI-407: the drag workloads' projections, recorded from the server by the PlayMode acceptance test, one per side.
+        private void AddDragViews()
+        {
+            var recorded = JsonConvert.DeserializeObject<Dictionary<string, PlayerView>>(File.ReadAllText(dragPath));
+            foreach (var name in MapProfileScene.DragViews)
+            {
+                if (!recorded.TryGetValue(name, out var view))
+                    throw new InvalidOperationException("Missing drag profile projection: " + name);
+                var side = name.EndsWith("-fp", StringComparison.Ordinal) ? Side.FreePeoples : Side.Shadow;
+                if (view.You != side || view.Decision == null)
+                    throw new InvalidOperationException($"The drag projection {name} is not {side}'s own decision.");
+                views[name] = view;
+            }
+        }
+
         private IEnumerator ProfileCase(MapCanvas map, int width, int height, float scale, string kind)
         {
             scene.Prepare(kind);
             for (var settle = 0; settle < 8; settle++)
                 yield return null;
+            yield return SetUpGesture(kind);
             using var profile = new FrameProfile();
             using var memory = new MapProfileMemory();
             using var vertices = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Vertices Count", 1);
@@ -186,14 +210,32 @@ namespace Wotr.Client.Diagnostics
                 BorderRepaints = map.Renderer.BorderRepaints - count,
                 BorderBuilds = actualBuilds, ExpectedBorderBuilds = scene.ExpectedBorderBuilds,
                 GraphicsVertices = new { CounterValid = vertices.Valid, Peak = vertexPeak },
-                Memory = memory.Result()
+                Memory = memory.Result(),
+                Drag = scene.DragEvidence
             });
-            if (kind.StartsWith("stress-", StringComparison.Ordinal) || kind.StartsWith("override-", StringComparison.Ordinal))
+            if (kind.StartsWith("stress-", StringComparison.Ordinal) || kind.StartsWith("override-", StringComparison.Ordinal) ||
+                kind.StartsWith("drag-", StringComparison.Ordinal))
             {
                 yield return end;
                 Save($"{kind}-{width}-{scale:0.00}");
             }
+            input.Dispatch(scene.EndAction);
             Debug.Log($"WOTR_MAP_REVIEW_CASE {kind} {width} {scale}");
+        }
+
+        // UI-407: a drag workload first chooses its die and lifts its army, and the edge pan has to start (after its dwell),
+        // before the warm-up frames run; other workloads are ready at once.
+        private IEnumerator SetUpGesture(string kind)
+        {
+            var deadline = Time.realtimeSinceStartup + DragSetupSeconds;
+            scene.SetFrame(-1);
+            while (!scene.Ready)
+            {
+                if (Time.realtimeSinceStartup > deadline)
+                    throw new InvalidOperationException($"The {kind} workload's figure did not reach a panning edge.");
+                input.Dispatch(scene.TickAction);
+                yield return null;
+            }
         }
 
         private IEnumerator CaptureRegions(MapCanvas map)
@@ -253,7 +295,7 @@ namespace Wotr.Client.Diagnostics
                     Bytes = Profiler.GetRuntimeMemorySizeLong(texture), texture.mipmapCount },
                 map.Renderer.BorderCount, map.Renderer.InputPoints,
                 GeometryMemory = geometryMemory,
-                Workload = "Real offline Player UI and TurnInteraction with server-generated safe projections, dense field/garrison, pointer and projection/metadata refresh. Only match ID and revision use a monotonic replay envelope; game data and legal options are unchanged. Network behavior is verified separately. Uncapped FPS is not monitor refresh; input-to-render excludes display latency.",
+                Workload = "Real offline Player UI and TurnInteraction with server-generated safe projections, dense field/garrison, pointer and projection/metadata refresh, and (UI-407) each side's own army carried to a map edge so the edge pan runs, on projections recorded from the server. Only match ID and revision use a monotonic replay envelope; game data and legal options are unchanged; nothing is sent. Network behavior is verified separately. Uncapped FPS is not monitor refresh; input-to-render excludes display latency.",
                 Results = results, Screenshots = screenshots
             };
             File.WriteAllText(Path.Combine(output, "report.json"), JsonConvert.SerializeObject(report, Formatting.Indented));

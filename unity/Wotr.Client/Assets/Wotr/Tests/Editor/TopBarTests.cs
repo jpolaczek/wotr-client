@@ -36,7 +36,8 @@ namespace Wotr.EditorTests
             Assert.AreEqual("Shadow · Dice out of play: 1", chips[3].tooltip);
             Assert.IsTrue(chips.All(chip => chip.pickingMode == PickingMode.Position), "Chips carry the hover tooltip.");
             Assert.IsTrue(chips.All(chip => chip.Query<VisualElement>().ToList().Skip(1).All(child => child.pickingMode == PickingMode.Ignore)));
-            Assert.AreEqual(3, summary.Root.Query(className: "summary-divider").ToList().Count);
+            // UI-344: the expansions' token chips and their dividers stay hidden in a base game.
+            Assert.AreEqual(3, summary.Root.Query(className: "summary-divider").ToList().Count(d => d.style.display != DisplayStyle.None));
 
             summary.Apply(View(handFp: 4, handShadow: 7), Side.Shadow);
             Assert.AreSame(values[0], chips[0].Q<Label>(className: "summary-value"), "Values update without rebuilding chips.");
@@ -55,13 +56,15 @@ namespace Wotr.EditorTests
             var menu = new Button { name = "open-board-menu" };
             var bar = new TopBarView(phase, dice, connection, menu);
             var children = bar.Root.Children().ToList();
-            CollectionAssert.AreEqual(new VisualElement[] { bar.Frame, phase, children[2], dice, bar.Opponent.Root, connection, menu }, children);
+            // UI-263: the expansions' crests follow the phase.
+            CollectionAssert.AreEqual(new VisualElement[] { bar.Frame, phase, bar.Crests, children[3], dice, bar.Opponent.Root, connection, menu },
+                children);
             Assert.IsTrue(bar.Root.ClassListContains("topbar"));
             Assert.IsTrue(bar.Root.ClassListContains("map-edge-control"), "UI-98: the slim bar pans only on the outer rim.");
-            Assert.IsTrue(children[2].ClassListContains("topbar-divider"));
+            Assert.IsTrue(children[3].ClassListContains("topbar-divider"));
             Assert.AreEqual(PickingMode.Ignore, bar.Frame.pickingMode);
             Assert.AreEqual(PickingMode.Ignore, bar.Shadow.pickingMode);
-            Assert.AreEqual(PickingMode.Ignore, children[2].pickingMode);
+            Assert.AreEqual(PickingMode.Ignore, children[3].pickingMode);
             Assert.IsNull(bar.Shadow.parent, "The board stage owns the cast shadow.");
         }
 

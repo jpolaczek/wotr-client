@@ -7,19 +7,20 @@ using Wotr.Client;
 namespace Wotr.EditorTests
 {
     // UI-187: every ability of the base game's characters has a short form for tooltips, one line each, without the
-    // title repeated in its gist; nothing else is summarised.
+    // title repeated in its gist. ART-04: so has every ability of the expansions' characters; a card's own form
+    // ("<card id>#<ability id>") exists only for a card that has that ability. UI-365: an expansion form names the
+    // subject of its condition ("With Gimli in Iron Hills or Ered Luin, …"), so it may be a little longer.
     public sealed class CharacterAbilitySummariesTests
     {
         private const int Longest = 72;
+        private const int LongestExpansion = 85;
 
         [Test]
-        public void EveryBaseAbilityHasOneShortLine()
+        public void EveryAbilityOfEveryCharacterHasOneShortLine()
         {
-            var cards = JObject.Parse(Resources.Load<TextAsset>("character-ability-text").text)["cards"]
-                .Where(card => card.Value<string>("id").StartsWith("base.")).ToList();
-            Assert.AreEqual(14, cards.Count, "The base game has fourteen character cards.");
+            var cards = JObject.Parse(Resources.Load<TextAsset>("character-ability-text").text)["cards"].ToList();
+            Assert.AreEqual(14, cards.Count(card => card.Value<string>("id").StartsWith("base.")), "The base game has fourteen character cards.");
             var used = cards.SelectMany(card => card["abilities"].Select(ability => ability.Value<string>("id"))).Distinct().ToList();
-            Assert.AreEqual(22, used.Count);
             foreach (var card in cards)
             {
                 var id = card.Value<string>("id");
@@ -27,11 +28,21 @@ namespace Wotr.EditorTests
                 Assert.AreEqual(card["abilities"].Count(), lines.Count, id + " has a line per ability");
             }
             var summaries = JObject.Parse(Resources.Load<TextAsset>("character-ability-summaries").text)["summaries"].ToObject<JObject>();
-            CollectionAssert.AreEquivalent(used, summaries.Properties().Select(p => p.Name), "Only the base abilities are summarised.");
+            var shared = summaries.Properties().Select(p => p.Name).Where(name => !name.Contains("#")).ToList();
+            CollectionAssert.AreEquivalent(used, shared, "Exactly the printed abilities are summarised.");
+            foreach (var own in summaries.Properties().Select(p => p.Name).Where(name => name.Contains("#")))
+            {
+                var parts = own.Split('#');
+                var card = cards.SingleOrDefault(c => c.Value<string>("id") == parts[0]);
+                Assert.IsNotNull(card, own + " names a card");
+                Assert.IsTrue(card["abilities"].Any(a => a.Value<string>("id") == parts[1]), own + " names one of its abilities");
+            }
+            var basic = cards.Where(card => card.Value<string>("id").StartsWith("base."))
+                .SelectMany(card => card["abilities"].Select(ability => ability.Value<string>("id"))).ToHashSet();
             foreach (var summary in summaries.Properties())
             {
                 var text = summary.Value.Value<string>();
-                Assert.LessOrEqual(text.Length, Longest, summary.Name + " stays short");
+                Assert.LessOrEqual(text.Length, basic.Contains(summary.Name) ? Longest : LongestExpansion, summary.Name + " stays short");
                 Assert.IsFalse(text.EndsWith("."), summary.Name + " reads as a tooltip phrase, not a sentence");
                 Assert.IsFalse(text.Contains("\n"), summary.Name + " stays on one line");
             }
@@ -43,13 +54,24 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[]
             {
                 "Captain of the West · +1 Combat Strength in battle (max 5 dice)",
-                "Dwarf of Erebor · Any die in Erebor moves the Dwarves a step toward war"
+                "Dwarf of Erebor · With Gimli in Erebor, any die advances the Dwarves a step toward war"
             }, CharacterAbilitySummaries.Lines("base.character.gimli"));
             Assert.AreEqual("Gollum\nGuide · Joins the Fellowship when no Companions remain\nGuide · Unseen path · Ignores Reveal on standard numbered tiles\n" +
                 "Guide · Reveal · Reveals the Fellowship to reduce Hunt damage by 1",
                 CharacterAbilitySummaries.Append("Gollum", "base.character.gollum"));
-            Assert.AreEqual("Galadriel", CharacterAbilitySummaries.Append("Galadriel", "lords.character.galadriel"),
-                "An expansion card adds no lines.");
+            Assert.AreEqual("Galadriel\nNenya · Gives Nenya to the Shadow to cancel a drawn standard Eye tile and redraw\n" +
+                "Valour of the Elven People · May recruit in Lórien while it is besieged\n" +
+                "Combat-card level · Counts as level 3 for Combat card effects\n" +
+                "Bound to Lórien · Never leaves Lórien; removed if the Shadow conquers it",
+                CharacterAbilitySummaries.Append("Galadriel", "lords.character.galadriel"));
+            // ART-04: the Dwarven Lord's Messenger works in his own homelands, so his card has its own form.
+            Assert.IsTrue(CharacterAbilitySummaries.Lines("fate.character.gimli-dwarven-lord")
+                .Any(line => line.EndsWith(" · With Gimli in Iron Hills or Ered Luin, any die activates and advances the Dwarves")));
+            Assert.IsTrue(CharacterAbilitySummaries.Lines("lords.character.gimli")
+                .Any(line => line.EndsWith(" · With Gimli in Erebor, any die activates and advances the Dwarves")));
+            // UI-365 (owner's report): Dwarf of Renown names Gimli as the condition's subject, not the die.
+            CollectionAssert.Contains(CharacterAbilitySummaries.Lines("fate.character.gimli"),
+                "Dwarf of Renown · With Gimli in Iron Hills or Ered Luin, any die moves the Dwarves a step toward war");
         }
     }
 }

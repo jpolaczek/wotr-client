@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- UI-268: Vilya, the Ring of Air (Elrond): a gold band with a great sapphire between two wings of air. On a console socket; the lit variant wears the gold glow of a Keeper ability offered
+       now, the captured variant an ember halo once the Shadow holds it. -->
+  <defs>
+    <linearGradient id="vilya-metal" x1="0.15" y1="0.1" x2="0.85" y2="0.95">
+      <stop offset="0" stop-color="#fff2bf"/>
+      <stop offset="0.5" stop-color="#d9ad52"/>
+      <stop offset="1" stop-color="#7d5719"/>
+    </linearGradient>
+    <linearGradient id="vilya-inner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7d5719"/>
+      <stop offset="1" stop-color="#d9ad52"/>
+    </linearGradient>
+    <radialGradient id="vilya-stone" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#e4efff"/>
+      <stop offset="0.45" stop-color="#3f7ff0"/>
+      <stop offset="1" stop-color="#0f2c78"/>
+    </radialGradient>
+    <radialGradient id="vilya-aura" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.45" stop-color="#fff3c4" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffd06a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vilya-ember" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.4" stop-color="#ff5a2a" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#7a1004" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="vilya-hole" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+      <rect width="32" height="32" fill="#fff"/>
+      <ellipse cx="16" cy="20.2" rx="7.9" ry="4.4" fill="#000"/>
+    </mask>
+  </defs>
+  <circle cx="16" cy="16" r="16" fill="url(#vilya-aura)" mask="url(#vilya-hole)" style="opacity: var(--keeper-aura-opacity)"/>
+  <circle cx="16" cy="17" r="15" fill="url(#vilya-ember)" mask="url(#vilya-hole)" style="opacity: var(--captured-halo-opacity)"/>
+  <g filter="url(#lift)">
+    <g mask="url(#vilya-hole)">
+      <ellipse cx="16" cy="19.8" rx="12.2" ry="8.2" fill="url(#vilya-metal)" style="stroke: var(--gilt-edge)" stroke-width="0.45"/>
+      <ellipse cx="16" cy="18.9" rx="8.4" ry="5.2" fill="url(#vilya-inner)"/>
+    </g>
+    <ellipse cx="16" cy="20.2" rx="7.9" ry="4.4" fill="none" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <path d="M6.5 17.2 C7.8 14.0 11.3 12.4 15 12.2" fill="none" stroke="#fffdf2" stroke-width="0.9" stroke-linecap="round" opacity="0.8"/>
+    <path d="M11.9 9.9 C9.6 9.4 8.1 7.9 7.6 6.0 C9.4 6.9 11.0 7.3 12.6 7.4 Z" fill="url(#vilya-metal)" style="stroke: var(--gilt-edge)" stroke-width="0.3"/>
+    <path d="M20.1 9.9 C22.4 9.4 23.9 7.9 24.4 6.0 C22.6 6.9 21.0 7.3 19.4 7.4 Z" fill="url(#vilya-metal)" style="stroke: var(--gilt-edge)" stroke-width="0.3"/>
+    <path d="M12.2 12.4 L13.4 9.4 L18.6 9.4 L19.8 12.4 Z" fill="url(#vilya-metal)" style="stroke: var(--gilt-edge)" stroke-width="0.35" stroke-linejoin="round"/>
+    <circle cx="16" cy="9.1" r="4.15" fill="url(#vilya-metal)" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <circle cx="16" cy="9.1" r="3.30" fill="url(#vilya-stone)" stroke="#120c04" stroke-width="0.3"/>
+    <circle cx="15.0" cy="8.1" r="0.75" fill="#ffffff" opacity="0.9"/>
+  </g>
+</svg>

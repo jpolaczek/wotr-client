@@ -1,3 +1,5 @@
+/* UI-471: the game chrome's shared tokens and the buttons' states; first, so every later rule may override them. */
+@import url("Wotr/Styles/GameChrome.uss");
 /* UI-86: the illustrated top bar has its own sheet; imports must precede all rules. */
 @import url("Wotr/Styles/TopBar.uss");
 @import url("Wotr/Styles/LeftRail.uss");
@@ -33,6 +35,8 @@
 @import url("Wotr/Styles/Updates.uss");
 /* UI-114: press states; imported last so its rules win ties with the sheets above. */
 @import url("Wotr/Styles/Interaction.uss");
+/* UI-440: a skill button is the skill's bare icon (Runtime/UI/SkillIcon.cs); after the press states it builds on. */
+@import url("Wotr/Styles/SkillIcons.uss");
 @import url("Wotr/Styles/Presentation.uss");
 
 .board-screen {
@@ -85,11 +89,11 @@
     margin: 0;
     white-space: normal;
     font-size: 14px;
-    color: rgb(241, 235, 214);
-    background-color: rgb(39, 37, 34);
+    color: var(--game-card-text);
+    background-color: var(--game-card-fill);
     border-width: 1px;
-    border-color: rgb(210, 186, 126);
-    border-radius: 4px;
+    border-color: var(--game-hairline);
+    border-radius: 2px;
 }
 
 .tracks {
@@ -156,37 +160,30 @@
     flex-shrink: 0;
 }
 
-/* UI-138: every text button wears the framed lacquer of frames/button (gilt edge, studs), with its hover art;
-   a press tints and sinks it (Styles/Interaction.uss). Buttons with art of their own override the image. */
+/* UI-471: every button wears the menus' thin line from the shared tokens (Styles/GameChrome.uss, with the states). Buttons
+   with art of their own override the image and set their slices beside it. */
 .action {
     min-width: 38px;
     min-height: 36px;
     padding-left: 12px;
     padding-right: 12px;
-    color: rgb(241, 227, 181);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+    color: var(--game-button-text);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button");
-    -unity-slice-top: 24;
-    -unity-slice-right: 24;
-    -unity-slice-bottom: 24;
-    -unity-slice-left: 24;
-    -unity-slice-scale: 0.5px;
+    background-image: var(--game-button);
+    -unity-slice-top: var(--game-button-slice);
+    -unity-slice-right: var(--game-button-slice);
+    -unity-slice-bottom: var(--game-button-slice);
+    -unity-slice-left: var(--game-button-slice);
+    -unity-slice-scale: var(--game-button-slice-scale);
     border-width: 0;
 }
 
-.action:hover {
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-hover");
-}
-
-.action.selected { background-image: resource("Wotr/Art/UI/frames/button-selected"); }
 /* UI-235: a control that cannot act now is its picture only: no frame, hover or press. */
 #board-screen .action.read-only,
 #board-screen .action.read-only:hover,
 #board-screen .action.read-only:focus,
 #board-screen .action.read-only.pressed { background-image: none; -unity-background-image-tint-color: rgb(255, 255, 255); }
-.action:disabled { color: rgb(158, 150, 128); -unity-background-image-tint-color: rgb(150, 150, 150); }
 
 
 .fp {
@@ -530,6 +527,12 @@
 .hunt-response-random { background-image: resource("Wotr/Art/UI/hunt/choice-random"); }
 .hunt-guide-portrait { overflow: hidden; background-color: rgb(65, 62, 57); border-color: rgb(231, 209, 160); border-width: 1px; border-radius: 14px; }
 .hunt-guide-portrait > .figure-art-image { position: absolute; left: 1px; right: 1px; top: 1px; bottom: 0; }
+/* UI-439: a Guide's response keeps his figure and wears the response's ability icon on its lower right edge. */
+.hunt-response-figure { flex-shrink: 0; margin-right: 9px; }
+.hunt-response-figure > .hunt-response-icon { margin-right: 0; }
+.hunt-response-figure > .hunt-response-ability { position: absolute; right: -7px; bottom: -4px; width: 17px; height: 17px; -unity-background-scale-mode: scale-to-fit; }
+/* UI-272: We Won't Go Back's No Corruption, an empty card slot of the response card's size. */
+.hunt-response-none { width: 21px; height: 28px; margin-right: 5px; border-width: 1px; border-color: rgb(160, 177, 181); border-radius: 2px; opacity: 0.6; }
 .hunt-response-object #hunt-response-name { margin: 0; padding: 0; font-size: 13px; }
 .hunt-response-object #hunt-response-consequence { margin: 1px 0 0 0; padding: 0; font-size: 12px; white-space: pre; -unity-text-align: middle-center; }
 .hunt-panel #hunt-guide-order { margin: 1px 0; padding: 0; font-size: 12px; color: rgb(231, 209, 160); }
@@ -551,7 +554,10 @@
 .fellowship-panel .draft-status { white-space: normal; }
 .fellowship-panel.fellowship-route { width: 360px; }
 .fellowship-route .travel-summary { flex-wrap: wrap; }
-.fellowship-panel #fellowship-route-effect { color: rgb(231, 209, 160); white-space: normal; }
+/* UI-448 (owner): while the declaration is drawn, the panel keeps the route's summary only — Declare (beside Finish
+   phase) sends it and the console holds the hint, Back and Cancel. */
+#board-screen .fellowship-panel.fellowship-declaring #confirm-decision,
+#board-screen .fellowship-panel.fellowship-declaring .draft-status { display: none; }
 .fellowship-panel .companion-token {
     width: 68px;
     min-width: 32px;
@@ -649,11 +655,11 @@
 .match-loading { position: absolute; left: 24px; top: 76px; font-size: 20px; color: rgb(231, 209, 160); }
 .board-information {
     position: absolute; left: 16px; top: 112px; bottom: 8px; width: 560px;
-    padding: 8px; background-color: rgb(34, 32, 30);
-    border-top-width: 1px; border-top-color: rgb(111, 131, 126);
+    padding: 8px; background-color: rgba(0, 0, 0, 0);
+    border-top-width: 1px; border-top-color: rgba(0, 0, 0, 0);
 }
 .information-heading { flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: space-between; height: 33px; min-height: 33px; }
-.information-heading .title { margin: 0; font-size: 16px; }
+.information-heading .title { margin: 0; font-size: 16px; letter-spacing: 1px; }
 .board-information .action { height: 33px; min-height: 33px; padding: 0 8px; margin: 0 4px 0 0; font-size: 13px; }
 #information-content { flex-grow: 1; min-height: 0; }
 .information-tabs { flex-direction: row; align-items: center; flex-wrap: nowrap; flex-shrink: 0; height: 33px; min-height: 33px; }
@@ -704,11 +710,10 @@
 .sovereign-strip { flex-direction: row; flex-wrap: wrap; }
 .sovereign-strip .action { white-space: pre; font-size: 12px; justify-content: center; -unity-text-align: middle-center; }
 .sovereign-strip .corrupted-sovereign { border-bottom-width: 3px; border-bottom-color: rgb(206, 118, 130); }
-.expansion-inspector { position: absolute; top: 112px; left: 16px; width: 560px; padding: 8px; background-color: rgb(34, 32, 30); }
+.expansion-inspector { position: absolute; top: 112px; left: 16px; width: 560px; padding: 8px; background-color: rgba(0, 0, 0, 0); }
 .expansion-inspector .action { height: 32px; min-height: 32px; margin: 0 4px 3px 0; padding: 0 6px; font-size: 13px; }
 .expansion-inspector .unity-label { margin-top: 0; margin-bottom: 2px; font-size: 13px; }
 .corruption-tile { width: 32px; min-width: 32px; height: 32px; background-color: rgb(67, 64, 59); -unity-text-align: middle-center; margin-right: 4px; }
-.sovereign-ability { white-space: normal; }
 
 /* Saved games and optional return summaries share the gateway, outside the decision tray. */
 .saved-games-panel {
@@ -838,6 +843,20 @@
 .interface-settings-panel .sound-settings { margin-top: 14px; }
 .interface-settings-panel #sound-heading { margin: 0 0 2px 0; }
 .interface-settings-panel .sound-level { flex-direction: row; align-items: center; margin: 0 0 4px 0; }
+/* UI-415 (owner): Settings as compact as the menu it opens from; every control keeps its 32-point target (QUAL-19:
+   34 points keep it after rounding at 125%). */
+.interface-settings-panel { padding: 12px 16px 14px 16px; }
+.interface-settings-panel .settings-heading { margin-bottom: 4px; }
+.interface-settings-panel #interface-options { margin-right: 20px; }
+.interface-settings-panel .display-choices { margin-bottom: 6px; }
+.interface-settings-panel .display-choice { height: 34px; min-height: 34px; margin: 0 4px 4px 0; }
+.interface-settings-panel .row { margin-bottom: 8px; }
+.interface-settings-panel .scale-choice { height: 36px; }
+.interface-settings-panel .sound-settings { margin-top: 8px; }
+.interface-settings-panel .sound-level { margin: 0 0 2px 0; }
+.interface-settings-panel .unity-toggle { min-height: 34px; margin-bottom: 2px; }
+.interface-settings-panel #reset-window-layout,
+.interface-settings-panel #test-sound { height: 34px; min-height: 34px; margin-top: 4px; }
 .interface-settings-panel .sound-level-label { width: 64px; margin: 0; }
 .interface-settings-panel .sound-level-slider { flex-grow: 1; min-width: 0; height: 32px; margin: 0 8px; }
 .interface-settings-panel .sound-level-value { width: 44px; margin: 0; -unity-text-align: middle-right; }
@@ -857,8 +876,9 @@
 .action-symbol { position: absolute; left: 5px; top: 4px; width: 22px; height: 22px; }
 .special-die .action-symbol { left: 12px; top: 1px; height: 20px; }
 .die-badge { position: absolute; right: 1px; top: 0; font-size: 12px; margin: 0; padding: 0; }
-.region-hover { position: absolute; width: 440px; padding: 8px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
-.region-hover .title { font-size: 17px; margin: 0 0 2px 0; }
+/* UI-474: the card's art comes from GameChrome.uss; each 1-point border stays in the layout, transparent, so nothing moves. */
+.region-hover { position: absolute; width: 440px; padding: 8px; background-color: rgba(0, 0, 0, 0); border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 0; }
+.region-hover .title { font-size: 17px; letter-spacing: 1px; margin: 0 0 2px 0; -unity-font-style: normal; color: var(--game-title-text); }
 .region-hover .unity-label { font-size: 12px; margin: 1px 0; white-space: normal; }
 .hover-force { margin-top: 4px; padding-left: 4px; border-left-width: 3px; }
 .hover-force.fp { border-left-color: rgb(130, 194, 205); background-color: rgba(0, 0, 0, 0); }
@@ -957,8 +977,7 @@
     width: 22px; height: 22px; border-radius: 11px; border-color: rgb(170, 64, 50); background-color: rgb(48, 22, 18);
     background-image: resource("Wotr/Art/UI/actions/battle"); -unity-background-scale-mode: scale-to-fit;
 }
-.politics-panel .nation-slot.legal-target > .nation-station { width: 16px; height: 16px; border-radius: 8px; border-color: rgb(247, 213, 120); background-color: rgb(64, 84, 52); }
-.politics-panel .nation-slot-war.legal-target > .nation-station { width: 24px; height: 24px; border-radius: 12px; border-color: rgb(247, 213, 120); }
+/* UI-410 (owner): no station glows; a dragged token's destination shows only by a white rim while the drag points at it. */
 .politics-panel .nation-slot.destination-selected > .nation-station { border-color: rgb(255, 255, 255); }
 .politics-panel .nation-token {
     position: absolute; top: 2px; width: 28px; min-width: 28px;
@@ -976,9 +995,11 @@
 .politics-panel .nation-actions { width: 28px; min-width: 28px; margin-left: 4px; flex-shrink: 0; align-items: center; justify-content: center; }
 #board-screen .politics-panel .nation-actions .icon-button { width: 26px; min-width: 26px; height: 26px; min-height: 26px; margin: 0; }
 #board-screen .politics-panel .nation-actions .nation-activate { position: absolute; left: 1px; top: 50%; margin-top: -13px; }
+/* UI-440: Narya's activation is its bare skill icon (SkillIcon) in the arrow's 26-point place; it glows while usable. */
+#board-screen .politics-panel .nation-actions .skill-icon.nation-activate { width: 26px; height: 26px; }
 #board-screen .politics-panel .nation-actions .icon-button:disabled { opacity: 0.35; }
 #board-screen .politics-panel .nation-actions .icon-button.legal-target {
-    border-width: 0; background-image: resource("Wotr/Art/UI/frames/button-square-hover");
+    border-width: 0; background-image: var(--game-button-hover);
 }
 .action-progress { flex-direction: row; align-items: center; flex-shrink: 0; }
 .action-progress .march-step { font-size: 24px; width: 34px; height: 32px; margin: 0; -unity-text-align: middle-center; color: rgb(245, 212, 133); }
@@ -997,22 +1018,40 @@
     background-color: rgb(47, 44, 41);
 }
 .hand-card .action-symbol { position: relative; left: 0; top: 0; width: 20px; height: 20px; flex-shrink: 0; }
-.hand .hand-card.playable-card { border-top-color: rgb(144, 203, 172); border-bottom-color: rgb(144, 203, 172); }
+.hand .hand-card.playable-card { border-top-color: rgb(255, 214, 112); border-bottom-color: rgb(255, 214, 112); }
 .hand .hand-card.selected { background-color: rgb(82, 79, 43); border-color: rgb(241, 206, 119); }
 .card-decks { flex-direction: row; flex-wrap: nowrap; height: 40px; margin-bottom: 2px; }
 .card-decks .card-deck { flex-direction: row; align-items: center; justify-content: center; width: 50%; min-width: 0; height: 36px; min-height: 36px; padding: 2px; margin: 0; border-left-width: 4px; }
 .card-deck .action-symbol { position: relative; left: 0; top: 0; width: 22px; height: 22px; }
 .card-deck .unity-label { font-size: 12px; }
 .card-deck.empty-deck { opacity: .4; }
-.legal-target { border-top-color: rgb(144, 203, 172); border-right-color: rgb(144, 203, 172); border-bottom-color: rgb(144, 203, 172); border-width: 2px; }
+.legal-target { border-top-color: rgb(255, 214, 112); border-right-color: rgb(255, 214, 112); border-bottom-color: rgb(255, 214, 112); border-width: 2px; }
 
 .component-actions { flex-direction: row; flex-wrap: wrap; align-items: center; flex-shrink: 0; margin-left: 10px; margin-right: 10px; }
 .component-actions > Button { min-width: 33px; padding-left: 7px; padding-right: 7px; }
 .region-hover .component-actions > Button { width: auto; font-size: 13px; }
-/* UI-286: a character's ability is a small picture on the square gilt frame; it glows only while a click can use it. */
+/* UI-286: a character's ability is a small picture; it glows only while a click can use it. UI-440 (owner): the bare skill
+   icon (SkillIcon, Styles/SkillIcons.uss), a 28-point picture in a 32-point box, no frame; an entry keeps the board pin
+   on the square gilt frame (it uses no ability). */
 .component-actions > .action.icon-button.ability-icon,
 .region-hover .component-actions > .action.icon-button.ability-icon { width: 32px; min-width: 32px; height: 32px; min-height: 32px; padding: 0; margin: 2px 4px 2px 0; }
 .component-actions > .ability-icon > .icon-glyph { max-width: 24px; max-height: 24px; }
+#board-screen .component-actions > .skill-icon.ability-icon,
+#board-screen .region-hover .component-actions > .skill-icon.ability-icon { width: 32px; height: 32px; margin: 2px 6px 2px 0; }
+/* UI-439: the ability's own icon; an ability with several commands (Voice recruits or upgrades, a Muster die moves or
+   attacks) badges each button on its lower right corner with what this one does. */
+.component-actions > .ability-icon > .icon-badge {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 13px;
+    height: 13px;
+    border-width: 1px;
+    border-radius: 7px;
+    border-color: rgb(231, 196, 112);
+    background-color: rgba(28, 22, 14, 0.92);
+    -unity-background-scale-mode: scale-to-fit;
+}
 
 .recruit-palette .reserve-piece { width: 30px; min-width: 30px; margin-right: 1px; }
 
@@ -1023,7 +1062,8 @@
 
 /* UI-29: one hover path across the hand and its compact, two-effect preview. */
 .cards-tab { position: absolute; right: 0; top: 64px; width: 94px; height: 36px; margin: 0; }
-.hand-drawer { position: absolute; width: 320px; padding: 4px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
+/* UI-474: flat, not the card's art: the docked hand wears this class too and clears only the colour (Cards.uss). */
+.hand-drawer { position: absolute; width: 320px; padding: 4px; background-color: var(--game-card-fill); border-width: 1px; border-color: var(--game-hairline); border-radius: 2px; }
 .card-header { flex-direction: row; align-items: flex-start; }
 .card-header #pin-card, .card-header #close-card { width: 24px; min-width: 24px; padding: 0; }
 .card-toolbar { flex-direction: row; margin: 6px 0 4px 0; }
@@ -1035,11 +1075,11 @@
 .card-effect-heading { font-size: 12px; color: rgb(205, 186, 138); white-space: normal; margin: 0 0 4px 0; }
 .focused-effect .card-effect-heading { color: rgb(244, 230, 184); }
 #card-combat-section { border-top-width: 1px; border-top-color: rgb(80, 98, 101); margin-top: 6px; }
-.card-effect.playable-effect { border-left-color: rgb(144, 203, 172); background-color: rgb(32, 56, 50); }
+.card-effect.playable-effect { border-left-color: rgb(255, 214, 112); background-color: rgb(70, 52, 18); }
 .card-inspector.compact-card { padding: 8px; }
 .compact-card .card-effect { padding-top: 4px; padding-bottom: 4px; }
 .card-inspector #card-window { font-size: 11px; white-space: normal; margin: 0 0 4px 0; }
-.card-inspector.playable-preview { border-top-color: rgb(144, 203, 172); }
+.card-inspector.playable-preview { border-top-color: rgb(255, 214, 112); }
 .hand .hand-card.playable-card { background-color: rgb(40, 73, 62); border-top-width: 3px; }
 .card-ready { position: absolute; right: 3px; top: 1px; color: rgb(190, 235, 184); font-size: 13px; }
 
@@ -1052,24 +1092,25 @@
 .window-dragging { border-top-color: rgb(247, 213, 120); }
 
 /* UI-41: virtual history and the shared read-only action card. */
-.action-log, .action-summary { position: absolute; left: 8px; bottom: 8px; width: 410px; height: 420px; max-height: 94%; padding: 8px; background-color: rgb(34, 32, 30); border-top-width: 2px; border-top-color: rgb(197, 178, 126); }
+/* UI-474: the card's art comes from GameChrome.uss; the old 2-point rule stays in the layout, transparent. */
+.action-log, .action-summary { position: absolute; left: 8px; bottom: 8px; width: 410px; height: 420px; max-height: 94%; padding: 8px; background-color: rgba(0, 0, 0, 0); border-top-width: 2px; border-top-color: rgba(0, 0, 0, 0); }
 .action-log .action, .action-summary .action { height: 26px; min-height: 26px; font-size: 12px; padding: 0 7px; margin: 2px; }
 .action-summary { width: 390px; height: 460px; bottom: auto; top: 8px; }
 .action-log > .row { flex-shrink: 0; }
 .action-log #log-status { white-space: normal; font-size: 12px; flex-grow: 1; flex-shrink: 1; }
 .action-log #log-new-entries { flex-shrink: 0; }
 #action-log-list { flex-grow: 1; min-height: 0; }
-.action-log-row { height: 94px; min-height: 94px; max-height: 94px; flex-shrink: 0; flex-direction: row; border-bottom-width: 1px; border-bottom-color: rgb(75, 72, 67); }
+.action-log-row { height: 94px; min-height: 94px; max-height: 94px; flex-shrink: 0; flex-direction: row; border-bottom-width: 1px; border-bottom-color: var(--game-hairline-quiet); }
 .action-log-open { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0; padding: 5px 3px; border-width: 0; border-radius: 0; background-color: rgba(0,0,0,0); align-items: stretch; -unity-text-align: middle-left; }
-.action-log-open:hover { background-color: rgb(55, 52, 48); }
+.action-log-open:hover { background-color: rgba(255, 244, 220, 0.06); }
 .action-log-heading { font-size: 12px; color: rgb(231, 209, 160); white-space: normal; max-height: 32px; overflow: hidden; margin: 0; }
 .action-log-content { font-size: 12px; white-space: normal; max-height: 40px; overflow: hidden; margin: 2px 0; }
-.action-log-cost { font-size: 11px; white-space: nowrap; overflow: hidden; margin: 0; color: rgb(168, 186, 184); }
+.action-log-cost { font-size: 11px; white-space: nowrap; overflow: hidden; margin: 0; color: var(--game-card-text-muted); }
 .action-log .action-log-expand { width: 25px; min-width: 25px; align-self: center; }
-.action-log-child { padding-left: 10px; background-color: rgb(29, 27, 25); }
+.action-log-child { padding-left: 10px; background-color: rgba(0, 0, 0, 0.18); }
 .action-card { flex-grow: 1; min-height: 0; }
 .action-card .title { font-size: 15px; white-space: normal; margin: 4px 0; flex-shrink: 0; }
-.action-card #action-card-status { font-size: 12px; color: rgb(168, 186, 184); white-space: normal; flex-shrink: 0; }
+.action-card #action-card-status { font-size: 12px; color: var(--game-card-text-muted); white-space: normal; flex-shrink: 0; }
 .action-card-costs { padding: 5px 0; flex-shrink: 0; }
 .action-cost { flex-shrink: 0; flex-direction: row; align-items: center; }
 .action-cost .action-symbol { position: relative; left: 0; top: 0; width: 24px; height: 24px; margin-right: 4px; flex-shrink: 0; }
@@ -1082,8 +1123,9 @@
 .action-summary .window-header #pin-action-summary { width: auto; min-width: 32px; }
 
 .map-action-layer { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
-.recorded-map-label { position: absolute; width: 232px; font-size: 11px; white-space: normal; color: rgb(168, 223, 242); background-color: rgba(28, 26, 24, .9); padding: 3px 5px; border-left-width: 2px; border-left-color: rgb(145, 212, 238); }
-.history-context-host { border-top-color: rgb(145, 212, 238); }
+.recorded-map-label { position: absolute; width: 232px; font-size: 11px; white-space: normal; color: rgb(255, 214, 112); background-color: rgba(28, 26, 24, .9); padding: 3px 5px; border-left-width: 2px; border-left-color: rgb(255, 214, 112); }
+/* UI-378: the history's marks are gold, as the observed ones. */
+.history-context-host { border-top-color: rgb(255, 214, 112); }
 
 .notification-bar { flex-direction: row; height: 42px; min-height: 42px; max-height: 42px; padding: 2px 8px; align-items: center; flex-shrink: 0; background-color: rgb(34, 32, 30); }
 .notification-tabs { flex-direction: row; flex-grow: 1; flex-shrink: 1; min-width: 0; align-items: center; }
@@ -1092,7 +1134,7 @@
 .action-notice { background-color: rgb(105, 48, 48); border-left-width: 3px; border-left-color: rgb(244, 166, 148); white-space: normal; -unity-text-align: middle-left; overflow: hidden; }
 .notification-tabs .action-notice { flex-basis: 0; flex-grow: 1; flex-shrink: 1; min-width: 80px; max-width: 460px; }
 .notification-more { width: 48px; flex-shrink: 0; }
-.notification-overflow { position: absolute; width: 420px; height: 360px; max-height: 94%; padding: 8px; background-color: rgb(38, 35, 33); border-top-width: 2px; border-top-color: rgb(244, 166, 148); }
+.notification-overflow { position: absolute; width: 420px; height: 360px; max-height: 94%; padding: 8px; background-color: rgba(0, 0, 0, 0); border-top-width: 2px; border-top-color: rgba(0, 0, 0, 0); }
 .notification-overflow .action-notice { height: 54px; min-height: 54px; margin: 2px 0; font-size: 12px; padding: 4px 8px; }
 #notification-list { flex-grow: 1; min-height: 0; }
 #notification-retry { width: 30px; }
@@ -1122,12 +1164,11 @@
 /* UI-57 Effects */
 .effects-tab { position: absolute; left: 0; top: 106px; width: 94px; min-width: 94px; height: 34px; min-height: 34px; padding: 0 3px; margin: 0; font-size: 12px; }
 .effects-panel { position: absolute; left: 98px; top: 56px; width: 420px; padding: 6px 8px; background-color: rgb(34, 32, 29); border-width: 1px; border-color: rgb(112, 135, 132); border-radius: 5px; }
-.effects-panel.compact-effects { width: 500px; left: 98px; top: 8px; }
 .effects-panel > .window-header { flex-direction: row; align-items: center; height: 28px; margin-bottom: 3px; }
 .effects-panel .window-header > .title { flex-grow: 1; }
 .effects-panel #close-effects { width: 28px; min-width: 28px; height: 26px; min-height: 26px; padding: 0; margin: 0; }
 #effects-sources { flex-direction: row; flex-wrap: wrap; }
-.effect-entry { flex-direction: row; align-items: center; width: 49%; min-height: 43px; margin: 1px 1px 3px 0; padding: 3px; background-color: rgb(51, 48, 45); border-width: 1px; border-color: rgb(88, 84, 78); border-radius: 3px; }
+.effect-entry { flex-direction: row; align-items: center; flex-shrink: 0; margin: 0 2px 2px 0; padding: 1px 3px; background-color: rgb(51, 48, 45); border-width: 1px; border-color: rgb(88, 84, 78); border-radius: 3px; }
 .effect-entry.shadow-effect { background-color: rgb(55, 39, 44); border-color: rgb(100, 70, 75); }
 .effect-entry.selected-effect { border-color: rgb(228, 197, 127); }
 .effect-entry > Label { font-size: 10px; width: 20px; white-space: normal; color: rgb(175, 193, 190); }
@@ -1136,17 +1177,15 @@
 #effects-source-details { margin-top: 3px; padding-top: 3px; border-top-width: 1px; border-top-color: rgb(95, 113, 110); }
 #effects-source-details Label { white-space: normal; font-size: 12px; }
 #effect-detail-title { -unity-font-style: bold; }
+/* UI-424: the name and the state each stand on one line (the longest fit the details card), so rounding a measured width
+   to pixels never wraps a last word under a one-line box; the state moves to the next row when both do not fit. */
+#effects-source-details #effect-detail-title, #effects-source-details #effect-detail-state { white-space: nowrap; flex-shrink: 0; }
 .effect-detail-heading { flex-direction: row; align-items: center; flex-wrap: wrap; }
 .effect-detail-heading #effect-detail-title { margin-right: 10px; }
 #effect-detail-state { color: rgb(160, 180, 175); font-size: 11px; }
 .effect-scope { margin-top: 2px; padding: 3px 5px; border-left-width: 2px; border-left-color: rgb(161, 177, 165); background-color: rgba(90, 110, 110, .1); }
-.compact-effects .effect-scopes, .preparing-effect-removal .effect-scopes { flex-direction: row; flex-wrap: wrap; }
-.compact-effects .effect-scope, .preparing-effect-removal .effect-scope { width: 49%; margin-right: 1%; }
-/* QUAL-19: a compact panel spends no spare space between rows; a source keeps its 32-point button (32 + 2 × 3 padding
-   + 2 × 1 border = 40). */
-.compact-effects .effect-entry { min-height: 40px; margin-bottom: 1px; }
-.compact-effects #effects-source-details { margin-top: 1px; padding-top: 2px; }
-.compact-effects #effect-removal-cost { margin-top: 2px; }
+.preparing-effect-removal .effect-scopes { flex-direction: row; flex-wrap: wrap; }
+.preparing-effect-removal .effect-scope { width: 49%; margin-right: 1%; }
 .effect-targets { flex-direction: row; flex-wrap: wrap; align-items: center; }
 .effect-targets .action { min-height: 23px; height: 23px; margin: 1px 4px 1px 0; padding: 2px 5px; font-size: 11px; }
 .effect-targets Label { color: rgb(193, 199, 173); }
@@ -1160,7 +1199,6 @@
 .region-hover .hover-effects > .action { width: auto; min-width: 0; max-width: 100%; height: auto; min-height: 26px; padding: 2px 5px; font-size: 12px; white-space: normal; }
 .effect-scope-badge { width: 28px; min-width: 28px; height: 23px; min-height: 23px; padding: 0; margin: 0 2px; font-size: 11px; }
 /* UI-87: the transient scope badge covers the nation emblem instead of a long nation name. */
-.nation-track > .effect-scope-badge { position: absolute; left: 1px; top: 3px; width: 22px; min-width: 22px; }
 #effects-empty { font-size: 12px; color: rgb(173, 189, 184); padding: 8px; }
 
 /* UI-58 Resource decisions */
@@ -1189,25 +1227,25 @@
 /* UI-60 Victory */
 .victory-tab { position: absolute; right: 8px; bottom: 8px; height: 30px; font-size: 14px; }
 .victory-result { position: absolute; right: 8px; bottom: 42px; font-size: 15px; padding: 5px 8px; background-color: rgb(34, 32, 30); color: rgb(244, 219, 157); border-top-width: 2px; border-top-color: rgb(209, 181, 115); }
-.victory-panel { position: absolute; width: 480px; padding: 6px 8px; background-color: rgb(34, 32, 30); border-width: 1px; border-color: rgb(120, 145, 145); }
+.victory-panel { position: absolute; width: 480px; padding: 6px 8px; background-color: rgba(0, 0, 0, 0); border-width: 1px; border-color: rgba(0, 0, 0, 0); }
 .victory-panel > .window-header { height: 27px; align-items: center; }
-.victory-panel > .window-header .title { flex-grow: 1; font-size: 15px; margin: 0; }
+.victory-panel > .window-header .title { flex-grow: 1; font-size: 15px; letter-spacing: 1px; margin: 0; }
 .victory-panel .action { font-size: 12px; min-height: 24px; height: 24px; padding: 2px 5px; margin: 1px; }
 .victory-panel .unity-label { white-space: normal; padding: 0; }
 .victory-panel .victory-timing { font-size: 12px; color: rgb(209, 181, 115); margin: 3px 0; }
 .victory-scores { flex-direction: row; align-items: stretch; }
 .victory-score { width: 50%; padding-right: 5px; }
-.victory-score-shadow { padding-left: 5px; padding-right: 0; border-left-width: 1px; border-left-color: rgb(84, 80, 74); }
+.victory-score-shadow { padding-left: 5px; padding-right: 0; border-left-width: 1px; border-left-color: var(--game-hairline-quiet); }
 .victory-side { font-size: 14px; -unity-font-style: bold; margin: 0 0 3px 0; }
 .threshold-reached { color: rgb(244, 219, 157); border-bottom-width: 2px; border-bottom-color: rgb(209, 181, 115); }
 .victory-region { flex-direction: row; align-items: center; min-height: 37px; }
 .victory-region-text { flex-grow: 1; flex-basis: 0; }
 .victory-region-name { font-size: 12px; margin: 0; }
-.victory-region-detail { font-size: 11px; color: rgb(174, 190, 186); margin: 0; }
+.victory-region-detail { font-size: 11px; color: var(--game-card-text-muted); margin: 0; }
 .victory-pages { flex-direction: row; align-items: center; justify-content: flex-end; height: 25px; }
 .victory-pages .unity-label { font-size: 11px; }
 .victory-score > VisualElement > .muted { font-size: 12px; }
-.victory-ring { flex-direction: row; align-items: center; border-top-width: 1px; border-top-color: rgb(84, 80, 74); margin-top: 5px; padding-top: 4px; }
+.victory-ring { flex-direction: row; align-items: center; border-top-width: 1px; border-top-color: var(--game-hairline-quiet); margin-top: 5px; padding-top: 4px; }
 .victory-ring > VisualElement { flex-grow: 1; flex-basis: 0; }
 .victory-ring .unity-label { font-size: 12px; margin: 0; }
 
@@ -1226,30 +1264,12 @@
 .sovereign-context .dice-panel .own-resource-columns { flex-direction: row; align-items: flex-start; }
 .sovereign-context .dice-panel .own-resource-columns > .available-dice { width: 210px; }
 .sovereign-context .dice-panel .own-resource-reserves { flex-grow: 1; flex-basis: 0; margin-left: 8px; }
-.sovereign-inspector { width: 440px; padding: 7px; }
-.sovereign-inspector .unity-label { white-space: normal; }
-.sovereign-inspector #sovereign-state { flex-grow: 1; }
-.sovereign-inspector #sovereign-cost { margin-right: 8px; -unity-text-align: middle-right; }
-.sovereign-inspector #sovereign-ability, .sovereign-inspector #sovereign-availability { color: rgb(198, 191, 169); font-size: 12px; }
+/* UI-436: the sovereign's window is a character window (Styles/Characters.uss); these are its attempt's lines. */
+.sovereign-inspector #sovereign-cost { flex-shrink: 0; margin: 0 6px 0 0; font-size: 12px; -unity-text-align: middle-right; }
 .sovereign-inspector #sovereign-attempt, .sovereign-inspector #sovereign-cost { color: rgb(231, 193, 107); }
-.sovereign-inspector #sovereign-consequence { font-size: 12px; margin-top: 3px; }
-.sovereign-inspector .tray { flex-basis: auto; flex-grow: 0; flex-shrink: 0; position: relative; left: auto; right: auto; top: auto; bottom: auto; width: auto; min-width: 0; max-width: none; padding: 5px 0 0; margin: 4px 0 0; border-top-width: 1px; border-top-color: rgb(125, 102, 62); background-color: rgba(0, 0, 0, 0); }
-.sovereign-inspector .tray > .title { display: none; }
-.sovereign-inspector .decision-choice-footer { flex-wrap: nowrap; align-items: center; }
-.sovereign-inspector .decision-choice-footer > .draft-status { flex-basis: 0; flex-grow: 1; font-size: 12px; margin-right: 6px; }
-.sovereign-inspector .effect-choices, .sovereign-inspector #corruption-attempt { flex-wrap: wrap; }
-.sovereign-inspector .corruption-tile { min-width: 32px; min-height: 29px; margin: 2px 3px 2px 0; }
-
-.sovereign-inspector #sovereign-decision-host { flex-shrink: 0; }
-.sovereign-status { flex-direction: row; flex-wrap: wrap; align-items: center; }
-.sovereign-status #sovereign-location { flex-grow: 0; min-width: 100px; }
-.sovereign-status .sovereign-tiles { flex-shrink: 0; }
-.sovereign-details { flex-direction: row; flex-wrap: wrap; }
-.sovereign-details .unity-label { margin-right: 10px; }
+.sovereign-inspector #sovereign-consequence { font-size: 12px; margin-top: 3px; white-space: normal; }
 .sovereign-progress { flex-direction: row; flex-wrap: wrap; align-items: center; }
-.sovereign-progress .unity-label { margin-right: 12px; }
-.sovereign-inspector .travel-summary > .unity-label { flex-grow: 1; }
-.sovereign-inspector #corruption-attempt { flex-shrink: 0; }
+.sovereign-progress .unity-label { margin-right: 12px; font-size: 12px; }
 .sovereign-strip .inspected-sovereign { border-width: 2px; border-color: rgb(231, 193, 107); }
 /* Reserve the left rail and a pinned card at the smallest supported scale. */
 .edge-board .board-information { left: 102px; width: 460px; }
@@ -1267,8 +1287,13 @@
 .short-viewport .characters-panel { padding: 4px 6px; }
 .short-viewport .character-roster-grid .action { height: 40px; min-height: 40px; }
 #board-screen.short-viewport .characters-panel.edge-left-panel { width: 462px; }
+/* UI-445: a roster too tall even compact takes one more column of 110-point rows (and the window's slot with it); the
+   left panels' 45 % cap (LeftRail.uss) would take that column away again. */
+#board-screen .characters-panel.edge-left-panel.roster-dense { width: 462px; max-width: none; }
+#board-screen.short-viewport .characters-panel.edge-left-panel.roster-dense { width: 572px; max-width: none; }
 /* QUAL-19: a section title is as tall as its text (14 points → 20, 12 points → 18). */
-.short-viewport .characters-panel > #characters-section-OnBoard > .unity-label, .short-viewport .characters-panel > #characters-section-NotInPlay > .unity-label { height: 18px; margin-top: 0; margin-bottom: 0; font-size: 12px; }
+.short-viewport .characters-panel > #characters-section-OnBoard > .unity-label, .short-viewport .characters-panel > #characters-section-NotInPlay > .unity-label,
+.short-viewport .characters-panel > #characters-section-Sovereigns > .unity-label { height: 18px; margin-top: 0; margin-bottom: 0; font-size: 12px; }
 .character-roster-portrait { width: 26px; min-width: 26px; height: 30px; margin: 0; padding: 0; border-radius: 13px; -unity-text-align: middle-center; font-size: 13px; background-color: rgb(75, 71, 66); color: rgb(237, 223, 176); }
 .character-roster-portrait.shadow { background-color: rgb(81, 42, 43); }
 .character-roster-text { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-left: 3px; }
@@ -1276,34 +1301,59 @@
    10-point Alegreya 14. */
 .character-roster-title { font-size: 12px; height: 17px; margin: 0; padding: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .character-roster-detail { font-size: 10px; height: 14px; margin: 0; padding: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.character-inspector { position: absolute; width: 420px; padding: 6px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
-.short-viewport .character-inspector { width: 400px; }
+/* UI-436: the characters' and the sovereigns' windows share one width in every layout (Styles/Characters.uss). */
+.character-window { position: absolute; width: 380px; padding: 6px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
 .character-inspector .unity-label { white-space: normal; flex-shrink: 0; }
-.character-inspector .character-header { flex-wrap: nowrap; }
-.character-inspector .character-header .title { min-width: 0; flex-shrink: 1; }
-.character-inspector .character-header .action { flex-shrink: 0; }
+.character-window .character-header { flex-wrap: nowrap; }
+.character-window .character-header .title { min-width: 0; flex-shrink: 1; }
+.character-window .character-header .action { flex-shrink: 0; }
 .short-viewport .character-inspector .unity-label { margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
 .short-viewport .character-inspector .action { min-height: 32px; height: 32px; margin-top: 1px; margin-bottom: 1px; }
+/* UI-387 (owner): a character's versions are tabs under the title: a low strip on a thin gilt line; the shown version
+   wears a gold underline and gold text, the others are muted until hovered; no button frame. */
+.character-inspector .character-version-tabs {
+    flex-direction: row;
+    margin: 2px 0 6px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(214, 178, 98, 0.35);
+}
+#board-screen .character-inspector .action.character-version-tab {
+    height: 30px;
+    min-height: 30px;
+    margin: 0 4px -1px 0;
+    padding: 0 12px;
+    font-size: 15px;
+    color: rgb(190, 178, 148);
+    background-image: none;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0 0 3px 0;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+}
+#board-screen .character-inspector .action.character-version-tab:hover,
+#board-screen .character-inspector .action.character-version-tab:focus {
+    color: rgb(245, 230, 190);
+    background-color: rgba(255, 214, 112, 0.08);
+}
+#board-screen .character-inspector .action.character-version-tab.selected {
+    color: rgb(255, 214, 112);
+    border-bottom-color: rgb(255, 214, 112);
+}
 .short-viewport .character-inspector #character-statistics { margin-top: 2px; margin-bottom: 2px; }
-.short-viewport .character-inspector #character-abilities .unity-label { min-height: 20px; margin-top: 2px; margin-bottom: 2px; }
-#character-state { flex-grow: 1; flex-shrink: 1; font-size: 12px; }
+
 #character-statistics { font-size: 13px; margin-top: 4px; margin-bottom: 4px; }
 #character-abilities { font-size: 13px; }
-#character-limits, #character-entry { font-size: 12px; color: rgb(223, 208, 168); }
-.character-ability-pages { flex-direction: row; justify-content: flex-end; }
-.character-ability-pages .action { width: 32px; min-width: 32px; min-height: 32px; margin: 0 2px; }
+#character-entry { font-size: 12px; color: rgb(223, 208, 168); }
 
 .dice-header { flex-direction: row; align-items: center; flex-shrink: 0; height: 22px; }
 .dice-header > .title { flex-grow: 1; flex-shrink: 1; font-size: 16px; margin: 0; }
 .sovereign-context .dice-panel .dice-header { width: 210px; }
-.sovereign-inspector .information-heading > .title { flex-shrink: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sovereign-inspector #sovereign-availability { height: 16px; min-height: 16px; margin: 0 10px 0 0; }
 
 /* UI-67 Character actions */
 .character-decision-active #character-statistics,
 .character-decision-active #character-abilities,
-.character-decision-active .character-ability-pages,
-.character-decision-active #character-limits { display: none; }
+.character-decision-active #character-limits,
+.character-decision-active #character-ability-heading { display: none; }
 .character-inspector #character-decision-host .tray { padding: 0; min-height: 0; flex-basis: auto; flex-grow: 0; flex-shrink: 0; }
 .character-inspector #character-decision-host .title { font-size: 14px; margin: 2px 0; }
 .character-inspector #character-decision-host .action { height: 33px; min-height: 33px; flex-shrink: 0; margin: 1px 2px; }
@@ -1313,48 +1363,19 @@
 .character-inspector #character-actions .action { min-height: 32px; margin: 2px; }
 .character-inspector #character-entry { font-size: 12px; }
 
-/* UI-68: private companion versions and Guide share one decision host. */
-.companion-setup-panel {
-    position: absolute; top: 8px; left: 116px; width: 820px;
-    padding: 8px; background-color: rgb(41, 38, 36);
-    border-top-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-right-width: 1px;
-    border-top-color: rgb(164, 145, 97); border-bottom-color: rgb(164, 145, 97);
-    border-left-color: rgb(164, 145, 97); border-right-color: rgb(164, 145, 97);
-}
-.companion-setup-tab { position: absolute; left: 8px; top: 180px; }
-.companion-setup-panel .tray { padding: 0; margin: 0; flex-grow: 0; flex-shrink: 0; flex-basis: auto; }
-.companion-setup-panel .unity-label { margin: 0; padding: 0; flex-shrink: 0; }
-.companion-setup-panel .window-header { margin-bottom: 4px; }
-.setup-portraits, .setup-guides, .setup-comparison, .setup-version-heading { flex-direction: row; }
-.setup-portraits { margin-bottom: 6px; }
-.companion-setup-panel .setup-portraits .action {
-    flex-grow: 1; flex-basis: 0; min-width: 0; max-width: 110px; height: 50px; min-height: 50px;
-    margin: 0 3px 0 0; padding: 3px; font-size: 14px;
-}
-.setup-portraits .setup-portrait-version { font-size: 12px; color: rgb(202, 191, 157); }
+/* UI-68/UI-269: the version cards of the private setup, now shown on the Fellowship panel. */
+.setup-comparison, .setup-version-heading { flex-direction: row; }
 .setup-comparison { align-items: stretch; }
-.companion-setup-panel .tray .setup-version-card {
-    flex-grow: 1; flex-basis: 0; min-width: 0; height: auto; min-height: 150px;
-    margin: 0 4px 0 0; padding: 7px; align-items: stretch;
-    background-color: rgb(52, 49, 45); white-space: normal;
-}
-.companion-setup-panel .tray .setup-version-card.selected { background-color: rgb(60, 70, 60); }
 .setup-version-heading { justify-content: space-between; font-size: 12px; color: rgb(202, 191, 157); }
 .setup-version-title { font-size: 16px; -unity-font-style: bold; white-space: normal; }
 .setup-version-statistics { font-size: 12px; white-space: normal; margin-bottom: 4px; }
 .setup-version-ability { font-size: 13px; white-space: normal; margin: 1px 0; }
 .setup-version-ability:focus { color: rgb(245, 212, 133); }
-.setup-guides { align-items: center; margin-top: 6px; }
-.setup-guides > Label { width: 94px; font-size: 13px; }
-.companion-setup-panel .setup-guides .action { flex-grow: 0; width: 150px; min-width: 0; padding: 0 5px; margin: 0 3px 0 0; font-size: 13px; }
-.companion-setup-panel #setup-missing { font-size: 13px; color: rgb(245, 212, 133); margin-top: 4px; }
-.companion-setup-panel .decision-choice-footer { justify-content: flex-end; margin-top: 4px; }
-.companion-setup-panel #confirm-decision { min-width: 48px; }
 
 /* UI-70: board navigation; no game pause or changes to mechanic shortcuts. */
 .board-menu { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .board-menu-panel {
-    position: absolute; right: 10px; top: 46px; width: 224px;
+    position: absolute; right: 10px; top: var(--game-topbar-menu-top); width: 224px;
     padding: 10px; background-color: rgb(36, 34, 31);
     border-top-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-right-width: 1px;
     border-top-color: rgb(164, 145, 97); border-bottom-color: rgb(164, 145, 97);
@@ -1363,25 +1384,13 @@
 .board-menu-panel > .action { height: 36px; min-height: 36px; margin: 2px 0; -unity-text-align: middle-left; }
 .board-menu-status { white-space: normal; font-size: 13px; color: rgb(245, 212, 133); margin: 8px 2px 4px; }
 
-/* UI-69: a compact map-based homeland choice, separate from versions. */
-.companion-setup-panel.council-homeland-panel { width: 548px; }
-.homeland-portraits { flex-direction: row; margin: 6px 0; }
-.companion-setup-panel.council-homeland-panel .tray .homeland-portrait {
-    flex-grow: 1; flex-basis: 0; min-width: 0; height: 100px; min-height: 100px;
-    margin: 0 3px 0 0; padding: 3px; white-space: normal; font-size: 14px;
+/* UI-69/UI-270: the homelands on the Fellowship panel: the destination over a placed companion's portrait.
+   UI-482 (owner, 2026-11-04): their instruction and the Shadow's Council tokens stand in the console. */
+.illustrated-companion .portrait-homeland {
+    position: absolute; left: 0; right: 0; top: 1px; height: 13px; margin: 0; padding: 0 2px;
+    font-size: 9px; -unity-text-align: middle-center; color: rgb(245, 212, 133); background-color: rgba(24, 22, 20, .88);
 }
-.homeland-portrait-symbol { font-size: 19px; color: rgb(231, 211, 160); }
-.homeland-location { font-size: 12px; white-space: normal; -unity-text-align: middle-center; }
-.homeland-placed .homeland-location { color: rgb(245, 212, 133); }
-.homeland-nation { font-size: 12px; color: rgb(193, 203, 193); }
-.homeland-hint { font-size: 13px; white-space: normal; }
-.council-homeland-panel #homeland-stay { align-self: flex-start; min-height: 30px; margin: 0 0 5px 0; }
-.homeland-tokens { flex-direction: row; align-items: center; }
-.council-homeland-panel .homeland-token { padding: 4px 6px; margin-right: 5px; font-size: 13px; border-bottom-width: 2px; }
-.homeland-token-none { opacity: 0.4; }
-.homeland-token-choice { border-bottom-color: rgb(220, 179, 83); }
-.homeland-token-granted { color: rgb(154, 216, 174); border-bottom-color: rgb(154, 216, 174); }
-#homeland-token-effect { flex-grow: 1; flex-basis: 0; min-width: 0; font-size: 13px; white-space: normal; }
+.fellowship-panel.fellowship-homelands { width: 420px; }
 
 /* UI-75/76: map artwork and paired decision windows. */
 .board-screen > .map { flex-shrink: 0; }
@@ -1411,17 +1420,64 @@
     border-color: rgb(241, 209, 122);
     background-color: rgba(199, 164, 70, .15);
 }
-.figure-garrison { border-bottom-width: 3px; border-bottom-color: rgb(188, 180, 153); border-radius: 4px; }
 .figure-motion-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
-/* UI-185/UI-192: the flying figures are as large as the map's figures; MapFigureMotion places them by their feet. */
-.moving-figures { position: absolute; width: 96px; height: 84px; }
-.moving-figures > .figure-art-image { position: absolute; width: 64px; height: 72px; top: 0; }
-.moving-figure-count { position: absolute; right: 0; bottom: 0; padding: 1px 5px; margin: 0; border-radius: 9px; background-color: rgb(34, 32, 30); color: rgb(250, 226, 167); -unity-font-style: bold; }
-.figure-arrival { border-bottom-width: 3px; border-bottom-color: rgb(242, 211, 133); border-radius: 12px; }
+/* UI-404: a flight is the destination's own miniature on the ground (Styles/Armies.uss, "figure-flight"). */
 
 .illustrated-companion > .figure-art-image { position: absolute; left: 0; right: 0; top: 0; bottom: 14px; }
 .illustrated-companion #portrait-name { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; height: 16px; font-size: 11px; -unity-text-align: middle-center; }
 .illustrated-companion #guide-badge { position: absolute; left: 1px; top: 1px; margin: 0; height: 12px; font-size: 9px; background-color: rgba(24, 22, 20, .88); }
+/* UI-269: a portrait's cell keeps the row's flow (the portrait shrinks as before) and holds the starting Guide's crown
+   centred just above the portrait, clear of it; the two-faces badge sits at the portrait's upper left while versions
+   are chosen. */
+.fellowship-portrait-cell { flex-direction: row; flex-shrink: 1; min-width: 0; position: relative; }
+.fellowship-portrait-cell > .guide-crown {
+    position: absolute;
+    left: 50%;
+    top: -17px;
+    width: 18px;
+    height: 16px;
+    margin-left: -9px;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/fellowship/guide-crown");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.fellowship-portrait-cell > .guide-crown:hover:enabled { background-image: resource("Wotr/Art/UI/fellowship/guide-crown-crown-hover"); background-color: rgba(0, 0, 0, 0); }
+.fellowship-portrait-cell > .guide-crown.selected { background-image: resource("Wotr/Art/UI/fellowship/guide-crown-crown-on"); }
+.fellowship-portrait-cell > .guide-crown:active { scale: 0.9 0.9; }
+/* UI-270: the owner's mark of a companion in its alternate version: at a Fellowship portrait's upper right (the Guide
+   badge keeps the left), at a Characters row portrait's lower left. */
+.illustrated-companion .alternate-badge, .character-roster-portrait .alternate-badge {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background-image: resource("Wotr/Art/UI/fellowship/alternate");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.illustrated-companion .alternate-badge { right: 1px; top: 1px; }
+.character-roster-portrait .alternate-badge { left: 0; bottom: 0; }
+.illustrated-companion .versions-badge {
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    width: 16px;
+    height: 16px;
+    background-image: resource("Wotr/Art/UI/fellowship/versions");
+    -unity-background-scale-mode: scale-to-fit;
+}
+/* UI-269: while the versions are chosen the panel widens for the two version cards side by side. */
+.fellowship-panel.fellowship-versions { width: 452px; }
+.fellowship-versions .fellowship-members { margin-top: 18px; }
+.fellowship-versions .setup-comparison { flex-direction: row; align-items: stretch; margin-top: 4px; }
+.fellowship-panel.fellowship-versions .action.setup-version-card {
+    flex-grow: 1; flex-basis: 0; width: auto; min-width: 0; height: auto; min-height: 140px;
+    margin: 0 4px 0 0; padding: 6px; align-items: stretch; flex-direction: column; justify-content: flex-start;
+    background-color: rgb(52, 49, 45); white-space: normal;
+}
+.fellowship-panel.fellowship-versions .action.setup-version-card:last-child { margin-right: 0; }
+.fellowship-panel.fellowship-versions .action.setup-version-card.selected { background-color: rgb(60, 70, 60); }
 
 /* UI-79: public parallel tracks, independent of action hitboxes. */
 .fellowship-symbol { width: 24px; height: 24px; flex-shrink: 0; }
@@ -1467,6 +1523,8 @@
 .board-dropdowns .fellowship-track-lane, .board-dropdowns .fellowship-panel .fellowship-track-cell { height: 32px; }
 .board-dropdowns .fellowship-track-marker { height: 21px; }
 .board-dropdowns .fellowship-panel .companion-token { width: 54px; min-width: 44px; margin-right: 3px; }
+/* UI-382 (owner): a separation's or journey's portraits in the Fellowship panel are the Fellowship's icons' size. */
+.board-dropdowns .fellowship-panel .tray .companion-portrait { width: 54px; min-width: 54px; height: 44px; min-height: 44px; }
 .board-dropdowns .fellowship-panel .fellowship-action-hint { font-size: 12px; }
 .edge-cards {
     margin-top: auto; flex-shrink: 0; border-width: 1px;
@@ -1495,6 +1553,7 @@
 .compact-edge-board .board-dropdowns .fellowship-track-marker { height: 18px; }
 .compact-edge-board .board-dropdowns .fellowship-track-tick { height: 12px; font-size: 8px; }
 .compact-edge-board .board-dropdowns .fellowship-panel .companion-token { width: 46px; min-width: 40px; height: 34px; min-height: 34px; margin-right: 1px; }
+.compact-edge-board .board-dropdowns .fellowship-panel .tray .companion-portrait { width: 46px; min-width: 46px; height: 34px; min-height: 34px; }
 .compact-edge-board .board-dropdowns .illustrated-companion #portrait-name { height: 12px; font-size: 9px; }
 .compact-edge-board .board-dropdowns .illustrated-companion > .figure-art-image { bottom: 11px; }
 .compact-edge-board .edge-cards .card-decks { height: 28px; margin-bottom: 2px; }
@@ -1507,6 +1566,15 @@
 .compact-edge-board .notification-bar { margin-right: 350px; }
 .edge-board .notification-bar .action { height: 28px; min-height: 28px; }
 
+/* UI-263: the expansions' crests (graphicalassets/ui/src/rules), on the waiting room's medallions and, 18 px, in a row
+   wherever a game is listed or played; a base game's row is empty and takes no space. */
+.expansion-crest { width: 18px; height: 18px; flex-shrink: 0; }
+.expansion-crest.crest-fate { background-image: resource("Wotr/Art/UI/rules/crest-fate"); }
+.expansion-crest.crest-lords { background-image: resource("Wotr/Art/UI/rules/crest-lords"); }
+.expansion-crest.crest-kings { background-image: resource("Wotr/Art/UI/rules/crest-kings"); }
+.expansion-crests { flex-direction: row; align-items: center; flex-shrink: 0; }
+.expansion-crests > .expansion-crest { margin-left: 3px; }
+.expansion-crests.base-game { display: none; }
 /* UI-321 (owner rule): a panel or window that comes into view fades in (Appearance); under Skip animations it appears at
    once. Only the opacity changes, so its place and size are its own from the first frame. */
 .motion-enabled .appear-host { transition-property: opacity; transition-duration: 0.18s; transition-timing-function: ease-out; }

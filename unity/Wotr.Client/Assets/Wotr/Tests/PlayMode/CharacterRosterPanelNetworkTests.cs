@@ -35,12 +35,32 @@ namespace Wotr.PlayTests
             var row = board.Characters.Root.Q<Button>("character-roster-" + id);
             StringAssert.Contains("White", row.Q<Label>("character-roster-title").text);
             // UI-187: the row's tooltip ends with the short abilities of the card it shows.
-            StringAssert.EndsWith("\n" + string.Join("\n", CharacterAbilitySummaries.Lines("base.character.gandalf-white")), row.tooltip);
+            StringAssert.EndsWith("\n" + string.Join("\n", CharacterAbilitySummaries.Lines("base.character.gandalf-white")), CharacterRowTooltip.Plain(row.tooltip));
+            // UI-408 (owner): the base roster stands two a line, its ability icons larger, beside the text and inside the row.
+            Assert.IsTrue(board.Characters.Wide, "Two characters a line fit this roster.");
+            var icon = row.Query<Button>(className: CharacterAbilityStrip.IconClass).Where(b => b.resolvedStyle.display == DisplayStyle.Flex).First();
+            Assert.IsNotNull(icon, "Gandalf's row shows an ability icon.");
+            Assert.That(icon.worldBound.width, Is.GreaterThanOrEqualTo(17f), "The icons are larger two a line.");
+            Assert.That(icon.worldBound.yMax, Is.LessThanOrEqualTo(row.worldBound.yMax + 0.5f), "The icons fit inside the row.");
+            Assert.That(icon.worldBound.xMax, Is.LessThanOrEqualTo(row.worldBound.xMax + 0.5f), "The icons fit inside the row.");
+            // UI-440 (owner): a row's icon is the bare skill icon, its picture filling its box.
+            SkillIconChecks.Bare(icon, AbilityArt.For("base.character.gandalf-white", icon.userData as string), 17f);
+            await SkillIconLayouts.Capture(room, room.Fp, "roster", () => CheckRosterIcons(row));
             PointerGestureEvents.ClickAt(row);
             await room.Settle();
             Assert.IsTrue(board.Characters.InspectorPinned);
-            Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q<Button>("locate-character").resolvedStyle.display);
-            board.Characters.Inspector.Root.Q<Button>("character-version-base.character.gandalf-white").Focus();
+            // UI-436: off the map his place is a picture that keeps its slot, disabled.
+            Assert.IsFalse(board.Characters.Inspector.Root.Q<Button>("locate-character").enabledSelf);
+            Assert.AreEqual("Removed", board.Characters.Inspector.Place.Caption);
+            // UI-387 (owner): the versions are tabs right under the title, low and named by the version.
+            var white = board.Characters.Inspector.Root.Q<Button>("character-version-base.character.gandalf-white");
+            var tabs = white.parent;
+            Assert.IsTrue(tabs.ClassListContains("character-version-tabs"));
+            Assert.AreEqual(1, board.Characters.Inspector.Root.IndexOf(tabs), "The tabs follow the title.");
+            Assert.LessOrEqual(white.resolvedStyle.height, 30.5f, "A tab, not a large button.");
+            Assert.AreEqual("White", white.text);
+            LayoutTests.Save(room.Fp.Viewport, "ui387-version-tabs.png");
+            white.Focus();
             var choice = before.Options.Single(o => o.Kind == CommandKind.EnterCharacter).CharacterActions
                 .Single(c => c.CharacterId == "base.character.gandalf-white");
             var command = T22NetworkActions.Command(before, CommandKind.EnterCharacter,
@@ -54,7 +74,8 @@ namespace Wotr.PlayTests
             Assert.IsTrue(board.Characters.InspectorPinned);
             Assert.AreSame(board.Characters.Inspector.Root.Q<Button>("locate-character"),
                 board.Root.panel.focusController.focusedElement, "A disappearing version control keeps focus in the inspector.");
-            StringAssert.Contains("Fangorn", board.Characters.Inspector.Root.Q<Label>("character-state").text);
+            Assert.AreEqual("Fangorn", board.Characters.Inspector.Place.Caption, "UI-436: his place's picture is named.");
+            Assert.AreEqual("On the board", board.Characters.Inspector.Root.Q<Label>("character-state").text);
             Assert.AreEqual(1, room.Sh.Board.View.Characters.Count(c => c.Id == id));
             Assert.IsFalse(room.Sh.Board.View.OwnCharacterRoster.Any(c => c.FigureId == id));
             await KingsCardNetworkChecks.Reconnect(room, room.Fp);
@@ -87,8 +108,9 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(row);
             await room.Settle();
             Assert.AreEqual(id, board.Characters.Inspector.FigureId);
-            StringAssert.Contains("Removed", board.Characters.Inspector.Root.Q<Label>("character-state").text);
-            Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q<Button>("locate-character").resolvedStyle.display);
+            Assert.AreEqual("Removed", board.Characters.Inspector.Place.Caption);
+            Assert.AreEqual("removed-shadow", board.Characters.Inspector.Place.Place.Key);
+            Assert.IsFalse(board.Characters.Inspector.Root.Q<Button>("locate-character").enabledSelf);
             Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q<Label>("character-entry").resolvedStyle.display);
             Assert.AreEqual(revision, board.View.Revision);
         }
@@ -116,6 +138,9 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.AreEqual("base.character.gimli", board.Characters.Inspector.FigureId);
             Assert.AreEqual(DisplayStyle.Flex, board.Characters.Inspector.Root.resolvedStyle.display);
+            // UI-449 (owner): the row's click brings the camera to a character on the board; nothing after it moves the camera.
+            AssertCameraOnCharacter(board, "base.character.gimli");
+            pan = board.Map.Camera.Pan;
             await ComponentGestures.Hover(board.Characters.Inspector.Root.Q("character-statistics"));
             Assert.AreEqual(DisplayStyle.Flex, board.Characters.Root.resolvedStyle.display);
             var ability = board.Characters.Inspector.Root.Q<Button>("character-ability-combat-strength-plus-one");
@@ -123,18 +148,25 @@ namespace Wotr.PlayTests
             var tooltip = room.Fp.Interface.Content.parent.Q<Label>("runtime-tooltip");
             Assert.AreEqual(ability.tooltip, tooltip.text);
             Assert.AreEqual(DisplayStyle.Flex, tooltip.resolvedStyle.display);
-            StringAssert.Contains("5 combat dice", tooltip.text.ToLowerInvariant());
-            // UI-139: a click unrolls the ability's full text under the chips; a second click rolls it up.
-            var text = board.Characters.Inspector.Root.Q<Label>("character-ability-text");
-            Assert.AreEqual(DisplayStyle.None, text.resolvedStyle.display);
+            // UI-440 (owner): the bare icon's formatted tooltip is the ability's description (its name, gist, printed text,
+            // source); the tooltip shows it as rich text. A passive ability's icon is read only: its click changes nothing.
+            Assert.IsTrue(tooltip.enableRichText);
+            var description = SkillTooltip.Plain(tooltip.text);
+            StringAssert.StartsWith("Captain of the West\n", description);
+            StringAssert.Contains("5 combat dice", description.ToLowerInvariant());
+            SkillIconChecks.Bare(ability, AbilityArt.For("base.character.gimli", "combat-strength-plus-one"), 28f);
+            Assert.IsTrue(ReadOnlyControl.Is(ability));
+            var placed = board.Characters.Inspector.Root.worldBound;
             PointerGestureEvents.ClickAt(ability);
             await room.Settle();
-            Assert.AreEqual(DisplayStyle.Flex, text.resolvedStyle.display);
-            StringAssert.Contains("5 combat dice", text.text.ToLowerInvariant());
-            Assert.IsTrue(ability.ClassListContains("selected"));
-            PointerGestureEvents.ClickAt(ability);
-            await room.Settle();
-            Assert.AreEqual(DisplayStyle.None, text.resolvedStyle.display);
+            Assert.IsNull(board.Characters.Inspector.Root.Q<Label>("character-ability-text"), "No text unrolls.");
+            Assert.That(Vector2.Distance(placed.position, board.Characters.Inspector.Root.worldBound.position), Is.LessThan(1f),
+                "The window stays where it stood.");
+            Assert.AreEqual(placed.height, board.Characters.Inspector.Root.worldBound.height, 0.5f, "Its content does not change.");
+            // UI-372: no choice highlight is the old pale blue.
+            var mint = new Color(144 / 255f, 203 / 255f, 172 / 255f);
+            foreach (var target in board.Root.Query(className: "legal-target").ToList())
+                Assert.Greater(Vector4.Distance(target.resolvedStyle.borderTopColor, mint), 0.05f, target.name + " is still pale blue.");
             Assert.AreEqual(pan, board.Map.Camera.Pan);
             Assert.IsTrue(board.OwnDice.Q<Button>(die).ClassListContains("selected"));
             await ComponentGestures.Hover(board.Phase);
@@ -188,6 +220,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.None, board.Characters.Root.resolvedStyle.display);
             using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 1, mousePosition = origin }))
                 board.Map.SendEvent(up);
+            await RowClosesItsWindow(room, board, row);
             var enemy = room.Sh.Board;
             enemy.Map.Focus("hollin");
             enemy.Hover.Open("hollin");
@@ -203,6 +236,29 @@ namespace Wotr.PlayTests
             Assert.AreEqual(revision, enemy.View.Revision);
             var actual = await room.Fp.Api.Get<PlayerView>($"api/matches/{board.View.MatchId}", room.Token);
             Assert.AreEqual(originalView, JsonConvert.SerializeObject(actual), "Inspection and keyboard navigation must not mutate the server view.");
+        }
+
+        // UI-460 (owner, 2026-11-03): a second click on the row of the open window closes it; the next one opens it again, and
+        // the Characters panel stays open throughout.
+        private static async Task RowClosesItsWindow(MatchTestRoom room, BoardScreen board, Button row)
+        {
+            PointerGestureEvents.ClickAt(board.Characters.Tab);
+            await room.Settle();
+            Assert.AreEqual(DisplayStyle.Flex, board.Characters.Root.resolvedStyle.display);
+            PointerGestureEvents.ClickAt(row);
+            await room.Settle();
+            Assert.AreEqual(DisplayStyle.Flex, board.Characters.Inspector.Root.resolvedStyle.display, "The row's first click opens its window.");
+            LayoutTests.Save(room.Fp.Viewport, "ui460-window-open.png");
+            PointerGestureEvents.ClickAt(row);
+            await room.Settle();
+            Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.resolvedStyle.display, "The row's second click closes its window.");
+            Assert.AreEqual(DisplayStyle.Flex, board.Characters.Root.resolvedStyle.display, "The Characters panel stays open.");
+            LayoutTests.Save(room.Fp.Viewport, "ui460-window-closed.png");
+            PointerGestureEvents.ClickAt(row);
+            await room.Settle();
+            Assert.AreEqual(DisplayStyle.Flex, board.Characters.Inspector.Root.resolvedStyle.display, "The next click opens it again.");
+            Assert.AreEqual("base.character.gimli", board.Characters.Inspector.FigureId);
+            board.Characters.Close();
         }
 
         private static async Task Sovereigns()
@@ -242,10 +298,38 @@ namespace Wotr.PlayTests
                     PointerGestureEvents.ClickAt(portrait);
                     await room.Settle();
                     Assert.AreEqual(id, board.Characters.Inspector.FigureId);
+                    // UI-449: the row's click brings the camera to the king on the board; a hover or Show never did.
+                    AssertCameraOnCharacter(board, id);
+                    pan = board.Map.Camera.Pan;
                 }
                 Assert.AreEqual(pan, board.Map.Camera.Pan);
                 Assert.AreEqual(revision, board.View.Revision);
             }
+        }
+
+        // UI-440: in every layout a row's shown icons stay inside it, bare and at least 15 points.
+        private static void CheckRosterIcons(Button row)
+        {
+            foreach (var icon in row.Query<Button>(className: CharacterAbilityStrip.IconClass).ToList()
+                         .Where(b => b.resolvedStyle.display == DisplayStyle.Flex))
+            {
+                Assert.That(icon.worldBound.yMax, Is.LessThanOrEqualTo(row.worldBound.yMax + 0.5f), icon.name);
+                Assert.That(icon.worldBound.xMax, Is.LessThanOrEqualTo(row.worldBound.xMax + 0.5f), icon.name);
+                Assert.GreaterOrEqual(SkillIcon.Glyph(icon).worldBound.width, 14.5f, icon.name);
+                Assert.AreEqual(0f, icon.resolvedStyle.borderTopWidth, icon.name);
+            }
+        }
+
+        // UI-449: a character on the board (or in the Fellowship, whose region this player sees) stands in the camera's view.
+        private static void AssertCameraOnCharacter(BoardScreen board, string id)
+        {
+            var row = board.View.OwnCharacterRoster.Single(entry => entry.FigureId == id);
+            var region = PlacePresentation.CameraRegion(board.View, row, board.Presentation.Regions);
+            if (region.Length == 0)
+                return;
+            var anchor = board.Map.Data.Shapes[region].Anchor;
+            Assert.IsTrue(board.Map.contentRect.Contains(board.Map.Camera.ToScreen(new Vector2(anchor[0], anchor[1]))),
+                id + "'s region " + region + " is in view after the row's click.");
         }
     }
 }

@@ -1,6 +1,6 @@
 /* UI-126: army markers on the map. Every force is always shown: a token on the whole map (army-token), or up to
    three figures standing on a base when zoomed in (army-figures). The garrison has battlements, the field force a
-   plain plinth; the picture follows the side and the state, so it needs no text or border. Art: armies/ (UI-125). */
+   plain stand or puck; the picture follows the side, the state is a rim over it, so it needs no text or border. */
 #board-screen .army.illustrated-army,
 .army.illustrated-army {
     position: absolute;
@@ -14,12 +14,10 @@
     -unity-background-image-tint-color: rgb(255, 255, 255);
 }
 /* UI-185: about 30% larger than UI-126, UI-192: about 15% larger again; MapArmyArtwork.Size gives the same sizes to
-   the map's placement. */
-.army.army-figures { width: 116px; height: 84px; }
-.army.army-figures.garrison { height: 90px; }
+   the map's placement. UI-401: the miniature is designed in board units (1.35 points per unit): a 54-point stand (the
+   army's 40-unit base) under figures up to 54 points tall, its feet at (33, 64); the map scales it (MapStand). */
+.army.army-figures { width: 66px; height: 86px; }
 .army.army-token { width: 44px; height: 44px; }
-.army.army-token.garrison { height: 48px; }
-.army.illustrated-army:hover .army-plinth { -unity-background-image-tint-color: rgb(255, 246, 222); }
 
 .army-artwork { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
 /* UI-334: an army that appears or grows — a warm flare behind it first, then the figures emerge from transparent to clear
@@ -50,26 +48,83 @@
 .army.army-shrinking .army-artwork { opacity: 0.45; }
 .motion-enabled .army.army-shrinking .army-artwork { transition-duration: 0.25s; }
 .army-artwork .army-part-unused { display: none; }
-.army-plinth { position: absolute; left: 0; right: 0; bottom: 0; -unity-background-scale-mode: stretch-to-fill; }
-.army-figures .army-plinth { height: 32px; }
-.army-figures.garrison .army-plinth { height: 42px; }
-.army-token .army-plinth { top: 0; height: auto; }
 
-.army-silhouette { position: absolute; top: 6px; width: 50px; height: 60px; }
-.army-figures.garrison .army-silhouette { top: 5px; }
+/* UI-400 (TABLETOP_FIGURES_UX): the miniature's table — a contact shadow a little down and right (light from the upper
+   left), the painted stand (Codex art, graphicalassets/stands) and the state rim round it. Figures stand on the stand's
+   top face; MapArmyArtwork sizes and places them (their boxes are their painted cells, so the feet are the bottom edge). */
+.army-contact-shadow, .army-stand, .army-rim, .army-plaque { position: absolute; display: none; }
+.army-figures .army-contact-shadow, .army-figures .army-stand, .army-figures .army-plaque { display: flex; }
+.army-contact-shadow {
+    left: 10px;
+    right: 2px;
+    top: 68px;
+    height: 9px;
+    background-image: resource("Wotr/Art/UI/armies/contact-shadow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.army-stand { left: 6px; right: 6px; top: 54px; height: 21px; -unity-background-scale-mode: stretch-to-fill; }
+.army-figures.garrison .army-stand { top: 53px; height: 23px; }
+.army-figures.field-force.fp .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-field-free"); }
+.army-figures.field-force.sh .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-field-shadow"); }
+.army-figures.garrison.fp .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-garrison-free"); }
+.army-figures.garrison.sh .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-garrison-shadow"); }
+.army.illustrated-army:hover .army-stand { -unity-background-image-tint-color: rgb(255, 246, 222); }
+/* The state is a rim round the stand; later states win: moved, owner, eligible, selected, pressed. */
+.army-rim { left: 5px; right: 5px; top: 52px; height: 25px; -unity-background-scale-mode: stretch-to-fill; }
+.army-figures.garrison .army-rim { top: 51px; height: 27px; }
+.army.army-figures.moved .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-moved"); }
+.army.army-figures.ability-owner .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-ability"); }
+.army.army-figures.eligible-army .army-rim,
+.army.army-figures.sovereign-target .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-eligible"); }
+.army.army-figures.selected-force .army-rim,
+.army.army-figures.armed-force .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-selected"); }
+.army.army-figures.pressed .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-pressed"); }
+/* The nation emblems and the count are a code-drawn plaque on the stand's front. */
+.army-plaque {
+    left: 6px;
+    right: 6px;
+    bottom: 2px;
+    height: 17px;
+    border-width: 1px;
+    border-radius: 8px;
+    border-color: rgb(196, 154, 69);
+    background-color: rgba(22, 16, 10, 0.86);
+}
+
+/* UI-406 (TABLETOP_FIGURES_UX, decision 3): the far-zoom token is a puck lying on the table — the painted enamel puck
+   (Codex art, graphicalassets/stands: top face, side band and rim; a garrison's is walled with battlements), 44 points
+   wide, over the contact shadow down and right, and the state as a rim drawn round the puck (rim-token) instead of the
+   twenty UI-125 token pictures. The colours keep their meanings: legal green, gold selected, dim gold pressed, amber
+   ability owner, a veil when marched. */
+.army-puck, .army-token-rim { position: absolute; display: none; -unity-background-scale-mode: stretch-to-fill; }
+.army-token .army-puck, .army-token .army-contact-shadow { display: flex; }
+.army-token .army-puck { left: 0; top: 2px; width: 44px; height: 35.2px; }
+.army-token .army-contact-shadow { left: -1px; top: 9px; width: 48px; height: 33px; }
+.army-token.field-force.fp .army-puck { background-image: resource("Wotr/Art/UI/armies/token-puck-free"); }
+.army-token.field-force.sh .army-puck { background-image: resource("Wotr/Art/UI/armies/token-puck-shadow"); }
+.army-token.garrison.fp .army-puck { background-image: resource("Wotr/Art/UI/armies/token-puck-garrison-free"); }
+.army-token.garrison.sh .army-puck { background-image: resource("Wotr/Art/UI/armies/token-puck-garrison-shadow"); }
+.army.illustrated-army:hover .army-puck { -unity-background-image-tint-color: rgb(255, 246, 222); }
+/* The rim art is the puck's outline 2 points clear of it (44 × 36 art round the 40 × 32 puck), at the puck's scale. */
+.army-token-rim { left: -2.2px; top: -0.2px; width: 48.4px; height: 39.6px; }
+.army.army-token.moved .army-token-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-token-rim-moved"); }
+.army.army-token.ability-owner .army-token-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-token-rim-ability"); }
+.army.army-token.eligible-army .army-token-rim,
+.army.army-token.sovereign-target .army-token-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-token-rim-eligible"); }
+.army.army-token.selected-force .army-token-rim,
+.army.army-token.armed-force .army-token-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-token-rim-selected"); }
+.army.army-token.pressed .army-token-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-token-rim-pressed"); }
+
+.army-silhouette { position: absolute; }
 .army-token .army-silhouette { display: none; }
-.army-silhouette-shadow { position: absolute; top: 7.5px; width: 50px; height: 60px; }
-.army-figures.garrison .army-silhouette-shadow { top: 6.5px; }
-.army-token .army-silhouette-shadow { display: none; }
 
 .army-emblems { position: absolute; flex-direction: row; align-items: center; }
 .army-emblem { width: 15px; height: 15px; margin: 0 2px 0 0; -unity-background-scale-mode: scale-to-fit; }
 .army-more-nations { margin: 0; padding: 0; font-size: 12px; -unity-font-style: bold; color: rgb(247, 236, 209); }
-.army-figures .army-emblems { left: 12px; bottom: 5px; height: 15px; }
-.army-figures.garrison .army-emblems { bottom: 8px; height: 17px; }
-.army-figures.garrison .army-emblem { width: 17px; height: 17px; }
-.army-token .army-emblems { left: 7px; top: 8px; }
-.army-token.garrison .army-emblems { top: 11px; }
+.army-figures .army-emblems { left: 10px; bottom: 4px; height: 13px; }
+.army-figures .army-emblem { width: 13px; height: 13px; margin: 0 1px 0 0; }
+.army-figures .army-more-nations { font-size: 11px; }
+.army-token .army-emblems { left: 7px; top: 7px; }
 .army-token .army-emblem { width: 16px; height: 16px; margin: 0; }
 .army-token #army-emblem-1, .army-token .army-more-nations { display: none; }
 
@@ -87,37 +142,21 @@
     color: rgb(247, 236, 209);
     background-color: rgba(25, 23, 22, 0.94);
 }
-.army-figures.garrison .army-count { bottom: 8px; }
+.army-figures .army-count { right: 9px; bottom: 3px; min-width: 16px; height: 15px; padding: 0 3px; font-size: 12px; border-radius: 7px; }
 .army-token .army-count { right: 0; bottom: 0; min-width: 17px; height: 19px; padding: 0 3px; font-size: 14px; border-radius: 9px; }
 /* TYPO-01's Alegreya sets a taller line: the token's count has a fixed height, so it stays clear of the emblem. */
 
 .army-moved { position: absolute; right: 2px; top: 2px; width: 20px; height: 20px; display: none; background-image: resource("Wotr/Art/UI/armies/moved-check"); }
+.army-figures .army-moved { right: 4px; top: 8px; width: 16px; height: 16px; }
 .army-token .army-moved { right: 0; top: 0; width: 17px; height: 17px; }
 .army.moved .army-moved { display: flex; }
 
-/* Base and token pictures. Every rule has the same weight; later states win: moved, owner, selected, pressed. UI-301: an
-   eligible army keeps its picture and wears ChoiceGlow (below). */
-.army.army-figures.field-force.fp.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free"); }
-.army.army-figures.field-force.sh.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow"); }
-.army.army-figures.garrison.fp.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free"); }
-.army.army-figures.garrison.sh.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow"); }
-.army.army-token.field-force.fp.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free"); }
-.army.army-token.field-force.sh.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow"); }
-.army.army-token.garrison.fp.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free"); }
-.army.army-token.garrison.sh.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow"); }
-.army.army-figures.field-force.fp.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-moved"); }
-.army.army-figures.field-force.sh.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-moved"); }
-.army.army-figures.garrison.fp.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-moved"); }
-.army.army-figures.garrison.sh.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-moved"); }
-.army.army-token.field-force.fp.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-moved"); }
-.army.army-token.field-force.sh.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-moved"); }
-.army.army-token.garrison.fp.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-moved"); }
-.army.army-token.garrison.sh.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-moved"); }
 /* UI-301 (owner's decision): an army a click may choose wears the shared ChoiceGlow, as the usable tabs and the
    Fellowship's portraits do: a halo behind the marker with a thick gold rim on a warm plate (army-choice-glow), which
    pulses and swells a little in the 750 ms rhythm under .motion-enabled (MapCanvas runs the pulse) and stays bright
-   and still under Reduced motion; the plinth and figures keep their pictures and size. A chosen, armed or acting army
-   shows its selection instead. */
+   and still under Reduced motion; the stand or puck and the figures keep their pictures and size. A chosen or armed
+   army shows its selection instead. UI-374 (owner): the army of a figure whose ability or order a click uses
+   (ability-owner: the Balrog, the Chief, A Balrog is Come!) wears the glow too, over its amber rim. */
 .army-choice-glow {
     position: absolute;
     left: -5px;
@@ -130,58 +169,154 @@
     border-color: rgb(255, 214, 112);
     background-color: rgba(120, 88, 24, 0.55);
 }
-.army-token > .army-choice-glow { border-radius: 27px; }
-.army.eligible-army > .army-choice-glow { display: flex; }
+/* UI-406: round a token the halo is a capsule round its puck. */
+.army-token > .army-choice-glow { left: -4px; right: -4px; top: -1px; bottom: 3px; border-radius: 22px; }
+/* UI-400: round a miniature the halo is a capsule round its stand, so the figures stand above it, not on a plate. */
+.army-figures > .army-choice-glow { top: 48px; bottom: 0; left: -2px; right: -2px; border-radius: 18px; }
+.army.eligible-army > .army-choice-glow,
+.army.ability-owner > .army-choice-glow { display: flex; }
 .army.eligible-army.selected-force > .army-choice-glow,
-.army.eligible-army.armed-force > .army-choice-glow,
-.army.eligible-army.ability-owner > .army-choice-glow { display: none; }
+.army.eligible-army.armed-force > .army-choice-glow { display: none; }
 .motion-enabled .army > .army-choice-glow {
     transition-property: border-color, background-color, scale;
     transition-duration: 750ms;
     transition-timing-function: ease-in-out-sine;
 }
-.motion-enabled .map.choice-glow-pulse .army.eligible-army > .army-choice-glow {
+.motion-enabled .map.choice-glow-pulse .army.eligible-army > .army-choice-glow,
+.motion-enabled .map.choice-glow-pulse .army.ability-owner > .army-choice-glow {
     border-color: rgba(255, 214, 112, 0.4);
     background-color: rgba(70, 52, 18, 0.3);
     scale: 1.05 1.05;
 }
-.army.army-figures.field-force.fp.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-selected"); }
-.army.army-figures.field-force.sh.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-selected"); }
-.army.army-figures.garrison.fp.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-selected"); }
-.army.army-figures.garrison.sh.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-selected"); }
-.army.army-token.field-force.fp.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-selected"); }
-.army.army-token.field-force.sh.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-selected"); }
-.army.army-token.garrison.fp.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-selected"); }
-.army.army-token.garrison.sh.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-selected"); }
-.army.army-figures.field-force.fp.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-selected"); }
-.army.army-figures.field-force.sh.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-selected"); }
-.army.army-figures.garrison.fp.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-selected"); }
-.army.army-figures.garrison.sh.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-selected"); }
-.army.army-token.field-force.fp.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-selected"); }
-.army.army-token.field-force.sh.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-selected"); }
-.army.army-token.garrison.fp.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-selected"); }
-.army.army-token.garrison.sh.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-selected"); }
-/* UI-212: the source a card's Nazgûl flights are armed at. */
-.army.army-figures.field-force.fp.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-selected"); }
-.army.army-figures.field-force.sh.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-selected"); }
-.army.army-figures.garrison.fp.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-selected"); }
-.army.army-figures.garrison.sh.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-selected"); }
-.army.army-token.field-force.fp.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-selected"); }
-.army.army-token.field-force.sh.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-selected"); }
-.army.army-token.garrison.fp.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-selected"); }
-.army.army-token.garrison.sh.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-selected"); }
-.army.army-figures.field-force.fp.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-pressed"); }
-.army.army-figures.field-force.sh.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-pressed"); }
-.army.army-figures.garrison.fp.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-pressed"); }
-.army.army-figures.garrison.sh.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-pressed"); }
-.army.army-token.field-force.fp.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-pressed"); }
-.army.army-token.field-force.sh.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-pressed"); }
-.army.army-token.garrison.fp.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-pressed"); }
-.army.army-token.garrison.sh.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-pressed"); }
 
-/* UI-127: the planned move ghost, figures of the selection at a hovered target; never interactive. */
-.army.army-ghost { opacity: 0.5; }
-.army-ghost-caption {
+/* UI-274: a force led by an Initial king wears a crown over its base; a force holding a king that a decision or the
+   selected die lights glows like an eligible force (sovereign-target), and its click chooses the king. */
+.army-crown {
+    position: absolute;
+    width: 24px;
+    height: 15px;
+    background-image: resource("Wotr/Art/UI/dice/ruler-crown");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.army-figures .army-crown { left: 23px; top: 0; width: 20px; height: 12px; }
+.army-token .army-crown { left: 13px; top: -9px; width: 18px; height: 11px; }
+
+/* UI-274: a Corrupted king's dark marker by his capital (MapSovereignMarkers); a steady gold rim and plate when a
+   click on it chooses him (no pulse, so the map is never restyled on a timer). UI-406: the marker is a small puck on the
+   table — the dark iron puck with its ember rim (Codex art, graphicalassets/stands), 30 × 24 points, over the contact
+   shadow, with the crown under the Eye on its top face — in its 30 × 34 box. */
+#board-screen .sovereign-marker,
+.sovereign-marker {
+    position: absolute;
+    width: 30px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+}
+.sovereign-glow, .sovereign-shadow, .sovereign-puck, .sovereign-emblem {
+    position: absolute;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.sovereign-glow {
+    left: -4px;
+    right: -4px;
+    top: 0;
+    bottom: 2px;
+    display: none;
+    border-width: 3px;
+    border-radius: 17px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.sovereign-shadow { left: 0.5px; top: 11px; width: 32px; height: 20px; background-image: resource("Wotr/Art/UI/armies/contact-shadow"); }
+.sovereign-puck { left: 0; top: 4px; width: 30px; height: 24px; background-image: resource("Wotr/Art/UI/kings/puck-corrupted"); }
+.sovereign-emblem { left: 7.5px; top: 5px; width: 15px; height: 15px; background-image: resource("Wotr/Art/UI/kings/emblem-corrupted"); }
+#board-screen .sovereign-marker:hover > .sovereign-puck { -unity-background-image-tint-color: rgb(255, 236, 214); }
+/* UI-344 (D1): a removed king's marker fades out where it stood. */
+.motion-enabled .sovereign-marker {
+    transition-property: opacity;
+    transition-duration: 0.4s;
+    transition-timing-function: ease-out-sine;
+}
+#board-screen .sovereign-marker.sovereign-marker-leaving { opacity: 0; }
+#board-screen .sovereign-marker.pressed { scale: 0.94 0.94; }
+#board-screen .sovereign-marker.choice-glow > .sovereign-glow { display: flex; }
+
+/* UI-403 (TABLETOP_FIGURES_UX, "The lifted figure"): a chosen figure lifts off the table into the hand (MapFigureHand,
+   above the stands, clipped by the map). A piece is the same miniature at the same scale; its pose grows it 1.10 round its
+   feet (MapHandPiece sets the origin) and raises it 12 design points (12 px × the figure's scale), while a contact shadow
+   stays on the table at .8 and .35 opacity — the miniature's own shadow would rise with it, so it is hidden there. Only
+   translate, scale and opacity change, and only under .motion-enabled do they transition: Reduced motion shows the
+   static raised pose. A returning piece drops back onto its base; a planned one dissolves where it hovers. */
+.figure-hand-piece { position: absolute; }
+.hand-lift { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.figure-hand-piece.figure-lifted > .hand-lift { translate: 0 -12px; scale: 1.1 1.1; }
+/* UI-428: away from its source — carried, or resting where it was dropped — the piece is held 34 design points up, so
+   over its target the landing mark on the table shows whole round its shadow (MapHandPiece.CarriedRise). */
+.figure-hand-piece.figure-lifted.hand-carried > .hand-lift { translate: 0 -34px; }
+.hand-shadow,
+.flight-shadow {
+    position: absolute;
+    background-image: resource("Wotr/Art/UI/armies/contact-shadow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+/* Where the miniature's own contact shadow lies (.army-contact-shadow, .character-contact-shadow). */
+.hand-army-shadow, .flight-army-shadow { left: 10px; top: 68px; width: 54px; height: 9px; }
+.hand-character-shadow, .flight-character-shadow { left: 20px; top: 59px; width: 19px; height: 6px; }
+.figure-hand-piece.figure-lifted > .hand-shadow { scale: 0.8 0.8; opacity: 0.35; }
+.figure-hand-piece .army-contact-shadow,
+.figure-hand-piece .character-contact-shadow { visibility: hidden; }
+.figure-hand-piece.hand-planned > .hand-lift,
+.figure-hand-piece.hand-planned > .hand-shadow { opacity: 0; }
+.motion-enabled .hand-lift,
+.motion-enabled .hand-shadow {
+    transition-property: translate, scale, opacity;
+    transition-duration: 0.18s;
+    transition-timing-function: ease-out-sine;
+}
+.motion-enabled .figure-hand-piece.hand-returning > .hand-lift,
+.motion-enabled .figure-hand-piece.hand-returning > .hand-shadow { transition-duration: 0.22s; transition-timing-function: ease-in-sine; }
+.motion-enabled .figure-hand-piece.hand-planned > .hand-lift,
+.motion-enabled .figure-hand-piece.hand-planned > .hand-shadow { transition-duration: 0.25s; }
+/* UI-405: a carried piece follows the pointer with no transition; dropped where nothing takes it, its holder glides home
+   over its source (MapHandPiece.Home adds the class for the glide alone, so camera moves never lag). */
+.motion-enabled .hand-gliding {
+    transition-property: translate;
+    transition-duration: 0.22s;
+    transition-timing-function: ease-in-out-sine;
+}
+
+/* UI-404 (TABLETOP_FIGURES_UX, "Flight profile"): a flight is the destination's own miniature (FlightMiniature) in a
+   holder on the ground (FigureFlight). FlightProfile writes the pose's translate and scale (origin at the feet) and the
+   shadow's scale and opacity every frame, so nothing here transitions; the miniature's own contact shadow is hidden, as
+   in the hand, and the flight's stays on the ground. UI-406: the Fellowship's figure has its contact shadow too, where
+   MapFellowshipMarker.ShadowRect lays it. */
+.figure-flight { position: absolute; }
+.flight-lift { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.flight-fellowship-shadow { left: 19.9px; top: 68.5px; width: 28.8px; height: 9.07px; }
+.figure-flight .army-contact-shadow,
+.figure-flight .character-contact-shadow,
+.figure-flight .fellowship-contact-shadow { visibility: hidden; }
+/* The source shows only what stays behind (MapArmyStand.Mask): a base none stays on disappears at once — no fade, so
+   nothing shows twice when a piece lands — while its stand still takes the click it took. */
+.army.lifted-away .army-artwork,
+.character-miniature.lifted-away .character-artwork { visibility: hidden; }
+.army.lifted-away > .army-choice-glow,
+.character-miniature.lifted-away > .character-choice-glow { display: none; }
+
+/* UI-403: the landing mark on a hovered legal target's prospective place, a baked ring on the table under the stands
+   (green for a move, red for an attack), drawn round an army's base (MapLandingMark) and the caption of that click
+   hanging above the lifted figure. It replaces UI-127's translucent army ghost; neither takes the pointer. */
+.landing-mark { position: absolute; width: 58px; height: 18.6px; -unity-background-scale-mode: stretch-to-fill; }
+.landing-mark.landing-move { background-image: resource("Wotr/Art/UI/armies/landing-mark-landing-move"); }
+.landing-mark.landing-attack { background-image: resource("Wotr/Art/UI/armies/landing-mark-landing-attack"); }
+.landing-caption {
     position: absolute;
     width: 120px;
     margin: 0;
@@ -199,6 +334,10 @@
 .region-hover .hover-portrait.moved {
     opacity: 0.55;
     background-image: resource("Wotr/Art/UI/armies/moved-check");
+    -unity-slice-top: 24;
+    -unity-slice-right: 24;
+    -unity-slice-bottom: 24;
+    -unity-slice-left: 24;
     background-size: 12px 12px;
     background-repeat: no-repeat;
     background-position-x: right;
@@ -207,7 +346,7 @@
 
 /* UI-131: a reinforcement planned by a card or an ability: the faint ghost of its figures with a close icon
    (UI-138) to return them. The small enamel disc replaces the square frame of other icon buttons. */
-.army.army-ghost.planned-recruit { opacity: 0.6; }
+.army.planned-ghost { opacity: 0.6; }
 #board-screen .planned-recruit-remove {
     position: absolute;
     width: 18px;
@@ -225,3 +364,218 @@
 #board-screen .planned-recruit-remove:hover { background-color: rgba(112, 34, 26, 0.98); }
 #board-screen .unity-button.action.icon-button.planned-recruit-remove.pressed { background-image: none; background-color: rgba(48, 14, 11, 0.98); }
 #board-screen .planned-recruit-remove > .icon-glyph { width: 13px; height: 13px; }
+
+/* UI-402 (TABLETOP_FIGURES_UX, decision 5): a character is its own miniature (MapCharacterArtwork) — its painted figure
+   on a small round stand in its side's enamel (stand-character, 19 points wide: the footprint's 14-unit base at 1.35
+   points a unit), a contact shadow a little down and right, and the state rim (rim-character) round the stand. The feet
+   are at (28, 56), the middle of the stand's top face; the map scales it as it does the armies (MapStand). Far out it is
+   a token: the character's portrait in its side's medallion. No filter: the flare is the glow texture, the fades opacity. */
+#board-screen .character-miniature,
+.character-miniature {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+.character-miniature.character-figures { width: 56px; height: 70px; }
+.character-miniature.character-token { width: 24px; height: 24px; }
+.character-artwork, .character-front, .character-behind { position: absolute; left: 0; top: 0; width: 56px; height: 70px; }
+.character-artwork .army-part-unused { display: none; }
+.character-token .character-front, .character-token .character-behind, .character-token .character-more { display: none; }
+.character-contact-shadow, .character-stand, .character-behind-stand, .character-rim { position: absolute; }
+.character-contact-shadow {
+    left: 20px;
+    top: 59px;
+    width: 19px;
+    height: 6px;
+    background-image: resource("Wotr/Art/UI/armies/contact-shadow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.character-stand, .character-behind-stand {
+    left: 18.5px;
+    top: 51.25px;
+    width: 19px;
+    height: 13.3px;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.character-miniature.fp .character-stand,
+.character-miniature.fp .character-behind-stand { background-image: resource("Wotr/Art/UI/armies/stand-character-free"); }
+.character-miniature.sh .character-stand,
+.character-miniature.sh .character-behind-stand { background-image: resource("Wotr/Art/UI/armies/stand-character-shadow"); }
+.character-miniature:hover .character-stand { -unity-background-image-tint-color: rgb(255, 246, 222); }
+.character-figure, .character-behind-figure { position: absolute; }
+/* The state is a rim round the stand; later states win: moved, owner, eligible, selected, pressed. */
+.character-rim {
+    left: 17.55px;
+    top: 49.8px;
+    width: 20.9px;
+    height: 16.15px;
+    display: none;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.character-figures.moved .character-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-character-rim-moved"); }
+.character-figures.ability-owner .character-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-character-rim-ability"); }
+.character-figures.eligible-character .character-rim,
+.character-figures.sovereign-target .character-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-character-rim-eligible"); }
+.character-figures.selected-character .character-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-character-rim-selected"); }
+.character-figures.pressed .character-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-character-rim-pressed"); }
+/* The stacked pair's count of the characters behind the front one, code-drawn on the stand's front. */
+.character-more {
+    position: absolute;
+    left: 31px;
+    top: 57px;
+    min-width: 13px;
+    height: 11px;
+    margin: 0;
+    padding: 0 2px;
+    font-size: 9px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: rgb(196, 154, 69);
+    color: rgb(247, 236, 209);
+    background-color: rgba(22, 16, 10, 0.9);
+}
+/* The token: the portrait in the side's medallion. */
+.character-portrait {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    padding: 3px;
+    display: none;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.character-token .character-portrait { display: flex; }
+.character-miniature.fp .character-portrait,
+.character-miniature.fp .character-token-edge { background-image: resource("Wotr/Art/UI/battle/portrait-medallion-free"); }
+.character-miniature.sh .character-portrait,
+.character-miniature.sh .character-token-edge { background-image: resource("Wotr/Art/UI/battle/portrait-medallion-shadow"); }
+/* UI-406: the medallion is a thick coin lying on the table — a darkened copy 2.5 points below is its edge, and the
+   contact shadow lies under it, down and right. */
+.character-token-shadow, .character-token-edge { position: absolute; display: none; }
+.character-token .character-token-shadow, .character-token .character-token-edge { display: flex; }
+.character-token-shadow {
+    left: -0.5px;
+    top: 8px;
+    width: 27px;
+    height: 19px;
+    background-image: resource("Wotr/Art/UI/armies/contact-shadow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.character-token-edge {
+    left: 0;
+    top: 2.5px;
+    width: 24px;
+    height: 24px;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgb(92, 80, 66);
+}
+.character-moved {
+    position: absolute;
+    left: 34px;
+    top: 40px;
+    width: 12px;
+    height: 12px;
+    display: none;
+    background-image: resource("Wotr/Art/UI/armies/moved-check");
+}
+.character-token .character-moved { left: 14px; top: -2px; width: 11px; height: 11px; }
+.character-miniature.moved .character-moved { display: flex; }
+.character-figures.moved .character-figure { opacity: 0.6; }
+/* ChoiceGlow (UI-301) as a capsule round the stand of a character a click may choose or whose ability it uses, a disc
+   round the token; it pulses with the armies' (MapCanvas runs the pulse). */
+.character-choice-glow {
+    position: absolute;
+    left: 13px;
+    top: 47px;
+    width: 30px;
+    height: 22px;
+    display: none;
+    border-width: 3px;
+    border-radius: 11px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.character-token > .character-choice-glow { left: -4px; top: -4px; width: 32px; height: 32px; border-radius: 16px; }
+.character-miniature.eligible-character > .character-choice-glow,
+.character-miniature.ability-owner > .character-choice-glow { display: flex; }
+.character-miniature.eligible-character.selected-character > .character-choice-glow { display: none; }
+.motion-enabled .character-miniature > .character-choice-glow {
+    transition-property: border-color, background-color, scale;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .map.choice-glow-pulse .character-miniature.eligible-character > .character-choice-glow,
+.motion-enabled .map.choice-glow-pulse .character-miniature.ability-owner > .character-choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.05 1.05;
+}
+/* UI-334 and UI-338 for a character: it flares and emerges, or fades out where it stood. */
+.character-flare {
+    position: absolute;
+    left: 8px;
+    top: 10px;
+    width: 40px;
+    height: 60px;
+    background-image: resource("Wotr/Art/UI/ornaments/move-glow");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(255, 236, 186);
+    opacity: 0;
+}
+.character-miniature.army-flaring .character-flare { opacity: 1; }
+.character-miniature.army-emerge-hidden .character-artwork { opacity: 0; }
+.character-miniature.army-leaving .character-artwork { opacity: 0; }
+.motion-enabled .character-miniature .character-flare { transition-property: opacity; transition-duration: 0.3s; transition-timing-function: ease-out-sine; }
+.motion-enabled .character-miniature.army-flaring .character-flare { transition-duration: 0.15s; }
+.motion-enabled .character-miniature .character-artwork { transition-property: opacity; transition-duration: 0.5s; transition-timing-function: ease-out-sine; }
+.motion-enabled .character-miniature.army-leaving .character-artwork { transition-duration: 0.7s; transition-timing-function: ease-in-out-sine; }
+
+/* UI-406 (TABLETOP_FIGURES_UX, "Fellowship figure"): the Fellowship's figure stands on a round Free Peoples base (the
+   characters' painted stand, 16 units wide) over a contact shadow a little down and right, on its region's place and on
+   the Mordor track's step (MapFellowshipMarker.Dress places the parts). The blue underline of UI-201's panel tiles is
+   gone: the base is its side's colour. UI-427: the button has no text (a text drawn behind the base never showed); its
+   Hidden or Revealed symbol is the plaque below. */
+.fellowship-marker.fellowship-miniature {
+    padding: 0;
+    border-width: 0;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+}
+.fellowship-contact-shadow {
+    background-image: resource("Wotr/Art/UI/armies/contact-shadow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.fellowship-stand {
+    background-image: resource("Wotr/Art/UI/armies/stand-character-free");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.fellowship-miniature:hover > .fellowship-stand { -unity-background-image-tint-color: rgb(255, 246, 222); }
+/* UI-427 (FELLOWSHIP_UX "Fellowship on track"): ◇ Hidden or ◆ Revealed on a code-drawn plaque hanging on the base's front,
+   as an army's plaque hangs on its stand (FellowshipStateBadge places it and paints the diamond in its colour): the Free
+   Peoples' blue enamel with a gilt rim, the diamond in ivory, outlined while hidden and filled while revealed. It takes no
+   pointer and scales with the figure, on its region, on the Mordor track and in its flight. */
+.fellowship-state {
+    border-width: 1px;
+    border-radius: 5px;
+    border-color: rgb(222, 182, 96);
+    background-color: rgb(20, 46, 112);
+}
+.fellowship-state-symbol {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    color: rgb(250, 239, 206);
+}

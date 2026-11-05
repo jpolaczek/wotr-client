@@ -28,9 +28,18 @@ namespace Wotr.EditorTests
         [Test]
         public void OnlyTheDecisionsTheGameWaitsOnAreRequired()
         {
-            foreach (var kind in new[] { DecisionKind.RemoveExcess, DecisionKind.Losses, DecisionKind.HuntDamage, DecisionKind.DiscardCards })
+            foreach (var kind in new[]
+            {
+                DecisionKind.RemoveExcess, DecisionKind.Losses, DecisionKind.HuntDamage, DecisionKind.DiscardCards,
+                DecisionKind.SpecialDieChoice, DecisionKind.RulerDiscard, DecisionKind.CouncilVersions,
+                DecisionKind.CouncilHomelands, DecisionKind.CouncilToken, DecisionKind.CorruptionTile
+            })
                 Assert.IsTrue(RequiredDecisions.Is(kind), kind.ToString());
-            foreach (var kind in new[] { DecisionKind.Action, DecisionKind.ActionSequence, DecisionKind.CombatCard, DecisionKind.EffectChoice, DecisionKind.Reaction })
+            foreach (var kind in new[]
+            {
+                DecisionKind.Action, DecisionKind.ActionSequence, DecisionKind.CombatCard, DecisionKind.EffectChoice,
+                DecisionKind.Reaction, DecisionKind.KeepActionDie, DecisionKind.Dismay
+            })
                 Assert.IsFalse(RequiredDecisions.Is(kind), kind.ToString());
             var view = Excess();
             Assert.IsTrue(RequiredDecisions.Waits(view));

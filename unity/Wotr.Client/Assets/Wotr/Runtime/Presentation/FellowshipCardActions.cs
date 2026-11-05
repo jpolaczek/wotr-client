@@ -6,7 +6,7 @@ namespace Wotr.Client
 {
     // UI-249: There Is Another Way (with Gollum as Guide) moves or hides the Fellowship where its own move and hide are
     // made — the glowing track symbol or the Mordor track's next step, and the Ring — without charging another die.
-    // Stay (finish after healing) keeps its console button.
+    // UI-430 (owner): Stay (finish after healing) is the console's ✓ (FinishingOption), no longer a button.
     public static class FellowshipCardActions
     {
         public const string Presentation = "FellowshipAction";
@@ -35,7 +35,7 @@ namespace Wotr.Client
             CardDraft.Choose(draft, Option(view), id);
         }
 
-        // The console names the Fellowship's controls the card uses, then its button.
+        // The console names the Fellowship's controls the card uses, then the ✓ that finishes.
         public static string Guidance(PlayerView view)
         {
             var steps = new List<string>();
@@ -43,7 +43,7 @@ namespace Wotr.Client
                 steps.Add("Move: click the glowing track");
             if (Choice(view, CommandKind.HideFellowship).Length > 0)
                 steps.Add("Hide: click the Fellowship's glowing marker on its track");
-            return steps.Count == 0 ? "" : string.Join(" · ", steps) + " · or Stay to finish after healing.";
+            return steps.Count == 0 ? "" : string.Join(" · ", steps) + " · ✓ finishes after healing";
         }
 
         public static string Description(string id) => id == Move

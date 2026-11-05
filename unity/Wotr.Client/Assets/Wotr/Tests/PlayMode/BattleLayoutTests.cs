@@ -197,6 +197,8 @@ namespace Wotr.PlayTests
                         var own = tray.Q(defender ? "battle-defender" : "battle-attacker");
                         var other = tray.Q(defender ? "battle-attacker" : "battle-defender");
                         var label = kind + (defender ? " defender" : " attacker");
+                        // UI-394 (owner): the choosing side's column is as wide as the other one.
+                        Assert.That(own.worldBound.width, Is.EqualTo(other.worldBound.width).Within(1.5f), label + ": columns of one width");
                         var confirm = tray.Q<Button>("confirm-decision");
                         Assert.IsNotNull(confirm, label);
                         if (defender)
@@ -220,6 +222,93 @@ namespace Wotr.PlayTests
                         Assert.IsEmpty(tray.Query<ScrollView>().ToList(), label);
                         Assert.LessOrEqual(confirm.worldBound.yMax, client.Board.Map.worldBound.yMax + 1, label + ": above the console");
                     }
+        }
+
+        // UI-437: whatever a battle ability adds to one side — characters standing in its force row (so many that the row
+        // takes two lines), a replacement's marker beside its card, the hit buttons a card adds to its roll's heading, a
+        // special attack's pager, the ledge of figures outside the fight — both sides' rows stay level in every layout.
+        [UnityTest]
+        public IEnumerator WhatAnAbilityAddsToOneSideKeepsBothSidesRowsLevel()
+        {
+            using (var client = new MountedMatchClient("http://localhost", "battle-rows"))
+                foreach (var width in new[] { 1366, 1920 })
+                    foreach (var scale in new[] { 1f, 1.25f })
+                    {
+                        var target = new RenderTexture(width, width == 1366 ? 768 : 1080, 24);
+                        target.Create();
+                        client.Panel.targetTexture = target;
+                        client.Panel.scale = scale;
+                        var view = OneSidedAbilities();
+                        client.Apply(view);
+                        yield return Settle();
+                        if (!client.Board.Battles.IsOpen)
+                            CardNetworkTests.Click(client.Board.Console.Status.Plaque);
+                        yield return Settle();
+                        var label = $"{width}×{scale:0.00}";
+                        var tray = client.Board.Tray;
+                        // UI-458 (owner): the hit buttons stand on the roll of the side that uses them (the Free Peoples attack).
+                        Assert.IsNotNull(tray.Q("battle-attacker").Q("battle-hit-cancels"), label + ": the hit buttons on the user's own roll");
+                        Assert.IsNotNull(tray.Q("battle-defender").Q("battle-hit-cancels-reserved"), label + ": their room kept opposite");
+                        Assert.IsNotNull(tray.Q("battle-attacker").Q("battle-garrison-shelf"), label + ": the attacker's ledge");
+                        Assert.IsNotNull(tray.Q("battle-defender").Q("battle-garrison-shelf-reserved"), label + ": kept on the defender's side");
+                        Assert.IsNotNull(tray.Q("battle-defender").Q("battle-roll-page-Shadow"), label + ": the special attack's pager");
+                        var attacker = tray.Q("battle-attacker");
+                        Assert.GreaterOrEqual(attacker.Q("battle-composition").worldBound.yMin + 1, attacker.Q("battle-portraits").worldBound.yMax,
+                            label + ": the figures take a second line under the characters");
+                        Assert.Greater(tray.Q("battle-defender").Q("battle-force-spacer").worldBound.height, 10, label + ": the shorter force row's spacer");
+                        Assert.IsTrue(attacker.Q("battle-portraits").ClassListContains(BattleContext.CrowdedClass), label + ": nine names give way");
+                        LayoutTests.Save(target, $"ui437-abilities-{width}-{scale:0.00}.png");
+                        BattleRowChecks.Level(tray, label, rolled: true);
+                        Assert.IsEmpty(tray.Query<ScrollView>().ToList(), label);
+                        client.Panel.targetTexture = client.Viewport;
+                        target.Release();
+                        Object.Destroy(target);
+                    }
+        }
+
+        // Heroic Death for the Free Peoples, whose army has nine Companions (more than one line holds) and a rear guard; the
+        // Shadow has made the Black Serpent's replacement and rolls a special attack beside its Combat roll.
+        private static PlayerView OneSidedAbilities()
+        {
+            var view = BattleScreenFixture.Create(CommandKind.ContinueBattle);
+            var force = view.Battle.Attacker;
+            foreach (var id in new[] { "gimli", "boromir", "legolas", "gandalf-grey", "strider", "merry", "pippin", "gandalf-white", "aragorn" })
+            {
+                var character = new CharacterView { Id = id, DefinitionId = "base.character." + id, Side = Side.FreePeoples, Location = force.RegionId };
+                view.Characters.Add(character);
+                force.Characters.Add(character);
+                force.ParticipantIds.Add(id);
+            }
+            var north = new UnitView { Id = "north-elite", Nation = "north", Kind = UnitKind.Elite, Side = force.Side, Location = force.RegionId };
+            view.Units.Add(north);
+            force.Units.Add(north);
+            force.ParticipantIds.Add(north.Id);
+            view.Units.Add(new UnitView { Id = "rear", Nation = "rohan", Kind = UnitKind.Regular, Side = force.Side, Location = force.RegionId });
+            view.CombatReplacements.Add(new CombatReplacementView { Side = Side.Shadow, SourceId = "kings.character.black-serpent" });
+            view.Battle.SpecialAttacks.Add(new BattleAttackView
+            {
+                Side = Side.Shadow, SourceId = "base.sh.strategy.01",
+                Dice = { new BattleDieView { Id = "special-shadow", Result = 6, Hit = true, HitTarget = 5 } }
+            });
+            view.You = Side.FreePeoples;
+            view.DecisionOwner = Side.FreePeoples;
+            view.Decision = new DecisionView { Id = "heroic", Kind = DecisionKind.EffectChoice, Presentation = BattleObjectChoices.SacrificePresentation };
+            var option = new ActionOption { Kind = CommandKind.ChooseEffect, Enabled = true, Minimum = 1, Maximum = 2 };
+            option.EffectChoices.Add(new EffectChoiceView { Id = "gimli", SelectionGroup = "Sacrifice", Detail = "Eliminate this figure to cancel the selected hits." });
+            option.EffectChoices.Add(new EffectChoiceView { Id = "heroic-death.decline", SelectionGroup = "Sacrifice", Title = "Keep all", Exclusive = true });
+            for (var amount = 0; amount <= 2; amount++)
+            {
+                var hits = new EffectChoiceView
+                {
+                    Id = "heroic-death.hits." + amount, SelectionGroup = "Hits", Title = amount == 0 ? "Keep hits" : "− " + new string('●', amount)
+                };
+                hits.RequiresAny.Add("gimli");
+                option.EffectChoices.Add(hits);
+            }
+            option.EligibleIds.AddRange(option.EffectChoices.Select(c => c.Id));
+            view.Options.Clear();
+            view.Options.Add(option);
+            return view;
         }
 
         private static void PlayTheDefender(PlayerView view, CommandKind kind)

@@ -408,6 +408,8 @@ leads to opens ([OPPONENT_ACTIONS_UX §6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310
   - The drawn tile turns face up for 1 s, then the damage shows.
   - A response is marked on its object: the Fellowship's Ring, a portrait, or a table card at the Effects tab.
   - A casualty leaves the Fellowship's roster through its portrait. A new Guide takes the badge.
+  - UI-462: a new Guide who is no Companion yet (Sméagol, by his tile) flies as a portrait from the drawn tile into his
+    new place in the roster before he takes the badge ([UX_SPEC](UX_SPEC.md#ui-462)).
 - **No choices.** The window hosts no choice during the presentation. A real response, Guide or damage decision opens
   on its usual host at the release. No Continue or result window is added.
 - **Afterwards.** The Fellowship's tracks, a reveal's relocation and the progress move after the Hunt's entries.

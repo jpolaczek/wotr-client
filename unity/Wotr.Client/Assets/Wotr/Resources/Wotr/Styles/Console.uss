@@ -14,33 +14,36 @@
 #board-screen .dice-panel .available-dice .die.die-shadow { margin-bottom: 1px; }
 #board-screen .dice-panel.dense-resources .available-dice .die.die-free,
 #board-screen .dice-panel.dense-resources .available-dice .die.die-shadow { width: 32px; min-width: 32px; height: 32px; min-height: 32px; margin: 0 3px 3px 0; }
-/* Games with Lords or Kings keep the same height; their reserves (ruler and council tokens, special dice
-   pools) stand in a second column beside the dice, so only the panel's width differs from the base game. */
-#board-screen .dice-panel.expanded-resources { width: 432px; }
+/* Games with Lords or Kings keep the same height; their dice column is wide enough for six dice a row, with the
+   counters under the dice as in the base game (the column keeps a few points beyond six dice of 35 px, so a scaled
+   layout never wraps the sixth). UI-467 (owner, 2026-11-03): only the tokens (Ruler, Dismay, Council) stand in a
+   narrow second column, three a row (the fullest pool, five Dismay and two Council tokens, in three rows), and only in
+   a game that has them, so the console keeps a wide hint line (the panel was 432 px with the counters spread beside
+   the dice). */
+#board-screen .dice-panel.expanded-resources { width: 230px; }
+#board-screen .dice-panel.expanded-resources.token-column { width: 336px; }
 #board-screen .dice-panel.expanded-resources .own-resource-columns { flex-direction: row; align-items: flex-start; }
-#board-screen .dice-panel.expanded-resources .own-resource-columns > .available-dice { width: 210px; }
-#board-screen .dice-panel.expanded-resources .own-resource-reserves { flex-grow: 1; flex-basis: 0; margin-left: 8px; }
-#board-screen .dice-panel.expanded-resources .dice-header { width: 210px; }
+#board-screen .dice-panel.expanded-resources .own-dice-column { width: 214px; }
+#board-screen .dice-panel.expanded-resources .own-resource-reserves { display: none; }
+#board-screen .dice-panel.expanded-resources.token-column .own-resource-reserves { display: flex; width: 100px; margin-left: 6px; }
+#board-screen .dice-panel.expanded-resources.token-column .own-resource-reserves .pool-tokens { flex-wrap: wrap; margin: 0; }
+#board-screen .dice-panel.expanded-resources.token-column .own-resource-reserves .pool-tokens > Button { margin: 0 3px 3px 0; }
 
 .turn-console {
     flex-grow: 1;
     flex-shrink: 1;
     min-width: 0;
     height: 132px;
-    margin: 4px 4px 0 6px;
+    /* UI-494 (owner, 2026-11-04): it stands on the screen's bottom edge, as the top bar and the cards do. */
+    margin: 8px 4px 0 6px;
     padding: 12px 12px 10px 12px;
     flex-direction: row;
     align-items: stretch;
-    background-image: resource("Wotr/Art/UI/console/frame");
-    -unity-slice-top: 36;
-    -unity-slice-right: 36;
-    -unity-slice-bottom: 36;
-    -unity-slice-left: 36;
-    -unity-slice-scale: 0.5px;
 }
-.console-divider { width: 1px; flex-shrink: 0; margin: 4px 8px; background-color: rgba(176, 138, 64, 0.45); }
+.console-divider { width: 1px; flex-shrink: 0; margin: 4px 8px; background-color: var(--game-hairline-quiet); }
 
-/* Status: the acting side's plaque with its emblem, then a hint of at most two lines. */
+/* Status: the acting side's plaque with its emblem, then a hint of at most two lines. UI-476: the plaque is the button in
+   the side's enamel; hover lightens it and a press darkens it and sinks it a point (UI-113). */
 .console-status { flex-grow: 1; flex-shrink: 1; min-width: 0; flex-direction: column; }
 .console-status-plaque {
     height: 32px;
@@ -51,14 +54,24 @@
     align-items: center;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/console/status-plaque-free");
-    -unity-slice-top: 16;
-    -unity-slice-right: 36;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 36;
-    -unity-slice-scale: 0.5px;
+    background-image: var(--game-side-button-free);
+    -unity-slice-top: var(--game-button-slice);
+    -unity-slice-right: var(--game-button-slice);
+    -unity-slice-bottom: var(--game-button-slice);
+    -unity-slice-left: var(--game-button-slice);
+    -unity-slice-scale: var(--game-button-slice-scale);
 }
-.console-status-plaque.side-shadow { background-image: resource("Wotr/Art/UI/console/status-plaque-shadow"); }
+#board-screen .console-status-plaque:hover { background-color: rgba(0, 0, 0, 0); background-image: var(--game-side-button-free-hover); }
+#board-screen .console-status-plaque.side-shadow { background-image: var(--game-side-button-shadow); }
+#board-screen .console-status-plaque.side-shadow:hover { background-image: var(--game-side-button-shadow-hover); }
+#board-screen .console-status-plaque.pressed,
+#board-screen .console-status-plaque.pressed:hover {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: var(--game-side-button-free-pressed);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+#board-screen .console-status-plaque.side-shadow.pressed,
+#board-screen .console-status-plaque.side-shadow.pressed:hover { background-image: var(--game-side-button-shadow-pressed); }
 .console-emblem { width: 20px; height: 20px; flex-shrink: 0; margin-right: 8px; -unity-background-scale-mode: scale-to-fit; background-image: resource("Wotr/Art/UI/icons/ring"); }
 .side-shadow > .console-emblem { background-image: resource("Wotr/Art/UI/dice/faces/eye"); }
 .console-headline {
@@ -95,6 +108,9 @@
 .console-line > .console-hint,
 .console-line > .console-options { flex-grow: 1; flex-shrink: 1; min-width: 0; }
 .console-trail { flex-direction: row; flex-shrink: 1; max-width: 45%; height: 38px; margin: 6px 0 0 6px; align-items: center; overflow: hidden; }
+/* UI-430: in the line the committed steps keep their share (up to 45 %) instead of yielding to a long hint, so a card's
+   name that fits its share is whole; one that does not stands in the strip above the console (ConsoleOptionsFit). */
+.console-line > .console-trail { flex-shrink: 0; }
 .console-trail > .effect-trail { flex-direction: row; flex-wrap: nowrap; flex-shrink: 1; min-width: 0; overflow: hidden; }
 #board-screen .console-trail .committed-choice {
     flex-shrink: 1;
@@ -110,8 +126,32 @@
     text-overflow: ellipsis;
 }
 
+/* UI-461 (owner, 2026-11-03): the Will of the West face menu stands at the start of the hint's line, in the hint's
+   height: four medallions (the Elven Ring picker's .ring-face) that never resize the console; the chosen result is pressed in. */
+.console-line > .console-will-faces { flex-shrink: 0; }
+.console-will-faces { height: 38px; min-height: 38px; max-height: 38px; margin: 6px 0 0 4px; flex-direction: row; align-items: center; }
+#board-screen .console-will-faces .will-face { margin: 0 2px; }
+#board-screen .console-will-faces .will-face.will-face-chosen { background-image: resource("Wotr/Art/UI/dice/medallion-free-selected"); }
+/* A line too narrow for the medallions beside the hint (Lords or Kings at 1366×768 and 125 %) raises them into the strip
+   above the console (ConsoleOptionsFit), at the same size. */
+.console-options-strip > .console-will-faces { margin: 0 4px; }
+
 /* UI-214: a card's object-less options take the hint's place and size: up to three buttons in one row. */
 .console-options { height: 38px; min-height: 38px; max-height: 38px; margin: 6px 4px 0 6px; flex-direction: row; align-items: center; }
+/* TEST-15: options too wide for the console's line stand in a strip just above the console, at their full text; the
+   bottom row keeps its height. The strip stands 4 points over the console's top (UI-494: 132 from the screen's bottom);
+   only its left edge follows the status column. The row keeps its side margins, so its measured width is the same in
+   both places. */
+.console-options-strip {
+    position: absolute;
+    bottom: 136px;
+    flex-direction: row;
+    padding: 6px 4px;
+}
+.console-options-strip > .console-options { height: auto; min-height: 0; max-height: none; margin-top: 0; }
+#board-screen .console-options-strip .console-options .console-option { flex-grow: 0; flex-shrink: 0; flex-basis: auto; text-overflow: clip; }
+.console-options-strip > .console-trail { max-width: none; height: auto; margin: 0 0 0 6px; }
+#board-screen .console-options-strip .console-trail .committed-choice { flex-shrink: 0; max-width: none; text-overflow: clip; }
 #board-screen .console-options .console-option {
     flex-grow: 1;
     flex-shrink: 1;
@@ -129,7 +169,8 @@
 /* The board's resources: the Hunt Box above the three Elven Rings, in one column of fixed width. */
 .console-resources { width: 108px; flex-shrink: 0; flex-direction: column; justify-content: space-between; }
 
-/* Hunt Box: the Hunt plaque (Eyes, Free Peoples movement dice) in its well; a click opens the Hunt panel. */
+/* Hunt Box: the Hunt plaque (Eyes, Free Peoples movement dice) in its well, since UI-476 a thin row (slices in
+   GameChrome.uss); while eligible for Hunt dice it is the warm row with a bright line. A click opens the Hunt panel. */
 .console-hunt { width: 108px; height: 60px; flex-shrink: 0; flex-direction: row; align-items: center; }
 .console-hunt-well {
     width: 108px;
@@ -137,14 +178,9 @@
     flex-shrink: 0;
     justify-content: center;
     align-items: center;
-    background-image: resource("Wotr/Art/UI/console/hunt-box");
-    -unity-slice-top: 20;
-    -unity-slice-right: 20;
-    -unity-slice-bottom: 20;
-    -unity-slice-left: 20;
-    -unity-slice-scale: 0.5px;
+    background-image: var(--game-row);
 }
-.console-hunt.hunt-allocating .console-hunt-well { background-image: resource("Wotr/Art/UI/console/hunt-box-eligible"); }
+.console-hunt.hunt-allocating .console-hunt-well { background-image: var(--game-row-selected); }
 #board-screen .console-hunt .hunt-tab {
     position: relative;
     width: 104px;
@@ -154,7 +190,7 @@
     margin: 0;
     padding: 0 0 6px 0;
     border-width: 0;
-    border-radius: 5px;
+    border-radius: 2px;
     background-color: rgba(0, 0, 0, 0);
     background-image: none;
     font-size: 9px;
@@ -165,7 +201,25 @@
 }
 #board-screen .console-hunt .hunt-tab:hover,
 #board-screen .console-hunt .hunt-tab:focus { background-color: rgba(241, 209, 122, 0.12); }
-#board-screen .console-hunt .hunt-tab.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+#board-screen .console-hunt .hunt-tab.legal-target { border-width: 2px; border-color: rgb(255, 214, 112); }
+/* UI-430 (owner): a Hunt roll an effect offers (The Nazgûl Strike!) lights the plaque with the shared choice glow — the gold
+   rim on a warm plate — and its own ticker pulses it in the shared rhythm; no filter, and its size stays (scale 1 1). */
+#board-screen .console-hunt .hunt-tab.choice-glow {
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+    color: rgb(255, 236, 180);
+}
+.motion-enabled #board-screen .console-hunt .hunt-tab.choice-glow {
+    transition-property: border-color, background-color;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .console-hunt .hunt-tab.choice-glow.choice-glow-pulse {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1 1;
+}
 /* UI-172: during the Shadow's own allocation the plaque is its confirmation: lit when ready, dimmed until then. */
 #board-screen .console-hunt .hunt-tab.hunt-confirm-ready {
     border-width: 2px;
@@ -276,13 +330,62 @@
 .console-ring-socket.pressed > .console-ring-image { scale: 0.9 0.9; }
 .ring-removed > .console-ring-image { -unity-background-image-tint-color: rgb(128, 128, 128); opacity: 0.35; }
 
+/* UI-268: a Lords game's named rings in their own art (console/ring-<name>): the captured art wears an ember halo,
+   the lit art the gold aura of a Keeper ability offered now; a lit ring shows at full brightness. */
+.ring-vilya > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-vilya"); }
+.ring-vilya.ring-captured > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-vilya-keeper-captured"); }
+.ring-vilya.keeper-ready > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-vilya-keeper-lit"); }
+.ring-nenya > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-nenya"); }
+.ring-nenya.ring-captured > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-nenya-keeper-captured"); }
+.ring-nenya.keeper-ready > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-nenya-keeper-lit"); }
+.ring-narya > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-narya"); }
+.ring-narya.ring-captured > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-narya-keeper-captured"); }
+.ring-narya.keeper-ready > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-narya-keeper-lit"); }
+.console-ring-socket.keeper-ready > .console-ring-image { -unity-background-image-tint-color: rgb(255, 255, 255); }
+
 /* The four permanent actions; a greyed one keeps its place. */
 /* Two by two: back and confirm above, pass and discard below. */
 .console-actions { width: 80px; flex-shrink: 0; flex-direction: row; flex-wrap: wrap; align-content: center; justify-content: space-between; }
 #board-screen .console-actions .console-action { width: 36px; min-width: 36px; height: 36px; min-height: 36px; margin: 2px 0; }
-#board-screen .console-actions .console-action:disabled { opacity: 0.4; }
+/* UI-471: the thin line is too fine for the dim tint under this opacity; the icon stays as dim as it was. */
+#board-screen .console-actions .console-action:disabled { opacity: 0.4; -unity-background-image-tint-color: rgb(255, 255, 255); }
+/* UI-483 (owner, 2026-11-04): a confirm that can be clicked stands out: solid gold under a light rim with a dark check,
+   the strongest contrast in the console; it breathes in brightness and size, never fading away (colours and transform
+   only; Reduced motion keeps it bright and still). A window's confirm (Apply losses, Keep roll…) wears the menus' primary
+   plate without the pulse. */
+#board-screen .console-actions #console-confirm.choice-glow {
+    background-image: none;
+    background-color: var(--game-confirm-fill);
+    border-color: var(--game-confirm-rim);
+    border-radius: 2px;
+}
+#board-screen .console-actions #console-confirm.choice-glow:hover { background-image: none; background-color: var(--game-confirm-fill-hover); }
+#board-screen .console-actions #console-confirm.choice-glow.pressed { background-image: none; background-color: var(--game-confirm-fill-pressed); }
+#board-screen .console-actions #console-confirm.choice-glow > .icon-glyph { -unity-background-image-tint-color: var(--game-confirm-check); }
+.motion-enabled #board-screen .console-actions.choice-glow-pulse #console-confirm.choice-glow {
+    background-color: var(--game-confirm-fill-dim);
+    border-color: var(--game-confirm-rim-dim);
+    scale: 1.12 1.12;
+}
+#board-screen #confirm-decision:enabled { background-image: var(--game-button-primary); }
+#board-screen #confirm-decision:enabled:hover { background-image: var(--game-button-primary-hover); }
+#board-screen #confirm-decision:enabled.pressed { background-image: var(--game-button-primary-pressed); }
+/* UI-455 (owner, 2026-11-03): a small Cancel on its own line under the four, always in its place, greyed while there is
+   nothing to cancel. The grid keeps its columns; the three lines stand centred in the zone. */
+#board-screen .console-actions .console-cancel {
+    width: 80px;
+    min-width: 80px;
+    height: 22px;
+    min-height: 22px;
+    margin: 2px 0 0 0;
+    padding: 0 4px;
+    font-size: 11px;
+    -unity-text-align: middle-center;
+}
+#board-screen .console-actions .console-cancel:disabled { opacity: 0.5; -unity-background-image-tint-color: rgb(255, 255, 255); }
 
-/* The decision window: choices without an object, above the console. */
+/* The decision window: choices without an object, above the console; the card and the header's hairline stand in
+   GameChrome.uss (UI-473). */
 .decision-window {
     position: absolute;
     left: 232px;
@@ -293,25 +396,14 @@
     padding: 6px 12px 12px 12px;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 .decision-window .window-header {
     height: 26px;
     min-height: 26px;
     margin: 0 0 4px 0;
     padding: 0 2px 0 12px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
 }
+.decision-window .window-header > .title { letter-spacing: 0.8px; }
 /* The dock takes its content's height, so the window grows upwards from its bottom anchor. */
 .decision-window > .decision-dock { flex-grow: 0; flex-shrink: 1; flex-basis: auto; min-width: 0; min-height: 0; }
 .decision-window .decision-dock > .tray { padding: 0; flex-grow: 0; flex-shrink: 0; flex-basis: auto; }
@@ -351,7 +443,7 @@
 }
 
 /* UI-161: the Elven Ring gesture. The dice the armed ring can change glow and the others dim; the chosen die gets
-   a popover of results (console/picker, slices in texture pixels = 2x assets.json) with a tail pointing at it. */
+   a popover of results (the board's card since UI-476, GameChrome.uss) with a tail pointing at it. */
 #board-screen .dice-panel .die.ring-candidate { border-width: 2px; border-color: rgb(231, 193, 107); border-radius: 18px; }
 #board-screen .dice-panel .die.ring-muted { opacity: 0.4; }
 /* UI-238: choosing the die to change is its own moment. The panel's band reads CHOOSE A DIE in gold, the dice the
@@ -364,12 +456,6 @@
     position: absolute;
     flex-direction: row;
     padding: 7px 8px;
-    background-image: resource("Wotr/Art/UI/console/picker");
-    -unity-slice-top: 20;
-    -unity-slice-right: 20;
-    -unity-slice-bottom: 20;
-    -unity-slice-left: 20;
-    -unity-slice-scale: 0.5px;
 }
 .ring-face-row { flex-direction: row; }
 .ring-face {
@@ -390,6 +476,16 @@
 .ring-face.die-free.pressed { background-image: resource("Wotr/Art/UI/dice/medallion-free-selected"); }
 .ring-face.die-shadow.pressed { background-image: resource("Wotr/Art/UI/dice/medallion-shadow-selected"); }
 .ring-face:disabled { opacity: 0.35; }
+/* UI-272: a Lore result that keeps a special die's Remove symbol carries its star. */
+.ring-face > .die-remove-star {
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    width: 13px;
+    height: 13px;
+    background-image: resource("Wotr/Art/UI/dice/remove-star");
+    -unity-background-scale-mode: scale-to-fit;
+}
 .ring-face-tail {
     position: absolute;
     bottom: -9px;
@@ -397,6 +493,22 @@
     height: 9px;
     background-image: resource("Wotr/Art/UI/console/picker-tail");
 }
+/* UI-377 (owner): the Council token's travel is a small popover above the token pool, on the Ring picker's frame and
+   tail: the icons of the Nazgûl it may move (lit with the ChoiceGlow while a click can add them, chosen with their
+   selection, planned dimmed) and the ✓ that ends the choice. */
+.council-travel-picker { align-items: center; }
+.council-travel-figures { flex-direction: row; }
+#board-screen .council-travel-figure {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    margin: 0 2px;
+    padding: 0;
+    border-radius: 8px;
+}
+#board-screen .council-travel-figure > .figure-art-image { left: 3px; right: 3px; top: 2px; bottom: 4px; }
+.council-travel-confirm { margin-left: 8px; }
 /* A ring that changes hands pulses once in its socket; Reduced motion keeps it still. */
 .console-ring-socket { transition-property: scale; transition-duration: 0.18s; }
 .console-ring-socket.ring-transferred { scale: 1.2 1.2; }
@@ -434,8 +546,9 @@
 }
 .motion-enabled .console-status-plaque.must-act.choice-glow-pulse > .console-status-glow { opacity: 0.3; }
 
-/* UI-167: the ribbon that crosses the top of the map when the action passes to the player (console/ribbon-*),
-   under the notice strip and centred; it slides in for 200 ms, holds and fades out for 300 ms. */
+/* UI-167: the band that crosses the top of the map when the action passes to the player (since UI-476 the side row, thin
+   and nearly opaque, its slices in GameChrome.uss), under the notice strip and centred; it slides in for 200 ms, holds and
+   fades out for 300 ms. */
 #board-screen .turn-ribbon {
     position: absolute;
     left: 0;
@@ -450,19 +563,14 @@
     height: 52px;
     align-items: center;
     justify-content: center;
-    background-image: resource("Wotr/Art/UI/console/ribbon-free");
-    -unity-slice-top: 24;
-    -unity-slice-right: 56;
-    -unity-slice-bottom: 24;
-    -unity-slice-left: 56;
-    -unity-slice-scale: 0.5px;
+    background-image: var(--game-row-free);
     opacity: 0;
     translate: 0 -14px;
     transition-property: opacity, translate;
     transition-duration: 0.2s, 0.2s;
     transition-timing-function: ease-out, ease-out;
 }
-#board-screen .turn-ribbon-band.side-shadow { background-image: resource("Wotr/Art/UI/console/ribbon-shadow"); }
+#board-screen .turn-ribbon-band.side-shadow { background-image: var(--game-row-shadow); }
 #board-screen .turn-ribbon-band.shown { opacity: 1; translate: 0 0; }
 #board-screen .turn-ribbon-band.leaving { opacity: 0; translate: 0 0; transition-duration: 0.3s, 0.3s; }
 #board-screen .turn-ribbon-text {
@@ -470,7 +578,7 @@
     padding: 0;
     font-size: 20px;
     letter-spacing: 3px;
-    color: rgb(246, 236, 206);
+    color: var(--game-title-text);
     -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
     -unity-text-align: middle-center;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);

@@ -59,10 +59,13 @@ namespace Wotr.PlayTests
                         room.Fp.Board.Tray.parent?.name + " · " + string.Join("|", room.Fp.Board.Tray.Query<Label>().ToList().Select(l => l.name + "=" + l.text)));
                     StringAssert.Contains("Fords of Bruinen", summary.text);
                     camera = await Route(room.Fp, token, "hollin");
-                    PointerGestureEvents.ClickAt(room.Fp.Board.Tray.Q<Button>("route-undo"));
+                    // UI-448: the console's ↶ undoes a step and its Cancel option clears the route.
+                    PointerGestureEvents.ClickAt(room.Fp.Board.Console.Actions.Back);
                     StringAssert.Contains("Fords of Bruinen", room.Fp.Board.Tray.Q<Label>("travel-summary").text);
                     LayoutTests.Save(room.Fp.Viewport, "ui52-route-before-cancel.png");
-                    PointerGestureEvents.ClickAt(room.Fp.Board.Tray.Q<Button>("route-cancel"));
+                    // UI-455 (owner): the console's fixed Cancel ends the declaration.
+                    Assert.IsTrue(room.Fp.Board.Console.Actions.Cancel.enabledSelf);
+                    PointerGestureEvents.ClickAt(room.Fp.Board.Console.Actions.Cancel);
                     Assert.AreEqual(0, room.Fp.Board.View.Revision);
                     Assert.AreEqual(camera, room.Fp.Board.Map.Camera.Pan);
                     await FellowshipGestures.Declare(room.Fp);
@@ -188,9 +191,11 @@ namespace Wotr.PlayTests
             Assert.AreSame(room.Fp.Board.Fellowship.Root, room.Fp.Board.Tray.parent);
             await Route(room.Fp, token, "dimrill-dale");
             LayoutTests.Save(room.Fp.Viewport, "ui52-route-before-cancel.png");
-            PointerGestureEvents.ClickAt(room.Fp.Board.Tray.Q<Button>("route-cancel"));
+            // UI-455: the fixed Cancel clears the revealed route; the reveal starts again, so it greys.
+            PointerGestureEvents.ClickAt(room.Fp.Board.Console.Actions.Cancel);
             Assert.AreEqual(DecisionKind.FellowshipRoute, room.Fp.Board.View.Decision.Kind);
-            StringAssert.Contains("Become revealed", room.Fp.Board.Tray.Q<Label>("fellowship-route-effect").text);
+            Assert.IsFalse(room.Fp.Board.Console.Actions.Cancel.enabledSelf, "Nothing drawn, nothing to cancel.");
+            Assert.IsNull(room.Fp.Board.Tray.Q<Label>("fellowship-route-effect"), "UI-448: no effect line.");
             await Route(room.Fp, token, "dimrill-dale", "north-anduin-vale");
             await Task.Delay(80, token);
             var endpoint = MapContourProbe.ReachRegion(room.Fp.Board.Map, "dol-guldur");

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="40" viewBox="0 0 96 40">
+  <!-- UI-470 (owner, 2026-11-03): a list row (games, saved games, replays, test scenarios), a side card and a waiting
+       room seat. 9-slice, 8 points on every side: a quiet dark field edged with a dimmer line than a button; hover
+       brightens the line, selected (the chosen side, your seat) lights it gold over a warm field. -->
+  <rect x="0.5" y="0.5" width="95" height="39" rx="2"
+    style="fill: var(--fe-row-fill); fill-opacity: var(--fe-row-opacity); stroke: var(--fe-row-line)" stroke-width="1"/>
+</svg>

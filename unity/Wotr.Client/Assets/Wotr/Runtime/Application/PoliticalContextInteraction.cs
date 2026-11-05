@@ -10,6 +10,9 @@ namespace Wotr.Client
         private readonly Func<bool> busy;
         private PlayerView view;
         private TurnDraft draft;
+        // UI-376: the political Council token's use is pending, and whether its start opened the Politics panel.
+        private bool councilPending;
+        private bool councilOpened;
         public bool Active { get; private set; }
 
         public PoliticalContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
@@ -28,7 +31,30 @@ namespace Wotr.Client
             var option = PoliticalActions.AdvanceOption(view, draft, board.ActionDie);
             Active = option != null || PoliticalActions.UsesPanel(draft);
             var selected = draft.Kind is CommandKind.AdvancePolitics or CommandKind.UseCouncilToken ? draft.Payload.NationId : "";
+            // UI-366: a character's political ability lights its nation; it does not take over the console's hint.
+            board.Nations.Abilities = draft.Kind == null ? CharacterPolitics.For(view, board.ActionDie)
+                : new System.Collections.Generic.Dictionary<string, CharacterPolitics.Offer>();
             board.Nations.RefreshActions(option, selected, !busy(), draft);
+            FollowCouncil();
+        }
+
+        // UI-376 (owner): the political Council token's use opens the Politics panel; another choice closes the panel it
+        // opened; a panel the player closed stays closed (its tab keeps glowing), and one already open stays as it was.
+        private void FollowCouncil()
+        {
+            var pending = view?.DecisionOwner == view?.You && ExpansionDraft.CouncilPoliticsPending(draft);
+            if (pending && !councilPending)
+            {
+                councilOpened = !board.Nations.IsOpen;
+                board.Nations.Open();
+            }
+            else if (!pending && councilPending && councilOpened)
+            {
+                councilOpened = false;
+                if (board.Nations.IsOpen)
+                    board.Nations.Close();
+            }
+            councilPending = pending;
         }
 
         private void OnAdvanced(string nation) => Commit(nation, false);
@@ -43,12 +69,23 @@ namespace Wotr.Client
             if (view == null || busy())
                 return false;
             var next = draft.Fork();
-            var valid = activation ? PoliticalActions.Activate(next, view, nation)
-                : PoliticalActions.Advance(next, view, board.ActionDie, nation);
+            var valid = activation ? PoliticalActions.Activate(next, view, nation) : Step(next, nation);
             if (!valid)
                 return false;
+            // UI-376: the step's own presentation keeps the panel the Council token opened.
+            councilOpened = false;
             edit(() => draft.Adopt(next), true);
+            board.Nations.PresentOwnStep();
             return true;
+        }
+
+        // The die's own step first; a character's ability when the die cannot step this nation or the ability does more.
+        private bool Step(TurnDraft next, string nation)
+        {
+            var die = board.ActionDie;
+            if (CharacterPolitics.Preferred(view, die, nation))
+                return CharacterPolitics.Use(next, view, die, nation) || PoliticalActions.Advance(next, view, die, nation);
+            return PoliticalActions.Advance(next, view, die, nation) || draft.Kind == null && CharacterPolitics.Use(next, view, die, nation);
         }
 
         public bool Drop(DraftToken source, DraftToken target) =>

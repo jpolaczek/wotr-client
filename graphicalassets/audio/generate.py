@@ -2,7 +2,8 @@
 """Generates the game's sound effects (AUDIO-01) into the Unity Resources and writes their provenance.
 
 Every clip is synthesised here from numbers and fixed seeds: felt and cloth thumps, paper rustle, dice on a mat,
-boots, a heavy ring, war drums under an army's roar (AUDIO-11), a soft chime and plucked strings, in a small room. AUDIO-10 made
+boots, a heavy ring, war drums under an army's roar (AUDIO-11), a soft chime, plucked strings and a deep struck bell for
+the Politics track (AUDIO-12), in a small room. AUDIO-10 made
 the effects toneless and lower (no "bamboo" modes, no crackle above ~4 kHz). No recording, download or service is used, so
 running it again gives the same files. Usage: python generate.py [--preview <html>]
 """
@@ -21,7 +22,7 @@ from synth import (RATE, band, decay, envelope, finish, grains, loudness, lowpas
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Audio"
 MANIFEST = pathlib.Path(__file__).resolve().parent / "manifest.json"
-VERSION = 5
+VERSION = 6
 
 
 def thump(rng, duration, cutoff, tau, attack=0.002):
@@ -236,6 +237,40 @@ def defeat(rng, variant):
     return finish(room(x, rng, tail=0.25, wet=0.1, brightness=2500), -18, fade_out=0.25)
 
 
+def politics_moved(rng, variant):
+    """A nation's token slides along the Politics track (AUDIO-12, owner 2026-10-27): one deep, struck metal note
+    between a bell and an anvil that rings through the 0.7 s slide and fades with the token's glow (about 8 dB down
+    when the slide ends, 13 dB a little later). The bell partials (hum, prime, minor tierce, quint, nominal) ring
+    longest, each with a slightly detuned twin for a slow, warm beat; the anvil's inharmonic upper modes, up to about
+    1.6 kHz, carry the metal and die sooner; a felt-wrapped hammer gives a soft attack, and nothing passes about
+    2.6 kHz, so it stays deep and calm rather than shrill (its spectrum sits near CorruptionChanged's)."""
+    duration = 1.6
+    root = [123.5, 116.5][variant]
+    partials = [
+        (0.5, 0.12, 1.3),
+        (1.0, 0.45, 1.15),
+        (1.19, 0.45, 1.05),
+        (1.5, 0.4, 0.95),
+        (2.0, 0.85, 0.9),
+        (2.52, 0.6, 0.75),
+        (3.0, 0.5, 0.65),
+        (4.2, 0.6, 0.55),
+        (5.4, 0.55, 0.42),
+        (6.9, 0.5, 0.32),
+        (8.6, 0.4, 0.24),
+        (10.8, 0.28, 0.16),
+        (13.1, 0.16, 0.1),
+    ]
+    modes = []
+    for ratio, level, tau in partials:
+        modes.append((root * ratio, level, tau))
+        modes.append((root * ratio * 1.0035, level * 0.35, tau * 0.9))
+    x = modal(rng, duration, modes, attack=0.004)
+    place(x, thump(rng, 0.12, 900, 0.02) * 0.45, 0.0)
+    x = lowpass(x, 2600, order=4)
+    return finish(room(x, rng, tail=0.4, wet=0.12, brightness=2200), -22, fade_out=0.35)
+
+
 # Cue → channel, file stem, variants, longest allowed duration and the generator (AUDIO_UX catalogue).
 CATALOGUE = [
     ("UiClick", "Effects", "ui-click", 3, 0.12, ui_click),
@@ -250,6 +285,8 @@ CATALOGUE = [
     ("ActionFailed", "Alerts", "action-failed", 1, 0.3, action_failed),
     ("Victory", "Alerts", "victory", 1, 1.0, victory),
     ("Defeat", "Alerts", "defeat", 1, 1.0, defeat),
+    # Last, so the earlier cues keep their seeds (and files).
+    ("PoliticsMoved", "Effects", "politics-moved", 2, 1.7, politics_moved),
 ]
 
 

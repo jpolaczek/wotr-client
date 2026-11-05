@@ -51,6 +51,46 @@ namespace Wotr.EditorTests
             Assert.IsNull(host.Q<Button>("palantir-no-ring"));
         }
 
+        // UI-272: the Lords' Lore of the Elven Rings is removed like Palantír of Orthanc: dice in the pool, the Ring on
+        // its socket, a Will die alone; the hint asks for the Ring while a non-Will die waits for one.
+        [Test]
+        public void LoreRemovalListsNoDiceOrRingsAndAsksForTheRingOnItsSocket()
+        {
+            var view = View(CommandKind.DiscardLore);
+            view.Options[0].EligibleDice.AddRange(new[] { "will", "character" });
+            view.Options[0].DiceWithoutRing.Add("will");
+            view.Options[0].EligibleIds.Add("lords.ring.vilya");
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.DiscardLore, "character");
+            CollectionAssert.AreEquivalent(new[] { "will", "character" }, CostDice.Offered(view, draft));
+            StringAssert.StartsWith("Click a lit Elven Ring", CostDice.RingHint(view, draft));
+            Assert.IsTrue(CostDice.DropsRing(view, draft, "will"), "A Will die pays alone.");
+            draft.Change(p => p.RingId = "lords.ring.vilya");
+            Assert.AreEqual("", CostDice.RingHint(view, draft));
+
+            var host = new VisualElement();
+            var tray = new DecisionTray(host);
+            tray.Render(view, draft, false, false);
+            Assert.IsNull(host.Q<Button>("cost-will"), "The pool holds the dice.");
+            Assert.IsNull(host.Q<Button>("ring-cost-lords.ring.vilya"), "The Ring is chosen on its socket.");
+            Assert.IsNull(host.Q<Button>("lore-no-ring"));
+        }
+
+        // UI-272: The Gates are Closed takes one of its eligible dice in the pool.
+        [Test]
+        public void GatesRemovalTakesItsDieInThePool()
+        {
+            var view = View(CommandKind.DiscardGates);
+            view.Options[0].EligibleDice.AddRange(new[] { "will", "character" });
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.DiscardGates, "will");
+            Assert.IsTrue(CostDice.Glows(view, draft, "character"));
+            Assert.AreEqual("", CostDice.RingHint(view, draft), "No Ring pays for the Gates.");
+            var host = new VisualElement();
+            new DecisionTray(host).Render(view, draft, false, false);
+            Assert.IsNull(host.Q<Button>("cost-character"));
+        }
+
         private static PlayerView View(CommandKind kind) => new PlayerView
         {
             You = Side.FreePeoples,

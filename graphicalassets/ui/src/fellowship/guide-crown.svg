@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="18" viewBox="0 0 20 18">
+  <!-- UI-269: the starting Guide's crown on a candidate's portrait: a dim crown to click, lit gold with a glow on the
+       chosen Guide (variant on). -->
+  <defs>
+    <linearGradient id="crown-gold" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" style="stop-color: var(--crown-light)"/>
+      <stop offset="1" style="stop-color: var(--crown-dark)"/>
+    </linearGradient>
+  </defs>
+  <path d="M3 13.6 L2.2 5.4 L6.4 8.9 L10 3.2 L13.6 8.9 L17.8 5.4 L17 13.6 Z" fill="none"
+        style="stroke: var(--gilt-highlight); opacity: var(--glow-opacity)" stroke-width="2.2" stroke-linejoin="round" filter="url(#glow)"/>
+  <g filter="url(#lift)">
+    <path d="M3 13.6 L2.2 5.4 L6.4 8.9 L10 3.2 L13.6 8.9 L17.8 5.4 L17 13.6 Z" fill="url(#crown-gold)"
+          style="stroke: var(--gilt-edge)" stroke-width="0.55" stroke-linejoin="round"/>
+    <rect x="2.9" y="13.4" width="14.2" height="2.4" rx="0.6" fill="url(#crown-gold)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <circle cx="2.2" cy="5.2" r="1.05" fill="url(#crown-gold)" style="stroke: var(--gilt-edge)" stroke-width="0.35"/>
+    <circle cx="10" cy="3.0" r="1.15" fill="url(#crown-gold)" style="stroke: var(--gilt-edge)" stroke-width="0.35"/>
+    <circle cx="17.8" cy="5.2" r="1.05" fill="url(#crown-gold)" style="stroke: var(--gilt-edge)" stroke-width="0.35"/>
+    <circle cx="10" cy="11.2" r="1.25" style="fill: var(--crown-stone)" stroke="#1a0c06" stroke-width="0.3"/>
+  </g>
+</svg>

@@ -9,20 +9,15 @@ namespace Wotr.Client
         public static bool IsStep(TurnDraft draft) => draft.Payload.Stepwise &&
             draft.Kind is CommandKind.MoveCompanions or CommandKind.MoveShadowCharacters;
 
+        // UI-379: a Council token's travel has its own groups and destinations (CouncilTravel), not this path.
         public static ActionOption Option(PlayerView view, TurnDraft draft, ActionDieContext context)
         {
-            if (view?.Decision?.Kind == DecisionKind.Action && view.DecisionOwner == view.You &&
-                draft.Kind == CommandKind.UseCouncilToken && draft.Payload.AbilityId == ExpansionDraft.CouncilTravel)
-            {
-                var council = DraftOptions.For(view, draft);
-                return council?.Enabled == true && council.Travel.Count > 0 ? council : null;
-            }
             if (view?.Decision?.Kind == DecisionKind.CompanionSeparation && view.DecisionOwner == view.You)
                 return view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.MoveCompanions);
             if (view?.Decision == null || view.DecisionOwner != view.You ||
                 view.Decision.Kind is not (DecisionKind.Action or DecisionKind.ActionSequence) ||
                 !ActionDieContext.DirectIntent(draft) ||
-                draft.Payload.AbilityId != context.AbilityId)
+                !context.Matches(draft.Payload.AbilityId))
                 return null;
             var kind = view.You == Side.FreePeoples ? CommandKind.MoveCompanions : CommandKind.MoveShadowCharacters;
             if (view.ActionSequence != null && view.ActionSequence.Kind != kind)
@@ -30,6 +25,9 @@ namespace Wotr.Client
             var option = DraftOptions.For(view, draft, kind);
             if (option == null || !context.Allows(option))
                 return null;
+            // UI-465 (owner, 2026-11-03): with the die that pays Far-sighted, Thranduil alone outside moves with it.
+            if (FarSightedFigure.Moves(view, draft, context))
+                return FarSightedFigure.Option(option);
             var required = option.MovementCosts.FirstOrDefault(c => c.DieId == context.DieId && c.AbilityId == context.AbilityId)?.RequiredCharacterId;
             return string.IsNullOrEmpty(required) ? option : new ActionOption
             {
@@ -47,7 +45,7 @@ namespace Wotr.Client
             var option = Option(view, draft, context);
             if (option?.EligibleIds.Contains(id) != true)
                 return false;
-            if (view.Decision.Kind != DecisionKind.CompanionSeparation && draft.Kind != CommandKind.UseCouncilToken || draft.Kind != option.Kind)
+            if (view.Decision.Kind != DecisionKind.CompanionSeparation || draft.Kind != option.Kind)
                 return true;
             return !draft.Payload.CompanionMoves.Where((_, index) => index != draft.CompanionFocus).Any(g => g.Ids.Contains(id)) &&
                 (TravelDraft.Group(draft) != null || option.MaximumGroups == 0 || draft.Payload.CompanionMoves.Count < option.MaximumGroups);
@@ -59,27 +57,28 @@ namespace Wotr.Client
                 return false;
             var option = Option(view, draft, context);
             var journey = view.Decision.Kind == DecisionKind.CompanionSeparation;
-            var council = draft.Kind == CommandKind.UseCouncilToken;
             // UI-250: in a journey a figure that cannot join the current group starts the next one (TravelDraft); an
             // ordinary move picked on the map starts over from the new source.
             var joins = journey ? TravelDraft.Selectable(draft, view, option, id) : TravelDraft.CanToggle(draft, view, option, id);
             if (draft.Kind != option.Kind || !joins)
             {
                 var token = draft.Payload.RulerTokenId;
-                if ((journey || council) && draft.Kind == option.Kind)
+                var ability = FarSightedFigure.Ability(view, draft, context);
+                if (journey && draft.Kind == option.Kind)
                 {
                     TravelDraft.RemoveGroup(draft);
                     TravelDraft.NewGroup(draft);
                 }
                 else
                     draft.Choose(option.Kind, journey ? "" : context.DieId);
-                if (!council)
-                    draft.Change(p =>
-                    {
-                        p.Stepwise = !journey;
-                        p.AbilityId = journey ? "" : context.AbilityId;
-                        p.RulerTokenId = journey ? "" : token;
-                    });
+                // UI-389: a Ruler token's travel (Thranduil's) carries the token's ability; UI-465: so does his figure's move
+                // with the die that pays Far-sighted.
+                draft.Change(p =>
+                {
+                    p.Stepwise = !journey;
+                    p.AbilityId = journey ? "" : token.Length > 0 ? ExpansionDraft.TokenAbility(view, token, option.Kind) : ability;
+                    p.RulerTokenId = journey ? "" : token;
+                });
             }
             TravelDraft.ToggleCompanion(draft, view, option, id);
             return true;

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Wotr.Contracts;
 
 namespace Wotr.Client
@@ -11,13 +9,13 @@ namespace Wotr.Client
 
         public static string Title(DecisionKind kind) => kind switch
         {
-            DecisionKind.CouncilVersions => "Choose your companions · Private",
+            DecisionKind.CouncilVersions => "Prepare the Fellowship",
             DecisionKind.CouncilHomelands => "Starting positions · Private until confirmed",
             DecisionKind.CouncilToken => "Choose a Council token",
-            DecisionKind.SpecialDieChoice => "Choose the special die to keep",
+            DecisionKind.SpecialDieChoice => "Special dice",
             DecisionKind.RulerDiscard => "Choose a die to discard",
             DecisionKind.Dismay => "Dismay · Re-roll a Ruler die?",
-            DecisionKind.KeepActionDie => "Vilya · Keep a die?",
+            DecisionKind.KeepActionDie => "Keep the die?",
             _ => ""
         };
 
@@ -38,12 +36,8 @@ namespace Wotr.Client
             CommandKind.AwakenSovereign => "Awaken sovereign",
             CommandKind.RemoveCorruptedSovereign => "Remove corrupted sovereign",
             CommandKind.AttemptCorruption => "Attempt corruption",
-            CommandKind.UseEvilKnowledge => "Evil Knowledge · Extend siege",
+            CommandKind.UseEvilKnowledge => "Evil Knowledge",
             _ => ""
         };
-
-        public static IEnumerable<ActionOption> Alternatives(PlayerView view, TurnDraft draft) =>
-            view.Decision.Kind is DecisionKind.Dismay or DecisionKind.KeepActionDie or DecisionKind.CorruptionTile
-                ? view.Options.Where(o => o.Kind != draft.Kind) : Enumerable.Empty<ActionOption>();
     }
 }

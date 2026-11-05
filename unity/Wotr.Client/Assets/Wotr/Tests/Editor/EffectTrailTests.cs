@@ -50,6 +50,18 @@ namespace Wotr.EditorTests
             Assert.That(buttons.Last().text, Does.Contain("Moria"));
         }
 
+        // UI-417 (owner): an option of the card's effect joins its card's button; two buttons opened the same card.
+        [Test]
+        public void AnEffectOptionJoinsItsCardsButton()
+        {
+            var view = new PlayerView();
+            view.EffectTrail.Add(new EffectTrailView { SourceId = "lords.sh.character.17" });
+            view.EffectTrail.Add(new EffectTrailView { SourceId = "lords.sh.character.17", ChoiceId = BalrogCardOrder.Alone });
+            var buttons = Console(view).Query<Button>().ToList();
+            Assert.AreEqual(1, buttons.Count);
+            Assert.AreEqual("✓ A Balrog is Come! · Balrog alone", buttons[0].text);
+        }
+
         [TestCase(false)]
         [TestCase(true)]
         public void SovereignChoiceKeepsItsNameWithOrWithoutLeaderFigure(bool hasLeader)

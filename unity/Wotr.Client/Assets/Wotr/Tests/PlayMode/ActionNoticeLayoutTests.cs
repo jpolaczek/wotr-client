@@ -130,14 +130,14 @@ namespace Wotr.PlayTests
             Assert.IsFalse(board.Log.IsOpen, "A second click closes it · " + label);
         }
 
-        // The action card on parchment with the lacquer header of the board's panels, sized to its content
+        // The action card on parchment with the quiet header of the board's windows, sized to its content
         // and centred on the board whatever the notice (UI-100).
         private static void CheckCard(BoardScreen board, string label)
         {
             var card = board.Log.Popup;
             Assert.IsTrue(Visible(card), label);
             Assert.AreEqual("parchment", Texture(card), "The card is parchment · " + label);
-            Assert.AreEqual("panel-header", Texture(card.Q(className: "window-header")), label);
+            Assert.AreEqual("title-rule", Texture(card.Q(className: "window-header")), "A hairline, not a band · " + label);
             Inside(card.worldBound, board.Root.worldBound, label);
             Assert.LessOrEqual(card.resolvedStyle.height, 460.5f, label);
             // UI-166: the notice's card is the compact result: no step list, nothing scrolls, Full record on it.

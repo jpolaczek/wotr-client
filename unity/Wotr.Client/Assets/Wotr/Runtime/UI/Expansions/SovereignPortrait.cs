@@ -1,0 +1,219 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.UIElements;
+using Wotr.Contracts;
+
+namespace Wotr.Client
+{
+    // UI-274: one sovereign's fixed slot in the Characters panel: the painted portrait with its status badge and name, the
+    // corruption meter (a pip per point of resistance), the Shadow's attempt button beside an Initial king, and the tiles
+    // drawn for an attempt on him or shown by an inspection.
+    public sealed class SovereignPortrait
+    {
+        public const string SlotClass = "sovereign-slot";
+        public const string LitClass = "legal-target";
+        public VisualElement Root { get; } = new VisualElement();
+        public Button Portrait { get; }
+        public Button Attempt { get; }
+        private readonly string id;
+        private Image image = Image();
+        private readonly VisualElement badge = new VisualElement { name = "sovereign-status", pickingMode = PickingMode.Ignore };
+        // UI-276 (D19): the king holds his Ruler token; the token itself stands in the dice pool.
+        private readonly VisualElement token = new VisualElement { name = "sovereign-token", pickingMode = PickingMode.Ignore };
+        private readonly Label title = new Label { name = "sovereign-name", pickingMode = PickingMode.Ignore, enableRichText = false };
+        private readonly VisualElement meter = new VisualElement { name = "sovereign-meter" };
+        private readonly VisualElement tiles = new VisualElement { name = "sovereign-tiles" };
+        private readonly Action<string, string> tileChosen;
+        private string status = "";
+        private string tileKey = "";
+        private string art = "";
+        private string meterKey = "";
+        // What a click on the portrait does now (null when it only informs), its description, and (UI-441) why his skill
+        // lights him; "" when none can be used.
+        private string hint;
+        private string description = "";
+        private string skill = "";
+
+        public SovereignPortrait(string id, Action portrait, Action attempt, Action<string, string> tileChosen)
+        {
+            this.id = id;
+            this.tileChosen = tileChosen;
+            Root.name = "sovereign-slot-" + id;
+            Root.AddToClassList(SlotClass);
+            Portrait = BoardScreen.Button("", portrait);
+            Portrait.name = "sovereign-" + id;
+            Portrait.AddToClassList("sovereign-portrait");
+            Portrait.AddToClassList(RuntimeTooltip.RichHoverClass);
+            Portrait.userData = new DraftToken(DraftObject.Sovereign, id);
+            badge.AddToClassList("sovereign-status");
+            token.AddToClassList("sovereign-token");
+            Portrait.Add(image);
+            Portrait.Add(badge);
+            Portrait.Add(token);
+            Attempt = new Button(attempt) { name = "sovereign-attempt-" + id };
+            Attempt.AddToClassList("sovereign-attempt");
+            title.AddToClassList("sovereign-name");
+            meter.AddToClassList("sovereign-meter");
+            tiles.AddToClassList("sovereign-tiles");
+            Root.Add(Portrait);
+            Root.Add(Attempt);
+            Root.Add(title);
+            Root.Add(meter);
+            Root.Add(tiles);
+        }
+
+        // The hint says what a click on the portrait does now; without one the click only informs.
+        public void Apply(PlayerView view, SovereignView king, TurnDraft draft, BoardPresentation data, string hint)
+        {
+            if (Art(king) != art)
+            {
+                var changed = art.Length > 0;
+                art = Art(king);
+                ShowArt(changed);
+            }
+            Status(king.Status);
+            title.text = king.Title.Split(' ')[0];
+            var region = data.Regions.TryGetValue(king.RegionId, out var definition) ? definition.Name : "Out of play";
+            description = SovereignPresentation.Describe(king, region);
+            var holds = view.RulerTokens.Any(t => t.SovereignId == king.Id && t.Location == "free-peoples");
+            token.style.display = holds ? DisplayStyle.Flex : DisplayStyle.None;
+            if (holds)
+                description += "\nHolds his Ruler token: it stands in the Free Peoples' dice pool";
+            this.hint = hint;
+            ShowLight();
+            Meter(king);
+            AttemptButton(view, draft, king);
+            Tiles(SovereignAttempt.Tiles(view, king));
+        }
+
+        // UI-441 (owner): a king whose skill can be used now glows on his portrait, as a king a decision lights does, and the
+        // tooltip says why; line: "" when none can be used.
+        public void ShowSkill(string line)
+        {
+            if (line == skill)
+                return;
+            skill = line;
+            ShowLight();
+        }
+
+        private void ShowLight()
+        {
+            var lead = hint ?? (skill.Length > 0 ? skill : null);
+            Portrait.tooltip = lead != null ? lead + "\n" + description : description;
+            Portrait.EnableInClassList(LitClass, lead != null);
+            ChoiceGlow.Apply(Portrait, lead != null);
+        }
+
+        // UI-345: a king whose portrait changes (awakened, corrupted) crossfades to it (UI-322); the first shows at once.
+        private void ShowArt(bool changed)
+        {
+            if (!changed || !Appearance.Moving(Portrait))
+            {
+                image.sprite = PortraitArtwork.Sprite(art);
+                return;
+            }
+            var next = Image();
+            next.sprite = PortraitArtwork.Sprite(art);
+            Portrait.Insert(Portrait.IndexOf(image) + 1, next);
+            Appearance.Crossfade(image, next);
+            image = next;
+        }
+
+        private static Image Image()
+        {
+            var image = new Image { name = "sovereign-portrait-image", pickingMode = PickingMode.Ignore, scaleMode = UnityEngine.ScaleMode.ScaleToFit };
+            image.AddToClassList("sovereign-portrait-image");
+            return image;
+        }
+
+        // An Initial king shows his awakened portrait, dimmed; a Corrupted one his corrupted portrait (UI-447: his window
+        // shows the same).
+        public static string ArtOf(SovereignView king) => king.DefinitionId.Length > 0 ? king.DefinitionId
+            : "kings.character." + king.Id.Substring(king.Id.LastIndexOf('.') + 1) + ".awakened";
+
+        private static string Art(SovereignView king) => ArtOf(king);
+
+        private void Status(SovereignStatus value)
+        {
+            var key = value.ToString().ToLowerInvariant();
+            if (key == status)
+                return;
+            // UI-345: a changed status pulses on its badge.
+            if (status.Length > 0)
+                ValuePulse.Pulse(badge);
+            badge.RemoveFromClassList("sovereign-status-" + status);
+            Portrait.RemoveFromClassList("sovereign-" + status);
+            status = key;
+            badge.AddToClassList("sovereign-status-" + status);
+            Portrait.AddToClassList("sovereign-" + status);
+        }
+
+        // A pip per point of resistance: filled for the known corruption, hatched for tiles whose values are hidden.
+        private void Meter(SovereignView king)
+        {
+            while (meter.childCount < king.Resistance)
+            {
+                var pip = new VisualElement { pickingMode = PickingMode.Ignore };
+                pip.AddToClassList("sovereign-pip");
+                meter.Add(pip);
+            }
+            while (meter.childCount > king.Resistance)
+                meter.RemoveAt(meter.childCount - 1);
+            var known = king.Corruption ?? 0;
+            var hidden = king.Corruption.HasValue ? 0 : king.Tiles.Count(t => !t.Value.HasValue && !t.Kings);
+            for (var index = 0; index < meter.childCount; index++)
+            {
+                meter[index].EnableInClassList("filled", index < known);
+                meter[index].EnableInClassList("hidden", !king.Corruption.HasValue && index < hidden);
+            }
+            // UI-420 (owner): "Corruption 2/4 · 1 hidden tile"; the count already shows the resistance.
+            meter.tooltip = TooltipText.Parts(SovereignPresentation.Corruption(king), hidden > 0 ? TooltipText.Count(hidden, "hidden tile") : "");
+            meter.style.display = king.Status == SovereignStatus.Initial ? DisplayStyle.Flex : DisplayStyle.None;
+            // UI-345: a changed corruption (a tile attached, one returned) pulses on the meter.
+            var key = king.Resistance + ":" + known + ":" + hidden;
+            if (meterKey.Length > 0 && key != meterKey)
+                ValuePulse.Pulse(meter);
+            meterKey = key;
+        }
+
+        // Beside an Initial king for the Shadow; it keeps its place, disabled with its reason, when unusable.
+        private void AttemptButton(PlayerView view, TurnDraft draft, SovereignView king)
+        {
+            var shown = SovereignAttempt.Shown(view, king);
+            Attempt.style.visibility = shown ? Visibility.Visible : Visibility.Hidden;
+            var enabled = shown && SovereignAttempt.Enabled(view, draft, king.Id);
+            Attempt.SetEnabled(enabled);
+            Attempt.EnableInClassList(LitClass, enabled);
+            ChoiceGlow.Apply(Attempt, enabled);
+            Attempt.tooltip = shown ? SovereignAttempt.Tooltip(view, draft, king) : "";
+        }
+
+        private void Tiles(IReadOnlyList<SovereignTile> shown)
+        {
+            var key = string.Join("|", shown.Select(t => t.Id + ":" + t.Value + ":" + t.Back + ":" + t.Selectable));
+            if (key != tileKey)
+            {
+                tileKey = key;
+                tiles.Clear();
+                foreach (var tile in shown)
+                    tiles.Add(TileButton(tile));
+            }
+            tiles.style.visibility = shown.Count > 0 ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        private Button TileButton(SovereignTile tile)
+        {
+            var tileId = tile.Id;
+            var button = new Button(() => tileChosen(id, tileId)) { name = "corruption-choice-" + tileId, tooltip = tile.Tooltip };
+            button.AddToClassList("sovereign-tile");
+            button.AddToClassList(tile.Back ? "sovereign-tile-back" : tile.Kings ? "sovereign-tile-kings" : "sovereign-tile-face");
+            if (!tile.Back)
+                button.Add(new Label(tile.Kings ? "K" : tile.Value?.ToString() ?? "?") { pickingMode = PickingMode.Ignore });
+            ReadOnlyControl.Apply(button, tile.Selectable);
+            button.EnableInClassList(LitClass, tile.Selectable);
+            ChoiceGlow.Apply(button, tile.Selectable);
+            return button;
+        }
+    }
+}

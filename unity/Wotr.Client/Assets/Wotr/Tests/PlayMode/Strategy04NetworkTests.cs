@@ -74,7 +74,7 @@ namespace Wotr.PlayTests
                 var die = room.Fp.Board.View.Battle.Attacker.Dice.Single();
                 Assert.AreEqual(1, die.Modifier);
                 Assert.IsFalse(die.Hit);
-                Assert.That(room.Fp.Board.Tray.Q<Button>("battle-die-" + die.Id).tooltip, Does.Contain("Modifier 1"));
+                Assert.That(room.Fp.Board.Tray.Q<Button>("battle-die-" + die.Id).tooltip, Does.Contain("Modifier +1"));
                 Click(room.Fp, "battle-die-" + die.Id);
                 await room.Confirm(room.Fp);
                 await room.Confirm(room.Sh);

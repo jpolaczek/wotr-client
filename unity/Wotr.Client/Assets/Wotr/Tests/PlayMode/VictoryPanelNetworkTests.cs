@@ -125,6 +125,16 @@ namespace Wotr.PlayTests
                 Assert.IsFalse(board.Victory.Root.worldBound.Contains(board.Map.LocalToWorld(board.Map.contentRect.center)),
                     "Locate leaves the centered region uncovered.");
                 LayoutTests.Save(actor.Viewport, "ui60-fate-kings-" + board.View.You + ".png");
+                // UI-265: a Fate game draws Erebor held by the Shadow, its gem a Shadow Stronghold, Dale a neutral
+                // Fortification and the Iron Hills a Free Peoples City.
+                CollectionAssert.Contains(board.Presentation.Modules, "fate");
+                Assert.AreEqual(("Stronghold", "sauron"), (board.Presentation.Regions["erebor"].Settlement, board.Presentation.Regions["erebor"].Nation));
+                Assert.AreEqual("Fortification", board.Presentation.Regions["dale"].Settlement);
+                Assert.AreEqual("City", board.Presentation.Regions["iron-hills"].Settlement);
+                board.Victory.Close();
+                board.Map.Focus("erebor");
+                await room.Settle();
+                LayoutTests.Save(actor.Viewport, "ui265-fate-erebor-" + board.View.You + ".png");
             }
         }
 

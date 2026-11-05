@@ -43,10 +43,8 @@ namespace Wotr.Client
 
         public static bool Select(TurnDraft draft, ActionOption option, string id)
         {
-            var group = option?.Recruitment.FirstOrDefault(g => g.ReserveIds.Contains(id));
-            if (group == null || !Available(draft, group).Contains(id) || draft.Payload.Placements.Count >= option.Maximum)
-                return false;
-            if (!group.Targets.Any(region => CanPlace(draft, option, group, region)))
+            var group = Armable(draft, option, id);
+            if (group == null)
                 return false;
             // Region first: with no token armed, a token click fills the chosen region. An armed token is switched
             // or released instead (UI-213).
@@ -54,6 +52,26 @@ namespace Wotr.Client
                 return Drop(draft, option, id, draft.Payload.RegionId);
             draft.Change(_ => draft.ReserveId = draft.ReserveId == id ? "" : id);
             return true;
+        }
+
+        // UI-454 (owner, 2026-11-03): a token taken up to be carried is armed, never placed (not even in the chosen region)
+        // nor released, so the regions it may be dropped on light.
+        public static bool Arm(TurnDraft draft, ActionOption option, string id)
+        {
+            if (Armable(draft, option, id) == null)
+                return false;
+            if (draft.ReserveId != id)
+                draft.Change(_ => draft.ReserveId = id);
+            return true;
+        }
+
+        // The figure's group while the figure is free and has a legal region under the card's limits; null otherwise.
+        private static RecruitmentOption Armable(TurnDraft draft, ActionOption option, string id)
+        {
+            var group = option?.Recruitment.FirstOrDefault(g => g.ReserveIds.Contains(id));
+            if (group == null || !Available(draft, group).Contains(id) || draft.Payload.Placements.Count >= option.Maximum)
+                return null;
+            return group.Targets.Any(region => CanPlace(draft, option, group, region)) ? group : null;
         }
 
         public static bool Region(TurnDraft draft, ActionOption option, string region)

@@ -24,14 +24,8 @@ namespace Wotr.Client
                 return board.Hunt.Open;
             if (parent == board.TableEffects.DecisionHost)
                 return board.TableEffects.Open;
-            if (parent == board.Sovereigns.DecisionHost)
-                return board.Sovereigns.OpenDecision;
-            if (parent == board.ResourceDecision.DecisionHost)
-                return board.ResourceDecision.Open;
             if (parent == board.Characters.DecisionHost)
                 return board.Characters.OpenDecision;
-            if (parent == board.CompanionSetup.DecisionHost)
-                return board.CompanionSetup.Open;
             if (parent == board.Fellowship.Root)
                 return board.Fellowship.Open;
             if (parent == board.Battles.Root)

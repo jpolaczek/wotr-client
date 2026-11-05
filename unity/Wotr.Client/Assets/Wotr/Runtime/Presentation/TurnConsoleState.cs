@@ -13,6 +13,8 @@ namespace Wotr.Client
         public string Headline { get; private set; } = "";
         // What to do when the current step gives no hint of its own.
         public string Guidance { get; private set; } = "";
+        // UI-482: what the hint's tooltip says beyond Guidance; empty when the guidance alone is its tooltip.
+        public string GuidanceDetail { get; private set; } = "";
 
         public static TurnConsoleState For(PlayerView view, TurnDraft draft, ActionDieContext die, Func<string, string> regionName)
         {
@@ -30,9 +32,10 @@ namespace Wotr.Client
                 Own = own,
                 Headline = own ? RingChoice.Headline(draft) is { Length: > 0 } ring ? ring : OwnHeadline(view, draft, die)
                     : WaitingHeadline(view, owner, regionName),
-                Guidance = own ? OwnGuidance(view, die) : owner.HasValue
+                Guidance = own ? OwnGuidance(view, draft, die) : owner.HasValue
                     ? "The opponent is deciding. The notices under the top bar show what they do."
-                    : "The game moves to its next step."
+                    : "The game moves to its next step.",
+                GuidanceDetail = own ? CouncilHomelandPresentation.Detail(view, draft) : ""
             };
         }
 
@@ -44,17 +47,46 @@ namespace Wotr.Client
             _ => "YOUR DECISION · " + DecisionTitle(view, draft)
         };
 
-        // UI-211: a card's decision names its card; other decisions name their step.
+        // UI-211: a card's decision names its card; other decisions name their step. UI-390: a deck choice names its source
+        // and the step ("Denethor · Choose a deck").
         private static string DecisionTitle(PlayerView view, TurnDraft draft)
         {
+            if (DeckChoice.Pending(view))
+                return DeckChoice.Title(view);
             var card = CardDecisions.CardTitle(view);
             return card.Length > 0 ? card : DecisionTray.Title(view.Decision.Kind, draft.Kind);
         }
 
-        private static string OwnGuidance(PlayerView view, ActionDieContext die) => view.Decision.Kind switch
+        // UI-347: a step made on its objects names their clicks — a marked Council token (D13), the Balrog card's order
+        // (D11), the Council's homelands with the second click that keeps a companion (D14). UI-430: The Nazgûl Strike!'s
+        // red table cards, Hunt Box and ✓, and a card's red table cards. UI-431: a region's forces, the Black Captain's
+        // Nazgûl, Lure of the Ring's portrait and marker, Monsters Roused's regions.
+        private static string ObjectGuidance(PlayerView view, TurnDraft draft)
+        {
+            foreach (var hint in new[]
+                     {
+                         ResourcePresentation.CouncilHint(view, draft), BalrogCardOrder.Hint(view), CouncilHomelandPresentation.Hint(view, draft),
+                         KingsCardChoices.Hint(view), DeckChoice.Hint(view), NazgulStrikeChoice.Hint(view, draft),
+                         TableDiscardText.DecisionHint(view, draft), RegionForceChoices.Hint(view, draft), BlackCaptainOrder.Hint(view),
+                         LureChoice.Hint(view), MonstersHalves.Hint(view)
+                     })
+                if (hint.Length > 0)
+                    return hint;
+            return "";
+        }
+
+        private static string OwnGuidance(PlayerView view, TurnDraft draft, ActionDieContext die)
+        {
+            var objects = ObjectGuidance(view, draft);
+            return objects.Length > 0 ? objects : DecisionGuidance(view, die);
+        }
+
+        private static string DecisionGuidance(PlayerView view, ActionDieContext die) => view.Decision.Kind switch
         {
             DecisionKind.Action when die.DieId.Length == 0 => "Choose an action die, then what it acts on: the map, a card or a panel.",
-            DecisionKind.Action => "Choose what this die acts on: the highlighted map, cards and panels." + FellowshipDieGuidance(view, die),
+            // UI-461: a Will die waits for its result in the console's face menu, or for a use of itself.
+            DecisionKind.Action when die.Will && !die.WillFace.HasValue => WillFaceChoices.Hint,
+            DecisionKind.Action =>"Choose what this die acts on: the highlighted map, cards and panels." + FellowshipDieGuidance(view, die),
             DecisionKind.FellowshipPhase => FellowshipGuidance(view),
             DecisionKind.AllocateHunt => "Click dice to place them in the Hunt Box, then click the Hunt plaque to allocate and roll.",
             DecisionKind.Guide => FellowshipGuideText.ChooseHint,
@@ -82,20 +114,27 @@ namespace Wotr.Client
         private static string FellowshipGuidance(PlayerView view)
         {
             var steps = new List<string>();
-            if (Offered(view, CommandKind.DeclareFellowship))
-                steps.Add("Declare: click the glowing Fellowship figure on the map");
-            if (Offered(view, CommandKind.EnterMordor))
-                steps.Add("Enter Mordor: click the glowing gate");
+            var map = MapGuidance(Offered(view, CommandKind.DeclareFellowship), Offered(view, CommandKind.EnterMordor));
+            if (map.Length > 0)
+                steps.Add(map);
             if (Offered(view, CommandKind.SelectGuide))
                 steps.Add("Guide: click a glowing companion");
             steps.Add(steps.Count == 0 ? "Continue to the Hunt." : "or continue to the Hunt.");
             return string.Join(" · ", steps);
         }
 
+        // UI-434: the gate that enters is the one on the map (the Fellowship panel's Mordor track symbol is a gate too), so
+        // the hint says where; the figure and the gate together share one clause, so the hint keeps to the console's two lines.
+        private static string MapGuidance(bool declare, bool enter) =>
+            declare && enter ? "Declare or enter Mordor: click the glowing figure or gate on the map"
+            : declare ? "Declare: click the glowing Fellowship figure on the map"
+            : enter ? "Enter Mordor: click the glowing gate on the map" : "";
+
         private static bool Offered(PlayerView view, CommandKind kind) => view.Options.Any(o => o.Kind == kind && o.Enabled);
 
+        // UI-459: a die that is its ability keeps its own face's name (the Balrog die's Use Balrog), not the cost it moves with.
         private static string DieText(ActionDieContext die) =>
-            die.DieId.Length == 0 || !die.Face.HasValue ? "" : " · " + FaceName(die.Face.Value) + " die";
+            die.DieId.Length == 0 || !die.Face.HasValue ? "" : " · " + FaceName(die.Implied ? DieFace.UseBalrog : die.Face.Value) + " die";
 
         // The steps of a die already spent in part: the second march, recruitment points, groups of characters.
         private static string Progress(PlayerView view)
@@ -116,6 +155,9 @@ namespace Wotr.Client
         {
             if (!owner.HasValue)
                 return BoardScreen.PhaseName(view.Phase).ToUpperInvariant();
+            // UI-269: the Free Peoples choose their private versions and starting Guide before the first turn.
+            if (view.Phase == GamePhase.Setup && owner == Side.FreePeoples && view.Configuration.Lords)
+                return "FREE PEOPLES PREPARE THE FELLOWSHIP";
             var context = view.Battle != null ? " · battle at " + regionName(view.Battle.RegionId)
                 : view.Hunt != null ? " · the Hunt"
                 : view.Phase == GamePhase.Fellowship ? " · Fellowship phase"
@@ -128,6 +170,7 @@ namespace Wotr.Client
         {
             DieFace.ArmyMuster => "Army/Muster",
             DieFace.WillOfTheWest => "Will of the West",
+            DieFace.UseBalrog => "Use Balrog",
             _ => face.ToString()
         };
 

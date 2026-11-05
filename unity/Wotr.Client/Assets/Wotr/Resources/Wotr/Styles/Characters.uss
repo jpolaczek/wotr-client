@@ -3,42 +3,53 @@
    flight, combat level, leadership, nation), ability chips and, after a click, the ability's text on parchment.
    Art: graphicalassets/ui/src/characters. Each symbol explains itself in its tooltip. */
 
-/* The inspector window, framed like the other board windows (frames/panel, header plate). */
-#board-screen .character-inspector {
+/* The inspector window, framed like the other board windows: the thin card and a quiet title over a hairline, with
+   the portrait, the status and the close button in their old places (UI-473, GameChrome.uss). */
+#board-screen .character-window {
     padding: 6px 12px 12px 12px;
     border-width: 0;
     border-radius: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
-#board-screen .character-inspector > .character-header {
+#board-screen .character-window > .character-header {
     min-height: 30px;
     margin: 0 0 4px 0;
     padding: 0 2px 0 12px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
 }
-#board-screen .character-inspector > .character-header > .title {
+/* UI-441 (owner): while a skill of the character can be used now the header wears the shared gold rim on a warm plate,
+   behind its title (a light of its own, so the header keeps its size); it breathes in the window's 750 ms
+   ChoicePulse with the lit icons, by opacity only. Reduced motion keeps it bright and still. */
+#board-screen .character-inspector > .character-header > .character-header-glow {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: none;
+    border-width: 2px;
+    border-radius: 6px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.45);
+}
+#board-screen .character-inspector > .character-header.choice-glow > .character-header-glow { display: flex; }
+.motion-enabled #board-screen .character-inspector > .character-header > .character-header-glow {
+    transition-property: opacity;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .character-inspector.choice-glow-pulse > .character-header > .character-header-glow { opacity: 0.4; }
+#board-screen .character-window > .character-header > .title {
     font-size: 15px;
-    letter-spacing: 0.4px;
-    -unity-font-style: bold;
-    color: rgb(241, 223, 166);
+    letter-spacing: 1.4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-#board-screen .character-inspector .character-header .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; }
+#board-screen .character-window .character-header .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; }
 #board-screen .character-inspector .character-edition {
     flex-shrink: 0;
+    /* The short edition name ("Kings") never wraps at fractional scales (125 %). */
+    white-space: nowrap;
     margin: 0 6px 0 4px;
     padding: 0 5px;
     font-size: 11px;
@@ -49,16 +60,131 @@
     background-color: rgba(0, 0, 0, 0.3);
 }
 
-/* Status: symbol, region or short state, Locate. */
-.character-status { flex-direction: row; align-items: center; min-height: 26px; }
+/* The roster row's status symbols. */
 .character-status-icon { width: 16px; height: 16px; flex-shrink: 0; margin-right: 5px; -unity-background-scale-mode: scale-to-fit; }
 .character-status-on-board { background-image: resource("Wotr/Art/UI/characters/on-board"); }
 .character-status-waiting { background-image: resource("Wotr/Art/UI/characters/waiting"); }
 .character-status-removed { background-image: resource("Wotr/Art/UI/characters/removed"); }
 .character-status-may-return { background-image: resource("Wotr/Art/UI/characters/may-return"); }
 .character-status-fellowship { background-image: resource("Wotr/Art/UI/icons/fellowship"); }
-#board-screen .character-inspector #character-state { font-size: 13px; color: rgb(236, 224, 190); }
-#board-screen .character-inspector .character-status .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; margin: 0; }
+
+/* UI-436: the place as a picture (Art/Places, 128x80 points) captioned with its name, and beside it the facts. UI-469
+   (owner, 2026-11-03): the abilities stand in the facts beside the picture and empty fact lines collapse, so a ruler's
+   window is as tall as its content (about 208 points, no empty strip); it still opens at one place with one width. */
+.character-place-row { flex-direction: row; align-items: flex-start; flex-shrink: 0; min-height: 82px; margin: 0 0 4px 0; }
+#board-screen .character-window .place-picture {
+    width: 128px;
+    min-width: 128px;
+    height: 80px;
+    min-height: 80px;
+    margin: 0 8px 0 0;
+    padding: 0;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-width: 1px;
+    border-radius: 3px;
+    border-color: rgb(150, 124, 70);
+    background-color: rgb(24, 20, 16);
+    background-image: none;
+}
+#board-screen .character-window .place-picture:hover,
+#board-screen .character-window .place-picture:focus { border-color: rgb(255, 214, 112); }
+#board-screen .character-window .place-picture:disabled { opacity: 1; border-color: rgb(110, 94, 62); }
+.place-picture-image {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-and-crop;
+}
+#board-screen .character-window .place-picture-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 18px;
+    margin: 0;
+    padding: 0 5px;
+    font-size: 12px;
+    color: rgb(250, 238, 204);
+    background-color: rgba(16, 11, 7, 0.74);
+    -unity-text-align: middle-left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.character-place-facts { flex-grow: 1; flex-shrink: 1; min-width: 0; min-height: 80px; }
+.character-place-facts .character-fact { margin-right: 8px; }
+#board-screen .character-inspector .character-place-facts .character-statistics { margin: 3px 0 0 0; }
+#board-screen .character-window .character-place-meaning {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    color: rgb(223, 208, 168);
+    white-space: normal;
+}
+
+/* UI-436: a window's actions in words: what it is and takes, then available now (gold) or what it still needs. */
+.character-window-actions { flex-shrink: 0; margin: 0 0 4px 0; }
+.availability-row { flex-shrink: 0; margin: 0 0 2px 0; padding: 1px 0 1px 7px; border-left-width: 2px; border-left-color: rgba(214, 178, 98, 0.55); }
+#board-screen .character-window .availability-title,
+#board-screen .character-window .availability-state {
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#board-screen .character-window .availability-title { height: 16px; font-size: 12px; -unity-font-style: bold; color: rgb(236, 224, 190); }
+#board-screen .character-window .availability-state { height: 15px; font-size: 11px; color: rgb(214, 160, 128); }
+#board-screen .character-window .availability-ready .availability-state { color: rgb(255, 214, 112); }
+
+/* UI-436: the king's abilities stand under a heading saying when they apply. */
+#board-screen .character-window .ability-lines-heading {
+    height: 16px;
+    margin: 0 0 2px 0;
+    padding: 0;
+    font-size: 11px;
+    -unity-font-style: bold;
+    color: rgb(198, 184, 150);
+}
+
+/* UI-436: the sovereign's facts beside his place: corruption on a small meter, what it means, flags and tiles. */
+.sovereign-inspector #sovereign-corruption { flex-direction: row; align-items: center; height: 22px; }
+#board-screen .sovereign-inspector #sovereign-state { margin: 0 8px 0 0; padding: 0; font-size: 13px; color: rgb(236, 224, 190); white-space: nowrap; flex-shrink: 0; }
+.sovereign-window-meter { flex-direction: row; flex-shrink: 0; height: 10px; }
+.sovereign-window-meter > .sovereign-pip { width: 14px; height: 8px; margin: 0 2px 0 0; border-width: 1px; border-color: rgb(150, 132, 92); border-radius: 1px; }
+.sovereign-window-meter > .sovereign-pip.filled { background-color: rgb(196, 64, 46); border-color: rgb(120, 30, 20); }
+.sovereign-window-meter > .sovereign-pip.hidden { background-color: rgb(92, 84, 70); }
+.sovereign-inspector #sovereign-meaning, .sovereign-inspector #sovereign-flags { height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; }
+.sovereign-inspector .sovereign-tiles { flex-direction: row; height: 22px; margin: 2px 0 0 0; }
+.sovereign-inspector .corruption-tile { width: 22px; min-width: 22px; height: 20px; min-height: 20px; margin: 0 3px 0 0; font-size: 12px; }
+.sovereign-window-status {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    height: 20px;
+    margin: 0 6px 0 4px;
+    padding: 0 5px;
+    border-width: 1px;
+    border-radius: 3px;
+    border-color: rgb(150, 124, 70);
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.sovereign-window-status-icon { width: 12px; height: 12px; flex-shrink: 0; margin: 0 4px 0 0; -unity-background-scale-mode: scale-to-fit; }
+#board-screen .sovereign-inspector #sovereign-window-status-text { margin: 0; padding: 0; font-size: 11px; white-space: nowrap; color: rgb(229, 210, 158); }
+.sovereign-inspector .information-heading > .title { flex-shrink: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* UI-436: where the Characters panel unrolls, for the windows' one place (CharacterWindowPlace); never seen. */
+#board-screen .characters-panel.edge-left-panel.characters-panel-slot {
+    visibility: hidden;
+    height: 0;
+    min-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    background-image: none;
+}
 
 /* Statistics: one recessed band of symbols with their numbers. */
 #board-screen .character-inspector .character-statistics {
@@ -88,50 +214,45 @@
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
 }
 
-/* Abilities: chips with a scroll symbol; the chosen one unrolls its text on parchment. */
-.character-abilities { flex-direction: row; flex-wrap: wrap; align-items: center; }
-/* A chip is as wide as its symbol and title (children, so the title never elides). */
-#board-screen .character-inspector .character-ability {
+/* UI-440 (owner): each ability is its bare icon (SkillIcon, Styles/SkillIcons.uss; UI-439: the ability's own, AbilityArt,
+   as on the roster row), one row in printed order, 32 points each (a 28-point picture); its description is the formatted
+   tooltip, a lit icon's click uses it. An ability's variants (AbilityVariants) stand as one group, 4 points apart over a
+   thin shared gilt line, while abilities stand 14 apart; a group never wraps, and the most icons a card shows (the Balrog's
+   seven) fit the window's width. The row keeps one height in every layout, with room for the light behind a lit icon.
+   (USS has no :last-child, so each icon keeps 2 points on either side.) The groups stand top-aligned, so a variant
+   group's line never shifts its icons from the row at a fractional scale. */
+.character-abilities { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+#board-screen .character-window .character-abilities > .character-ability-group {
     flex-direction: row;
-    align-items: center;
-    height: 28px;
-    min-height: 28px;
-    margin: 1px 4px 2px 0;
-    padding: 0 9px 0 6px;
+    flex-wrap: nowrap;
     flex-shrink: 0;
+    align-items: center;
+    margin: 4px 10px 6px 0;
+    padding: 0 0 2px 0;
 }
-.character-ability-icon { width: 16px; height: 16px; flex-shrink: 0; margin-right: 4px; -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("Wotr/Art/UI/characters/ability"); }
-#board-screen .character-inspector .character-ability-title {
-    margin: 0;
-    padding: 0;
-    font-size: 12px;
-    white-space: nowrap;
-    color: rgb(241, 227, 181);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+#board-screen .character-window .character-abilities > .character-ability-group.character-ability-variants {
+    padding: 0 0 1px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(214, 178, 98, 0.45);
 }
-#board-screen .character-inspector .character-ability-text {
-    width: 100%;
-    margin: 3px 0 4px 0;
-    padding: 7px 10px 8px 10px;
-    font-size: 12px;
-    color: rgb(52, 36, 22);
-    white-space: normal;
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/cards/parchment");
-    -unity-slice-top: 28;
-    -unity-slice-right: 28;
-    -unity-slice-bottom: 28;
-    -unity-slice-left: 28;
-    -unity-slice-scale: 0.5px;
+#board-screen .character-window .character-ability-group > .skill-icon.character-ability {
+    width: 32px;
+    height: 32px;
+    margin: 0 2px;
 }
-#board-screen .character-inspector .character-ability-pages .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; }
-
-/* Limits: the "why" symbol and a short word; the word's tooltip explains the actions and limits. */
-.character-limits-row { flex-direction: row; align-items: center; margin: 2px 0; }
-#board-screen .character-inspector #character-limits { margin: 0; padding: 0; font-size: 12px; color: rgb(223, 208, 168); }
-.character-limits-icon { width: 16px; height: 16px; flex-shrink: 0; margin-right: 4px; -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("Wotr/Art/UI/actions/why"); }
+/* A variant's badge sits on its icon's lower right corner, as on the component buttons. */
+#board-screen .character-window .character-ability > .icon-badge {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 13px;
+    height: 13px;
+    border-width: 1px;
+    border-radius: 7px;
+    border-color: rgb(231, 196, 112);
+    background-color: rgba(28, 22, 14, 0.92);
+    -unity-background-scale-mode: scale-to-fit;
+}
 
 /* Roster row: the level on the portrait, a status symbol beside the region or short state. */
 .character-roster-portrait { overflow: visible; }
@@ -153,3 +274,77 @@
 .character-roster-line { flex-direction: row; align-items: center; height: 12px; }
 .character-roster-line > .character-status-icon { width: 11px; height: 11px; margin-right: 2px; }
 .character-roster-line > .character-roster-detail { flex-shrink: 1; min-width: 0; }
+
+/* UI-276 (D19): a king who holds his Ruler token wears the token in his portrait's corner. */
+#board-screen .sovereign-portrait > .sovereign-token {
+    position: absolute;
+    right: 1px;
+    bottom: 1px;
+    width: 16px;
+    height: 16px;
+    background-image: resource("Wotr/Art/UI/tokens/ruler-token-free");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+
+/* UI-391 (owner): the third line of a roster row holds up to four 15-point ability icons, right-aligned away from the
+   portrait's level star, on a line of fixed height, their text in the tooltip; one usable now glows and pulses with the
+   roster. Title (17) + status line (12) + icons (15) fill the row's 44 inner points. On a short viewport (40-point rows)
+   the icons take the status line's place; the row's tooltip keeps the state and region. UI-440 (owner): an icon is the
+   bare skill icon (SkillIcon, Styles/SkillIcons.uss), its picture filling its box, no small gilt frame. The selectors
+   outrank the rows' (.character-roster-grid .action), so the icons keep their own size. */
+.roster-abilities { flex-direction: row; justify-content: flex-end; height: 15px; min-height: 15px; margin: 0; }
+.roster-ability-line { flex-direction: row; justify-content: flex-end; flex-shrink: 0; }
+.short-viewport .roster-compact .character-roster-text > .character-roster-line { display: none; }
+#board-screen .character-roster-grid .roster-abilities .skill-icon.roster-ability,
+#board-screen .edge-left-panel .character-roster-grid .roster-abilities .skill-icon.roster-ability,
+#board-screen.short-viewport .edge-left-panel .character-roster-grid .roster-abilities .skill-icon.roster-ability {
+    width: 15px;
+    height: 15px;
+    margin: 0 0 0 2px;
+}
+.roster-abilities .roster-ability > .skill-icon-glyph { left: 0; top: 0; right: 0; bottom: 0; }
+
+/* UI-408 (owner): two characters a line, each row about twice as wide: the portrait, the name and region, and beside them a
+   2x2 block of 19-point ability icons (17 on a short viewport). A roster too tall for the board in this form keeps three
+   a line (.roster-compact, UI-391's third line). The block's two lines of two icons (CharacterAbilityStrip.LineClass)
+   stand one above the other, centred on the row; nothing wraps, so the form does not depend on the UI scale. */
+.characters-panel.roster-wide .character-roster-grid .action.character-roster-row,
+#board-screen .edge-left-panel.roster-wide .character-roster-grid .action.character-roster-row { width: 49%; min-width: 0; }
+.characters-panel.roster-wide .character-roster-row > .roster-abilities {
+    width: 44px;
+    min-width: 44px;
+    height: 42px;
+    min-height: 42px;
+    margin: 0 0 0 2px;
+    flex-shrink: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+}
+#board-screen .edge-left-panel.roster-wide .character-roster-grid .roster-abilities .skill-icon.roster-ability {
+    width: 19px;
+    height: 19px;
+    margin: 1px 0 1px 2px;
+}
+#board-screen.short-viewport .characters-panel.roster-wide .character-roster-row > .roster-abilities { width: 40px; min-width: 40px; height: 36px; min-height: 36px; }
+#board-screen.short-viewport .edge-left-panel.roster-wide .character-roster-grid .roster-abilities .skill-icon.roster-ability {
+    width: 17px;
+    height: 17px;
+    margin: 0 0 1px 2px;
+}
+
+/* UI-447 (owner): the window's character as a round gilt medallion at the head of its title bar, before the name; the
+   portrait fills it (cropped), the header keeps its height. */
+#board-screen .character-window > .character-header > .character-window-portrait {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    margin: 0 7px 0 -8px;
+    flex-shrink: 0;
+    border-width: 1px;
+    border-radius: 15px;
+    border-color: rgb(214, 170, 86);
+    background-color: rgb(46, 34, 24);
+    -unity-background-scale-mode: scale-and-crop;
+}

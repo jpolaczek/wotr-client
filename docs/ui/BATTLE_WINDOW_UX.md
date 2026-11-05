@@ -66,7 +66,7 @@ Implementation ( UI-114 ): one behaviour `PressFeedback` ( `Runtime/UI/PressFeed
 ```
 
 - Header: region, mode (Field/Siege/Sortie/Relief), round and decision owner, in the
-  `frames/panel-header` frame like other windows. Attacker on the left, defender on the right
+  thin header of the other windows (a quiet title over a hairline, UI-473; formerly `frames/panel-header`). Attacker on the left, defender on the right
   (BATTLE_ACTIVITY_UX "Fighting window").
 - pass scenes: from UI-206 painted illustration battle at the place of combat ( settlement and the
   site page, two versions); without it stylized pass horizon for combat mode ( UI-115 , SVG ; UI-120
@@ -89,10 +89,10 @@ Implementation ( UI-114 ): one behaviour `PressFeedback` ( `Runtime/UI/PressFeed
 - Losses: figure as illustrated chips with state overlay (keep → missing, downgrade → arrow down,
   remove → cross) and operation number; budget hits as wax seals “assigned/remaining”; legend as
   icons; one Apply looses. Preview server remains in tooltipach.
-- End of battle: Continue/Stop/Hold/Retreat/Advance/Extend siege as buttons with `frames/button`
-  frame and icon; cost of the elite as a preview of figure; retreat still indicates the region on
+- End of battle: Continue/Stop/Hold/Retreat/Advance/Extend siege as buttons with the shared button frame
+  (`frontend/button` since UI-471) and icon; cost of the elite as a preview of figure; retreat still indicates the region on
   the map.
-- Report battle: parchment-only chronicle (`frames/panel` + `cards/parchment`), header with mode,
+- Report battle: parchment-only chronicle (`frontend/card-board` since UI-473 + `cards/parchment`), header with mode,
   rounds as bookmarks ‹ Round 2/3 ›, same power layout (read only), steps as entries with icons.
   `BattleArchiveSummary` in the tab action in the same style.
 - Size: 760 Width (losses to 820), Content height, still at region (`MapPanelPlacement.Near`),
@@ -107,13 +107,13 @@ Category `graphicalassets/ui/src/battle/`, entries in `assets.json`, contract in
 | Group | Files | Options |
 | --- | --- | --- |
 | Scenes | `scene-field`, `scene-siege`, `scene-sortie`, `scene-relief` | repeat-x; interchangeable for UI-120 bitmaps |
-| Framework | `force-frame`, `portrait-medallion`, `card-slot`, `garrison-shelf` | `free`/`shadow`, `cancelled` (portrait), `pressed` |
+| Framework | `portrait-medallion` (since UI-477 `force-frame`, `card-slot` and `garrison-shelf` give way to `frontend/row-free`, `row-shadow` and `row`) | `free`/`shadow`, `cancelled` (portrait), `pressed` |
 | Statistics and Decision Icons | `strength`, `leadership`, `dice`, `hit`, `garrison`, `continue`, `stop`, `hold`, `retreat`, `advance`, `extend-siege`, `no-card`, `skip-cards` | — |
 | dice | `die-1` … `die-6`, `reroll-arrow` | `hit`, `selected`, `rerolled`, `pressed` |
 | Casualties | `loss-keep`, `loss-downgrade`, `loss-remove`, `hit-seal` | `spent` |
-| Stages ribbon | `stage-ribbon`, `stage-marker`, `stage-cards`, `stage-roll`, `stage-reroll`, `stage-losses`, `stage-next` | — |
-| Report | `chronicle-header`, `round-tab` | `selected` |
-| Press (UI-114) | variants `pressed` for `frames/button`, `frames/button-square`, `dice/medallion`, `cards/parchment` | — |
+| Stages ribbon | `frontend/row` since UI-477 (`stage-ribbon` before it), `stage-marker`, `stage-cards`, `stage-roll`, `stage-reroll`, `stage-losses`, `stage-next` | — |
+| Report | `chronicle-header`, `frontend/row` since UI-477 (`round-tab` before it) | `selected` |
+| Press (UI-114) | variants `pressed` for `frontend/button` (UI-471), `dice/medallion`, `cards/parchment` | — |
 
 Portraits and backgrounds ( UI-120 ): `graphicalassets/portraits/` with an atlas PNG , JSON rects, prompts and manifesto SHA-256 pattern `figures/` and `fellowship/` ; keys after the name of the characters common to base game and Lords: gimli, boromir, legolas, gandalf-grey, gandalf-white, strider, aragon, Pippin, merry, gollum, smeagol, ring-bearers, elrond, galladriel, balrog, gothmog, saruman, mouth-of-sauron, witch-king. `PortraitArtwork` pattern `FigureArtwork` Generating bitmap requires a tool outside Claude session; to deliver them, placeholders operate SVG ed UI-115 , a UI-120 remains blocked with ready-to-use props.
 
@@ -322,9 +322,13 @@ The user's application from 2026-10-16: the reroll and hit chapter is to be on t
   dice, and replaces the force composition there (`battle-force-choosing`): these are the same
   units, now to choose. This includes the loss block (legend, hit seals, budget and figure) in the
   column of the page with `BattleView.LossOwner` and the progress grid and extension grid siege in
-  the player column. This column is then wider (`flex-grow: 1.8`) so that the entire army will be
-  located in one row on the low screen. The block header of the loss block will be wrapped in the
-  column width. The losses of the event remain in the tray.
+  the player column. Since UI-394 (owner, 2026-10-28) this column keeps the other column's width:
+  its figures wrap into a second row inside it rather than widening it (`.loss-figures`); on a short
+  viewport its loss figures take the compact size (42 × 46) and the names under its portraits give
+  way (the portraits and their tooltips keep them), so two rows stay above the console. Since UI-437 (2026-11-01) the
+  names give way in a choosing column in every viewport ([rows](#rows--ui-437)). The block
+  header of the loss block will be wrapped in the column width. The losses of the event remain in
+  the tray.
 - dice to the reroll are in the player column (so far).
 - The battle decision-button foot (transmittance, loss, "Keep all", card) stands on the player side:
   with the attacking buttons on the left, and description next to them (`battle-footer-attacker`,
@@ -361,7 +365,8 @@ with the choice's title and detail (the cost, e.g. the forfeited Leadership). A 
 an adjustable set (Aragorn's two misses, Mighty Attack's Companion and miss) keeps its one confirmation. Identical
 figures of one nation and kind are equivalent, so a stack's click takes its next eligible figure. An exclusive
 outcome without an object — Keep misses, Keep Minions — keeps its button, and the list no longer repeats the dice
-and figures. Test: `BattleObjectChoicesTests`.
+and figures (UI-432, 2026-10-31: Keep misses and Keep Minions are the window's Skip effect and the console's Pass now,
+their tooltips naming the card and what passing does — [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)). Test: `BattleObjectChoicesTests`.
 
 ## Leadership points and Heroic Death on their objects — UI-246 (2026-10-17)
 
@@ -373,7 +378,8 @@ pip takes it back so the source can change before the one confirmation, and spen
 Death (`SacrificeAndHits`) takes the sacrificed Leader or Companion on its portrait or stack (UI-245) and the
 cancelled hits as pips (●) on the opponent's roll heading beside its hit count; an amount opens only after a figure
 that can cancel it is chosen, the chosen amount fills from the left, and a smaller pip replaces a larger one. Keep
-hits (zero hits, a legal costly choice for a Companion) and Keep all stay buttons; the confirmation sends the figure
+hits (zero hits, a legal costly choice for a Companion) and Keep all stay buttons (UI-432, 2026-10-31: Keep all is the
+window's Skip effect and the console's Pass; Keep hits stays — [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)); the confirmation sends the figure
 and the amount together. Pips keep fixed sizes (14 px, 11 px in short viewports) and never move the figures. Test:
 `BattleObjectChoicesTests`.
 
@@ -430,6 +436,10 @@ decision controls ([OPPONENT_ACTIONS_UX §6.15](OPPONENT_ACTIONS_UX.md#wdrozone-
 
 Owner's decision: this window opens centred in the board's middle, between the top bar and the console and between the side columns, in every phase; a position the player dragged it to wins ([IN_GAME_UX](IN_GAME_UX.md#okna-na-srodku--ui-324)).
 
+Since [UI-435](UX_SPEC.md#a-battle-window-keeps-its-lit-regions-clear--ui-435) a decision whose lit map regions the
+window or the HUD hides moves the window to the middle's top or bottom edge, away from them, and the view brings them into
+the strip it leaves, once per decision and map size.
+
 <a id="wstega--ui-327"></a>
 ## The stage marker glides — UI-327 (2026-10-25)
 
@@ -481,3 +491,93 @@ Regular or kill a Regular, each server-committed decision shown separately."
 - Only committed facts play (`Facts.LossDetails`, in the order of the decision); a decision of several losses plays them
   one after another. The player's own committed casualties play the same way (a shared battle resolution, UI-303).
 - Reduced motion keeps the flash, the ring and the fade without movement; Skip animations shows the latest state at once.
+
+## Orderly Withdrawal and Evil Knowledge on their objects — UI-347 (2026-10-27)
+
+The owner's decisions EXP-15 D10 and D12 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)):
+
+- **Orderly Withdrawal** (Wind from the West's and Three Rings' Combat side) cancels one hit on the opponent's hits: the
+  same "−1" as Heroic Death (UI-246, `BattleObjectChoices.WithdrawalCancel`; 33 px since UI-347, so the panel scale's
+  rounding keeps the 32 px target), glowing, whose tooltip says what
+  the withdrawal does; its click completes the step and sends it. "Keep the hit" is the console's Pass
+  (`OptionalDecline`, tooltip "Pass · Keep the hit and fight on"); no text button remains.
+- **Evil Knowledge** is the Mouth of Sauron's portrait in the besieging column while the siege may go on
+  (`EvilKnowledgeChoice`, `BattleContext.EvilKnowledgeSource`): the portrait glows, its tooltip says the siege goes on
+  one round without downgrading an Elite, and its click sends `UseEvilKnowledge`. The button beside Extend / Stop is
+  gone, also from the option row the tray shows when Extend is disabled (no Elite to downgrade, so the portrait is the
+  only way on); it comes back only if no portrait carries the ability (`EvilKnowledgeChoice.OnPortrait`). Since UI-439
+  the glowing portrait wears Evil Knowledge's own icon on its rim (as the White Rider's and the Sorcerer's portraits
+  wear theirs), and the button, when it comes back, carries that icon instead of `battle/evil-knowledge`
+  ([UX_SPEC](UX_SPEC.md#every-ability-has-its-own-icon--ui-439)).
+
+Tests: `BattleObjectChoicesTests.OrderlyWithdrawalCancelsItsHitOnThePipAndKeepsItThroughPass`,
+`LordsBattleNetworkTests` (the pip, the Pass, the Mouth's portrait), `ExpansionWindowNetworkTests` (the portrait with
+an Elite); seeder scenarios `ui347-orderly-withdrawal`, `ui347-orderly-withdrawal-pass`, `ui347-evil-knowledge`.
+
+## A Combat card's replacement is a gilt chip — UI-348 (2026-10-27)
+
+The owner's decision EXP-15 D17 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)): after the reveal, Brand's Heir of Bard
+(Brand Awakened, Free Peoples) and Shadows in the North (Brand Corrupted, Shadow) — and a Dark Chieftain's substitution
+(UI-277) — are a gilt chip beside the player's own Combat card (`CombatReplacementChoice`,
+`BattleContext.ReplacementChip`). The chip wears its source's arms (the nation emblem — the North for Brand, the
+Chieftain's nation — stands in until their own art exists; since UI-439 it shows the ability's own icon, Heir of Bard,
+Shadows in the North, Red Wrath, Lord of the Bats or I Command, `CombatReplacementChoice.Icon` —
+[UX_SPEC](UX_SPEC.md#every-ability-has-its-own-icon--ui-439)), glows and pulses with the window's choices, and its tooltip
+names the card it cancels ("Click to use Heir of Bard · Cancels Valinor at initiative 0; …'s effects are given up · Once
+per battle"); its click sends the replacement. The card and the chip share a row only during that step. "Keep card
+effects" is the console's Pass (`OptionalDecline`, a decline that counts only in its own step since its id is generic);
+no text button remains.
+
+Tests: `KingsCards02Tests.BrandsReplacementIsAChipAndKeepingIsThePass`, `KingsDecisionNetworkTests` (Heir of Bard,
+Shadows in the North, Keep through Pass); seeder scenarios `ui348-brand-heir`, `ui348-brand-heir-keep`,
+`ui348-brand-shadows`; test-menu group "Kings · Decisions" (wotr-server `KingsDecisionScenarios`).
+
+## The Dark Chieftains' substitution and the applied replacement — UI-277 (2026-10-27)
+
+The owner's decisions EXP-15 D7 and D17 for the Kings Dark Chieftains:
+
+- **Before the reveal** the Shadow may substitute a Chieftain's effect for its Combat card's (the Black Serpent's Red
+  Wrath, the Shadow of Mirkwood's bats, Uglúk's command — `Kings/KingsChieftainCombat.cs`). Each Chieftain who may is a
+  gilt chip with his nation's arms beside the Shadow's own card (`CombatReplacementChoice`, as Brand's, UI-348); its
+  tooltip names the card whose effects it replaces and what the Chieftain does instead ("Click to use The Black Serpent
+  instead of Deadly Strife's effects · Take one hit before reveal…"). Keep card effects is the console's Pass. The Free
+  Peoples see neither the choice nor the Shadow card (server privacy, `KingsChieftainCombatTests`).
+- **Once made**, a replacement — Brand's or a Chieftain's — stands as the same gilt marker, solid and without a click,
+  beside the replaced card for both players (`BattleContext.AppliedReplacement`, from `CombatReplacements`; since UI-437
+  in a row of the card's height, so both sides' rows stay level — [rows](#rows--ui-437)); its tooltip
+  names the source, and the opponent's card stays unnamed until the reveal ("The Black Serpent replaces the Combat
+  card's effects this round").
+- **Entry.** A Chieftain enters from his Characters row (UI-108): with a Council token the medallion marks it and lights
+  his row (UI-347, D13); without the Council the die alone pays.
+
+Tests: `KingsCards02Tests` (the Chieftain's chip, the applied marker for both players), `KingsDecisionNetworkTests`
+(the Chieftain's chip before the reveal, Keep through Pass, the entry without a token; Brand's applied marker),
+`ExpansionTokenNetworkTests.CouncilTokenAndMusterEnterAKingsChieftain`; seeder scenarios `ui277-chieftain`,
+`ui277-chieftain-keep`, `ui277-chieftain-entry`; test-menu scenario `kings-chieftain-substitution`.
+
+## A king chosen in the battle — UI-278 (2026-10-27)
+
+The owner's decision EXP-15 D16 for There Is Hope for Victory (Ever at Your Service, Men of Little Villages) and His Power
+Waxes (the Palantír of Barad-dûr, Work of the Enemy): while a king takes part in the battle — an Initial king's Leader,
+an Awakened king's portrait in the force column — his figure glows there and its click chooses him; its tooltip reads
+"Théoden · Awaken here if permitted. Add +1 to your Leader re-roll." A king outside the battle (a Corrupted king has no
+figure) keeps his Characters portrait, and the console's hint names both places ("Click a glowing king in the battle
+window's army or by his portrait"). The battle window stays open for the choice (`SovereignChoices.InBattleWindow`).
+
+Tests: `KingsCardChoicesTests.AKingWhoTakesPartInTheBattleIsChosenInItsArmy`,
+`KingsCards02NetworkTests.HopeChoosesWhichInitialSovereignAwakensDuringBattle`,
+`KingsBranchNetworkTests.HisPowerWaxesFindsTheDefendingKingInHisArmy`; seeder scenario `ui278-power-defender`;
+test-menu scenarios `kings-card-hope`, `kings-card-power-waxes`.
+
+<a id="rows--ui-437"></a>
+## Both sides' rows stand level — UI-437 (2026-11-01)
+
+Owner, after the Black Serpent's Red Wrath: the Serpent's portrait stood in a row of its own above his force and the
+Shadow's statistics, card, roll and dice stood lower than the Free Peoples'. Now a character stands in the force row
+beside the figures, his short name under his medallion as a figure has its count (no names line; more than four
+characters, or a column choosing figures, keep the medallions alone). Both columns hold the same rows — heading, force
+row, statistics, the ledge when either side has one, card, roll — and a row or control only one side shows (the ledge,
+a roll, its pager, Heroic Death's or Orderly Withdrawal's hit buttons) keeps an unseen copy on the other; the spacer
+under the shorter force row takes the difference, so the rows below line up whatever an ability adds. A replacement's
+chip or marker keeps the card's row height, its top on the card's. Cause, fix and tests:
+[UX_SPEC](UX_SPEC.md#both-sides-rows-stand-level--ui-437).

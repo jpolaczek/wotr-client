@@ -66,19 +66,26 @@ namespace Wotr.PlayTests
                 var selectedRuler = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples).Id;
                 await ComponentGestures.Cost(room, room.Fp, selectedRuler);
                 await ComponentGestures.Select(room.Fp, "character-kings.sovereign.theoden-kings.mustering-of-the-mark");
-                foreach (var region in new[] { "edoras", "helms-deep", "edoras" })
+                // UI-450 (owner): the Reserve opens at once and the character's window keeps its form; the last figure's
+                // click sends the recruitment (no ✓), so the layout and a reconnect are checked before it.
+                Assert.IsTrue(room.Fp.Board.Reinforcements.IsOpen, "The ability's click opens the Reserve.");
+                Assert.AreNotSame(room.Fp.Board.Characters.DecisionHost, room.Fp.Board.Tray.parent, "The window keeps its form.");
+                var start = room.Fp.Board.View.Revision;
+                var regions = new[] { "edoras", "helms-deep", "edoras" };
+                for (var index = 0; index < regions.Length; index++)
                 {
-                    room.Fp.Board.Map.Select(region);
+                    if (index == regions.Length - 1)
+                    {
+                        var cost = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples);
+                        Assert.IsNull(room.Fp.Board.Tray.Q<Button>("cost-" + cost.Id), "UI-239: the only die is taken for the player.");
+                        Assert.AreEqual(DieFace.Character, cost.Face, "The draft must not change the projected die.");
+                        await Layout(room, room.Fp, "ruler-recruit", "ui09");
+                        await Reconnect(room, room.Fp);
+                    }
+                    room.Fp.Board.Map.Select(regions[index]);
                     Click(room.Fp, "character-reserve-rohan-Regular");
                 }
-                Assert.AreSame(room.Fp.Board.Characters.DecisionHost, room.Fp.Board.Tray.parent,
-                    "The selected ability stays in its character inspector without a second action selection.");
-                var cost = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples);
-                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("cost-" + cost.Id), "UI-239: the only die is taken for the player.");
-                Assert.AreEqual(DieFace.Character, cost.Face, "The draft must not change the projected die.");
-                await Layout(room, room.Fp, "ruler-recruit", "ui09");
-                await Reconnect(room, room.Fp);
-                await room.Confirm(room.Fp);
+                await room.At(start + 1);
                 Assert.AreEqual(edoras + 2, room.Sh.Board.View.Units.Count(u => u.Location == "edoras"));
                 Assert.AreEqual("dismay", room.Sh.Board.View.RulerTokens.Single(t => t.Id.EndsWith("theoden")).Location);
                 var die = room.Sh.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples);
@@ -94,7 +101,9 @@ namespace Wotr.PlayTests
                 var cards = room.Fp.Board.View.Hand.Count;
                 Token(room.Fp, "denethor");
                 var ruler = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples);
-                CardNetworkTests.Click(room.Fp.Board.OwnDice.Q<Button>(ruler.Id));
+                // UI-380: the token's click takes the Ruler die; UI-386: a click on the chosen die would release it.
+                if (room.Fp.Board.ActionDie.DieId != ruler.Id)
+                    CardNetworkTests.Click(room.Fp.Board.OwnDice.Q<Button>(ruler.Id));
                 await Layout(room, room.Fp, play ? "ruler-event" : "ruler-draw", "ui09");
                 await Reconnect(room, room.Fp);
                 if (play)
@@ -123,7 +132,9 @@ namespace Wotr.PlayTests
                     Token(room.Fp, "thranduil");
                 var die = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples).Id;
                 await ComponentGestures.Cost(room, room.Fp, die);
-                await ComponentGestures.Select(room.Fp, "far-sighted-MoveCompanions");
+                // UI-465 (owner, 2026-11-03): Thranduil is the only companion outside the Fellowship, so Far-sighted's Move
+                // companions is greyed (UI-456) and his own figure moves him with Far-sighted — with the Ruler die
+                // (FarSightedFigure), or with his token, whose travel carries it (UI-389).
                 var figure = room.Fp.Board.View.Characters.Single(c => c.Id == "kings.sovereign.thranduil");
                 FellowshipGestures.Figure(room.Fp, figure.Location, figure.Id);
                 Assert.IsTrue(room.Fp.Board.Map.DraftOverlay.Targets.Contains("dale"));
@@ -147,28 +158,59 @@ namespace Wotr.PlayTests
                 var dice = room.Sh.Board.View.Dice.Count(d => d.Location == DieLocation.Available);
                 var token = travel ? "council.move-shadow-characters" : "council.advance-politics";
                 var initialRevision = room.Sh.Board.View.Revision;
+                // UI-347 (D13): the Black Serpent can enter with the token. UI-388 (owner): its one click lights both uses
+                // — his Characters row and the token's printed use — and opens no panel.
                 PointerGestureEvents.ClickAt(room.Sh.Board.OwnDice.Q<Button>("pool-" + token));
                 await room.Settle();
-                Assert.IsTrue(room.Sh.Board.ResourceDecision.IsOpen);
+                var hint = room.Sh.Board.Console.Status.Hint.text;
+                StringAssert.StartsWith("Click a lit Chieftain's row", hint);
+                StringAssert.Contains(travel ? "the Nazgûl above the token" : "a glowing Shadow nation's token or → in Politics", hint);
                 Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("pool-" + token).ClassListContains("selected"));
-                Assert.AreEqual(initialRevision, room.Sh.Board.View.Revision, "Selecting the token does not choose its use.");
-                PointerGestureEvents.ClickAt(room.Sh.Board.ResourceDecision.CouncilChoices.Root.Q<Button>("component-" + token));
-                await room.Settle();
+                Assert.IsTrue(room.Sh.Board.Characters.Tab.ClassListContains("legal-target"), "The Chieftain's entry is lit.");
+                Assert.IsFalse(room.Sh.Board.Nations.IsOpen, "A token of several uses opens no panel.");
+                Assert.AreEqual(initialRevision, room.Sh.Board.View.Revision, "Its use still waits for its nation or figures.");
                 string figure = "";
+                string partner = "";
                 var politics = room.Sh.Board.View.Nations.Single(n => n.Id == "sauron").StepsToWar;
+                // UI-376/UI-377 (owner): the token's use opens no decision window.
+                Assert.IsFalse(room.Sh.Board.DecisionWindow.IsOpen, "The Council token's use stands on its objects.");
                 if (travel)
                 {
-                    figure = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.UseCouncilToken).Travel.First().Id;
-                    Click(room.Sh, "companion-" + figure);
+                    var movable = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.UseCouncilToken).Travel.Select(t => t.Id).ToList();
+                    figure = movable[0];
+                    partner = movable[1];
+                    var picker = await CouncilPicker(room);
+                    Assert.IsFalse(room.Sh.Board.Nations.IsOpen);
+                    // UI-379: a group of several Nazgûl is chosen, and a second click releases one of them.
+                    foreach (var id in new[] { figure, partner, movable[2], movable[2] })
+                    {
+                        PointerGestureEvents.ClickAt(picker.Root.Q<Button>("council-travel-" + id));
+                        await room.Settle();
+                    }
+                    Assert.IsTrue(picker.Root.Q<Button>("council-travel-" + figure).ClassListContains("selected"));
+                    Assert.IsTrue(picker.Root.Q<Button>("council-travel-" + partner).ClassListContains("selected"));
+                    Assert.IsFalse(picker.Root.Q<Button>("council-travel-" + movable[2]).ClassListContains("selected"));
                     Assert.IsTrue(room.Sh.Board.Map.DraftOverlay.Targets.Contains("hollin"));
+                    StringAssert.Contains("Click a highlighted region to move there", room.Sh.Board.Console.Status.Hint.text);
                 }
+                else
+                    Assert.IsTrue(room.Sh.Board.Nations.Root.ClassListContains("legal-target"), "Politics glows for the printed use.");
                 await Layout(room, room.Sh, travel ? "council-travel" : "council-politics", "ui09");
                 await Reconnect(room, room.Sh);
                 if (travel)
                 {
-                    // UI-105: the destination click flies the Nazgûl at once.
+                    // UI-379: the destination click plans the group there, faintly with its count; Finish sends it.
                     var revision = room.Sh.Board.View.Revision;
                     FellowshipGestures.FinishRoute(room.Sh, "hollin");
+                    await room.Settle();
+                    Assert.AreEqual(revision, room.Sh.Board.View.Revision, "Planning a group does not end the action.");
+                    Assert.IsTrue(room.Sh.Board.Map.PlannedFlights.Regions.Contains("hollin"));
+                    StringAssert.Contains("click ✓ to finish", room.Sh.Board.Console.Status.Hint.text);
+                    await Layout(room, room.Sh, "council-travel-planned", "ui379");
+                    // UI-381: the console's ✓ finishes; the popover has none of its own.
+                    var finish = room.Sh.Board.Console.Actions.Confirm;
+                    await room.Until(() => finish.enabledInHierarchy);
+                    PointerGestureEvents.ClickAt(finish);
                     await room.At(revision + 1);
                 }
                 else
@@ -188,10 +230,30 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(room.Fp.Board.View.CouncilTokens.Single(t => t.Id == token).Spent);
                 Assert.AreEqual(dice, room.Fp.Board.View.Dice.Count(d => d.Location == DieLocation.Available));
                 if (travel)
+                {
                     Assert.AreEqual("hollin", room.Fp.Board.View.Units.Single(u => u.Id == figure).Location);
+                    Assert.AreEqual("hollin", room.Fp.Board.View.Units.Single(u => u.Id == partner).Location);
+                }
                 else
                     Assert.AreEqual(politics - 1, room.Fp.Board.View.Nations.Single(n => n.Id == "sauron").StepsToWar);
             }
+        }
+
+        // UI-377: the Council token's travel is a small popover above the token pool, holding only the Nazgûl and the ✓.
+        private static async Task<Wotr.Client.CouncilTravelPicker> CouncilPicker(MatchTestRoom room)
+        {
+            var board = room.Sh.Board;
+            var picker = board.CouncilPicker;
+            await room.Settle();
+            Assert.IsTrue(picker.IsOpen, "The token's travel shows its popover.");
+            Assert.LessOrEqual(picker.Root.worldBound.yMax, board.OwnDice.worldBound.yMin, "It stands above the token pool.");
+            var token = board.OwnDice.Q<Button>("pool-" + Wotr.Client.ExpansionDraft.CouncilTravel).worldBound;
+            Assert.That(picker.Root.worldBound.center.x, Is.EqualTo(token.center.x).Within(picker.Root.worldBound.width / 2));
+            var figures = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.UseCouncilToken).Travel.Select(t => t.Id).ToList();
+            CollectionAssert.AreEquivalent(figures.Select(id => "council-travel-" + id),
+                picker.Root.Query<Button>(className: "council-travel-figure").ToList().Select(b => b.name));
+            Assert.AreEqual(figures.Count, picker.Root.Query<Button>().ToList().Count, "Only the Nazgûl (UI-381: the console's ✓ finishes).");
+            return picker;
         }
 
         private static async Task Entry()
@@ -202,17 +264,17 @@ namespace Wotr.PlayTests
                     .Single(c => c.CharacterId == "kings.character.black-serpent");
                 const string token = "council.advance-politics";
                 var initialRevision = room.Sh.Board.View.Revision;
+                // UI-347 (D13): a Chieftain can enter with the token, so its click marks it and lights his row; no panel.
                 PointerGestureEvents.ClickAt(room.Sh.Board.OwnDice.Q<Button>("pool-" + token));
                 await room.Settle();
-                Assert.IsTrue(room.Sh.Board.ResourceDecision.IsOpen);
+                StringAssert.StartsWith("Click a lit Chieftain's row", room.Sh.Board.Console.Status.Hint.text);
                 Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>(choice.Dice[0]).ClassListContains("resource-candidate"));
                 await ComponentGestures.Cost(room, room.Sh, choice.Dice[0]);
                 Assert.IsEmpty(room.Sh.Board.ActionDie.DieId, "An entry cost must not enable the die's ordinary actions.");
                 await Reconnect(room, room.Sh);
                 Assert.AreEqual(initialRevision, room.Sh.Board.View.Revision);
                 Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("pool-" + token).ClassListContains("selected"));
-                // UI-108/UI-142: the token panel has no entry button; the Serpent's row enters by a click.
-                Assert.IsNull(room.Sh.Board.ResourceDecision.CouncilChoices.Root.Q<Button>("component-" + ComponentGestures.Character(choice)));
+                // UI-108/UI-142: the Serpent's row enters by a click; no panel offers it.
                 await ComponentGestures.Enter(room, room.Sh, choice);
                 Assert.IsNull(room.Sh.Board.Tray.Q<Button>("cost-" + choice.Dice[0]), "UI-239: the only die is not a button.");
                 await Layout(room, room.Sh, "entry-token", "ui09");

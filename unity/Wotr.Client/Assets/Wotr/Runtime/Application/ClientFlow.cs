@@ -34,6 +34,8 @@ namespace Wotr.Client
         public ReplaySession Replay => replay;
         public IReplayFilePicker FilePicker { get; set; } = new NativeReplayFilePicker();
         private TestSession testSession;
+        // UI-368: where the test list was when the scenario started.
+        private TestScenarioList.Place testListPlace;
         private MainMenuBrowser lobbyBrowser;
         private LobbyController lobbyController;
         // LOBBY-02: the lobby chat of this sign-in; signing out (any return to the sign-in screen) drops it.
@@ -113,7 +115,10 @@ namespace Wotr.Client
                 mainMenu.Status.text = notice;
         }
 
-        private Task ShowLobby()
+        private Task ShowLobby() => OpenLobby(null);
+
+        // tests: the Test scenarios list to return to once the catalog is loaded (UI-368), or null for the main menu.
+        private Task OpenLobby(TestScenarioList.Place tests)
         {
             ChangeScreen();
             var lobby = new MainMenuScreen(api.Username);
@@ -123,7 +128,8 @@ namespace Wotr.Client
             root.Add(lobby.Root);
             lobby.InterfaceRequested += OpenInterface;
             lobby.Create += request => Perform(async () => ShowRoom(await api.Post<RoomView>("api/rooms", request, screenLifetime.Token)));
-            lobby.Demo += side => Perform(() => StartDemo(side));
+            lobby.Demo += (side, configuration) => Perform(() => StartDemo(side, configuration));
+            lobby.DemoOpened += () => _ = LoadDemoModules(lobby, screenLifetime.Token);
             lobby.Join += (code, role) => Perform(async () => ShowRoom(await api.Post<RoomView>("api/rooms/join",
                 new JoinRoomRequest { Code = code, Role = role }, screenLifetime.Token)));
             lobby.JoinPublic += (id, role) => Perform(async () => ShowRoom(await api.Post<RoomView>(
@@ -132,7 +138,11 @@ namespace Wotr.Client
             lobby.OpenMatch += match => Perform(() => ShowMatch(match.MatchId));
             lobby.Logout += () => Perform(async () => { try { await api.Logout(screenLifetime.Token); } finally { ShowLogin(); } });
             lobby.QuitRequested += quit;
-            lobby.StartScenario += id => Perform(() => StartTestScenario(id));
+            lobby.StartScenario += id =>
+            {
+                testListPlace = lobby.TestScenarioPlace;
+                Perform(() => StartTestScenario(id));
+            };
             libraryController = new ReplayLibraryController(Replays, lobby.Replays, FilePicker, entry => PlayReplay(entry, false));
             lobby.ReplaysOpened += libraryController.Refresh;
             lobbyBrowser = new MainMenuBrowser(api, lobby);
@@ -140,13 +150,14 @@ namespace Wotr.Client
             lobbyState ??= LobbyState.FromSignIn();
             lobbyController = new LobbyController(api, lobby.Lobby, lobby.Challenge, lobbyState);
             lobbyController.RoomOpened += ShowRoom;
-            _ = LoadTestScenarios(lobby, screenLifetime.Token);
+            _ = LoadTestScenarios(lobby, tests, screenLifetime.Token);
             return Task.CompletedTask;
         }
 
         // MENU-31: the menu's demo makes a private room on the chosen side, starts the demo against the CPU from it (DEMO-04)
         // and lets the room go: an empty room is deleted (MENU-32), and the demo opens like any started game.
-        private async Task StartDemo(Side side)
+        // DEMO-06: the room takes the page's rules first, so the demo plays with them.
+        private async Task StartDemo(Side side, MatchConfiguration configuration)
         {
             var token = screenLifetime.Token;
             var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest
@@ -154,6 +165,9 @@ namespace Wotr.Client
             DemoMatchView demo;
             try
             {
+                if (!RulesChoices.IsBase(configuration))
+                    room = await api.Put<RoomView>("api/rooms/" + room.Id + "/configuration",
+                        new ConfigureRoomRequest { ExpectedVersion = room.Version, Configuration = configuration }, token);
                 demo = await api.Post<DemoMatchView>("api/rooms/" + room.Id + "/demo", null, token);
             }
             finally
@@ -161,6 +175,20 @@ namespace Wotr.Client
                 await LeaveRoomQuietly(room.Id, token);
             }
             await ShowMatch(demo.MatchId);
+        }
+
+        // DEMO-06: the released modules for the demo page's rules; a server without the route offers the base game only.
+        private async Task LoadDemoModules(MainMenuScreen lobby, CancellationToken token)
+        {
+            try
+            {
+                var offered = await api.Get<OfferedModulesView>("api/rooms/offered-modules", token);
+                if (!token.IsCancellationRequested)
+                    lobby.ShowDemoModules(offered.Modules);
+            }
+            catch (ApiException) { }
+            catch (HttpRequestException) { }
+            catch (OperationCanceledException) when (token.IsCancellationRequested) { }
         }
 
         // A room that is already gone needs no leaving; any other failure is left to the sweeper (MENU-27).
@@ -175,13 +203,16 @@ namespace Wotr.Client
         }
 
         // TEST-03: an optional server feature; when the catalog is missing or unreadable the menu stays as it is.
-        private async Task LoadTestScenarios(MainMenuScreen lobby, CancellationToken cancellation)
+        private async Task LoadTestScenarios(MainMenuScreen lobby, TestScenarioList.Place tests, CancellationToken cancellation)
         {
             try
             {
                 var catalog = await TestScenarioApi.Catalog(api, cancellation);
-                if (catalog != null && mainMenu == lobby)
-                    lobby.ShowTestScenarios(catalog);
+                if (catalog == null || mainMenu != lobby)
+                    return;
+                lobby.ShowTestScenarios(catalog);
+                if (tests != null && catalog.Scenarios.Count > 0)
+                    lobby.ReturnToTestScenarios(tests);
             }
             catch (Exception error) when (error is ApiException || error is HttpRequestException || error is OperationCanceledException) { }
         }
@@ -201,10 +232,10 @@ namespace Wotr.Client
             board.TestBar.Show(session.View.Scenario, session.Side);
             board.TestBar.SwitchSide += () => Perform(() => SwitchTestSide(session));
             board.TestBar.Restart += () => Perform(() => StartTestScenario(session.View.Scenario.Id));
-            board.TestBar.Exit += () => Perform(EndTestScenario);
+            board.TestBar.Exit += () => Perform(LeaveTestScenario);
             board.Menu.GamesRequested += _ => Perform(EndTestScenario);
             board.Menu.QuitRequested += _ => Perform(QuitTestScenario);
-            board.GameDeleted.MenuRequested += () => Perform(EndTestScenario);
+            board.GameDeleted.MenuRequested += () => Perform(LeaveTestScenario);
         }, false);
 
         private Task SwitchTestSide(TestSession session)
@@ -219,6 +250,13 @@ namespace Wotr.Client
         {
             await CloseTestScenario();
             await ShowLobby();
+        }
+
+        // UI-368: Exit, and the way back from a deleted test game, return to the Test scenarios list.
+        private async Task LeaveTestScenario()
+        {
+            await CloseTestScenario();
+            await OpenLobby(testListPlace ?? new TestScenarioList.Place());
         }
 
         // MENU-14: Quit game in a test scenario ends it on the server before the game closes.

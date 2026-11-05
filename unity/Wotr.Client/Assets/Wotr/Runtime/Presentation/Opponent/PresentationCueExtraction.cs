@@ -9,6 +9,8 @@ namespace Wotr.Client
     {
         public HashSet<string> Keys { get; } = new HashSet<string>();
         public HashSet<string> CostDice { get; } = new HashSet<string>();
+        // UI-488: the dice the player paid with themselves, whoever owns them.
+        public HashSet<string> OwnCostDice { get; } = new HashSet<string>();
         public HashSet<string> Battles { get; } = new HashSet<string>();
     }
 
@@ -27,28 +29,81 @@ namespace Wotr.Client
         {
             var steps = group.OrderBy(step => step.Order).ToList();
             var figures = FigureCuesByStep(steps, shown, data);
+            var revealed = RevealedTiles(steps);
+            var corrupted = steps.Any(step => step.Facts.Sovereigns.Any(s => s.Status == SovereignStatus.Corrupted));
+            var inactive = steps.Any(step => step.Kind == MordorInactivity);
             var released = new List<PresentationCue>();
             foreach (var step in steps)
             {
-                var cues = Costs(step, memory)
+                var cues = Costs(step, memory, you)
                     .Concat(Cards(step, you))
+                    .Concat(Rolls(step))
                     .Concat(Movements(step))
                     .Concat(figures.TryGetValue(step, out var anchored) ? anchored : Enumerable.Empty<PresentationCue>())
                     .Concat(Losses(step))
+                    .Concat(BattleChoices(step))
                     .Concat(Battle(step, memory))
                     .Concat(Hunt(step))
                     .Concat(Fellowship(step))
                     .Concat(Politics(step))
+                    .Concat(Sovereigns(step, revealed, corrupted))
                     .Concat(Control(step))
                     .Concat(Dice(step, memory, you))
                     .Concat(Resources(step))
                     .Concat(Outcome(step));
                 foreach (var cue in cues)
-                    if (memory.Keys.Add(cue.Id) && shown.Contains(step))
+                {
+                    if (!memory.Keys.Add(cue.Id))
+                        continue;
+                    if (shown.Contains(step))
+                    {
                         released.Add(cue);
+                    }
+                    else if (PresentationSelection.OpponentsChange(cue, step, you, memory, inactive))
+                    {
+                        cue.Actor = null;
+                        released.Add(cue);
+                    }
+                }
             }
-            return FinalBattleStatesLast(AfterTheirHunt(released));
+            return DiceLast(FinalBattleStatesLast(AfterTheirHunt(RollsBeforeTheirEffects(released))));
         }
+
+        private const string MordorInactivity = "MordorInactivity";
+        private const string EventLosses = "EventLosses";
+
+        // UI-492 (owner, 2026-11-04): the board's difference records a card's casualties on the command's first step, but
+        // its dice were rolled before them, so a roll plays before the first figure change in its region.
+        private static List<PresentationCue> RollsBeforeTheirEffects(List<PresentationCue> cues)
+        {
+            foreach (var roll in cues.Where(cue => cue.Kind == PresentationCueKind.Roll).ToList())
+            {
+                var effect = cues.FindIndex(cue => cue.Figures.Count > 0 && cue.Regions.Intersect(roll.Regions).Any());
+                if (effect < 0 || effect > cues.IndexOf(roll))
+                    continue;
+                cues.Remove(roll);
+                cues.Insert(effect, roll);
+            }
+            return cues;
+        }
+
+        // UI-487/UI-488 (owner, 2026-11-04): the board's difference records a revision's dice on its first step, but they
+        // move at its end. The action's die leaves after the action's last effect (a Fellowship move's die enters the Hunt
+        // Box after its Hunt, as the rules place it), and a new turn's recovery follows it, before that turn's draws.
+        private static List<PresentationCue> DiceLast(List<PresentationCue> cues)
+        {
+            var spent = cues.Where(cue => cue.Kind == PresentationCueKind.SpentDie).ToList();
+            var recovered = cues.Where(Recovered).ToList();
+            if (spent.Count == 0 && recovered.Count == 0)
+                return cues;
+            var draws = recovered.Count > 0 ? cues.Where(Drawn).ToList() : new List<PresentationCue>();
+            return cues.Except(spent).Except(recovered).Except(draws).Concat(spent).Concat(recovered).Concat(draws).ToList();
+        }
+
+        private static bool Recovered(PresentationCue cue) =>
+            cue.Kind == PresentationCueKind.Die && cue.Die.To is DieLocation.Unrolled or DieLocation.Removed;
+
+        private static bool Drawn(PresentationCue cue) => cue.Kind == PresentationCueKind.Draw && cue.Card.Use == ActionCardUse.Draw;
 
         // UI-311: a decision step records its revision's final battle state, the automatic steps after it the states on the
         // way (the roll of each side, the rerolls, the losses). Its snapshot plays after theirs, so a round never steps back.
@@ -85,12 +140,16 @@ namespace Wotr.Client
 
         // A card's cost is the card itself, shown by its own cue (played, entered or removed from the table); a free action
         // and a figure cost (a siege extension, shown as the figure change) have no cost cue.
-        private static IEnumerable<PresentationCue> Costs(ActionLogStep step, ActionMemory memory)
+        private static IEnumerable<PresentationCue> Costs(ActionLogStep step, ActionMemory memory, Side? you)
         {
             foreach (var cost in step.Costs.Where(cost => cost.Kind is not (ActionCostKind.Free or ActionCostKind.Figure or ActionCostKind.Card)))
             {
                 if (cost.Kind == ActionCostKind.Die && cost.Id.Length > 0)
+                {
                     memory.CostDice.Add(cost.Id);
+                    if (you.HasValue && step.Actor == you)
+                        memory.OwnCostDice.Add(cost.Id);
+                }
                 var payload = new CuePayload { Cost = cost };
                 yield return new PresentationCue(step, PresentationCueKind.Cost,
                     cost.Kind + "/" + (cost.Id.Length > 0 ? cost.Id : cost.Source) + "/" + cost.Face, payload);
@@ -122,6 +181,18 @@ namespace Wotr.Client
             }
         }
 
+        // UI-492 (owner, 2026-11-04): a card's dice are public, and a battle's show in its window. The losses they cause
+        // repeat them on a later step (EventLosses.Apply), which is no second roll.
+        private static IEnumerable<PresentationCue> Rolls(ActionLogStep step)
+        {
+            if (step.Facts.Rolls.Count == 0 || InBattle(step) || step.Kind == EventLosses)
+                yield break;
+            var payload = new CuePayload { HitTarget = step.Facts.HitTarget };
+            payload.Rolls.AddRange(step.Facts.Rolls);
+            payload.Regions.AddRange(step.Facts.Targets.Count > 0 ? step.Facts.Targets : step.Context.Regions);
+            yield return new PresentationCue(step, PresentationCueKind.Roll, step.Id, payload);
+        }
+
         private static IEnumerable<PresentationCue> Movements(ActionLogStep step)
         {
             foreach (var move in step.Movements)
@@ -150,11 +221,10 @@ namespace Wotr.Client
         {
             var covered = Covered(steps);
             var owner = new Dictionary<ActionFigureChange, ActionLogStep>();
-            var seen = new HashSet<string>();
-            foreach (var step in steps)
-                foreach (var change in step.Facts.Figures)
-                    if (!covered.Contains(FigureId(change)) && seen.Add(FigureCues.Key(change)) && shown.Contains(step))
-                        owner[change] = step;
+            var records = steps.SelectMany(step => step.Facts.Figures.Select(change => (change, step)));
+            foreach (var (change, step) in FigureCues.Once(records))
+                if (!covered.Contains(FigureCues.FigureId(change)) && shown.Contains(step))
+                    owner[change] = step;
             var anchored = new Dictionary<ActionLogStep, List<PresentationCue>>();
             foreach (var (kind, region, changes) in FigureCues.Classify(owner.Keys, data))
             {
@@ -170,24 +240,38 @@ namespace Wotr.Client
             return anchored;
         }
 
+        // UI-486 (owner, 2026-11-04): only a battle shows its losses itself (BattlePresenter, its window). An event's losses
+        // flow as figure changes: a trace, a signed count and the staged stack (FigureChangePresenter).
         private static HashSet<string> Covered(List<ActionLogStep> steps)
         {
             var moved = steps.SelectMany(step => step.Movements).SelectMany(move => move.Participants).Select(p => p.Id);
-            var lost = steps.SelectMany(step => step.Facts.LossDetails).SelectMany(loss => new[] { loss.Figure.Id, loss.ReplacementId });
+            var lost = steps.Where(InBattle).SelectMany(step => step.Facts.LossDetails).SelectMany(loss => new[] { loss.Figure.Id, loss.ReplacementId });
             return moved.Concat(lost).Where(id => id.Length > 0).ToHashSet();
         }
 
-        private static string FigureId(ActionFigureChange change) => change.After?.Id ?? change.Before?.Id ?? "";
+        private static bool InBattle(ActionLogStep step) => step.Context.BattleId.Length > 0 || step.Facts.Battle != null;
 
         private static IEnumerable<PresentationCue> Losses(ActionLogStep step)
         {
-            if (step.Facts.LossDetails.Count == 0)
+            if (step.Facts.LossDetails.Count == 0 || !InBattle(step))
                 yield break;
             var payload = new CuePayload();
             payload.Losses.AddRange(step.Facts.LossDetails);
             payload.Regions.AddRange(step.Facts.LossDetails.Select(loss => loss.RegionId));
             var key = string.Join(",", step.Facts.LossDetails.Select(loss => loss.Figure.Id + ":" + loss.Operation).OrderBy(id => id, System.StringComparer.Ordinal));
             yield return new PresentationCue(step, PresentationCueKind.Losses, key, payload);
+        }
+
+        // UI-491 (owner, 2026-11-04): a decision that changes nothing visible reads from one short caption, before what it
+        // causes. Its key is one per side and round: the record may repeat a commit, and a later round decides anew. A
+        // committed card is no quiet decision: it stays a back until its reveal.
+        private static IEnumerable<PresentationCue> BattleChoices(ActionLogStep step)
+        {
+            if (step.Context.BattleId.Length == 0 || !step.Actor.HasValue || !BattleChoiceCaption.Quiet(step))
+                yield break;
+            var round = step.Facts.Battle?.Round ?? step.Context.BattleRound ?? 0;
+            yield return new PresentationCue(step, PresentationCueKind.BattleChoice,
+                step.Command + "/" + step.Actor + "/" + step.Context.BattleId + "/" + round, new CuePayload());
         }
 
         // The first public snapshot of a battle is its attack (no attack movement is recorded) when it is the opening one;
@@ -259,11 +343,45 @@ namespace Wotr.Client
             return new PresentationCue(step, PresentationCueKind.Control, change.RegionId + "/" + change.After, payload);
         });
 
-        // The opponent's dice that changed face or place, except the die that paid for the action (its cost cue shows it).
+        // UI-344: a Kings sovereign's change, once per state (the producer step and the primary step record the same); the
+        // tiles the action revealed (an attempt's returned draws) stand with it, with his corruption when it is one.
+        private static IEnumerable<PresentationCue> Sovereigns(ActionLogStep step, IReadOnlyList<string> revealed, bool corruption) =>
+            step.Facts.Sovereigns.Select(sovereign =>
+            {
+                var payload = new CuePayload { Sovereign = sovereign };
+                payload.Regions.Add(sovereign.RegionId);
+                if (!corruption || sovereign.Status == SovereignStatus.Corrupted)
+                    payload.Tiles.AddRange(revealed);
+                return new PresentationCue(step, PresentationCueKind.Sovereign,
+                    sovereign.Id + "/" + sovereign.Status + "/" + sovereign.Tiles.Count + "/" + sovereign.Corruption, payload);
+            });
+
+        // The Corruption tiles the revision revealed, each recorded by its own automatic step.
+        private static List<string> RevealedTiles(IEnumerable<ActionLogStep> steps) => steps
+            .Where(step => step.Kind == RevealedTile).SelectMany(step => step.Facts.Targets).Distinct().ToList();
+
+        private const string RevealedTile = "CorruptionTileRevealed";
+
+        // The opponent's dice that changed face or place, except the die that is paying for the action (its cost cue shows
+        // it). UI-344 (D4): and the player's own die the opponent rerolled in place (Dismay re-rolls a Ruler die); a reroll is
+        // a beat even when it lands on the same face.
+        // UI-487 (owner, 2026-11-04): the paying die's final move is its own cue when it leaves the pool (spent, out, into the
+        // Hunt Box); once it returns to the pool (Vilya keeps it, a new turn recovers it) it is an ordinary change of a die.
         private static IEnumerable<PresentationCue> Dice(ActionLogStep step, ActionMemory memory, Side? you) => step.Facts.Dice
-            .Where(die => die.Owner != you && !memory.CostDice.Contains(die.Id) && (die.Before != die.After || die.From != die.To))
-            .Select(die => new PresentationCue(step, PresentationCueKind.Die, die.Id + "/" + die.From + ">" + die.To + "/" + die.After,
-                new CuePayload { Die = die }));
+            .Where(die => (die.Owner != you || Rerolled(step, die, you)) && !Paying(die, memory) &&
+                (die.Before != die.After || die.From != die.To || Rerolled(step, die, you)))
+            .Select(die => new PresentationCue(step, Leaves(die, memory) ? PresentationCueKind.SpentDie : PresentationCueKind.Die,
+                die.Id + "/" + die.From + ">" + die.To + "/" + die.After, new CuePayload { Die = die }));
+
+        private static bool Paying(ActionDieChange die, ActionMemory memory) =>
+            memory.CostDice.Contains(die.Id) && die.To == DieLocation.Resolving;
+
+        // Only a paid die is ever Resolving, so one whose payment is older than the baseline still leaves as paid.
+        private static bool Leaves(ActionDieChange die, ActionMemory memory) =>
+            (memory.CostDice.Contains(die.Id) || die.From == DieLocation.Resolving) && !DiceOutsidePool.InPool(die.To);
+
+        private static bool Rerolled(ActionLogStep step, ActionDieChange die, Side? you) =>
+            step.Actor.HasValue && step.Actor != you && die.From == die.To && die.Before.HasValue && die.After.HasValue;
 
         private static IEnumerable<PresentationCue> Resources(ActionLogStep step) => step.Facts.Resources.Select(resource =>
             new PresentationCue(step, PresentationCueKind.Resource, resource.Kind + "/" + resource.Id + "/" + resource.From + ">" + resource.To,

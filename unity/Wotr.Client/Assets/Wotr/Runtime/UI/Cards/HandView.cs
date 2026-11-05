@@ -59,8 +59,9 @@ namespace Wotr.Client
         {
             view = latest;
             var battle = view.Battle != null;
+            // UI-272: the Shadow cards Wind from the West inspects stand in the drawer while one is chosen.
             var shown = view.Hand.Concat(view.Battle?.OwnTableCombatCards ?? Enumerable.Empty<string>()).Concat(view.Options.Where(o => o.Kind == CommandKind.CommitCombatCard)
-                .SelectMany(o => o.EligibleIds)).Distinct().ToList();
+                .SelectMany(o => o.EligibleIds)).Concat(InspectedHand.Cards(view)).Distinct().ToList();
             if (grid.parent != root)
             {
                 root.Clear();
@@ -85,6 +86,7 @@ namespace Wotr.Client
                 }
                 card.Slot.userData = view.Decision?.Kind == DecisionKind.CombatCard ? null : new DraftToken(DraftObject.Card, id);
                 card.Apply(view.Configuration, battle, !view.Hand.Contains(id));
+                card.Slot.EnableInClassList("inspected-card", InspectedHand.Contains(view, id));
             }
             Layout();
             root.EnableInClassList("excess-hand", shown.Count > 6);
@@ -202,8 +204,9 @@ namespace Wotr.Client
         }
 
         // UI-222: the hand is where the player discards: an excess hand, a removal cost (A Power too Great, Tom
-        // Bombadil) or an effect's choice of a card from this hand (We Won't Go Back).
-        private static readonly string[] HandDiscardChoices = { "SmeagolCorruption" };
+        // Bombadil) or an effect's choice of a card from this hand (We Won't Go Back); UI-272: or from the Shadow's hand
+        // that Wind from the West inspects.
+        private static readonly string[] HandDiscardChoices = { "SmeagolCorruption", InspectedHand.Presentation };
 
         private bool Discarding() => draft.Kind is CommandKind.DiscardCards or CommandKind.DiscardProtection ||
             draft.Kind == CommandKind.ChooseEffect && DiscardChoice(view);
@@ -211,7 +214,8 @@ namespace Wotr.Client
         // An effect's choice of a hand card that discards it (UI-326 dissolves it).
         public static bool DiscardChoice(PlayerView view) => HandDiscardChoices.Contains(view?.Decision?.Presentation);
 
-        private bool HandChoice(string id) => draft.Kind == CommandKind.ChooseEffect && Discarding() && view.Hand.Contains(id) &&
+        private bool HandChoice(string id) => draft.Kind == CommandKind.ChooseEffect && Discarding() &&
+            (view.Hand.Contains(id) || InspectedHand.Contains(view, id)) &&
             DraftOptions.For(view, draft)?.EligibleIds.Contains(id) == true;
 
         private bool Eligible(string id)
@@ -246,7 +250,7 @@ namespace Wotr.Client
             if (draft.Kind == CommandKind.DiscardProtection)
                 return eligible ? "Click to discard as the cost · both cards remove the protection" : "Cannot pay this cost";
             if (HandChoice(id))
-                return "Click to discard this card";
+                return InspectedHand.Contains(view, id) ? "Click to discard this card from the Shadow's hand" : "Click to discard this card";
             if (view.Decision?.Kind == DecisionKind.CombatCard)
                 return CombatCardCondition.Eligible(view)?.Contains(id) == false ? CombatCardCondition.Text(id)
                     : "Choose Combat cards in the battle window";
@@ -262,7 +266,7 @@ namespace Wotr.Client
         private string PaidWith(string id)
         {
             var face = CardActions.Cost(view, draft, context, id)?.Face;
-            return face.HasValue && view.Decision?.Kind == DecisionKind.Action ? " · " + face + " die" : "";
+            return face.HasValue && view.Decision?.Kind == DecisionKind.Action ? " · " + DieDescriptions.Face(face.Value) + " die" : "";
         }
     }
 }

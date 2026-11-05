@@ -8,60 +8,52 @@ namespace Wotr.EditorTests
 {
     public sealed class ResourcePanelTests
     {
+        // UI-276 (EXP-15 D7, D20): Dismay is made on the glowing Ruler dice — a die's click spends the first Dismay token,
+        // since which one makes no difference — and keeping the tokens is the console's Pass; no panel hosts it.
         [Test]
-        public void ClosingPreservesDraftAndRefreshDoesNotReopenTheSameDecision()
+        public void DismayIsTheRulerDiesClickAndKeepingIsThePass()
         {
-            var panel = new ResourcePanel();
-            var tray = new VisualElement();
-            var dock = new VisualElement();
-            dock.Add(tray);
-            panel.Attach(tray, dock);
             var view = View(DecisionKind.Dismay);
-            var draft = new TurnDraft();
-            draft.Choose(CommandKind.UseDismay);
-            draft.Change(p => p.Ids.Add("token"));
-            panel.Context(view, draft);
-            Assert.IsTrue(panel.IsOpen);
-            Assert.AreSame(panel.DecisionHost, tray.parent);
-            panel.Close();
-            view.Revision++;
-            panel.Context(view, draft);
-            Assert.IsFalse(panel.IsOpen);
-            CollectionAssert.AreEqual(new[] { "token" }, draft.Payload.Ids);
-            panel.Open();
-            Assert.IsTrue(panel.IsOpen);
-            panel.Close();
-            view.Decision.Id = "next";
-            panel.Context(view, draft);
-            Assert.IsTrue(panel.IsOpen);
+            view.You = Side.Shadow;
             view.DecisionOwner = Side.Shadow;
-            panel.Context(view, draft);
-            Assert.IsFalse(panel.IsOpen);
-            Assert.AreEqual(DisplayStyle.None, panel.Tab.style.display.value);
-            Assert.AreSame(dock, tray.parent);
+            view.Options.Add(new ActionOption
+            {
+                Kind = CommandKind.UseDismay, Enabled = true, EligibleIds = { "kings.token.theoden", "kings.token.dain" }, EligibleDice = { "ruler" }
+            });
+            view.Options.Add(new ActionOption { Kind = CommandKind.DeclineDismay, Enabled = true });
+            Assert.IsTrue(ResourcePresentation.PoolDecision(view));
+            Assert.AreEqual(DecisionHost.Dice, DecisionRoutes.Of(view));
+            StringAssert.StartsWith("Click the glowing Ruler die in the top bar to reroll it with Dismay", ResourcePresentation.PoolHint(view));
+            Assert.AreEqual("kings.token.theoden", DismayChoice.Token(view, "ruler"));
+            Assert.AreEqual("", DismayChoice.Token(view, "other"));
+            var draft = new TurnDraft();
+            DismayChoice.Choose(draft, "ruler", DismayChoice.Token(view, "ruler"));
+            Assert.AreEqual(CommandKind.UseDismay, draft.Kind);
+            Assert.AreEqual("ruler", draft.Payload.DieId);
+            CollectionAssert.AreEqual(new[] { "kings.token.theoden" }, draft.Payload.Ids);
+            Assert.IsTrue(draft.Ready(view.Options[0]));
+            var pass = OptionalDecline.Option(view, new TurnDraft());
+            Assert.AreEqual(CommandKind.DeclineDismay, pass.Command);
+            Assert.AreEqual("Pass · Keep your Dismay tokens", pass.Tooltip);
+            Assert.AreEqual("Or Pass to keep your Dismay tokens.", OptionalDecline.Hint(view, new TurnDraft()));
+            Assert.IsFalse(DraftOptions.CanSelectToken(view, "kings.token.theoden"), "The die's click picks the token.");
+            view.You = Side.FreePeoples;
+            Assert.AreEqual("", DismayChoice.Token(view, "ruler"), "The opponent's Dismay lights nothing.");
         }
 
-        [Test]
-        public void OnlyOwnResourceWindowsUseThisHostAndNeverReplaceHuntOrNarya()
+        // UI-264: the special-die pick and the Ruler discard are made on the pool's lit dice.
+        [TestCase(DecisionKind.SpecialDieChoice)]
+        [TestCase(DecisionKind.RulerDiscard)]
+        public void PoolDecisionsAreMadeOnThePoolDice(DecisionKind kind)
         {
-            var view = View(DecisionKind.SpecialDieChoice);
-            Assert.IsTrue(ResourcePresentation.OwnsDecision(view, null));
+            var view = View(kind);
+            Assert.IsTrue(ResourcePresentation.PoolDecision(view));
+            // UI-273: the Ruler discard's hint says the click discards and when the die returns.
+            StringAssert.StartsWith(kind == DecisionKind.RulerDiscard ? "Click a glowing die to discard it" : "Click a highlighted die",
+                ResourcePresentation.PoolHint(view));
             view.You = Side.Shadow;
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, null));
-            view.You = Side.FreePeoples;
-            view.Decision.Kind = DecisionKind.Reaction;
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, null));
-            view.Decision.Kind = DecisionKind.Action;
-            var draft = new TurnDraft();
-            draft.Choose(CommandKind.UseNarya);
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft));
-            // UI-161: the base Elven Ring is used at its console socket, the dice and the result popover.
-            draft.Choose(CommandKind.UseRing);
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft));
-            view.Decision.Kind = DecisionKind.SpecialDieChoice;
-            Assert.IsTrue(ResourcePresentation.OwnsDecision(view, draft));
-            view.Winner = Side.Shadow;
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft));
+            Assert.IsFalse(ResourcePresentation.PoolDecision(view), "The opponent's pick lights nothing.");
+            Assert.AreEqual("", ResourcePresentation.PoolHint(view));
         }
 
         [Test]
@@ -74,7 +66,7 @@ namespace Wotr.EditorTests
                 RecoveryDescription = "Removed at Recover only if Gandalf the White is then in play."
             };
             // UI-97: one short line; the conditional recovery stays in the Why? and help panels.
-            Assert.AreEqual("Vilya · Army · Remove rune", ExpansionLabels.DieDetail(die));
+            Assert.AreEqual("Vilya · Army · ★ Remove", ExpansionLabels.DieDetail(die));
             StringAssert.DoesNotContain(die.RecoveryDescription, ExpansionLabels.DieDetail(die));
             StringAssert.DoesNotContain("Removed next recovery after use", ExpansionLabels.DieDetail(die));
         }
@@ -123,7 +115,7 @@ namespace Wotr.EditorTests
             var view = CouncilView(false);
             var draft = CouncilDraft();
             Assert.IsTrue(ResourcePresentation.CanSelectCouncil(view, ExpansionDraft.CouncilPolitics));
-            var entry = ResourcePresentation.CouncilChoices(view, draft).Single();
+            var entry = ComponentActions.For(view, draft).Single();
             Assert.AreEqual(CommandKind.EnterCharacter, entry.Kind);
             Assert.IsTrue(entry.Enabled);
             Assert.IsTrue(ComponentActions.Select(view, draft, entry));
@@ -146,13 +138,82 @@ namespace Wotr.EditorTests
             Assert.IsFalse(token.ClassListContains("legal-target"), "An expired entry loses its target highlight.");
         }
 
+        // UI-347 (EXP-15 D13): a medallion's click starts its printed use at once; when a Chieftain can enter with the token,
+        // UI-388: its first click marks it and lights both uses (his row and the printed use's objects), and a second
+        // click releases it; during his entry the token is its cost. No Dice & tokens panel step remains.
+        [Test]
+        public void ACouncilMedallionStartsItsUseOrMarksItForAChieftain()
+        {
+            var view = CouncilView(true);
+            Assert.AreEqual(CouncilClick.Mark, ResourcePresentation.Clicked(view, new TurnDraft(), ExpansionDraft.CouncilPolitics));
+            var draft = CouncilDraft();
+            Assert.AreEqual(CouncilClick.Release, ResourcePresentation.Clicked(view, draft, ExpansionDraft.CouncilPolitics));
+            Assert.IsTrue(ResourcePresentation.CouncilMarked(draft, ExpansionDraft.CouncilPolitics));
+            var hint = ResourcePresentation.CouncilHint(view, draft);
+            StringAssert.StartsWith("Click a lit Chieftain's row", hint);
+            // UI-434: both places within the console's two lines.
+            Assert.AreEqual("Click a lit Chieftain's row in Characters to enter him, or a glowing Shadow nation's token or → in Politics.", hint);
+            Assert.IsNotNull(PoliticalActions.AdvanceOption(view, draft, new ActionDieContext()), "Its printed use is lit beside the entry.");
+            var entry = ComponentActions.For(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
+            Assert.IsTrue(ComponentActions.Select(view, draft, entry));
+            Assert.AreEqual(CouncilClick.EntryCost, ResourcePresentation.Clicked(view, draft, ExpansionDraft.CouncilPolitics));
+
+            var plain = CouncilView(true);
+            plain.Options.RemoveAll(o => o.Kind == CommandKind.EnterCharacter);
+            Assert.AreEqual(CouncilClick.Use, ResourcePresentation.Clicked(plain, new TurnDraft(), ExpansionDraft.CouncilPolitics));
+            plain.You = Side.FreePeoples;
+            Assert.AreEqual(CouncilClick.None, ResourcePresentation.Clicked(plain, new TurnDraft(), ExpansionDraft.CouncilPolitics));
+        }
+
+        // UI-347 (D13): an entry that requires the only token it may use takes it, so no button asks for it.
+        [Test]
+        public void AChieftainsRequiredOnlyTokenIsTakenWithoutAButton()
+        {
+            var view = CouncilView(false);
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = "muster");
+            var entry = ComponentActions.For(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
+            Assert.IsTrue(ComponentActions.Select(view, draft, entry));
+            Assert.AreEqual(ExpansionDraft.CouncilPolitics, draft.Payload.CouncilTokenId);
+        }
+
+        // UI-276 (EXP-15 D19): the Ruler tokens are graphics in the pool with their king's nation emblem: the Free Peoples'
+        // lit while a die can use one; the Shadow's Dismay tokens are information, spent by a Ruler die's click.
+        [Test]
+        public void RulerTokensAreCoinsWithTheirKingsEmblem()
+        {
+            var view = View(DecisionKind.Action);
+            view.Sovereigns.Add(new SovereignView { Id = "kings.sovereign.theoden", Title = "Théoden", Nation = "rohan" });
+            view.RulerTokens.Add(new RulerTokenView { Id = "kings.token.theoden", SovereignId = "kings.sovereign.theoden", Location = "free-peoples" });
+            view.RulerTokenActions.Add(new RulerTokenActionOption { TokenId = "kings.token.theoden", AbilityId = "ability", Action = new ActionOption() });
+            var pool = new ActionPoolView(_ => { }, _ => { });
+            var root = new VisualElement();
+            pool.Apply(root, view, Side.FreePeoples, true);
+            var token = root.Q<Button>("ruler-token-kings.token.theoden");
+            Assert.IsTrue(token.ClassListContains("ruler-token-free") && token.ClassListContains("ruler-token-lit"));
+            Assert.IsTrue(token.Q("ruler-token-emblem").ClassListContains("nation-emblem-rohan"));
+            Assert.IsInstanceOf<DraftToken>(token.userData);
+
+            view.You = Side.Shadow;
+            view.DecisionOwner = Side.Shadow;
+            view.RulerTokens[0].Location = "dismay";
+            view.RulerTokenActions.Clear();
+            root = new VisualElement();
+            pool.Apply(root, view, Side.Shadow, true);
+            var dismay = root.Q<Button>("ruler-token-kings.token.theoden");
+            Assert.IsTrue(dismay.ClassListContains("ruler-token-dismay"));
+            Assert.IsFalse(dismay.ClassListContains("ruler-token-lit"));
+            Assert.IsNull(dismay.userData, "A Dismay token is not picked by hand.");
+            StringAssert.Contains("Spent by clicking a glowing Ruler die", dismay.tooltip);
+        }
+
         [Test]
         public void CouncilOffersBothUsesAndSuppressesUnrelatedComponentsWithoutChoosingAnAction()
         {
             var view = CouncilView(true);
             view.Options.Add(new ActionOption { Kind = CommandKind.DiscardDie, EligibleDice = { "muster" } });
             var draft = CouncilDraft("muster");
-            var choices = ResourcePresentation.CouncilChoices(view, draft).ToList();
+            var choices = ComponentActions.For(view, draft).ToList();
             CollectionAssert.AreEquivalent(new[] { CommandKind.UseCouncilToken, CommandKind.EnterCharacter }, choices.Select(c => c.Kind));
             Assert.IsTrue(choices.All(c => c.Enabled));
             Assert.IsNull(draft.Kind);
@@ -181,7 +242,7 @@ namespace Wotr.EditorTests
                 edit();
                 if (complete)
                     sends++;
-            }, () => false);
+            }, () => false, _ => { });
             using var actions = new ActionContextInteraction(board, edit => edit(), () => false);
             resources.Refresh(view, draft);
             Assert.IsTrue(token.ClassListContains("selected"));
@@ -200,7 +261,7 @@ namespace Wotr.EditorTests
             Assert.IsFalse(actions.ArmyActive);
             Assert.AreEqual(0, sends);
             Assert.IsFalse(draft.Reconcile(view));
-            var entry = ResourcePresentation.CouncilChoices(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
+            var entry = ComponentActions.For(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
             Assert.IsTrue(ComponentActions.Select(view, draft, entry));
             Assert.AreEqual("ruler", draft.Payload.DieId);
             Assert.AreEqual(ExpansionDraft.CouncilPolitics, draft.Payload.CouncilTokenId);
@@ -246,7 +307,7 @@ namespace Wotr.EditorTests
         {
             var view = CouncilView(false);
             var draft = CouncilDraft();
-            var entry = ResourcePresentation.CouncilChoices(view, draft).Single();
+            var entry = ComponentActions.For(view, draft).Single();
             Assert.IsTrue(ComponentActions.Select(view, draft, entry));
             draft.Change(p => p.RegionId = "near-harad");
             var complete = false;
@@ -254,7 +315,7 @@ namespace Wotr.EditorTests
             {
                 edit();
                 complete = submit;
-            }, () => false);
+            }, () => false, _ => { });
             resources.Refresh(view, draft);
             Assert.IsTrue(resources.Die("ruler"));
             Assert.IsTrue(complete);
@@ -270,7 +331,7 @@ namespace Wotr.EditorTests
             var draft = CouncilDraft();
             view.You = Side.FreePeoples;
             Assert.IsFalse(ResourcePresentation.CanSelectCouncil(view, ExpansionDraft.CouncilPolitics));
-            Assert.IsEmpty(ResourcePresentation.CouncilChoices(view, draft));
+            Assert.IsEmpty(ComponentActions.For(view, draft));
             Assert.IsEmpty(ResourcePresentation.CouncilDice(view, draft));
             view.You = Side.Shadow;
             view.Winner = Side.FreePeoples;

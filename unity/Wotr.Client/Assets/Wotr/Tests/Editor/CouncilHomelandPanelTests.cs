@@ -11,55 +11,61 @@ namespace Wotr.EditorTests
         private const string Gimli = "base.character.gimli";
         private const string Legolas = "base.character.legolas";
 
+        // UI-270: both private setup steps are held by the Fellowship panel; the Shadow's token choice is made in its pool.
         [Test]
-        public void HomelandIsANewPrivateContextAndTokenReleasesItsOnlyTray()
+        public void TheSetupStepsAreHeldByTheFellowshipPanelAndTheTokenByThePool()
         {
             var view = View();
-            var panel = new CompanionSetupPanel();
-            var tray = new VisualElement();
-            var dock = new VisualElement();
-            dock.Add(tray);
-            panel.Attach(tray, dock);
-            view.Decision.Id = "versions";
+            var draft = Draft(view);
+            Assert.AreEqual(DecisionHost.Fellowship, DecisionRoutes.Of(view));
+            Assert.IsTrue(FellowshipActions.UsesPanel(view, draft));
+            Assert.IsTrue(CompanionSetupPresentation.Homelands(view));
             view.Decision.Kind = DecisionKind.CouncilVersions;
-            panel.Context(view);
-            panel.Close();
-            view.Decision.Id = "homelands";
-            view.Decision.Kind = DecisionKind.CouncilHomelands;
-            panel.Context(view);
-            Assert.IsTrue(panel.IsOpen);
-            Assert.AreSame(panel.DecisionHost, tray.parent);
-            Assert.AreEqual("Homelands", panel.Tab.text);
-            panel.Close();
-            view.Revision++;
-            panel.Context(view);
-            Assert.IsFalse(panel.IsOpen);
+            Assert.AreEqual(DecisionHost.Fellowship, DecisionRoutes.Of(view));
+            Assert.IsTrue(FellowshipActions.UsesPanel(view, draft));
             view.Decision.Kind = DecisionKind.CouncilToken;
+            view.You = Side.Shadow;
             view.DecisionOwner = Side.Shadow;
-            panel.Context(view);
-            Assert.IsFalse(panel.Active);
-            Assert.AreSame(dock, tray.parent);
+            Assert.AreEqual(DecisionHost.Dice, DecisionRoutes.Of(view));
+            Assert.IsFalse(FellowshipActions.UsesPanel(view, new TurnDraft()));
+            Assert.IsTrue(ResourcePresentation.PoolDecision(view));
         }
 
+        // UI-482 (owner, 2026-11-04): with no candidate the client answers the step itself, so the console only says what
+        // happens and no required notice asks for what cannot be done; the panel holds no instruction at all.
         [Test]
-        public void NoCandidatesStillRequiresOneExplicitEmptyConfirmation()
+        public void NoCandidatesIsAnEmptyChoiceTheConsoleOnlyAnnounces()
         {
             var view = View();
             var option = view.Options.Single();
             option.CharacterActions.Clear();
             var draft = Draft(view);
             var root = new VisualElement();
-            var edits = 0;
-            var choices = new CouncilHomelandChoices(root, view, option, draft, action => { edits++; action(); }, BoardPresentation.Load());
-            choices.Refresh();
+            new CouncilChoices(root, view, draft, _ => { }, null).Refresh();
             Assert.IsTrue(CouncilHomelandPresentation.Owns(view));
+            Assert.IsTrue(CouncilHomelandPresentation.NothingToPlace(view));
             Assert.IsTrue(draft.Ready(option));
             Assert.IsEmpty(draft.Payload.Placements);
             Assert.IsEmpty(draft.Payload.CharacterId);
-            Assert.AreEqual(0, edits);
-            Assert.IsFalse(root.Q<Button>("homeland-stay").enabledSelf);
-            Assert.AreEqual("No tokens", root.Q<Label>("homeland-token-effect").text);
-            Assert.IsNotNull(root.Q<VisualElement>("council-homeland-choices"));
+            Assert.AreEqual(0, root.childCount, "Neither instruction nor tokens in the panel.");
+            Assert.AreEqual("All companions stay with the Fellowship.", CouncilHomelandPresentation.Hint(view, draft));
+            Assert.AreEqual("All companions stay with the Fellowship · ✓ confirms.", CouncilHomelandPresentation.AllStayByHand);
+            var state = TurnConsoleState.For(view, draft, new ActionDieContext(), id => id);
+            Assert.AreEqual(CouncilHomelandPresentation.AllStay, state.Guidance);
+            StringAssert.StartsWith(CouncilHomelandPresentation.TokenDetail(0), state.GuidanceDetail);
+            StringAssert.Contains(CouncilHomelandPresentation.PoliticsToken, state.GuidanceDetail);
+            Assert.IsNull(DecisionAttention.For(view), "No \"Place Companions\" notice for the moment of the pause.");
+        }
+
+        // UI-482: the same step with a candidate is a real decision, and its notice stays.
+        [Test]
+        public void ACandidateKeepsTheHintsConfirmAndTheRequiredNotice()
+        {
+            var view = View();
+            var draft = Draft(view);
+            StringAssert.EndsWith("· ✓ confirms.", CouncilHomelandPresentation.Hint(view, draft));
+            Assert.IsFalse(CouncilHomelandPresentation.NothingToPlace(view));
+            Assert.IsNotNull(DecisionAttention.For(view));
         }
 
         [Test]
@@ -82,51 +88,83 @@ namespace Wotr.EditorTests
             Assert.IsTrue(draft.Ready(option));
         }
 
-        [TestCase(0, "No tokens", "homeland-token-none")]
-        [TestCase(1, "Shadow chooses one", "homeland-token-choice")]
-        [TestCase(2, "Shadow receives both", "homeland-token-granted")]
-        [TestCase(5, "Shadow receives both", "homeland-token-granted")]
-        public void TokenPreviewDistinguishesNoneChoiceAndAutomaticPair(int count, string expected, string style)
+        // UI-482 (owner, 2026-11-04): the console's hint names the tokens the ✓ gives the Shadow; its tooltip keeps the full
+        // hint, what the ✓ gives and what each token does.
+        [TestCase(0, "")]
+        [TestCase(1, "Shadow chooses one Council token")]
+        [TestCase(2, "Shadow receives both Council tokens")]
+        [TestCase(5, "Shadow receives both Council tokens")]
+        public void TheConsoleHintDistinguishesNoneChoiceAndAutomaticPair(int count, string expected)
         {
             var view = View();
             var draft = Draft(view);
             var root = new VisualElement();
-            var choices = new CouncilHomelandChoices(root, view, view.Options.Single(), draft, action => action(), BoardPresentation.Load());
+            new CouncilChoices(root, view, draft, _ => { }, null).Refresh();
             for (var i = 0; i < count; i++)
                 draft.Payload.Placements.Add(new UnitPlacementChoice { UnitId = "companion-" + i, RegionId = "the-shire" });
-            choices.Refresh();
-            Assert.AreEqual(expected, root.Q<Label>("homeland-token-effect").text);
-            Assert.IsTrue(root.Query<Label>(className: "homeland-token").ToList().All(token => token.ClassListContains(style)));
+            Assert.AreEqual(expected, CouncilHomelandPresentation.TokenEffect(count));
+            var hint = CouncilHomelandPresentation.Hint(view, draft);
+            StringAssert.EndsWith("✓ confirms.", hint);
+            if (count == 0)
+                StringAssert.DoesNotContain("Council token", hint);
+            else
+                StringAssert.Contains(" · " + expected + " · ", hint);
+            var state = TurnConsoleState.For(view, draft, new ActionDieContext(), id => id);
+            Assert.AreEqual(hint, state.Guidance);
+            StringAssert.StartsWith(hint + "\n", state.GuidanceDetail);
+            StringAssert.Contains(CouncilHomelandPresentation.TokenDetail(count), state.GuidanceDetail);
+            StringAssert.Contains("Politics: advance a Shadow nation politically, without a die.", state.GuidanceDetail);
+            StringAssert.Contains("Travel: move Nazgûl and Minions, without a die.", state.GuidanceDetail);
+            Assert.AreEqual(0, root.childCount, "The panel shows no token line.");
             Assert.IsEmpty(view.CouncilTokens, "Preview never grants a resource.");
         }
 
+        // UI-270: the homelands on the Fellowship panel's portraits: each companion who may leave glows and its tooltip
+        // names its homelands and its version's nation; a placed one shows where it starts; destinations stay on the map.
         [Test]
-        public void PortraitUsesOwnVersionAndDoesNotInventANationIcon()
+        public void ThePortraitsOfferTheHomelandsAndShowWhereACompanionStarts()
         {
             var view = View();
-            var root = new VisualElement();
-            var choices = new CouncilHomelandChoices(root, view, view.Options.Single(), Draft(view), action => action(), BoardPresentation.Load());
-            choices.Refresh();
-            var gimli = root.Q<Button>("homeland-character-" + Gimli);
-            Assert.AreEqual("—", gimli.Q<Label>("homeland-nation").text);
+            var draft = Draft(view);
+            var roster = new FellowshipRoster { RegionName = id => id == "iron-hills" ? "Iron Hills" : id };
+            roster.Apply(view);
+            roster.Context(view, draft, new ActionDieContext(), true);
+            var gimli = roster.Root.Q<Button>("fellowship-portrait-" + Gimli);
+            var legolas = roster.Root.Q<Button>("fellowship-portrait-" + Legolas);
+            Assert.IsTrue(gimli.ClassListContains("legal-target"));
+            Assert.IsTrue(gimli.ClassListContains(ChoiceGlow.ClassName));
+            StringAssert.StartsWith("Click, then a lit homeland", gimli.tooltip);
             StringAssert.Contains("does not activate", gimli.tooltip);
-            Assert.AreEqual("◇ Elves", root.Q<Button>("homeland-character-" + Legolas).Q<Label>("homeland-nation").text);
-            Assert.IsNull(root.Q<Button>("homeland-" + Gimli + "-iron-hills"), "Destinations belong to the map.");
+            StringAssert.Contains("activates the Elves", legolas.tooltip);
+            Assert.AreEqual(DraftObject.CouncilPortrait, ((DraftToken)gimli.userData).Object, "A portrait may be dragged to its homeland.");
+            draft.Change(p => p.CharacterId = Gimli);
+            Assert.IsTrue(CouncilDraft.Region(draft, view.Options.Single(), "iron-hills"));
+            roster.Context(view, draft, new ActionDieContext(), true);
+            Assert.IsTrue(gimli.ClassListContains("selected"));
+            Assert.AreEqual("→ Iron Hills", gimli.Q<Label>("homeland-location").text);
+            Assert.AreEqual(DisplayStyle.None, legolas.Q<Label>("homeland-location").style.display.value);
+            Assert.IsNull(roster.Root.Q<Button>("homeland-" + Gimli + "-iron-hills"), "Destinations belong to the map.");
+            view.Decision.Kind = DecisionKind.FellowshipPhase;
+            roster.Context(view, draft, new ActionDieContext(), true);
+            Assert.AreEqual(DisplayStyle.None, gimli.Q<Label>("homeland-location").style.display.value);
+            Assert.AreEqual(DraftObject.FellowshipPortrait, ((DraftToken)gimli.userData).Object);
         }
 
         [Test]
         public void OpponentAndFinishedGameCannotRenderPrivateCandidates()
         {
             var view = View();
+            var draft = Draft(view);
             view.You = Side.Shadow;
             var root = new VisualElement();
-            var choices = new CouncilHomelandChoices(root, view, view.Options.Single(), new TurnDraft(), action => action(), BoardPresentation.Load());
-            choices.Refresh();
+            new CouncilChoices(root, view, new TurnDraft(), _ => { }, null).Refresh();
             Assert.IsFalse(CouncilHomelandPresentation.Owns(view));
             Assert.AreEqual(0, root.childCount);
+            Assert.IsEmpty(CouncilHomelandPresentation.Hint(view, draft));
+            Assert.IsEmpty(CouncilHomelandPresentation.Detail(view, draft));
             view.You = Side.FreePeoples;
             view.Winner = Side.Shadow;
-            Assert.IsFalse(CompanionSetupPresentation.Owns(view));
+            Assert.IsFalse(CompanionSetupPresentation.Setup(view));
         }
 
         private static TurnDraft Draft(PlayerView view)

@@ -23,12 +23,8 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-enemy-sovereign", ScenarioKind.CardPack))
             {
-                var button = room.Sh.Board.Tray.Q<Button>("effect-choice-kings.sovereign.denethor");
-                Assert.IsTrue(button.text.Contains("4+"));
                 await Layout(room, room.Sh, "sovereign");
-                var revision = room.Sh.Board.View.Revision;
-                CardNetworkTests.Click(button);
-                await room.At(revision + 1);
+                await KingsCardNetworkChecks.ChooseKing(room, room.Sh, "kings.sovereign.denethor", "4+");
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
                 Assert.AreEqual("Region", room.Sh.Board.View.Decision.Presentation);
                 Assert.AreEqual(2, room.Sh.Board.View.Options.Single().EligibleIds.Count);
@@ -39,15 +35,21 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-enemy-army", ScenarioKind.CardPack))
             {
+                // UI-431 (owner's rule, UI-430): the field army and the garrison are the region panel's glowing sections (UI-251),
+                // which the lit region's click opens; neither the console nor the tray has a button for them.
                 MapContourProbe.ClickRegion(room.Sh.Board.Map, "minas-tirith");
-                var field = room.Sh.Board.Tray.Q<Button>("effect-choice-minas-tirith:field");
-                var garrison = room.Sh.Board.Tray.Q<Button>("effect-choice-minas-tirith:garrison");
-                Assert.IsTrue(field.text.Contains("Field"));
-                Assert.IsTrue(garrison.text.Contains("Garrison"));
+                await room.Settle();
+                AssertConsoleOptions(room.Sh);
+                Assert.IsNull(room.Sh.Board.Tray.Q<Button>("effect-choice-minas-tirith:garrison"));
+                StringAssert.Contains("Click to choose the field army because of", BoardDrawnOptionsTests.ForceHeader(room.Sh, false).tooltip);
+                StringAssert.Contains("Click to choose the garrison because of", BoardDrawnOptionsTests.ForceHeader(room.Sh, true).tooltip);
                 Assert.IsFalse(room.Sh.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList().Any(b => b.text.Contains("kings.")));
                 await Layout(room, room.Sh, "army");
+                // The layout pass inspects the played card; the region's click brings its panel back.
+                MapContourProbe.ClickRegion(room.Sh.Board.Map, "minas-tirith");
+                await room.Settle();
                 var revision = room.Sh.Board.View.Revision;
-                CardNetworkTests.Click(garrison);
+                CardNetworkTests.Click(BoardDrawnOptionsTests.ForceHeader(room.Sh, true));
                 await room.At(revision + 1);
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
                 Assert.Greater(room.Fp.Board.View.Revision, revision);
@@ -79,9 +81,7 @@ namespace Wotr.PlayTests
             using (var room = await Connect("kings-enemy-power", ScenarioKind.CardPack))
             {
                 await Layout(room, room.Sh, "power");
-                var revision = room.Sh.Board.View.Revision;
-                Click(room.Sh, "effect-choice-kings.sovereign.denethor");
-                await room.At(revision + 1);
+                await KingsCardNetworkChecks.ChooseKing(room, room.Sh, "kings.sovereign.denethor");
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
                 Assert.AreNotEqual("Sovereign", room.Sh.Board.View.Decision?.Presentation);
             }

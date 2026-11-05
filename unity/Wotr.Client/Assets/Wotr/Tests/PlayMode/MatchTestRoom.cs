@@ -103,6 +103,35 @@ namespace Wotr.PlayTests
             catch { room.Dispose(); throw; }
         }
 
+        // UI-459/UI-461: a scenario of the server's test catalog (TEST-01), started through the test mode: the Free Peoples
+        // user's session owns the test match and its seat plays the other side, each on its own mounted client.
+        public static async Task<MatchTestRoom> ConnectCatalog(string scenario, bool openPanels = true)
+        {
+            var path = Environment.GetEnvironmentVariable("WOTR_CLIENT_TEST_CONFIG");
+            if (string.IsNullOrEmpty(path))
+                Assert.Ignore("Run scripts/test-client.sh for real server integration.");
+            var fixture = JsonConvert.DeserializeObject<Fixture>(File.ReadAllText(path));
+            var room = new MatchTestRoom();
+            room.openPanels = openPanels;
+            try
+            {
+                var owner = await room.Session(fixture.Address, fixture.FreePeoplesUser, fixture.Password, null);
+                var session = await TestScenarioApi.Start(owner, scenario, room.Token);
+                var seat = owner.WithSession(session.Seat);
+                room.privateSessions.Add(seat);
+                var free = session.OwnerSide == Side.FreePeoples;
+                room.Fp = await room.Mount(free ? owner : seat, session.MatchId, null);
+                room.Sh = await room.Mount(free ? seat : owner, session.MatchId, null);
+                room.Fp.Connection.Start();
+                room.Sh.Connection.Start();
+                await room.Until(() => room.Fp.Connected > 0 && room.Sh.Connected > 0);
+                await room.Settle();
+                await room.OpenBattles();
+                return room;
+            }
+            catch { room.Dispose(); throw; }
+        }
+
         private async Task<GameApi> Session(string address, string user, string password, HttpMessageHandler handler)
         {
             if (handler == null) return await BattleTestSessions.Login(address, user, password, Token);
@@ -158,7 +187,7 @@ namespace Wotr.PlayTests
                 submitted.Add(client, new SubmittedChoice { Revision = view.Revision });
             }
             VisualElement button = TrayOrConsole(client, name) ?? Reinforcement(client, name) ?? PanelFigure(client, name) ??
-                ObjectChoice(client, name);
+                ObjectChoice(client, name) ?? FellowshipControl(client, name);
             if (button == null && name.StartsWith("companion-"))
             {
                 if (client.Board.Tray.parent == client.Board.Hunt.DecisionHost)
@@ -174,6 +203,14 @@ namespace Wotr.PlayTests
             }
             CardNetworkTests.Click(button);
         }
+        // UI-269/UI-270: the Council's setup choices on the Fellowship panel's portraits (a portrait, its crown).
+        internal static Button FellowshipControl(MountedMatchClient client, string name)
+        {
+            if (!name.StartsWith("fellowship-portrait-") && !name.StartsWith("starting-guide-"))
+                return null;
+            client.Board.Fellowship.Open();
+            return client.Board.Fellowship.Root.Q<Button>(name);
+        }
         // UI-285: the response object of a table card in the Hunt window's response row.
         internal static Button HuntCard(MountedMatchClient client, string id) => client.Board.Hunt.Root.Q<Button>("effect-choice-" + id);
 
@@ -186,11 +223,11 @@ namespace Wotr.PlayTests
             var id = name.Substring("effect-choice-".Length);
             var view = client.Board.View;
             var tray = client.Board.Tray;
-            // UI-285: a table card's Hunt response is a card object in the Hunt window's response row.
-            if (HuntCardResponses.InRow(view, id))
+            // UI-270: an alternate companion's Guide response is a response object in the Hunt's response row.
+            if (view.Hunt != null && client.Board.Hunt.Root.Q<Button>(name) is { } response)
             {
                 client.Board.Hunt.Open();
-                return HuntCard(client, id);
+                return response;
             }
             if (view.Battle != null)
             {
@@ -230,9 +267,11 @@ namespace Wotr.PlayTests
 
         // UI-214: a card's object-less options and a reaction's responses are buttons in the console, named as in the tray.
         // UI-291: a reaction window is declined with the console's Pass.
+        // UI-370: during the Council's setup the tray's ✓ stands beside Finish phase in the Fellowship panel.
         internal static Button TrayOrConsole(MountedMatchClient client, string name) =>
             name == DeclineName ? client.Board.Console.Actions.Pass
-                : client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name);
+                : client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name) ??
+                client.Board.Fellowship.ActionRow.Q<Button>(name);
 
         internal const string DeclineName = "action-DeclineReaction";
 
@@ -316,6 +355,20 @@ namespace Wotr.PlayTests
                 }
             }
         }
+        // UI-482 (owner, 2026-11-04): the versions' ✓ when no companion gets a homeland. With the Council the client answers
+        // the empty homelands itself and moves on while the Shadow's board may still present the reveal, so the two boards
+        // meet at the step after them, not at the ✓'s own revision (Confirm).
+        public async Task ConfirmVersionsWithoutHomelands(MountedMatchClient client)
+        {
+            var revision = client.Board.View.Revision;
+            var steps = client.Board.View.Configuration.Council ? 2 : 1;
+            var confirm = client.Board.Console.Actions.Confirm;
+            await Until(() => confirm.enabledSelf);
+            await Settle();
+            CardNetworkTests.Click(confirm);
+            await At(revision + steps);
+        }
+
         public async Task Confirm(MountedMatchClient client)
         {
             if (submitted.TryGetValue(client, out var choice))
@@ -351,25 +404,15 @@ namespace Wotr.PlayTests
                 await At(revision + 1);
                 return;
             }
-            // UI-160: a card or ability recruitment plan keeps the decision window closed and is confirmed with the
-            // Reinforcements panel's own ✓.
+            // UI-211: a card's decision whose choices are on the board is confirmed with the console's ✓; UI-381: so is a
+            // recruitment plan, a Council token's Nazgûl or an ability decided in the Characters window, whose tray keeps
+            // its confirmation hidden.
             await Settle();
             var board = client.Board;
-            var planned = board.Reinforcements.Root.Q<Button>("reinforcements-confirm");
-            if (board.Tray.parent == board.DecisionWindow.Dock && !board.DecisionWindow.IsOpen &&
-                board.Tray.Q<Button>("confirm-decision") != null && planned?.style.display.value == DisplayStyle.Flex)
-            {
-                if (board.Reinforcements.Root.style.display.value == DisplayStyle.None)
-                    CardNetworkTests.Click(board.Console.Status.Plaque);
-                await Until(() => planned.enabledInHierarchy && planned.worldBound.width > 0);
-                await Settle();
-                CardNetworkTests.Click(planned);
-                await At(revision + 1);
-                return;
-            }
-            // UI-211: a card's decision whose choices are on the board is confirmed with the console's ✓.
             var console = board.Console.Actions.Confirm;
-            if (board.Tray.parent == board.DecisionWindow.Dock && !board.DecisionWindow.IsOpen && board.Tray.Q<Button>("confirm-decision") != null)
+            var trayConfirm = board.Tray.Q<Button>("confirm-decision");
+            if (trayConfirm != null && (trayConfirm.style.display.value == DisplayStyle.None ||
+                board.Tray.parent == board.DecisionWindow.Dock && !board.DecisionWindow.IsOpen))
             {
                 await Until(() => console.enabledSelf);
                 await Settle();
@@ -408,6 +451,18 @@ namespace Wotr.PlayTests
             await Settle();
             await OpenBattles();
         }
+        // UI-291/UI-347: the console's Pass, which also declines a reaction window or an optional decline.
+        public async Task Pass(MountedMatchClient client, string tooltip = null)
+        {
+            var pass = client.Board.Console.Actions.Pass;
+            await Until(() => pass.enabledInHierarchy);
+            if (tooltip != null)
+                Assert.AreEqual(tooltip, pass.tooltip);
+            var revision = client.Board.View.Revision;
+            CardNetworkTests.Click(pass);
+            await At(revision + 1);
+        }
+
         public async Task Direct(MountedMatchClient client, string button)
         {
             var revision = client.Board.View.Revision;
@@ -434,7 +489,7 @@ namespace Wotr.PlayTests
                 await ArmyGestures.Target(this, client, to);
                 return;
             }
-            Click(client, "action-AttackArmy");
+            // UI-431: a card army event lights its attack targets with its moves; the attack target's click makes the attack.
             client.Board.Map.Select(from);
             await Settle();
             MapContourProbe.ClickRegion(client.Board.Map, to);

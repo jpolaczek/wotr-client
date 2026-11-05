@@ -31,11 +31,20 @@ namespace Wotr.Client
             Toggle.EnableInClassList("selected", active);
             var ended = view.Battle == null || view.Battle.Stage is "Finish" or "Advance" or "Complete";
             Toggle.SetEnabled(available && !sending && (uncertain || active || !ended));
-            Toggle.tooltip = "Private setting. Skip your combat cards in this battle until your hand changes. " +
-                "Ask for cards cancels future skips; a committed choice stays committed.";
-            status.text = sending ? "Saving…" : notice.Length > 0 ? notice :
-                own.LastSkippedBattleId == view.Battle?.Id ? "No card · Round " + own.LastSkippedRound : "";
-            status.tooltip = status.text;
+            Toggle.tooltip = ToggleTooltip(uncertain, active);
+            var skipped = !sending && notice.Length == 0 && own.LastSkippedBattleId == view.Battle?.Id;
+            status.text = sending ? "Saving…" : notice.Length > 0 ? notice : skipped ? "No card · Round " + own.LastSkippedRound : "";
+            status.tooltip = skipped ? "Round " + own.LastSkippedRound + " · Your Combat card was skipped by this setting" : "";
+        }
+
+        // UI-420 (owner): each state of the toggle says what its own click does, rather than one text for both.
+        public static string ToggleTooltip(bool uncertain, bool active)
+        {
+            if (uncertain)
+                return "Check card setting · Recover whether your last change was saved";
+            return active
+                ? "Ask for cards · Choose your Combat cards again in this battle; a committed choice stays committed"
+                : "Skip cards this battle · Fight on without Combat cards until your hand changes · Private setting";
         }
     }
 }

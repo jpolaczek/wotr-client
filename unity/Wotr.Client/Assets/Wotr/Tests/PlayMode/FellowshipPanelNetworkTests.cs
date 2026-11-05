@@ -38,6 +38,9 @@ namespace Wotr.PlayTests
             Assert.IsTrue(board.OwnDice.Q<Button>(die).ClassListContains("fellowship-cost"));
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(die));
             await room.Settle();
+            // UI-461: the Will die moves or hides the Fellowship as a Character result, chosen in the console.
+            WillFaceGestures.Turn(room.Fp, DieFace.Character);
+            await room.Settle();
             Assert.IsTrue(board.Fellowship.Status.ClassListContains("legal-target"), "The plaque offers the Fellowship action.");
             Assert.IsTrue(board.Edges.Corner.ClassListContains(BoardEdgeLayout.UsableClass), "UI-290: the whole corner tab lights up.");
             Assert.AreEqual(DisplayStyle.Flex, board.Edges.Corner.Q("edge-corner-usable").resolvedStyle.display);
@@ -46,7 +49,7 @@ namespace Wotr.PlayTests
                 var marker = board.Fellowship.HideMarker;
                 Assert.IsTrue(marker.ClassListContains(FellowshipStatus.HideClass), "The track's marker hides.");
                 Assert.IsTrue(marker.ClassListContains(ChoiceGlow.ClassName));
-                StringAssert.StartsWith("Click the Fellowship's marker on its track to hide", marker.tooltip);
+                Assert.AreEqual(FellowshipActions.HideTooltip, marker.tooltip, "UI-420: the hide's one wording.");
                 Assert.IsNotInstanceOf<Button>(board.Fellowship.Status.Q("fellowship-ring"), "The plaque's Ring is a picture.");
                 Assert.IsFalse(board.Fellowship.Status.ClassListContains(FellowshipStatus.HideClass), "No separate Hide control.");
                 Assert.AreEqual("Revealed", board.Fellowship.Status.Q<Label>("fellowship-status-condition").text);

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="24" viewBox="0 0 120 24">
+  <!-- UI-484 (owner, 2026-11-04): the side's colour behind the own dice panel's title, melting into the card instead of a
+       framed bar: a soft wash of the side's enamel from the left edge, fading out, over a hairline of the same colour that
+       fades out too. No frame and no slices: USS stretches it across the header. free and shadow only. -->
+  <defs>
+    <linearGradient id="fe-side-wash" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" style="stop-color: var(--enamel-light)" stop-opacity="0.62"/>
+      <stop offset="0.35" style="stop-color: var(--enamel-light)" stop-opacity="0.34"/>
+      <stop offset="0.85" style="stop-color: var(--enamel-light)" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="fe-side-rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" style="stop-color: var(--enamel-light)" stop-opacity="1"/>
+      <stop offset="0.6" style="stop-color: var(--enamel-light)" stop-opacity="0.8"/>
+      <stop offset="1" style="stop-color: var(--enamel-light)" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="120" height="23" fill="url(#fe-side-wash)"/>
+  <rect x="0" y="23" width="119" height="1" fill="url(#fe-side-rule)"/>
+</svg>

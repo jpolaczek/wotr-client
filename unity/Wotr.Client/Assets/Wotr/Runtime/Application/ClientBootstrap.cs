@@ -40,7 +40,7 @@ namespace Wotr.Client
             if (Diagnostics.MapEdgeProbe.TryStart(gameObject, root, panel))
                 return;
 #endif
-            ui = new InterfaceController(root, panel);
+            ui = new InterfaceController(root, panel, ownsWindow: !ProfileOwnsWindow());
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (Diagnostics.MapRenderProfile.TryStart(gameObject, this, panel))
                 return;
@@ -58,6 +58,18 @@ namespace Wotr.Client
             flow = new ClientFlow(ui.Content, windows: ui.Windows, sounds: ui.Sounds);
             flow.InterfaceRequested += ui.Open;
             updates = UpdateController.Start(ui, flow);
+        }
+
+        // MENU-12 applies the saved window mode at start (Fullscreen by default, a maximized window on macOS), which would
+        // override the window a Development Player profile run asks for on its command line; the run sizes every measured
+        // layout itself (ProfileResolution, UI-407).
+        private static bool ProfileOwnsWindow()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            return !Application.isEditor && Diagnostics.ProfileResolution.Requested;
+#else
+            return false;
+#endif
         }
 
         private bool LockInstance()

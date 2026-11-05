@@ -22,7 +22,8 @@ namespace Wotr.EditorTests
             Assert.IsTrue(marker.focusable);
             Assert.IsTrue(marker.ClassListContains(ChoiceGlow.ClassName));
             Assert.IsTrue(marker.ClassListContains(PressFeedback.PressableClass), "It presses in like every control.");
-            StringAssert.StartsWith("Click the Fellowship's marker on its track to hide", marker.tooltip);
+            // UI-420: the marker's tooltip is the hide's one wording, as on the map's figure.
+            Assert.AreEqual("Click to hide the Fellowship · No progress; this die does not enter the Hunt", marker.tooltip);
             foreach (var name in new[] { "fellowship-ring", "fellowship-panel-ring" })
             {
                 var ring = status.Summary.Q(name) ?? status.StateRow.Q(name);

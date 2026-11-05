@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="8" viewBox="0 0 200 8">
+  <!-- UI-470 (owner, 2026-11-03): a hairline that fades out at both ends round a tiny open lozenge; drawn unscaled
+       (USS background-size) under a menu window's title and above the sign-in card's last row. -->
+  <defs>
+    <linearGradient id="fe-divider-left" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" style="stop-color: var(--fe-rule)" stop-opacity="0"/>
+      <stop offset="1" style="stop-color: var(--fe-rule)" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="fe-divider-right" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" style="stop-color: var(--fe-rule)" stop-opacity="1"/>
+      <stop offset="1" style="stop-color: var(--fe-rule)" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="3.5" width="93" height="1" fill="url(#fe-divider-left)"/>
+  <rect x="105" y="3.5" width="93" height="1" fill="url(#fe-divider-right)"/>
+  <path d="M100 1 L103 4 L100 7 L97 4 Z" fill="none" style="stroke: var(--fe-rule-bright)" stroke-width="0.9"/>
+  <circle cx="100" cy="4" r="0.8" style="fill: var(--fe-rule-bright)"/>
+</svg>

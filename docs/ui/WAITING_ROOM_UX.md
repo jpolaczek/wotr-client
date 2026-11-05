@@ -11,7 +11,7 @@ User order with 2026-10-15:
 <a id="układ-menu-25"></a>
 ## Layout (MENU-25)
 
-The waiting room accepts the layout of the main menu (MENU-11/MENU-15): dimmed map, header, fixed body 980×540 with window in the `frames/panel` frame and column action 250 px on the right and the status row. The sizes are fixed and each control has a fixed place: it is not available brightened, it does not disappear.
+The waiting room accepts the layout of the main menu (MENU-11/MENU-15): dimmed map, header, fixed body 980×540 with window in the `frontend/card` frame (UI-470; formerly `frames/panel`) and column action 250 px on the right and the status row. The sizes are fixed and each control has a fixed place: it is not available brightened, it does not disappear.
 
 ```
               EVENING GAME                     (name of room)
@@ -35,9 +35,11 @@ The waiting room accepts the layout of the main menu (MENU-11/MENU-15): dimmed m
                  status / errors
 ```
 
-- Window header (`frames/panel-header`): "Players" and refresh icon (`refresh-room`) at the right
-  end of the table, as in the menu. Refreshing is no longer between bigger buttons.
-- Two player seats, always in order of Free Peoples, Shadow, in the `frames/entry` frame. Each
+- Window header (since UI-470 no band: the title centred over `frontend/divider`; formerly `frames/panel-header`):
+  "Players" and refresh icon (`refresh-room`) at the right end of the table, as in the menu. Refreshing is no longer
+  between bigger buttons.
+- Two player seats, always in order of Free Peoples, Shadow, in the `frontend/row` frame (UI-470; your own seat in
+  `frontend/row-selected`; formerly `frames/entry`). Each
   contains:
   - Page emblem: ring or eye as on menu lists;
   - the name of the page;
@@ -110,6 +112,86 @@ Both only work before the launch.
 - After the party starts, the viewer stays in the waiting room with status; board the viewer joins
   OBS-05.
 
+<a id="rules-strip--ui-263-2026-10-19"></a>
+## Rules strip — UI-263 (2026-10-19)
+
+Owner decision 2026-10-19: the rules of a table are chosen only in its waiting room. Under the seats the window
+splits in two: the audience, the invitation and the chat keep the left part, and the rules take a fixed column of
+236 px on the right, every rule in a fixed place:
+
+```
+│ ┌ Free Peoples ─────────┐ ┌ Shadow ────────────────┐ │
+│ └───────────────────────┘ └────────────────────────┘ │
+│ Observers 2/16 [Ann ×][Bo ×]          (⛰) [✓ New Cities         ] │
+│ Invitation [code……] [Copy] [New code] Fate [○ Council of Rivendell] │
+│ Chat                                   (◎◎)[○ Visible Corruption  ] │
+│ ┌───────────────────────────────┐     Lords[○ Sequential Corruption] │
+│ │ Alice: ready when you are     │     (♛) [✓ Dismay              ] │
+│ └───────────────────────────────┘     Kings[○ Removing Ruler Tokens] │
+│ [message…………………………] [Send]                                       │
+```
+
+The three medallions (44 px, 58 px with the caption) and the six chips (25 px, 29 px apart) are both 174 px tall, so
+the column fits the window at 125 % on 1366 x 768; the invitation's title and buttons are narrower (96 and 92 px) to
+keep the code readable beside it; observers that do not fit the line are clipped and the count stays.
+
+- Three expansion medallions in release order: Fate of Erebor (the Lonely Mountain under the Arkenstone), Lords of
+  Middle-earth (three linked Elven rings), Kings of Middle-earth (a crown). Art: `graphicalassets/ui/src/rules`
+  (`medallion` with `hover`, `pressed`, `fate-on`, `lords-on`, `kings-on`; `crest-*`; `check-off`/`check-on`). An
+  expansion in the game lights its medallion in its own enamel with a gold glow and a coloured crest; one not in the
+  game shows a grey crest. Names: `rules-module-fate|lords|kings`.
+- Six variant chips in one column, grouped by the expansion they need: New Cities (Fate), Council of Rivendell
+  (Lords), Visible Corruption and Sequential Corruption (Kings), Dismay and Removing Ruler Tokens (Lords and Kings)
+  (`rules-variant-<id>`). A chip that is on wears the menus' selected button (UI-470: a warm field with a bright
+  line, `frontend/button-selected`) and a ticked box (`frontend/check-selected`); off, an empty box. The medallions
+  are the thin `frontend/medallion` (UI-470).
+- Only the host of a waiting room changes the rules. A click sends `PUT /api/rooms/{id}/configuration` with the
+  room's version and the configuration after that one change (`RulesChoices.Toggle`); the strip changes only when
+  the server's room comes back. Removing an expansion removes its variants; adding or removing Lords or Kings sets
+  Dismay to its default (on with both); switching Dismay off also switches Removing Ruler Tokens off.
+- Every control stays in place and is disabled, never hidden, with the reason in its tooltip: a variant whose
+  expansion is missing ("Council of Rivendell needs Lords of Middle-earth."), an expansion the server does not offer
+  yet ("… · Not yet available on this server.", from `RoomView.OfferedModules`; an older server's
+  `ExpansionsAvailable` offers all or none), the guest ("Only the host chooses the rules."), a started game ("The
+  rules are fixed once the game starts."). An expansion that is in the game but no longer offered stays enabled for
+  the host, who can still remove it. Every enabled control's tooltip says what its click does ("Click to add Fate of
+  Erebor to this game. Both players get ready again."), and each variant's tooltip adds what it changes.
+- Ready accepts the rules (its tooltip says so); every change of the rules resets both players' Ready on the server.
+  Start explains a table whose expansion the server no longer offers.
+- The masthead line names the rules: "Public · Fate of Erebor + Kings of Middle-earth · Two players · Observers 0/16".
+- The crests (`ExpansionCrests`, 18 px) also mark a game's expansions on the rows of Open games, My games and Replays,
+  after the phase in the top bar and in the Victory window's header; their tooltip names the expansions and the
+  variants in play. A base game shows none.
+
+The old `RoomScreen` and `ConfigurationEditor` (toggles, only used by tests) are gone; their tests moved to
+`WaitingRoomRulesTests` and `RulesChoicesTests`.
+
+<a id="expansion-checkboxes--ui-364-2026-10-27"></a>
+### Expansion checkboxes and the host's Ready — UI-364 (2026-10-27)
+
+Owner request 2026-10-27: when hosting, three checkboxes choose the expansions of the game, a ticked box meaning the
+expansion is in it; only the host changes them, and only before pressing Ready, after which they are greyed out.
+
+```
+ (⛰)      (◎◎)      (♛)
+ [✓] FATE  [ ] LORDS [✓] KINGS     ← one column in the waiting room, one row on the demo page
+```
+
+- Each expansion is one checkbox, its whole cell (`rules-module-<id>`, 60 x 58 px, no frame): the medallion with the
+  crest above a caption with the strip's tick ring (`rules/check-on`, `check-off`, as on the variant chips) and the
+  expansion's word. The medallion keeps its art for on, hover and pressed; the cell presses in as a whole (UI-113).
+  The column is 60 px wide (was 52) and the chips 170 px; the heights stay 174 px.
+  Greyed out (the guest, a ready host, a started game) the medallion, its crest and the word dim; a ticked box
+  stays at 75 % so the game's expansions remain readable, an unticked one at 45 %.
+- The host changes the rules only before their own Ready (`RulesChoices.Editable` also requires `!OwnReady`). After
+  it every control of the strip, the three checkboxes and the six variants, stays in place disabled, with "… · In this
+  game. Press Not ready to change the rules."; Not ready enables them again. Ready's tooltip tells the host "The rules
+  stay locked until Not ready."; Not ready's "Withdraw your acceptance of these rules to change them again.". A Start
+  blocked by an expansion the server no longer offers tells a ready host to press Not ready first.
+- The guest's Ready does not lock the host's rules (the host's change still resets it on the server), and a host
+  watching from the audience has no Ready of their own. The demo page has no Ready and is unchanged. The server
+  accepts a change from a ready host as before (resetting Ready); the lock is the client's (owner: client side).
+
 <a id="scenariusze"></a>
 ## Scenarios
 
@@ -121,3 +203,5 @@ Both only work before the launch.
 | WR04 | The guest sees the “Start game” and “Remove” grey; the removed guest returns to the message menu. | MENU-25 |
 | WR05 | Two players exchange messages via the server; Enter sends; text with tags is displayed literally. | MENU-26 |
 | OB03 | A viewer from a public poem and code, chat with role, simultaneous “Take seat” into one place (one sits, the other gets status), return to the audience, remove the viewer by the host. | OBS-04 |
+| WR06 | The host adds and removes expansions and variants by clicks; the guest sees them read-only; an unreleased module is greyed with its reason; every change resets Ready; all 93 legal configurations are reachable and fit the window in four layouts. | UI-263 |
+| WR07 | The three expansions are checkboxes with a tick; the host's Ready greys out every rule in place with "Press Not ready to change the rules.", Not ready enables them; the guest's Ready does not lock the host (`RulesChoicesTests`, `WaitingRoomRulesTests`, menu09-waiting-ready screenshots). | UI-364 |

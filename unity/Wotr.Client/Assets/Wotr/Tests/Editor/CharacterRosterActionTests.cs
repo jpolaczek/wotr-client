@@ -77,7 +77,7 @@ namespace Wotr.EditorTests
             view.Options.Clear();
             view.Options.Add(new ActionOption
             {
-                Kind = CommandKind.UseCouncilToken, EligibleIds = { ExpansionDraft.CouncilTravel },
+                Kind = CommandKind.UseCouncilToken, Enabled = true, EligibleIds = { ExpansionDraft.CouncilTravel },
                 Travel =
                 {
                     new TravelOption { Id = "first", Origin = "moria", Range = 2, Targets = { "moria", "hollin" } },
@@ -87,12 +87,13 @@ namespace Wotr.EditorTests
             var draft = new TurnDraft();
             draft.Choose(CommandKind.UseCouncilToken);
             draft.Change(p => p.AbilityId = ExpansionDraft.CouncilTravel);
-            var context = new ActionDieContext();
-            Assert.IsTrue(TravelActions.Select(view, draft, context, "first"));
-            Assert.IsTrue(TravelDraft.Step(draft, view, BoardPresentation.Load(), "hollin"));
-            Assert.IsTrue(TravelActions.Select(view, draft, context, "second"));
-            CollectionAssert.AreEqual(new[] { "second" }, TravelActions.Selected(draft));
-            Assert.IsEmpty(TravelDraft.Route(draft));
+            // UI-379: the token's travel plans its groups through CouncilTravel; the general travel path stays out of it.
+            Assert.IsNull(TravelActions.Option(view, draft, new ActionDieContext()));
+            Assert.IsTrue(CouncilTravel.Choose(view, draft, "first"));
+            Assert.IsTrue(CouncilTravel.Move(view, draft, "hollin", BoardPresentation.Load()));
+            Assert.IsTrue(CouncilTravel.Choose(view, draft, "second"));
+            CollectionAssert.AreEqual(new[] { "second" }, CouncilTravel.Chosen(draft));
+            Assert.AreEqual("hollin", draft.Payload.CompanionMoves.Single().Route.Last());
             Assert.IsEmpty(draft.Payload.DieId);
             Assert.AreEqual(ExpansionDraft.CouncilTravel, draft.Payload.AbilityId);
             Assert.IsFalse(draft.Payload.Stepwise);
@@ -162,6 +163,41 @@ namespace Wotr.EditorTests
                 "White Rider belongs to the stable Gandalf figure after its version changes.");
             view.DecisionOwner = Side.Shadow;
             Assert.IsFalse(CharacterRosterActions.HasReaction(view, Grey));
+        }
+
+        // UI-423 (owner's playtest pattern, like UI-390): a response made on its own object has no window for Open decision to
+        // open — Galadriel's Nenya at its socket, the Chief's Spear of Terror at the Character deck and He Sees, He Knows at
+        // his figure — so the character's window links none; a response of his made in a window still links.
+        [Test]
+        public void AResponseMadeOnItsObjectIsNotLinkedFromItsCharacter()
+        {
+            const string galadriel = "lords.character.galadriel";
+            var view = Reaction(Side.FreePeoples, galadriel, NamedRings.NenyaReaction);
+            Assert.IsFalse(CharacterRosterActions.HasReaction(view, galadriel), "Nenya is used at its socket.");
+
+            const string chief = "lords.character.witch-king";
+            view = Reaction(Side.Shadow, chief, ChiefReactionObjects.Spear, ChiefReactionObjects.Follow);
+            Assert.IsFalse(CharacterRosterActions.HasReaction(view, chief), "Spear of Terror and He Sees, He Knows stand on their objects.");
+            view.Options[0].EligibleIds.Add("lords.chief.window-response");
+            view.Options[0].EffectChoices.Add(new EffectChoiceView { Id = "lords.chief.window-response", SourceId = chief });
+            Assert.IsTrue(CharacterRosterActions.HasReaction(view, chief), "A response made in a window is still linked.");
+        }
+
+        private static PlayerView Reaction(Side side, string character, params string[] responses)
+        {
+            var option = new ActionOption { Kind = CommandKind.RespondEffect, Enabled = true };
+            foreach (var response in responses)
+            {
+                option.EligibleIds.Add(response);
+                option.EffectChoices.Add(new EffectChoiceView { Id = response, SourceId = character });
+            }
+            return new PlayerView
+            {
+                MatchId = "roster-reactions", You = side, DecisionOwner = side,
+                Decision = new DecisionView { Id = "reaction", Kind = DecisionKind.Reaction, SourceId = "base.hunt.eye" },
+                OwnCharacterRoster = { new CharacterRosterView { FigureId = character, CurrentDefinitionId = character, Side = side } },
+                Options = { option }
+            };
         }
 
         private static PlayerView Entry() => new PlayerView

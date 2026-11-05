@@ -52,6 +52,49 @@ namespace Wotr.Client.Tests
             CollectionAssert.AreEqual(new[] { "Battle at Edoras · Free Peoples retreats" }, fewer.Lines);
         }
 
+        // UI-489 (owner, 2026-11-04): a withdrawal as EXP-20 records it (From == To) reads as one, also for Scouts; a saved
+        // history has no Movement for it and its command says the same.
+        [TestCase(CommandKind.RetreatIntoSiege)]
+        [TestCase(CommandKind.ChooseEffect)]
+        public void AWithdrawalReadsAsOneAndNotAsARetreat(CommandKind command)
+        {
+            var decision = Step(command, Side.FreePeoples);
+            decision.Context.BattleId = "battle";
+            decision.Facts.BattlePlace = new BattlePlaceFact { RegionId = "minas-tirith" };
+            var shelter = Step(null, Side.FreePeoples, order: 1);
+            shelter.Context.BattleId = "battle";
+            shelter.Movements.Add(new ActionMovement { Kind = ActionMovementKind.Retreat, From = "minas-tirith", To = "minas-tirith",
+                Route = { "minas-tirith" }, Participants = { Unit(UnitKind.Regular, Side.FreePeoples) } });
+            var result = ActionResultText.For(new[] { shelter, decision }, Data);
+            Assert.AreEqual("Battle at Minas Tirith · Defender withdraws into the stronghold", result.Lines.Single());
+        }
+
+        // TEST-20 (owner, 2026-11-04): a pennant holds only the opponent's decision; its Movement sits on the automatic step.
+        [Test]
+        public void ADecisionAloneTellsItsRetreatAndItsAdvanceButNotAStay()
+        {
+            var retreat = Step(CommandKind.RetreatBattle, Side.FreePeoples);
+            retreat.Context.BattleId = "battle";
+            retreat.Facts.BattlePlace = new BattlePlaceFact { RegionId = "edoras" };
+            Assert.AreEqual("Battle at Edoras · Free Peoples retreats", ActionResultText.For(new[] { retreat }, Data).Lines.Single());
+            var advance = Step(CommandKind.AdvanceBattle, Side.Shadow);
+            advance.Context.BattleId = "battle";
+            advance.Facts.BattlePlace = new BattlePlaceFact { RegionId = "edoras" };
+            Assert.AreEqual("Battle at Edoras", ActionResultText.For(new[] { advance }, Data).Lines.Single(), "Staying moves no figure.");
+            advance.Facts.Figures.Add(new ActionFigureChange { Before = Unit(UnitKind.Regular), After = Unit(UnitKind.Regular), From = "westemnet", To = "edoras" });
+            StringAssert.StartsWith("Battle at Edoras · Attacker advances", ActionResultText.For(new[] { advance }, Data).Lines[0]);
+        }
+
+        [Test]
+        public void ASavedWithdrawalWithoutItsMovementKeepsItsLine()
+        {
+            var decision = Step(CommandKind.RetreatIntoSiege, Side.FreePeoples);
+            decision.Context.BattleId = "battle";
+            decision.Facts.BattlePlace = new BattlePlaceFact { RegionId = "minas-tirith" };
+            Assert.AreEqual("Battle at Minas Tirith · Defender withdraws into the stronghold",
+                ActionResultText.For(new[] { decision }, Data).Lines.Single());
+        }
+
         [Test]
         public void MusterPoliticsAndCharactersTellWhatChangedOnTheBoard()
         {
@@ -72,6 +115,22 @@ namespace Wotr.Client.Tests
             white.Facts.Figures.Add(new ActionFigureChange { After = Character("base.character.gandalf-white", Side.FreePeoples), From = "reserve", To = "fangorn" });
             result = ActionResultText.For(new[] { white }, Data);
             CollectionAssert.AreEqual(new[] { CharacterLibrary.Name("base.character.gandalf-white") + " enters · Fangorn" }, result.Lines);
+        }
+
+        // UI-485 (owner, 2026-11-04): a recruit as the engine records it, twice with different origins, is one figure in the
+        // pennant and one line of the record; two recruits stay two.
+        [Test]
+        public void ARecruitRecordedTwiceCountsOnce()
+        {
+            var muster = Step(CommandKind.Recruit, Side.FreePeoples);
+            var one = new ActionParticipant { Id = "one", Side = Side.FreePeoples, NationId = "rohan", UnitKind = UnitKind.Regular };
+            var two = new ActionParticipant { Id = "two", Side = Side.FreePeoples, NationId = "rohan", UnitKind = UnitKind.Regular };
+            muster.Facts.Figures.Add(new ActionFigureChange { After = one, To = "edoras" });
+            muster.Facts.Figures.Add(new ActionFigureChange { Before = one, After = one, From = "reserve", To = "edoras" });
+            CollectionAssert.AreEqual(new[] { "+1 Regular · Edoras" }, ActionResultText.For(new[] { muster }, Data).Lines);
+            Assert.AreEqual(1, ActionFactText.Effects(muster, Data).Count(line => line.Contains("Edoras")), "One line of the record.");
+            muster.Facts.Figures.Add(new ActionFigureChange { Before = two, After = two, From = "reserve", To = "edoras" });
+            CollectionAssert.AreEqual(new[] { "+2 Regular · Edoras" }, ActionResultText.For(new[] { muster }, Data).Lines);
         }
 
         [Test]

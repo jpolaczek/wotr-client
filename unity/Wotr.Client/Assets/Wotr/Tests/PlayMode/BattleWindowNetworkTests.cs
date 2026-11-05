@@ -90,7 +90,7 @@ namespace Wotr.PlayTests
             var rear = board.View.Units.Single(u => u.Nation == "rohan" && u.Location == "minas-tirith");
             Assert.IsFalse(board.View.Battle.Attacker.ParticipantIds.Contains(rear.Id));
             StringAssert.Contains("Rear guard", board.Tray.Q<Label>("battle-nonparticipants").text);
-            Assert.IsTrue(board.Tray.Q<Label>("battle-characters").text.Contains("Gimli"));
+            Assert.IsTrue(board.Tray.Query<Label>("battle-character-name").ToList().Any(name => name.text.Contains("Gimli")));
             await ReadOnlyHand(room, board);
             PointerGestureEvents.ClickAt(board.Battles.Root.Q<Button>("close-battle"));
             await room.Fp.Connection.Refresh();

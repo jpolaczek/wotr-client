@@ -55,6 +55,42 @@ namespace Wotr.EditorTests
             return view;
         }
 
+        // UI-490 (owner, 2026-11-04): a presentation waiting for the player's return does not hold back the alert that brings
+        // them back; it sounds once, as the view arrives, and not again at the release. Nothing else sounds meanwhile.
+        [Test]
+        public void TheDecisionOfAViewThatWaitsForTheReturnSoundsAtOnceAndOnce()
+        {
+            game.Update(View(1));
+            game.Update(View(2));
+            Quiet();
+            var waiting = View(3);
+            waiting.DecisionOwner = Side.FreePeoples;
+            waiting.Decision = new DecisionView { Id = "yours", Kind = DecisionKind.Action };
+            waiting.Hand.Add("base.fp.character.01");
+            game.Away(waiting);
+            CollectionAssert.AreEqual(new[] { SoundCue.DecisionRequired }, played, "The alert, and no card sound.");
+            game.Away(waiting);
+            Quiet();
+            played.Clear();
+            game.Update(waiting);
+            CollectionAssert.DoesNotContain(played, SoundCue.DecisionRequired, "Not again at the release.");
+        }
+
+        [Test]
+        public void AnObserverHearsNoAlertOfAViewThatWaits()
+        {
+            var observer = new GameSounds(module, () => "", commands, personal: false);
+            observer.Update(View(1));
+            observer.Update(View(2));
+            Quiet();
+            var waiting = View(3);
+            waiting.DecisionOwner = Side.FreePeoples;
+            waiting.Decision = new DecisionView { Id = "theirs", Kind = DecisionKind.Action };
+            observer.Away(waiting);
+            CollectionAssert.IsEmpty(played);
+            observer.Dispose();
+        }
+
         // Each case starts with nothing sounding, so the one-clip rule never hides the next one.
         private void Quiet() => module.Policy.Silence();
 

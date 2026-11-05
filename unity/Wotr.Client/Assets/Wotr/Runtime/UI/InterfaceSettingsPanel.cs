@@ -29,6 +29,8 @@ namespace Wotr.Client
         {
             this.preferences = preferences;
             Root.AddToClassList("settings-scrim");
+            // UI-470 (owner, 2026-11-03): Settings wears the menus' thin-line chrome, over the menus and the board alike.
+            FrontendTheme.ApplyChrome(Root);
             Root.style.display = DisplayStyle.None;
             panel.AddToClassList("interface-settings-panel");
             Root.Add(panel);

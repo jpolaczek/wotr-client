@@ -38,8 +38,9 @@ namespace Wotr.PlayTests
                 var connected = room.Sh.Connected;
                 room.Sh.Connection.Reconnect();
                 await room.Until(() => room.Sh.Connected > connected);
-                // UI-131: the Reinforcements ✓ commits the whole plan once the server's preview finds it legal.
-                var finish = room.Sh.Board.Reinforcements.Root.Q<Button>("reinforcements-confirm");
+                // UI-131/UI-381: the console's ✓ commits the whole plan once the server's preview finds it legal.
+                Assert.IsNull(room.Sh.Board.Reinforcements.Root.Q<Button>("reinforcements-confirm"), "The panel has no ✓ of its own.");
+                var finish = room.Sh.Board.Console.Actions.Confirm;
                 await room.Until(() => finish.enabledSelf);
                 var revision = room.Sh.Board.View.Revision;
                 CardNetworkTests.Click(finish);

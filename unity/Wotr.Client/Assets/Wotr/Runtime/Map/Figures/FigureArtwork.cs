@@ -42,6 +42,9 @@ namespace Wotr.Client
 
         private static Sprite Named(string key) => key.Length == 0 ? null : Units.Sprite(key) ?? Characters.Sprite(key);
 
+        // UI-400: a figure drawn by a painted atlas (its stature painted in), not a UI-76 fallback silhouette.
+        public static bool Painted(FigureArt art) => Named(art.Key) != null;
+
         public static Rect NormalizedCell(FigureAppearance appearance)
         {
             cells ??= LoadCells();

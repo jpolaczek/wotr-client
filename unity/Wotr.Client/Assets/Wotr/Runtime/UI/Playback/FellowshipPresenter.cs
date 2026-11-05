@@ -15,6 +15,8 @@ namespace Wotr.Client
     // - The tracks move as separate stages in TrackSequence's order — on the journey progress then corruption, in Mordor
     //   corruption then the step; healing is corruption going down. Each stage traces its track and sounds its cue once.
     // - A new Guide is marked on its portrait.
+    // - UI-344: a Companion leaving out of play outside the Hunt (Sméagol at a sanctuary or a separation) is marked on his
+    //   roster portrait, then leaves the roster; a Hunt casualty is the Hunt's own beat (HuntPresenter).
     // What the beat showed is the release's point of comparison (BoardScreen.StageFellowship), so nothing moves twice.
     // UI-315 (owner review): at the shared pace — the opened panel settles; the object a stage changes (the plaque's Hidden
     // or Revealed state, the track's row) glows first, then changes while lit and holds.
@@ -40,6 +42,8 @@ namespace Wotr.Client
 
         public IPresentationBeat Begin(PresentationCue cue, double now)
         {
+            if (Departure(cue))
+                return Leaving(cue, now);
             if (cue.Kind != PresentationCueKind.Fellowship || cue.FellowshipAfter == null)
                 return null;
             var before = Copy(staged.View.Fellowship);
@@ -56,6 +60,24 @@ namespace Wotr.Client
         }
 
         public void Released() => EndRing();
+
+        private static bool Departure(PresentationCue cue) => cue.Kind == PresentationCueKind.Removal && cue.HuntChainId.Length == 0 &&
+            cue.Figures.Count > 0 && cue.Regions.Count == 1 && cue.Regions[0] == FigureCues.Fellowship;
+
+        private IPresentationBeat Leaving(PresentationCue cue, double now)
+        {
+            var figure = cue.Figures[0].Before ?? cue.Figures[0].After;
+            return new StepsBeat(now, End, new List<(Action Start, double Seconds)>
+            {
+                (() => reading.Open(), PresentationPace.PanelSettleSeconds),
+                (() => mark.Show(() => reading.Portrait(figure.Id)), PresentationPace.MarkSeconds),
+                (() =>
+                {
+                    staged.Leave(figure.Id, figure.DefinitionId);
+                    board.StageRoster(staged.View);
+                }, PresentationPace.HoldSeconds)
+            });
+        }
 
         private List<(Action Start, double Seconds)> Steps(PresentationCue cue, FellowshipView before, FellowshipView after)
         {

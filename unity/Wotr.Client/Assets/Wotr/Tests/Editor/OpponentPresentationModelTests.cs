@@ -28,21 +28,21 @@ namespace Wotr.EditorTests
             Assert.AreEqual(("moria", "hollin", 2), (marches[1].Movement.From, marches[1].Movement.To, marches[1].Movement.Participants.Count));
             Assert.IsFalse(cues.Any(cue => cue.Kind is PresentationCueKind.Relocation or PresentationCueKind.Recruit or PresentationCueKind.Removal),
                 "The board difference of a march is the march itself.");
-            Assert.AreEqual(1, model.Actions.Count, "Both marches belong to one action and one source.");
-            Assert.AreEqual(Side.Shadow, model.Actions.Values.Single().Initiator);
+            Assert.AreEqual(1, cues.Select(cue => cue.ActionId).Distinct().Count(), "Both marches belong to one action and one source.");
+            Assert.AreEqual(Side.Shadow, model.Actions[cues[0].ActionId].Initiator);
         }
 
         [Test]
         public void ACardRecruitingInTwoRegionsShowsTheCardThenEachRegionOnce()
         {
             var cues = Replay(Fixture("card-recruit-free-peoples"), out var model);
-            CollectionAssert.AreEqual(new[] { PresentationCueKind.Cost, PresentationCueKind.Card, PresentationCueKind.Recruit, PresentationCueKind.Recruit },
-                cues.Select(cue => cue.Kind));
+            CollectionAssert.AreEqual(new[] { PresentationCueKind.Cost, PresentationCueKind.Card, PresentationCueKind.Recruit, PresentationCueKind.Recruit, PresentationCueKind.SpentDie },
+                cues.Select(cue => cue.Kind), "UI-487: the die leaves after the card's effects.");
             Assert.AreEqual("base.sh.strategy.20", cues[1].Card.Id);
             Assert.AreEqual(ActionCardUse.Event, cues[1].Card.Use);
-            CollectionAssert.AreEquivalent(new[] { "dol-guldur", "mount-gundabad" }, cues.Skip(2).Select(cue => cue.Regions.Single()));
-            Assert.IsTrue(cues.Skip(2).All(cue => cue.Figures.Count == 3 && cue.Figures.All(f => f.After.UnitKind == UnitKind.Regular)));
-            Assert.AreEqual("base.sh.strategy.20", model.Actions.Values.Single().CardId);
+            CollectionAssert.AreEquivalent(new[] { "dol-guldur", "mount-gundabad" }, cues.Skip(2).Take(2).Select(cue => cue.Regions.Single()));
+            Assert.IsTrue(cues.Skip(2).Take(2).All(cue => cue.Figures.Count == 3 && cue.Figures.All(f => f.After.UnitKind == UnitKind.Regular)));
+            Assert.AreEqual("base.sh.strategy.20", model.Actions[cues[0].ActionId].CardId);
         }
 
         [Test]
@@ -163,8 +163,9 @@ namespace Wotr.EditorTests
                 Assert.IsTrue(shared.Any(source => source.EndsWith("/" + PresentationCueKind.Battle)));
         }
 
+        // UI-488: a die's cue is about one side's die, and each player is shown the other's.
         private static Dictionary<string, List<string>> BySource(IEnumerable<PresentationCue> cues) => cues
-            .GroupBy(cue => cue.StepId + "/" + cue.Kind)
+            .GroupBy(cue => cue.StepId + "/" + cue.Die?.Owner + "/" + cue.Kind)
             .ToDictionary(group => group.Key, group => group.Select(cue => cue.Id).ToList());
 
         [Test]
@@ -188,7 +189,7 @@ namespace Wotr.EditorTests
             Assert.AreEqual(hunt.Count, cues.Count(cue => cue.Kind == PresentationCueKind.Hunt));
             Assert.AreEqual(1, hunt.Count(kind => kind == HuntReportKind.HuntCompleted), "The chain's end is recorded twice, shown once.");
             Assert.IsFalse(cues.Any(cue => cue.Actor == Side.FreePeoples), "None of our own decisions is replayed.");
-            Assert.IsFalse(cues.Any(cue => cue.Kind is PresentationCueKind.Draw or PresentationCueKind.Card), "Our own card and draws are ours.");
+            Assert.IsFalse(cues.Any(cue => cue.Card?.Owner == Side.FreePeoples), "Our own card and draws are ours.");
         }
 
         // UI-310: the engine records the move's progress on the move, before its Hunt; the Fellowship's change plays after
@@ -386,8 +387,8 @@ namespace Wotr.EditorTests
             model.Baseline(new[] { fixture.Baseline, fixture.Updates[0].Page }, fixture.Updates[0].ViewRevision);
             model.Advance(fixture.Updates[1].ViewRevision);
             var cues = model.Merge(new[] { fixture.Updates[0].Page, fixture.Updates[1].Page });
-            CollectionAssert.AreEqual(new[] { PresentationCueKind.March }, cues.Select(cue => cue.Kind),
-                "A reconnect after the first march shows only the second, without the cost again.");
+            CollectionAssert.AreEqual(new[] { PresentationCueKind.March, PresentationCueKind.SpentDie }, cues.Select(cue => cue.Kind),
+                "A reconnect after the first march shows only the second and its die leaving, without the cost again.");
             Assert.AreEqual("hollin", cues[0].Movement.To);
         }
 
@@ -397,6 +398,7 @@ namespace Wotr.EditorTests
             var model = new OpponentPresentationModel(Side.FreePeoples, Data);
             model.Baseline(new ActionLogPage[0], 1);
             var decline = Step("decline", 2, 1, Side.Shadow, "CombatCardCommitted");
+            decline.Command = CommandKind.CommitCombatCard;
             decline.Context.BattleId = "battle";
             decline.Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.CombatCommit, Deck = "strategy", Count = 0 });
             var reveal = Step("reveal", 2, 2, null, "CombatCardRevealed");
@@ -404,8 +406,9 @@ namespace Wotr.EditorTests
             reveal.Facts.Cards.Add(new ActionCardFact { Owner = Side.FreePeoples, Use = ActionCardUse.CombatReveal, Id = "base.fp.strategy.14" });
             model.Advance(2);
             var cues = model.Merge(new[] { Page(decline, reveal) });
-            Assert.AreEqual(1, cues.Count);
-            Assert.AreEqual(("reveal", "base.fp.strategy.14"), (cues[0].StepId, cues[0].Card.Id));
+            // UI-491 (owner, 2026-11-04): the decline itself reads as one short caption, first.
+            CollectionAssert.AreEqual(new[] { PresentationCueKind.BattleChoice, PresentationCueKind.Card }, cues.Select(cue => cue.Kind));
+            Assert.AreEqual(("reveal", "base.fp.strategy.14"), (cues[1].StepId, cues[1].Card.Id));
         }
 
         [Test]
@@ -471,6 +474,408 @@ namespace Wotr.EditorTests
             var cues = Replay(fixture, out _);
             fixture.Updates[0].Page.Steps[0].Movements[0].To = "changed";
             Assert.AreEqual("eastern-brown-lands", cues.First(cue => cue.Kind == PresentationCueKind.March).Movement.To);
+        }
+
+        // UI-485 (owner, 2026-11-04), as the engine records it (probe of the audit, gap 1): a recruit from nowhere and from
+        // the reserve, in either order, on one step or on the primary step and an automatic one.
+        [Test]
+        public void ARecruitRecordedTwiceIsOneFigureAtItsRegion()
+        {
+            var model = new OpponentPresentationModel(Side.FreePeoples, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var primary = Step("recruit", 2, 1, Side.Shadow, "UnitRecruited");
+            primary.Facts.Figures.Add(new ActionFigureChange { After = Unit("one", UnitKind.Regular), To = "dol-guldur" });
+            primary.Facts.Figures.Add(new ActionFigureChange { Before = Unit("one", UnitKind.Regular), After = Unit("one", UnitKind.Regular), From = "reserve", To = "dol-guldur" });
+            primary.Facts.Figures.Add(new ActionFigureChange { Before = Unit("two", UnitKind.Regular), After = Unit("two", UnitKind.Regular), From = "reserve", To = "mount-gundabad" });
+            var automatic = Step("recruit-2", 2, 2, null, "UnitRecruited");
+            automatic.Facts.Figures.Add(new ActionFigureChange { After = Unit("two", UnitKind.Regular), To = "mount-gundabad" });
+            model.Advance(2);
+            var cues = model.Merge(new[] { Page(primary, automatic) });
+            var recruits = cues.Where(cue => cue.Kind == PresentationCueKind.Recruit).ToList();
+            CollectionAssert.AreEquivalent(new[] { "dol-guldur", "mount-gundabad" }, recruits.Select(cue => cue.Regions.Single()));
+            Assert.IsTrue(recruits.All(cue => cue.Figures.Count == 1), "One recruit, one figure.");
+            Assert.IsTrue(recruits.All(cue => cue.Figures.Single().From == "reserve"), "The record that knows the origin stands.");
+            Assert.IsTrue(recruits.All(cue => FigureChangePresenter.Deltas(cue).Single().Text == "+1"), "The badge counts it once.");
+        }
+
+        [Test]
+        public void TwoRealMovesOfOneFigureStayTwoFacts()
+        {
+            var model = new OpponentPresentationModel(Side.FreePeoples, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var steps = new[] { ("dol-guldur", "mount-gundabad"), ("mount-gundabad", "gorgoroth"), ("gorgoroth", "mount-gundabad") }.Select((move, index) =>
+            {
+                var step = Step("move-" + index, 2, index + 1, Side.Shadow, "ActionDecision");
+                step.Facts.Figures.Add(new ActionFigureChange { Before = Unit("one", UnitKind.Regular), After = Unit("one", UnitKind.Regular), From = move.Item1, To = move.Item2 });
+                return step;
+            }).ToArray();
+            model.Advance(2);
+            var cues = model.Merge(new[] { Page(steps) });
+            Assert.AreEqual(3, cues.SelectMany(cue => cue.Figures).Count(), "A figure that left and came back moved twice to its first destination.");
+        }
+
+        // UI-486 (owner, 2026-11-04): an event's losses are figure changes for both viewers — only a battle shows its own.
+        [TestCase(Side.FreePeoples)]
+        [TestCase(Side.Shadow)]
+        public void AnEventsLossesAreFigureChangesTheCameraFrames(Side viewer)
+        {
+            var opponent = viewer == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
+            var model = new OpponentPresentationModel(viewer, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var choice = Step("choice", 2, 1, opponent, "ActionDecision");
+            choice.Command = CommandKind.TakeEventLosses;
+            choice.Facts.Figures.Add(new ActionFigureChange { Before = Unit("replacement", UnitKind.Regular), After = Unit("replacement", UnitKind.Regular), From = "reserve", To = "osgiliath" });
+            choice.Facts.Figures.Add(new ActionFigureChange { Before = Unit("elite", UnitKind.Elite), After = Unit("elite", UnitKind.Elite), From = "osgiliath", To = "reserve" });
+            choice.Facts.Figures.Add(new ActionFigureChange { Before = Unit("regular", UnitKind.Regular), After = Unit("regular", UnitKind.Regular), From = "osgiliath", To = "casualties" });
+            var losses = Step("losses", 2, 2, null, "EventLosses");
+            losses.Facts.LossDetails.Add(new ActionLossFact { Figure = Unit("elite", UnitKind.Elite), Operation = BattleLossKind.Downgrade, RegionId = "osgiliath", ReplacementId = "replacement" });
+            losses.Facts.LossDetails.Add(new ActionLossFact { Figure = Unit("regular", UnitKind.Regular), Operation = BattleLossKind.Remove, RegionId = "osgiliath" });
+            model.Advance(2);
+            var cues = model.Merge(new[] { Page(choice, losses) });
+            CollectionAssert.AreEqual(new[] { PresentationCueKind.Removal, PresentationCueKind.Recruit }, cues.Select(cue => cue.Kind),
+                "The Elite leaves, then its Regular arrives; no loss cue waits for a presenter.");
+            CollectionAssert.AreEquivalent(new[] { "elite", "regular" }, cues[0].Figures.Select(change => change.Before.Id));
+            Assert.AreEqual("replacement", cues[1].Figures.Single().After.Id);
+            Assert.IsTrue(cues.All(PresentationCamera.Frames), "The camera travels for a scene that plays.");
+            Assert.IsTrue(cues.All(FigureChangePresenter.Shows));
+        }
+
+        // UI-487 (owner, 2026-11-04): the die leaves once, at the end, on the revision that really moves it.
+        [Test]
+        public void TwoMarchesLetTheirDieLeaveOnceAtTheEnd()
+        {
+            var cues = Replay(Fixture("march-free-peoples"), out _);
+            var spent = cues.Single(cue => cue.Kind == PresentationCueKind.SpentDie);
+            Assert.AreEqual((2L, DieLocation.Spent), (spent.Revision, spent.Die.To));
+            Assert.AreSame(spent, cues.Last(), "After the second march.");
+            Assert.IsFalse(cues.Any(cue => cue.Kind == PresentationCueKind.Die), "The move to Resolving is the cost's own.");
+        }
+
+        [Test]
+        public void AnAttacksDieLeavesWhenItsBattleEnds()
+        {
+            var cues = Replay(Fixture("attack-free-peoples"), out _);
+            var spent = cues.Single(cue => cue.Kind == PresentationCueKind.SpentDie);
+            Assert.AreEqual(19L, spent.Revision);
+            Assert.AreSame(spent, cues.Last(cue => cue.Revision == spent.Revision), "After the advance.");
+        }
+
+        [Test]
+        public void ADieRecoveredByItsOwnRevisionFliesNowhere()
+        {
+            var cues = Replay(Fixture("hunt-shadow"), out _);
+            Assert.AreEqual("FreePeoples.standard.4", cues.Single(cue => cue.Kind == PresentationCueKind.SpentDie).Die.Id,
+                "Only the Event's die left for the Spent chip.");
+            var recovered = cues.Single(cue => cue.Kind == PresentationCueKind.Die && cue.Die.Id == "FreePeoples.standard.3" && cue.Revision == 5);
+            Assert.AreEqual(DieLocation.Unrolled, recovered.Die.To, "The move's die went from Resolving straight back to the pool.");
+        }
+
+        [Test]
+        public void AFellowshipMovesDieEntersTheHuntBoxAfterItsHunt()
+        {
+            var model = new OpponentPresentationModel(Side.Shadow, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var move = Step("move", 2, 1, Side.FreePeoples, "ActionDecision");
+            move.Costs.Add(new ActionCost { Kind = ActionCostKind.Die, Id = "die", Owner = Side.FreePeoples, Face = DieFace.Character, Use = DieFace.Character });
+            move.Facts.Dice.Add(new ActionDieChange { Id = "die", Owner = Side.FreePeoples, Before = DieFace.Character, After = DieFace.Character, From = DieLocation.Available, To = DieLocation.Hunt });
+            move.Facts.FellowshipBefore = Outcome("rivendell", 0);
+            move.Facts.FellowshipAfter = Outcome("rivendell", 1);
+            var hunt = Step("hunt", 2, 2, null, "HuntFact");
+            hunt.Context.HuntChainId = "chain";
+            hunt.Facts.Hunt = new ActionHuntFact { ChainId = "chain", Entry = new HuntReportEntryView { HuntId = 1, Revision = 2, Kind = HuntReportKind.Rolled } };
+            model.Advance(2);
+            var cues = model.Merge(new[] { Page(move, hunt) });
+            Assert.AreEqual(PresentationCueKind.SpentDie, cues.Last().Kind);
+            Assert.AreEqual(1, cues.Count(cue => cue.Kind == PresentationCueKind.SpentDie));
+        }
+
+        [Test]
+        public void ADieKeptByVilyaStaysAnOrdinaryChangeAndAnUnknownPaymentStillLeaves()
+        {
+            var model = new OpponentPresentationModel(Side.Shadow, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var kept = Step("kept", 2, 1, Side.FreePeoples, "ActionDecision");
+            kept.Facts.Dice.Add(new ActionDieChange { Id = "kept", Owner = Side.FreePeoples, Before = DieFace.Army, After = DieFace.Army, From = DieLocation.Resolving, To = DieLocation.Available });
+            kept.Facts.Dice.Add(new ActionDieChange { Id = "older", Owner = Side.FreePeoples, Before = DieFace.Army, After = DieFace.Army, From = DieLocation.Resolving, To = DieLocation.Discarded });
+            model.Advance(2);
+            var cues = model.Merge(new[] { Page(kept) });
+            Assert.AreEqual(PresentationCueKind.Die, cues.Single(cue => cue.Die.Id == "kept").Kind);
+            Assert.AreEqual(PresentationCueKind.SpentDie, cues.Single(cue => cue.Die.Id == "older").Kind);
+        }
+
+        // UI-488 (owner, 2026-11-04): the Free Peoples' roll on the Shadow's own allocation (audit E9).
+        [Test]
+        public void TheShadowSeesTheFreePeoplesRollOnItsOwnAllocation()
+        {
+            var cues = Replay(Fixture("hunt-shadow"), out _).Where(cue => cue.Revision == 7).ToList();
+            Assert.AreEqual(4, cues.Count, "Four Free Peoples dice.");
+            Assert.IsTrue(cues.All(cue => cue.Kind == PresentationCueKind.Die && cue.Die.Owner == Side.FreePeoples && cue.Die.After.HasValue));
+            Assert.IsTrue(cues.All(cue => cue.OwnCommand), "The camera stays the player's.");
+            Assert.IsTrue(cues.All(cue => !cue.Actor.HasValue), "No decision of the player's own is played back.");
+            Assert.IsFalse(cues.Any(cue => PresentationCamera.Frames(cue)));
+        }
+
+        // Audit E11: the Free Peoples' click ended the turn; the Shadow's draws and dice follow its own Hunt, hands hidden.
+        [Test]
+        public void TheOpponentsDrawsAndDiceFollowWhenOurClickEndedTheTurn()
+        {
+            var cues = Replay(Fixture("hunt-free-peoples"), out _).Where(cue => cue.Revision == 5).ToList();
+            var draws = cues.Where(cue => cue.Kind == PresentationCueKind.Draw).ToList();
+            Assert.AreEqual(2, draws.Count);
+            Assert.IsTrue(draws.All(cue => cue.Card.Owner == Side.Shadow && cue.Card.Id.Length == 0 && cue.OwnCommand && !cue.Actor.HasValue),
+                "The opponent's draws are counts; ours make no cue.");
+            var dice = cues.Where(cue => cue.Kind == PresentationCueKind.Die).ToList();
+            Assert.AreEqual(7, dice.Count);
+            Assert.IsTrue(dice.All(cue => cue.Die.Owner == Side.Shadow && cue.Die.To == DieLocation.Unrolled));
+            var kinds = cues.Select(cue => cue.Kind).ToList();
+            Assert.Less(kinds.LastIndexOf(PresentationCueKind.Hunt), kinds.IndexOf(PresentationCueKind.Die), "Recovery waits for the Hunt's result.");
+            Assert.Less(kinds.LastIndexOf(PresentationCueKind.Die), kinds.IndexOf(PresentationCueKind.Draw), "The rules recover the dice, then draw.");
+        }
+
+        [Test]
+        public void OurOwnPaymentWithTheOpponentsDieStaysOurs()
+        {
+            var model = new OpponentPresentationModel(Side.Shadow, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var pay = Step("pay", 2, 1, Side.Shadow, "ActionDecision");
+            pay.Costs.Add(new ActionCost { Kind = ActionCostKind.Die, Id = "keeper", Owner = Side.FreePeoples, Face = DieFace.Eye, Use = DieFace.Eye });
+            pay.Facts.Dice.Add(new ActionDieChange { Id = "keeper", Owner = Side.FreePeoples, Before = DieFace.Eye, After = DieFace.Eye, From = DieLocation.Hunt, To = DieLocation.Spent });
+            model.Advance(2);
+            CollectionAssert.IsEmpty(model.Merge(new[] { Page(pay) }), "The Keeper's Eye the Shadow paid with is its own action.");
+        }
+
+        [Test]
+        public void MordorInactivityShowsOnOurOwnStepAndOtherTracksDoNot()
+        {
+            var model = new OpponentPresentationModel(Side.FreePeoples, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var last = Step("last", 2, 1, Side.FreePeoples, "ActionDecision");
+            last.Facts.FellowshipBefore = Outcome("", 0, 1);
+            last.Facts.FellowshipAfter = Outcome("", 0, 1);
+            last.Facts.FellowshipAfter.Corruption = 1;
+            var inactivity = Step("inactivity", 2, 2, null, "MordorInactivity");
+            model.Advance(2);
+            var cue = model.Merge(new[] { Page(last, inactivity) }).Single();
+            Assert.AreEqual(PresentationCueKind.Fellowship, cue.Kind);
+            Assert.IsTrue(cue.OwnCommand, "The camera stays.");
+            var own = Step("own", 3, 1, Side.FreePeoples, "ActionDecision");
+            own.Facts.FellowshipBefore = Outcome("rivendell", 1);
+            own.Facts.FellowshipAfter = Outcome("rivendell", 2);
+            model.Advance(3);
+            CollectionAssert.IsEmpty(model.Merge(new[] { Page(own) }), "The player's own move is not played back.");
+        }
+
+        // UI-489 (owner, 2026-11-04): a withdrawal as EXP-20 records it. The decision's own step moves nothing and the automatic
+        // step's Movement stays in its region; it is the shared battle step of a retreat, also for the player who clicked.
+        [TestCase(Side.FreePeoples)]
+        [TestCase(Side.Shadow)]
+        public void AWithdrawalIsAShelterRetreatForBothPlayers(Side viewer)
+        {
+            var model = new OpponentPresentationModel(viewer, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var decision = Step("withdraw", 2, 1, Side.FreePeoples, "ActionDecision");
+            decision.Command = CommandKind.RetreatIntoSiege;
+            decision.Context.BattleId = "battle";
+            var unit = new ActionParticipant { Id = "regular", Side = Side.FreePeoples, NationId = "gondor", UnitKind = UnitKind.Regular };
+            var walls = new ActionParticipant { Id = "regular", Side = Side.FreePeoples, NationId = "gondor", UnitKind = UnitKind.Regular, Garrison = true };
+            decision.Facts.Figures.Add(new ActionFigureChange { Before = unit, After = walls, From = "minas-tirith", To = "minas-tirith" });
+            var shelter = Step("shelter", 2, 2, null, "StrongholdShelter");
+            shelter.Context.BattleId = "battle";
+            shelter.Movements.Add(new ActionMovement
+            {
+                Kind = ActionMovementKind.Retreat, From = "minas-tirith", To = "minas-tirith", Route = { "minas-tirith" }, Participants = { walls }
+            });
+            model.Advance(2);
+            var cues = model.Merge(new[] { Page(decision, shelter) });
+            var retreat = cues.Single(cue => cue.Kind == PresentationCueKind.Retreat);
+            CollectionAssert.AreEqual(new[] { "minas-tirith" }, retreat.Regions);
+            Assert.IsTrue(retreat.Movement.Participants.Single().Garrison, "It ends on the walls.");
+            Assert.AreEqual(viewer == Side.FreePeoples, retreat.OwnCommand, "The player's own click keeps the camera, as with a retreat.");
+            Assert.IsFalse(cues.Any(cue => cue.Figures.Count > 0), "The Movement describes the figures: no second cue.");
+            Assert.IsFalse(cues.Any(cue => cue.Kind == PresentationCueKind.BattleChoice), "The withdrawal has its scene, so no caption.");
+        }
+
+        // TEST-20: the real shape of a Muster recruit on the recorded server (EXP-20: one fact, from the reserve), for both
+        // viewers: each point of the die is one figure in its region, and the die leaves on the second point.
+        [TestCase("muster-recruit-free-peoples", "dol-guldur", "morannon")]
+        [TestCase("muster-recruit-shadow", "minas-tirith", "pelargir")]
+        public void ARecordedMusterIsOneFigurePerPointForBothViewers(string fixture, string first, string second)
+        {
+            var cues = Replay(Fixture(fixture), out _);
+            var recruits = cues.Where(cue => cue.Kind == PresentationCueKind.Recruit).ToList();
+            CollectionAssert.AreEqual(new[] { first, second }, recruits.Select(cue => cue.Regions.Single()));
+            CollectionAssert.AreEqual(new[] { 1, 1 }, recruits.Select(cue => cue.Figures.Count));
+            Assert.IsTrue(recruits.All(cue => cue.Figures.Single().From == "reserve"));
+            Assert.AreEqual(1, cues.Count(cue => cue.Kind == PresentationCueKind.Cost));
+            var spent = cues.Single(cue => cue.Kind == PresentationCueKind.SpentDie);
+            Assert.AreEqual(2, spent.Revision, "The die leaves on its second point.");
+            Assert.AreSame(spent, cues.Last());
+        }
+
+        // The pennant's line and the badge read the same one figure.
+        [TestCase("muster-recruit-free-peoples", Side.Shadow)]
+        [TestCase("muster-recruit-shadow", Side.FreePeoples)]
+        public void ARecordedMustersPennantCountsEachFigureOnce(string fixture, Side actor)
+        {
+            var recording = Fixture(fixture);
+            var steps = recording.Updates.SelectMany(update => update.Page.Steps).ToList();
+            var lines = ActionResultText.For(steps, Data).Lines;
+            Assert.AreEqual(2, lines.Count(line => line.StartsWith("+1 Regular")), string.Join(" | ", lines));
+            Assert.IsTrue(steps.All(step => step.Actor == actor));
+        }
+
+        // TEST-20: the pennant of a real advance, which has only the Shadow's decision to read.
+        [Test]
+        public void ARecordedAdvanceReadsOnItsPennant()
+        {
+            var recording = Fixture("attack-free-peoples");
+            var pennants = Pennants(recording.Updates.Select(update => update.Page), recording.Viewer);
+            Assert.IsTrue(pennants.Any(text => text.Contains("Attacker advances")), string.Join(" | ", pennants));
+        }
+
+        // TEST-20: a recorded event's casualties. The side that played the card watches the opponent choose them; the side
+        // that chose them saw only the card and its dice.
+        [Test]
+        public void ARecordedEventsLossesPlayForTheSideThatDidNotChooseThem()
+        {
+            var cues = Replay(Fixture("event-loss-shadow"), out _);
+            var removal = cues.Single(cue => cue.Kind == PresentationCueKind.Removal);
+            CollectionAssert.AreEqual(new[] { "parth-celebrant" }, removal.Regions);
+            Assert.AreEqual(2, removal.Figures.Count);
+            Assert.IsFalse(cues.Any(cue => cue.Kind == PresentationCueKind.Losses), "A loss cue exists only in a battle.");
+            Assert.IsTrue(PresentationCamera.Frames(removal));
+            Assert.IsTrue(FigureChangePresenter.Shows(removal));
+            var chooser = Replay(Fixture("event-loss-free-peoples"), out _);
+            Assert.IsFalse(chooser.Any(cue => cue.Kind == PresentationCueKind.Removal), "The chooser's own decision is not played back.");
+        }
+
+        // UI-492 (owner, 2026-11-04): a card's dice show once, at the region, for the side that did not roll them.
+        [Test]
+        public void ARecordedCardsDiceShowOnceAtTheirRegionBeforeTheChoiceTheyCause()
+        {
+            var cues = Replay(Fixture("event-loss-free-peoples"), out _);
+            var roll = cues.Single(cue => cue.Kind == PresentationCueKind.Roll);
+            CollectionAssert.AreEqual(new[] { 5, 6, 1 }, roll.Rolls);
+            Assert.AreEqual(5, roll.HitTarget);
+            CollectionAssert.AreEqual(new[] { "parth-celebrant" }, roll.Regions);
+            Assert.AreEqual(2, roll.Revision, "The losses' own step repeats the dice: no second roll.");
+            Assert.IsTrue(PresentationCamera.Frames(roll));
+            var card = cues.FindIndex(cue => cue.Kind == PresentationCueKind.Card && cue.Card.Use == ActionCardUse.Event);
+            Assert.Less(card, cues.IndexOf(roll), "The card is read first.");
+            Assert.IsFalse(Replay(Fixture("event-loss-shadow"), out _).Any(cue => cue.Kind == PresentationCueKind.Roll),
+                "The side that played the card rolled its own dice.");
+        }
+
+        // The board's difference lists the figures on the first step; the dice were rolled before they fell.
+        [Test]
+        public void ACardsDiceComeBeforeTheFiguresTheyTake()
+        {
+            var model = new OpponentPresentationModel(Side.FreePeoples, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var choice = Step("choice", 2, 1, Side.Shadow, "ActionDecision");
+            choice.Facts.Figures.Add(new ActionFigureChange { Before = Unit("one", UnitKind.Regular), After = Unit("one", UnitKind.Regular), From = "osgiliath", To = "casualties" });
+            choice.Facts.Figures.Add(new ActionFigureChange { Before = Unit("two", UnitKind.Regular), After = Unit("two", UnitKind.Regular), From = "dol-guldur", To = "casualties" });
+            var first = Step("first-roll", 2, 2, null, "EaglesAttack");
+            first.Facts.Rolls.AddRange(new[] { 6, 2 });
+            first.Facts.HitTarget = 5;
+            first.Facts.Targets.Add("dol-guldur");
+            var second = Step("second-roll", 2, 3, null, "EaglesAttack");
+            second.Facts.Rolls.AddRange(new[] { 6, 2 });
+            second.Facts.Targets.Add("osgiliath");
+            model.Advance(2);
+            var cues = model.Merge(new[] { Page(choice, first, second) });
+            CollectionAssert.AreEqual(new[]
+            {
+                PresentationCueKind.Roll, PresentationCueKind.Removal, PresentationCueKind.Roll, PresentationCueKind.Removal
+            }, cues.Select(cue => cue.Kind), "Each region's dice, then its figures; two equal rolls stay two rolls.");
+            CollectionAssert.AreEqual(new[] { "osgiliath", "osgiliath", "dol-guldur", "dol-guldur" }, cues.Select(cue => cue.Regions.Single()));
+        }
+
+        [Test]
+        public void ADiceFactInsideABattleBelongsToItsWindow()
+        {
+            var model = new OpponentPresentationModel(Side.FreePeoples, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var roll = Step("roll", 2, 1, Side.Shadow, "EventArmyRoll");
+            roll.Context.BattleId = "battle";
+            roll.Facts.Rolls.Add(6);
+            roll.Facts.Targets.Add("osgiliath");
+            model.Advance(2);
+            Assert.IsFalse(model.Merge(new[] { Page(roll) }).Any(cue => cue.Kind == PresentationCueKind.Roll));
+        }
+
+        // UI-491 (owner, 2026-11-04): the real fixtures, both viewers: each quiet decision of the opponent has its caption, and
+        // it comes before what it causes.
+        [TestCase("attack-free-peoples", CommandKind.ContinueBattle, 2)]
+        [TestCase("attack-shadow", CommandKind.HoldBattle, 2)]
+        public void AQuietBattleDecisionOfTheOpponentIsOneCaption(string fixture, CommandKind command, int count)
+        {
+            var cues = Replay(Fixture(fixture), out _);
+            var choices = cues.Where(cue => cue.Kind == PresentationCueKind.BattleChoice).ToList();
+            Assert.AreEqual(count, choices.Count(cue => cue.Command == command));
+            var viewer = Fixture(fixture).Viewer;
+            Assert.IsTrue(choices.All(cue => cue.Actor.HasValue && cue.Actor != viewer), "Never the viewer's own decision.");
+            Assert.IsNotNull(BattleChoiceCaption.Of(command));
+        }
+
+        [TestCase("attack-free-peoples", 15)]
+        [TestCase("attack-shadow", 16)]
+        public void NoCardIsACaptionBeforeWhatItCausesAndACommittedCardIsNot(string fixture, long revision)
+        {
+            var recording = Fixture(fixture);
+            var cues = Replay(recording, out _);
+            var choices = cues.Where(cue => cue.Kind == PresentationCueKind.BattleChoice && cue.Command == CommandKind.CommitCombatCard).ToList();
+            var none = choices.Single();
+            Assert.AreEqual(revision, none.Revision, "Only the decline: the committed cards of revisions 2, 3, 9 and 10 stay backs.");
+            Assert.AreEqual("No card", BattleChoiceCaption.Of(none.Command));
+            var first = cues.First(cue => cue.Revision == revision);
+            Assert.AreSame(none, first, "It plays before the rolls its commit completes.");
+            foreach (var cue in choices)
+                Assert.IsNull(cue.Card, "A caption carries no card fact.");
+        }
+
+        [Test]
+        public void AnObserverReadsBothSidesQuietDecisions()
+        {
+            var cues = Replay(Fixture("attack-free-peoples"), out _, everyone: true);
+            var commands = cues.Where(cue => cue.Kind == PresentationCueKind.BattleChoice).Select(cue => cue.Command).ToList();
+            Assert.AreEqual(2, commands.Count(command => command == CommandKind.ContinueBattle));
+            Assert.AreEqual(2, commands.Count(command => command == CommandKind.HoldBattle));
+            Assert.AreEqual(2, commands.Count(command => command == CommandKind.CommitCombatCard), "Both sides' No card.");
+        }
+
+        [TestCase(CommandKind.StopBattle, "Stops")]
+        [TestCase(CommandKind.FightFieldBattle, "Fights in the field")]
+        [TestCase(CommandKind.UseEvilKnowledge, "Evil Knowledge")]
+        public void EachQuietDecisionHasItsCaption(CommandKind command, string caption)
+        {
+            var model = new OpponentPresentationModel(Side.FreePeoples, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var step = Step("choice", 2, 1, Side.Shadow, "ActionDecision");
+            step.Command = command;
+            step.Context.BattleId = "battle";
+            model.Advance(2);
+            var cue = model.Merge(new[] { Page(step) }).Single();
+            Assert.AreEqual(PresentationCueKind.BattleChoice, cue.Kind);
+            Assert.AreEqual(caption, BattleChoiceCaption.Of(cue.Command));
+            Assert.IsFalse(PresentationCamera.Frames(cue), "It stays in the window.");
+        }
+
+        [TestCase(CommandKind.RetreatBattle)]
+        [TestCase(CommandKind.RetreatIntoSiege)]
+        [TestCase(CommandKind.AdvanceBattle)]
+        [TestCase(CommandKind.TakeBattleLosses)]
+        [TestCase(CommandKind.RerollBattle)]
+        [TestCase(CommandKind.ExtendSiege)]
+        public void ADecisionWithItsOwnSceneHasNoCaption(CommandKind command)
+        {
+            var model = new OpponentPresentationModel(Side.FreePeoples, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var step = Step("choice", 2, 1, Side.Shadow, "ActionDecision");
+            step.Command = command;
+            step.Context.BattleId = "battle";
+            model.Advance(2);
+            CollectionAssert.IsEmpty(model.Merge(new[] { Page(step) }));
         }
 
         private static List<string> Pennants(IEnumerable<ActionLogPage> pages, Side you)

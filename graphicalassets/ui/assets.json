@@ -12,7 +12,14 @@
       "--enamel-dark": "#1e1c19",
       "--button-top": "#3d3a36",
       "--button-bottom": "#252321",
-      "--glow-opacity": "0.45"
+      "--glow-opacity": "0.45",
+      "--fe-line": "#b39058",
+      "--fe-field-top": "#272420",
+      "--fe-field-bottom": "#1a1815",
+      "--fe-sheen-opacity": "0.08",
+      "--fe-row-fill": "#1b1916",
+      "--fe-row-opacity": "0.74",
+      "--fe-row-line": "#9a7c4a"
     },
     "selected": {
       "--gilt-highlight": "#fff3cc",
@@ -20,17 +27,49 @@
       "--gilt-mid": "#b08a40",
       "--gilt-shadow": "#7a5822",
       "--button-top": "#6a2019",
-      "--button-bottom": "#2e0d0b"
+      "--button-bottom": "#2e0d0b",
+      "--fe-line": "#d4b26c",
+      "--fe-field-top": "#3a2f1f",
+      "--fe-field-bottom": "#251e14",
+      "--fe-field-opacity": "0.94",
+      "--fe-sheen-opacity": "0.08",
+      "--fe-row-fill": "#2a2218",
+      "--fe-row-opacity": "0.8",
+      "--fe-row-line": "#c9a764",
+      "--fe-tick-opacity": "1",
+      "--tab-enamel-light": "#5a4526",
+      "--tab-enamel-mid": "#3a2c18",
+      "--tab-enamel-dark": "#1f170c"
+    },
+    "free-lacquer": {
+      "--lacquer-red-top": "#1d4466",
+      "--lacquer-red-bottom": "#0a1b2c"
     },
     "free": {
       "--enamel-light": "#2f5f82",
       "--enamel-mid": "#183c58",
-      "--enamel-dark": "#0c2135"
+      "--enamel-dark": "#0c2135",
+      "--fe-row-fill": "#0c2135",
+      "--fe-row-opacity": "0.96",
+      "--fe-row-line": "#2f5f82",
+      "--fe-field-top": "#12304a",
+      "--fe-field-bottom": "#0c2135",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#2f5f82",
+      "--fe-sheen-opacity": "0.06"
     },
     "shadow": {
       "--enamel-light": "#7c2b22",
       "--enamel-mid": "#4b1712",
-      "--enamel-dark": "#2a0b09"
+      "--enamel-dark": "#2a0b09",
+      "--fe-row-fill": "#2a0b09",
+      "--fe-row-opacity": "0.96",
+      "--fe-row-line": "#7c2b22",
+      "--fe-field-top": "#36110d",
+      "--fe-field-bottom": "#2a0b09",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#7c2b22",
+      "--fe-sheen-opacity": "0.06"
     },
     "shadow-hover": {
       "--gilt-highlight": "#fff3cc",
@@ -40,7 +79,15 @@
       "--enamel-light": "#96382c",
       "--enamel-mid": "#5d1d16",
       "--enamel-dark": "#33100c",
-      "--glow-opacity": "0.45"
+      "--glow-opacity": "0.45",
+      "--fe-row-fill": "#33100c",
+      "--fe-row-opacity": "0.96",
+      "--fe-row-line": "#96382c",
+      "--fe-field-top": "#42160f",
+      "--fe-field-bottom": "#33100c",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#96382c",
+      "--fe-sheen-opacity": "0.08"
     },
     "playable": {
       "--card-rim": "#8a6424",
@@ -61,7 +108,15 @@
       "--gilt-light": "#e9c977",
       "--gilt-mid": "#b08a40",
       "--gilt-shadow": "#7a5822",
-      "--glow-opacity": "0.45"
+      "--glow-opacity": "0.45",
+      "--fe-row-fill": "#102a42",
+      "--fe-row-opacity": "0.96",
+      "--fe-row-line": "#3b739a",
+      "--fe-field-top": "#17395a",
+      "--fe-field-bottom": "#102a42",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#3b739a",
+      "--fe-sheen-opacity": "0.08"
     },
     "free-selected": {
       "--enamel-light": "#2f5f82",
@@ -93,7 +148,14 @@
       "--button-bottom": "#0d0c0b",
       "--enamel-light": "#2a2724",
       "--enamel-mid": "#181614",
-      "--enamel-dark": "#0b0a09"
+      "--enamel-dark": "#0b0a09",
+      "--fe-line": "#8f7444",
+      "--fe-field-top": "#0f0e0c",
+      "--fe-field-bottom": "#171512",
+      "--fe-sheen-opacity": "0",
+      "--fe-row-fill": "#0b0a09",
+      "--fe-row-opacity": "0.8",
+      "--fe-row-line": "#8f7444"
     },
     "free-pressed": {
       "--gilt-highlight": "#cbb37c",
@@ -103,7 +165,12 @@
       "--glow-opacity": "0.15",
       "--enamel-light": "#1a3852",
       "--enamel-mid": "#0d2336",
-      "--enamel-dark": "#06121f"
+      "--enamel-dark": "#06121f",
+      "--fe-field-top": "#06121f",
+      "--fe-field-bottom": "#0c2135",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#2f5f82",
+      "--fe-sheen-opacity": "0"
     },
     "shadow-pressed": {
       "--gilt-highlight": "#cbb37c",
@@ -113,7 +180,12 @@
       "--glow-opacity": "0.15",
       "--enamel-light": "#4e1a14",
       "--enamel-mid": "#2c0d0a",
-      "--enamel-dark": "#160504"
+      "--enamel-dark": "#160504",
+      "--fe-field-top": "#160504",
+      "--fe-field-bottom": "#2a0b09",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#7c2b22",
+      "--fe-sheen-opacity": "0"
     },
     "cancelled": {
       "--cancel-opacity": "1"
@@ -196,7 +268,8 @@
       "--slab-glow-opacity": "1"
     },
     "available": {
-      "--tab-glow-opacity": "1"
+      "--tab-glow-opacity": "1",
+      "--fe-line": "#e9c977"
     },
     "available-hover": {
       "--gilt-highlight": "#fff3cc",
@@ -209,12 +282,470 @@
       "--button-top": "#3d3a36",
       "--button-bottom": "#252321",
       "--glow-opacity": "0.45",
-      "--tab-glow-opacity": "1"
+      "--tab-glow-opacity": "1",
+      "--fe-line": "#f2d283"
     },
     "discard": {
       "--card-rim": "#7a2a1c",
       "--card-glow": "#e0574a",
       "--card-glow-opacity": "1"
+    },
+    "fate-on": {
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1",
+      "--enamel-light": "#4d7fa8",
+      "--enamel-mid": "#24506f",
+      "--enamel-dark": "#102c42",
+      "--fe-line": "#e2c27c",
+      "--fe-glow-opacity": "0.85"
+    },
+    "lords-on": {
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1",
+      "--enamel-light": "#4f8a5e",
+      "--enamel-mid": "#275a36",
+      "--enamel-dark": "#12321c",
+      "--fe-line": "#e2c27c",
+      "--fe-glow-opacity": "0.85"
+    },
+    "kings-on": {
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1",
+      "--enamel-light": "#9a3a5a",
+      "--enamel-mid": "#5e1c35",
+      "--enamel-dark": "#33101e",
+      "--fe-line": "#e2c27c",
+      "--fe-glow-opacity": "0.85"
+    },
+    "vilya": {
+      "--enamel-light": "#4c7fd0",
+      "--enamel-mid": "#21478f",
+      "--enamel-dark": "#0e2252",
+      "--special-band-light": "#b9d6ff",
+      "--special-band-dark": "#2f5fae"
+    },
+    "vilya-hover": {
+      "--enamel-light": "#4c7fd0",
+      "--enamel-mid": "#21478f",
+      "--enamel-dark": "#0e2252",
+      "--special-band-light": "#b9d6ff",
+      "--special-band-dark": "#2f5fae",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "vilya-lit": {
+      "--enamel-light": "#4c7fd0",
+      "--enamel-mid": "#21478f",
+      "--enamel-dark": "#0e2252",
+      "--special-band-light": "#b9d6ff",
+      "--special-band-dark": "#2f5fae",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "vilya-pressed": {
+      "--enamel-light": "#21478f",
+      "--enamel-mid": "#0e2252",
+      "--enamel-dark": "#0e2252",
+      "--special-band-light": "#b9d6ff",
+      "--special-band-dark": "#2f5fae",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "nenya": {
+      "--enamel-light": "#8aa0b2",
+      "--enamel-mid": "#3f5466",
+      "--enamel-dark": "#18232d",
+      "--special-band-light": "#ffffff",
+      "--special-band-dark": "#8494a0"
+    },
+    "nenya-hover": {
+      "--enamel-light": "#8aa0b2",
+      "--enamel-mid": "#3f5466",
+      "--enamel-dark": "#18232d",
+      "--special-band-light": "#ffffff",
+      "--special-band-dark": "#8494a0",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "nenya-lit": {
+      "--enamel-light": "#8aa0b2",
+      "--enamel-mid": "#3f5466",
+      "--enamel-dark": "#18232d",
+      "--special-band-light": "#ffffff",
+      "--special-band-dark": "#8494a0",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "nenya-pressed": {
+      "--enamel-light": "#3f5466",
+      "--enamel-mid": "#18232d",
+      "--enamel-dark": "#18232d",
+      "--special-band-light": "#ffffff",
+      "--special-band-dark": "#8494a0",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "narya": {
+      "--enamel-light": "#c8463a",
+      "--enamel-mid": "#7d1c13",
+      "--enamel-dark": "#3d0905",
+      "--special-band-light": "#ffc27a",
+      "--special-band-dark": "#b8461c"
+    },
+    "narya-hover": {
+      "--enamel-light": "#c8463a",
+      "--enamel-mid": "#7d1c13",
+      "--enamel-dark": "#3d0905",
+      "--special-band-light": "#ffc27a",
+      "--special-band-dark": "#b8461c",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "narya-lit": {
+      "--enamel-light": "#c8463a",
+      "--enamel-mid": "#7d1c13",
+      "--enamel-dark": "#3d0905",
+      "--special-band-light": "#ffc27a",
+      "--special-band-dark": "#b8461c",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "narya-pressed": {
+      "--enamel-light": "#7d1c13",
+      "--enamel-mid": "#3d0905",
+      "--enamel-dark": "#3d0905",
+      "--special-band-light": "#ffc27a",
+      "--special-band-dark": "#b8461c",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "balrog": {
+      "--enamel-light": "#6a3218",
+      "--enamel-mid": "#2e120a",
+      "--enamel-dark": "#120604",
+      "--special-band-light": "#ff9a45",
+      "--special-band-dark": "#8c1a0b"
+    },
+    "balrog-hover": {
+      "--enamel-light": "#6a3218",
+      "--enamel-mid": "#2e120a",
+      "--enamel-dark": "#120604",
+      "--special-band-light": "#ff9a45",
+      "--special-band-dark": "#8c1a0b",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "balrog-lit": {
+      "--enamel-light": "#6a3218",
+      "--enamel-mid": "#2e120a",
+      "--enamel-dark": "#120604",
+      "--special-band-light": "#ff9a45",
+      "--special-band-dark": "#8c1a0b",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "balrog-pressed": {
+      "--enamel-light": "#2e120a",
+      "--enamel-mid": "#120604",
+      "--enamel-dark": "#120604",
+      "--special-band-light": "#ff9a45",
+      "--special-band-dark": "#8c1a0b",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "gothmog": {
+      "--enamel-light": "#66795f",
+      "--enamel-mid": "#334031",
+      "--enamel-dark": "#151c15",
+      "--special-band-light": "#d9edc6",
+      "--special-band-dark": "#566f4b"
+    },
+    "gothmog-hover": {
+      "--enamel-light": "#66795f",
+      "--enamel-mid": "#334031",
+      "--enamel-dark": "#151c15",
+      "--special-band-light": "#d9edc6",
+      "--special-band-dark": "#566f4b",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "gothmog-lit": {
+      "--enamel-light": "#66795f",
+      "--enamel-mid": "#334031",
+      "--enamel-dark": "#151c15",
+      "--special-band-light": "#d9edc6",
+      "--special-band-dark": "#566f4b",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "gothmog-pressed": {
+      "--enamel-light": "#334031",
+      "--enamel-mid": "#151c15",
+      "--enamel-dark": "#151c15",
+      "--special-band-light": "#d9edc6",
+      "--special-band-dark": "#566f4b",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "ruler-free": {
+      "--enamel-light": "#3c64b4",
+      "--enamel-mid": "#1e3a78",
+      "--enamel-dark": "#0e1e44",
+      "--special-band-light": "#f6f1e2",
+      "--special-band-dark": "#8f897b"
+    },
+    "ruler-free-hover": {
+      "--enamel-light": "#3c64b4",
+      "--enamel-mid": "#1e3a78",
+      "--enamel-dark": "#0e1e44",
+      "--special-band-light": "#f6f1e2",
+      "--special-band-dark": "#8f897b",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "ruler-free-lit": {
+      "--enamel-light": "#3c64b4",
+      "--enamel-mid": "#1e3a78",
+      "--enamel-dark": "#0e1e44",
+      "--special-band-light": "#f6f1e2",
+      "--special-band-dark": "#8f897b",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "ruler-free-pressed": {
+      "--enamel-light": "#22407e",
+      "--enamel-mid": "#122650",
+      "--enamel-dark": "#08122a",
+      "--special-band-light": "#f6f1e2",
+      "--special-band-dark": "#8f897b",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "ruler-shadow": {
+      "--enamel-light": "#a3241c",
+      "--enamel-mid": "#5e100c",
+      "--enamel-dark": "#2e0705",
+      "--special-band-light": "#b9b0a6",
+      "--special-band-dark": "#2f2925"
+    },
+    "ruler-shadow-hover": {
+      "--enamel-light": "#a3241c",
+      "--enamel-mid": "#5e100c",
+      "--enamel-dark": "#2e0705",
+      "--special-band-light": "#b9b0a6",
+      "--special-band-dark": "#2f2925",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "ruler-shadow-lit": {
+      "--enamel-light": "#a3241c",
+      "--enamel-mid": "#5e100c",
+      "--enamel-dark": "#2e0705",
+      "--special-band-light": "#b9b0a6",
+      "--special-band-dark": "#2f2925",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "ruler-shadow-pressed": {
+      "--enamel-light": "#5e100c",
+      "--enamel-mid": "#2e0705",
+      "--enamel-dark": "#1a0403",
+      "--special-band-light": "#b9b0a6",
+      "--special-band-dark": "#2f2925",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "keeper-lit": {
+      "--keeper-aura-opacity": "1"
+    },
+    "keeper-captured": {
+      "--captured-halo-opacity": "1"
+    },
+    "crown-on": {
+      "--crown-light": "#fff2b8",
+      "--crown-dark": "#c18d2c",
+      "--crown-stone": "#d8342a",
+      "--glow-opacity": "1"
+    },
+    "crown-hover": {
+      "--crown-light": "#f2e3b6",
+      "--crown-dark": "#9a7a3c",
+      "--crown-stone": "#9a3a2c",
+      "--glow-opacity": "0.45"
+    },
+    "council": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09"
+    },
+    "council-lit": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "council-hover": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "council-spent": {
+      "--enamel-light": "#57524c",
+      "--enamel-mid": "#36322e",
+      "--enamel-dark": "#1e1c19",
+      "--gilt-highlight": "#9a8f72",
+      "--gilt-light": "#7a6f57",
+      "--gilt-mid": "#5c5341",
+      "--gilt-shadow": "#3d3628",
+      "--ivory": "#9a927f",
+      "--ember": "#6a5a50"
+    },
+    "free-lit": {
+      "--enamel-light": "#2f5f82",
+      "--enamel-mid": "#183c58",
+      "--enamel-dark": "#0c2135",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "shadow-lit": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "rim-eligible": {
+      "--rim-color": "#90cbac",
+      "--rim-opacity": "1"
+    },
+    "rim-selected": {
+      "--rim-color": "#ffd06a",
+      "--rim-opacity": "1"
+    },
+    "rim-pressed": {
+      "--rim-color": "#a5853f",
+      "--rim-opacity": "0.85"
+    },
+    "rim-ability": {
+      "--rim-color": "#f0a640",
+      "--rim-opacity": "1"
+    },
+    "rim-moved": {
+      "--rim-veil-opacity": "0.45"
+    },
+    "landing-move": {
+      "--rim-color": "#90cbac"
+    },
+    "landing-attack": {
+      "--rim-color": "#e0573f"
+    },
+    "primary": {
+      "--fe-line": "#d6b46c",
+      "--fe-field-top": "#6e5530",
+      "--fe-field-bottom": "#3a2b16",
+      "--fe-field-opacity": "1",
+      "--fe-sheen-opacity": "0.16"
+    },
+    "primary-hover": {
+      "--fe-line": "#efcf88",
+      "--fe-field-top": "#82663a",
+      "--fe-field-bottom": "#46351b",
+      "--fe-field-opacity": "1",
+      "--fe-sheen-opacity": "0.22"
+    },
+    "primary-pressed": {
+      "--fe-line": "#c09d5a",
+      "--fe-field-top": "#3e2f18",
+      "--fe-field-bottom": "#563f20",
+      "--fe-field-opacity": "1",
+      "--fe-sheen-opacity": "0"
     }
   },
   "assets": [
@@ -306,7 +837,10 @@
     },
     {
       "source": "frames/panel-header.svg",
-      "role": "Panel header band in red lacquer with gilt rules.",
+      "role": "Panel header band in red lacquer with gilt rules; UI-466: the free-lacquer variant in blue lacquer heads the Free Peoples' own dice panel.",
+      "variants": [
+        "free-lacquer"
+      ],
       "slices": {
         "top": 8,
         "right": 16,
@@ -360,6 +894,10 @@
       "role": "Soft gilt halo behind the Fellowship track symbol while a click on it moves the Fellowship (UI-110)."
     },
     {
+      "source": "ornaments/skill-glow.svg",
+      "role": "Rimless gilt light behind a bare skill icon while the skill is usable; it breathes with the choice pulse (UI-440)."
+    },
+    {
       "source": "dice/medallion.svg",
       "role": "Round action die in the enamel of its side; a face glyph from dice/faces sits on top.",
       "variants": [
@@ -387,6 +925,97 @@
         "bottom": 10,
         "left": 10
       }
+    },
+    {
+      "source": "dice/special.svg",
+      "base": false,
+      "role": "UI-267: a Lords special die: the round action die with a rune-studded band and enamel in the colours of its origin (Vilya sapphire, Nenya mithril, Narya ruby, the Balrog's ember, Gothmog's Morgul green); hover and pressed as the other dice, lit while the special-die choice can keep it ART-07: the Kings Ruler die is the same round die in its side's enamel (a royal blue for the Free Peoples, crimson for the Shadow) with an ivory or an iron band; its crown (dice/ruler-crown) stands on its top edge.",
+      "variants": [
+        "vilya",
+        "vilya-hover",
+        "vilya-lit",
+        "vilya-pressed",
+        "nenya",
+        "nenya-hover",
+        "nenya-lit",
+        "nenya-pressed",
+        "narya",
+        "narya-hover",
+        "narya-lit",
+        "narya-pressed",
+        "balrog",
+        "balrog-hover",
+        "balrog-lit",
+        "balrog-pressed",
+        "gothmog",
+        "gothmog-hover",
+        "gothmog-lit",
+        "gothmog-pressed",
+        "ruler-free",
+        "ruler-free-hover",
+        "ruler-free-lit",
+        "ruler-free-pressed",
+        "ruler-shadow",
+        "ruler-shadow-hover",
+        "ruler-shadow-lit",
+        "ruler-shadow-pressed"
+      ]
+    },
+    {
+      "source": "dice/remove-star.svg",
+      "role": "UI-267: the Remove star of a special die's face, a badge at the die's upper right."
+    },
+    {
+      "source": "dice/origins/vilya.svg",
+      "role": "UI-267: origin emblem of the Vilya die: gold ring with a sapphire."
+    },
+    {
+      "source": "dice/origins/nenya.svg",
+      "role": "UI-267: origin emblem of the Nenya die: mithril ring with an adamant."
+    },
+    {
+      "source": "dice/origins/narya.svg",
+      "role": "UI-267: origin emblem of the Narya die: gold ring with a ruby."
+    },
+    {
+      "source": "dice/origins/balrog.svg",
+      "role": "UI-267: origin emblem of the Balrog's die: a tongue of flame."
+    },
+    {
+      "source": "dice/ruler-crown.svg",
+      "role": "UI-273: the crown a Kings Ruler die wears on its top edge."
+    },
+    {
+      "source": "kings/attempt.svg",
+      "role": "UI-274: the corruption-attempt button beside an Initial king's portrait."
+    },
+    {
+      "source": "kings/status-initial.svg",
+      "role": "UI-274: status badge of an Initial king."
+    },
+    {
+      "source": "kings/status-awakened.svg",
+      "role": "UI-274: status badge of an Awakened king."
+    },
+    {
+      "source": "kings/status-corrupted.svg",
+      "role": "UI-274: status badge of a Corrupted king."
+    },
+    {
+      "source": "kings/status-removed.svg",
+      "role": "UI-274: status badge of a king removed from the game."
+    },
+    {
+      "source": "kings/tile-back.svg",
+      "role": "UI-274: a face-down tile drawn for a corruption attempt."
+    },
+    {
+      "source": "kings/emblem-corrupted.svg",
+      "role": "UI-406: the crown under the ember Eye on a Corrupted king's puck (the puck is Codex art, graphicalassets/stands)."
+    },
+    {
+      "source": "dice/origins/gothmog.svg",
+      "role": "UI-267: origin emblem of Gothmog's die: the pale moon of Minas Morgul."
     },
     {
       "source": "dice/faces/character.svg",
@@ -470,6 +1099,30 @@
       "role": "Counter: Elven Rings held; on a console socket the ring a player can use. The captured variant is a ring the Shadow took (red stone).",
       "variants": [
         "captured"
+      ]
+    },
+    {
+      "source": "console/ring-vilya.svg",
+      "role": "UI-268: Vilya, Elrond's Ring of Air: gold band, great sapphire between two wings of air. Its console socket in a Lords of Middle-earth game; lit while its Keeper ability is offered now, captured with an ember halo once the Shadow holds it.",
+      "variants": [
+        "keeper-lit",
+        "keeper-captured"
+      ]
+    },
+    {
+      "source": "console/ring-nenya.svg",
+      "role": "UI-268: Nenya, Galadriel's Ring of Water: mithril band, white adamant glinting like a star. Its console socket in a Lords of Middle-earth game; lit while its Keeper ability is offered now, captured with an ember halo once the Shadow holds it.",
+      "variants": [
+        "keeper-lit",
+        "keeper-captured"
+      ]
+    },
+    {
+      "source": "console/ring-narya.svg",
+      "role": "UI-268: Narya, Gandalf's Ring of Fire: red-gold band, ruby crowned by flame. Its console socket in a Lords of Middle-earth game; lit while its Keeper ability is offered now, captured with an ember halo once the Shadow holds it.",
+      "variants": [
+        "keeper-lit",
+        "keeper-captured"
       ]
     },
     {
@@ -768,6 +1421,10 @@
       "role": "Decision icon: extend-siege."
     },
     {
+      "source": "battle/evil-knowledge.svg",
+      "role": "Decision icon: Evil Knowledge extends the siege (Lords)."
+    },
+    {
       "source": "battle/round-tab.svg",
       "role": "Parchment tab naming the shown round of a battle report.",
       "slices": {
@@ -776,74 +1433,6 @@
         "bottom": 8,
         "left": 10
       }
-    },
-    {
-      "source": "armies/base-field.svg",
-      "role": "Figure base of a field army on the map (UI-125) in the enamel of its side; code stands the silhouettes on it.",
-      "variants": [
-        "free",
-        "shadow",
-        "free-selected",
-        "shadow-selected",
-        "free-eligible",
-        "shadow-eligible",
-        "free-pressed",
-        "shadow-pressed",
-        "free-moved",
-        "shadow-moved"
-      ],
-      "base": false
-    },
-    {
-      "source": "armies/base-garrison.svg",
-      "role": "Battlemented figure base of a garrison on the map (UI-125) in the enamel of its side.",
-      "variants": [
-        "free",
-        "shadow",
-        "free-selected",
-        "shadow-selected",
-        "free-eligible",
-        "shadow-eligible",
-        "free-pressed",
-        "shadow-pressed",
-        "free-moved",
-        "shadow-moved"
-      ],
-      "base": false
-    },
-    {
-      "source": "armies/token-field.svg",
-      "role": "Whole-map token of a field army (UI-125); code draws the nation emblem and the count.",
-      "variants": [
-        "free",
-        "shadow",
-        "free-selected",
-        "shadow-selected",
-        "free-eligible",
-        "shadow-eligible",
-        "free-pressed",
-        "shadow-pressed",
-        "free-moved",
-        "shadow-moved"
-      ],
-      "base": false
-    },
-    {
-      "source": "armies/token-garrison.svg",
-      "role": "Whole-map token of a garrison crowned with merlons (UI-125); code draws the emblem and the count.",
-      "variants": [
-        "free",
-        "shadow",
-        "free-selected",
-        "shadow-selected",
-        "free-eligible",
-        "shadow-eligible",
-        "free-pressed",
-        "shadow-pressed",
-        "free-moved",
-        "shadow-moved"
-      ],
-      "base": false
     },
     {
       "source": "armies/moved-check.svg",
@@ -879,6 +1468,55 @@
       "variants": [
         "filled"
       ]
+    },
+    {
+      "source": "armies/contact-shadow.svg",
+      "role": "UI-400: the contact shadow under a miniature's base; it stays on the table when the figure lifts."
+    },
+    {
+      "source": "armies/rim-field.svg",
+      "role": "UI-400: the state rim round a field or garrison base (eligible, selected, pressed, ability) and the veil of a moved one.",
+      "variants": [
+        "rim-eligible",
+        "rim-selected",
+        "rim-pressed",
+        "rim-ability",
+        "rim-moved"
+      ],
+      "base": false
+    },
+    {
+      "source": "armies/rim-character.svg",
+      "role": "UI-400: the state rim round a character's round base, as rim-field.",
+      "variants": [
+        "rim-eligible",
+        "rim-selected",
+        "rim-pressed",
+        "rim-ability",
+        "rim-moved"
+      ],
+      "base": false
+    },
+    {
+      "source": "armies/rim-token.svg",
+      "role": "UI-406: the state rim round a far-zoom token's puck (eligible, selected, pressed, ability) and the veil of a moved one.",
+      "variants": [
+        "rim-eligible",
+        "rim-selected",
+        "rim-pressed",
+        "rim-ability",
+        "rim-moved"
+      ],
+      "base": false
+    },
+    {
+      "source": "armies/landing-mark.svg",
+      "role": "UI-403: where a lifted figure would land on a hovered legal target: green for a move, red for an attack.",
+      "variants": [
+        "landing-move",
+        "landing-attack"
+      ],
+      "base": false
     },
     {
       "source": "actions/back.svg",
@@ -1188,6 +1826,200 @@
     {
       "source": "end/title-defeat.svg",
       "role": "UI-169: plate under the DEFEAT title: darkened iron and red band with dulled gilt and a cracked rule; code writes the title."
+    },
+    {
+      "source": "rules/medallion.svg",
+      "role": "UI-263: an expansion's medallion in the waiting room's rules strip; the crest sits on top. Off in neutral enamel, lit in the module's enamel with a gold glow when the game uses it; hover and pressed as the other controls.",
+      "variants": [
+        "hover",
+        "pressed",
+        "fate-on",
+        "lords-on",
+        "kings-on"
+      ]
+    },
+    {
+      "source": "rules/crest-fate.svg",
+      "role": "UI-263: Fate of Erebor crest (the Lonely Mountain under the Arkenstone), on its medallion and, small, on rows and plaques."
+    },
+    {
+      "source": "rules/crest-lords.svg",
+      "role": "UI-263: Lords of Middle-earth crest (three linked Elven rings)."
+    },
+    {
+      "source": "rules/crest-kings.svg",
+      "role": "UI-263: Kings of Middle-earth crest (a crown)."
+    },
+    {
+      "source": "rules/check-off.svg",
+      "role": "UI-263: a variant chip that is off (empty gilt ring)."
+    },
+    {
+      "source": "rules/check-on.svg",
+      "role": "UI-263: a variant chip that is on (gilt ring with a tick)."
+    },
+    {
+      "source": "fellowship/versions.svg",
+      "role": "UI-269: a companion with two versions to choose from: two faces in profile on a gilt disc at the portrait's corner."
+    },
+    {
+      "source": "fellowship/guide-crown.svg",
+      "role": "UI-269: the starting Guide's crown on a candidate's portrait: dim to click, lit gold on the chosen Guide (on), brighter while hovered.",
+      "variants": [
+        "crown-on",
+        "crown-hover"
+      ]
+    },
+    {
+      "source": "tokens/council-politics.svg",
+      "role": "UI-270: the Shadow's Council of Rivendell token Advance Politics: a war banner stepping forward, in its fixed slot of the Shadow pool; lit while usable or chosen now, dim once spent.",
+      "variants": [
+        "council",
+        "council-lit",
+        "council-hover",
+        "council-spent"
+      ],
+      "base": false
+    },
+    {
+      "source": "tokens/council-travel.svg",
+      "role": "UI-270: the Shadow's Council of Rivendell token Move Nazgûl and Minions: the spread wings of a fell beast, in its fixed slot of the Shadow pool; lit while usable or chosen now, dim once spent.",
+      "variants": [
+        "council",
+        "council-lit",
+        "council-hover",
+        "council-spent"
+      ],
+      "base": false
+    },
+    {
+      "source": "tokens/ruler-token.svg",
+      "role": "UI-276: a Kings Ruler token, a gilt coin with a crown; the code lays the king's nation emblem over it. Blue enamel for a Ruler token the Free Peoples hold, red for a Dismay token the Shadow holds; lit while usable now.",
+      "variants": [
+        "free",
+        "free-lit",
+        "shadow",
+        "shadow-lit"
+      ],
+      "base": false
+    },
+    {
+      "source": "fellowship/alternate.svg",
+      "role": "UI-270: the owner's mark of a companion in its alternate version, on its portrait; only the Free Peoples see it."
+    },
+    {
+      "source": "icons/fellowship-box.svg",
+      "role": "UI-270: counter of action dice in the Fellowship Box (Strider, Dúnadan, Council of Rivendell)."
+    },
+    {
+      "source": "frontend/card.svg",
+      "role": "UI-470: the card of every menu window (sign-in, the main menu's window and action column, the waiting room, Settings, the questions, the board's Menu): translucent charcoal under one thin muted-gilt rule with small concave corners, a hairline inner rule and four tiny gilt lozenges.",
+      "slices": {
+        "top": 12,
+        "right": 12,
+        "bottom": 12,
+        "left": 12
+      }
+    },
+    {
+      "source": "frontend/card-board.svg",
+      "role": "UI-472: the card for what stands on the board's bright parchment: a nearly opaque field and a dark hairline outside the muted-gilt rule; the same concave corners, lozenges and inner rule as frontend/card.",
+      "slices": {
+        "top": 12,
+        "right": 12,
+        "bottom": 12,
+        "left": 12
+      }
+    },
+    {
+      "source": "frontend/button.svg",
+      "role": "UI-470: a menu button, tab or segment: a dark field edged with one muted-gold line; selected is an open page or chosen segment, primary the one main action's warm-gold gradient. UI-476: free and shadow (with hover and pressed) are the same button in the side's enamel, for the console's status plaque.",
+      "variants": [
+        "hover",
+        "pressed",
+        "selected",
+        "primary",
+        "primary-hover",
+        "primary-pressed",
+        "free",
+        "free-hover",
+        "free-pressed",
+        "shadow",
+        "shadow-hover",
+        "shadow-pressed"
+      ],
+      "slices": {
+        "top": 6,
+        "right": 6,
+        "bottom": 6,
+        "left": 6
+      }
+    },
+    {
+      "source": "frontend/row.svg",
+      "role": "UI-470: a list row, side card or waiting-room seat: a quiet dark field with a dim line; selected marks the chosen side or your seat. UI-475, UI-476: pressed for a clickable row of the game; free and shadow (with hover) are the side's enamel-dark field under its enamel-light line, nearly opaque, for what keeps the side's colour on the board: the dice band, Shadow entries, Politics rows, force frames, the turn ribbon.",
+      "variants": [
+        "hover",
+        "selected",
+        "pressed",
+        "free",
+        "free-hover",
+        "shadow",
+        "shadow-hover"
+      ],
+      "slices": {
+        "top": 8,
+        "right": 8,
+        "bottom": 8,
+        "left": 8
+      }
+    },
+    {
+      "source": "frontend/divider.svg",
+      "role": "UI-470: a hairline fading out at both ends round a tiny open lozenge, under a menu window's title and over the sign-in card's last row; drawn unscaled."
+    },
+    {
+      "source": "frontend/side-band.svg",
+      "role": "UI-484: the side's colour behind the own dice panel's title: a wash of the side's enamel from the left edge, fading out, over a fading hairline; stretched across the header, no frame.",
+      "variants": [
+        "free",
+        "shadow"
+      ],
+      "base": false
+    },
+    {
+      "source": "frontend/title-rule.svg",
+      "role": "UI-472: the hairline under a game panel's or window's title, fading out at both ends; stretched across the header's bottom point, so it takes no layout from the row."
+    },
+    {
+      "source": "frontend/medallion.svg",
+      "role": "UI-470: an expansion's checkbox in the rules strip: a dark enamel disc in one thin ring; lit in the module's enamel with a soft halo when the game uses it.",
+      "variants": [
+        "hover",
+        "pressed",
+        "fate-on",
+        "lords-on",
+        "kings-on"
+      ]
+    },
+    {
+      "source": "frontend/check.svg",
+      "role": "UI-470: a menus' checkbox (variant chips, expansion captions, Settings toggles); selected draws the tick.",
+      "variants": [
+        "selected"
+      ]
+    },
+    {
+      "source": "frontend/icon-account.svg",
+      "role": "UI-470: line icon inside the account name field."
+    },
+    {
+      "source": "frontend/icon-password.svg",
+      "role": "UI-470: line icon inside the password field."
+    },
+    {
+      "source": "frontend/icon-search.svg",
+      "role": "UI-470: line icon inside a search field."
     }
   ],
   "previews": [

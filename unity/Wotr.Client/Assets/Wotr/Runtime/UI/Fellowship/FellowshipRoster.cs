@@ -10,10 +10,23 @@ namespace Wotr.Client
     {
         public VisualElement Root { get; } = BoardScreen.Row("fellowship-members");
         public event Action<string> Selected;
+        // UI-269: a candidate's crown chooses the starting Guide while the versions are chosen.
+        public event Action<string> GuideChosen;
         // False when the Guide has no portrait here (e.g. Gollum); the status row then names it.
         public bool ShowsGuide { get; private set; }
+        // UI-270: the name of a region, for a homeland's destination.
+        public Func<string, string> RegionName { get; set; } = id => id;
         private readonly Dictionary<string, Button> portraits = new Dictionary<string, Button>();
+        private readonly Dictionary<string, Button> crowns = new Dictionary<string, Button>();
         private readonly Dictionary<string, string> descriptions = new Dictionary<string, string>();
+        // The offer each portrait's click makes now (the last Context), and (UI-441) the companions with a usable skill.
+        private readonly Dictionary<string, string> offers = new Dictionary<string, string>();
+        private readonly HashSet<string> lured = new HashSet<string>();
+        private IReadOnlyDictionary<string, string> skills = new Dictionary<string, string>();
+        // The portraits show the turn's choices (not the Council's versions or homelands), so a skill may light them.
+        private bool turnChoices;
+        // Some portrait's click makes a turn's choice now (the last Context).
+        private bool offering;
         private readonly ChoicePulse pulse;
         private string roster = "";
 
@@ -31,6 +44,7 @@ namespace Wotr.Client
                 roster = key;
                 Root.Clear();
                 portraits.Clear();
+                crowns.Clear();
                 foreach (var id in ids)
                 {
                     var button = BoardScreen.Button("", () => Selected?.Invoke(id));
@@ -41,9 +55,19 @@ namespace Wotr.Client
                     button.Add(new Label { name = "portrait-name", pickingMode = PickingMode.Ignore });
                     var badge = new Label("Guide") { name = "guide-badge", pickingMode = PickingMode.Ignore };
                     button.Add(badge);
+                    button.Add(VersionsBadge());
+                    button.Add(AlternateBadge());
+                    button.Add(HomelandLabel());
                     button.userData = new DraftToken(DraftObject.FellowshipPortrait, id);
                     portraits.Add(id, button);
-                    Root.Add(button);
+                    // UI-269: the crown stands over the portrait's corner, beside it rather than inside its button.
+                    var cell = new VisualElement { name = "fellowship-cell-" + id };
+                    cell.AddToClassList("fellowship-portrait-cell");
+                    cell.Add(button);
+                    var crown = Crown(id);
+                    crowns.Add(id, crown);
+                    cell.Add(crown);
+                    Root.Add(cell);
                 }
             }
             var privateStats = view.OwnCompanions.ToDictionary(c => c.Id);
@@ -57,15 +81,64 @@ namespace Wotr.Client
                 FigureArtwork.Apply(item.Value, FigureAppearances.Character(shownDefinition, Side.FreePeoples), Side.FreePeoples);
                 item.Value.Q<Label>("portrait-name").text = CharacterLibrary.ShortName(version.Length > 0 ? version : item.Key);
                 item.Value.EnableInClassList("current-guide", guide);
+                var alternate = character != null && CompanionSetupPresentation.Alternate(item.Key, version);
+                item.Value.Q("alternate-badge").style.display = alternate ? DisplayStyle.Flex : DisplayStyle.None;
                 item.Value.Q<Label>("guide-badge").style.display = guide ? DisplayStyle.Flex : DisplayStyle.None;
-                item.Value.tooltip = descriptions[item.Key] = CharacterLibrary.Name(version.Length > 0 ? version : item.Key) +
-                    (character == null ? "" : $" · Level {character.Level} · Leadership {character.Leadership} · {FigureGrid.Name(character.NationIcon)}") +
-                    (version.Length > 0 ? "\n" + Abilities(version) : view.Configuration.Lords ? "\nVersion unrevealed" : "");
+                item.Value.tooltip = descriptions[item.Key] = TooltipText.Lines(
+                    Heading(CharacterLibrary.Name(version.Length > 0 ? version : item.Key), character),
+                    version.Length > 0 ? Abilities(version) : view.Configuration.Lords ? "Version unrevealed" : "",
+                    alternate ? CompanionSetupPresentation.AlternateTooltip : "");
             }
+        }
+
+        // UI-269: two faces at the corner of a companion with two versions to choose from.
+        private static VisualElement VersionsBadge()
+        {
+            var badge = new VisualElement { name = "versions-badge", pickingMode = PickingMode.Ignore };
+            badge.AddToClassList("versions-badge");
+            badge.style.display = DisplayStyle.None;
+            return badge;
+        }
+
+        // UI-270: the owner's mark of a companion in its alternate version.
+        private static VisualElement AlternateBadge()
+        {
+            var badge = new VisualElement { name = "alternate-badge", pickingMode = PickingMode.Ignore };
+            badge.AddToClassList("alternate-badge");
+            badge.style.display = DisplayStyle.None;
+            return badge;
+        }
+
+        // UI-270: where a companion starts when it leaves for its homeland.
+        private static Label HomelandLabel()
+        {
+            var label = new Label { name = "homeland-location", pickingMode = PickingMode.Ignore };
+            label.AddToClassList("portrait-homeland");
+            label.style.display = DisplayStyle.None;
+            return label;
+        }
+
+        // UI-269: a starting Guide candidate's crown; lit on the chosen Guide.
+        private Button Crown(string id)
+        {
+            var crown = new Button(() => GuideChosen?.Invoke(id)) { name = "starting-guide-" + id };
+            crown.AddToClassList("guide-crown");
+            crown.style.display = DisplayStyle.None;
+            return crown;
         }
 
         // UI-187: every ability of the companion in its short form, the Guide's among them; a card without short forms
         // keeps its Guide ability text.
+        // UI-420 (owner): "Strider · Level 3 · Leadership 1 · North"; a companion without a nation ends after its
+        // Leadership, with no dangling separator, and the opponent sees the name alone.
+        private static string Heading(string name, CharacterView character)
+        {
+            if (character == null)
+                return name;
+            var nation = string.IsNullOrEmpty(character.NationIcon) ? "" : TooltipText.Nation(character.NationIcon);
+            return TooltipText.Parts(name, "Level " + character.Level, "Leadership " + character.Leadership, nation);
+        }
+
         private static string Abilities(string version)
         {
             var lines = CharacterAbilitySummaries.Lines(version);
@@ -75,27 +148,167 @@ namespace Wotr.Client
         // Some portrait's click makes a choice now, so the panel's plaque invites a look.
         public bool Choosing { get; private set; }
 
-        public void Context(PlayerView view, TurnDraft draft, ActionDieContext context, bool enabled)
+        public void Context(PlayerView view, TurnDraft draft, ActionDieContext context, bool enabled, string compared = "")
         {
-            var choosing = false;
+            if (CompanionSetupPresentation.VersionOption(view) is { } versions)
+            {
+                Versions(view, draft, versions, enabled, compared);
+                return;
+            }
+            HideVersions();
+            if (CompanionSetupPresentation.HomelandOption(view) is { } homelands)
+            {
+                Homelands(view, draft, homelands, enabled);
+                return;
+            }
+            HideHomelands();
+            turnChoices = true;
+            offering = false;
+            offers.Clear();
+            lured.Clear();
             foreach (var item in portraits)
             {
                 var kind = FellowshipActions.PortraitKind(view, context, item.Key, draft);
+                // UI-431: the companion Lure of the Ring may eliminate glows red and its click eliminates it.
+                var lure = enabled && LureChoice.Eliminates(view, item.Key);
                 // Inspection and keyboard focus remain available for non-candidates.
                 item.Value.SetEnabled(true);
                 item.Value.EnableInClassList("legal-target", enabled && kind.HasValue);
+                item.Value.EnableInClassList(LureChoice.EliminateClass, lure);
                 // UI-229/UI-240: a portrait whose click chooses the next Guide or separates the companion glows and
                 // pulses, and its tooltip starts with what the click does.
-                var offer = enabled ? Offer(view, item.Key, kind) : "";
-                choosing |= offer.Length > 0;
-                ChoiceGlow.Apply(item.Value, offer.Length > 0);
-                if (descriptions.TryGetValue(item.Key, out var description))
-                    item.Value.tooltip = offer.Length > 0 ? offer + "\n" + description : description;
+                var offer = lure ? LureChoice.EliminateTooltip(view) : enabled ? Offer(view, item.Key, kind) : "";
+                offering |= offer.Length > 0;
+                offers[item.Key] = offer;
+                if (lure)
+                    lured.Add(item.Key);
+                ShowLight(item.Key, item.Value);
                 item.Value.EnableInClassList("selected", draft.Kind == CommandKind.SelectGuide ? draft.Payload.GuideId == item.Key
                     : draft.Kind is CommandKind.SeparateCompanions or CommandKind.ChooseEffect && draft.Payload.Ids.Contains(item.Key));
             }
+            Choosing = offering;
+            RunPulse();
+        }
+
+        // UI-441 (owner): a companion whose skill can be used now glows on its portrait and pulses with the roster, and its
+        // tooltip says why — unless its click makes another choice now, which keeps its own words.
+        public void LightSkills(IReadOnlyDictionary<string, string> lines)
+        {
+            skills = lines ?? new Dictionary<string, string>();
+            if (!turnChoices)
+                return;
+            foreach (var item in portraits)
+                ShowLight(item.Key, item.Value);
+            RunPulse();
+        }
+
+        // This companion's skill can be used now (UI-441).
+        public bool SkillUsable(string id) => turnChoices && skills.ContainsKey(id);
+
+        private void ShowLight(string id, Button button)
+        {
+            var offer = offers.TryGetValue(id, out var text) ? text : "";
+            var skill = offer.Length == 0 && skills.TryGetValue(id, out var line) ? line : "";
+            ChoiceGlow.Apply(button, offer.Length > 0 && !lured.Contains(id) || skill.Length > 0);
+            var lead = offer.Length > 0 ? offer : skill;
+            if (descriptions.TryGetValue(id, out var description))
+                button.tooltip = lead.Length > 0 ? lead + "\n" + description : description;
+        }
+
+        private void RunPulse() => pulse.Run(offering || turnChoices && portraits.Keys.Any(skills.ContainsKey));
+
+        // UI-269: the private versions on the portraits — a two-faces badge on each companion with two versions (its
+        // click compares them), the drafted version's art and name, and a crown on each starting Guide candidate.
+        private void Versions(PlayerView view, TurnDraft draft, ActionOption option, bool enabled, string compared)
+        {
+            turnChoices = false;
+            var choosing = false;
+            foreach (var item in portraits)
+            {
+                var group = option.CompanionVersions.FirstOrDefault(candidate => candidate.FigureId == item.Key);
+                var button = item.Value;
+                var badge = button.Q("versions-badge");
+                badge.style.display = group == null ? DisplayStyle.None : DisplayStyle.Flex;
+                button.Q("alternate-badge").style.display = DisplayStyle.None;
+                var version = group == null ? "" : CouncilDraft.Version(draft.Payload, group);
+                var shown = version.Length > 0 ? version : group?.BaseId ?? item.Key;
+                FigureArtwork.Apply(button, FigureAppearances.Character(shown, Side.FreePeoples), Side.FreePeoples);
+                button.Q<Label>("portrait-name").text = CharacterLibrary.ShortName(shown);
+                var required = enabled && group != null && version.Length == 0;
+                choosing |= required;
+                ChoiceGlow.Apply(button, required);
+                button.SetEnabled(true);
+                button.EnableInClassList("legal-target", enabled && group != null);
+                button.EnableInClassList("selected", group != null && item.Key == compared);
+                var description = descriptions.TryGetValue(item.Key, out var text) ? text : "";
+                button.tooltip = group == null ? description : CompanionSetupPresentation.PortraitOffer(draft, group);
+                var crown = crowns[item.Key];
+                var candidate = option.Targets.Contains(item.Key);
+                crown.style.display = candidate ? DisplayStyle.Flex : DisplayStyle.None;
+                crown.EnableInClassList("selected", draft.Payload.GuideId == item.Key);
+                crown.SetEnabled(enabled && candidate);
+                crown.tooltip = candidate ? CompanionSetupPresentation.CrownOffer(draft, option, item.Key) : "";
+                button.EnableInClassList("current-guide", draft.Payload.GuideId == item.Key);
+                button.Q<Label>("guide-badge").style.display = DisplayStyle.None;
+            }
+            choosing |= enabled && !option.Targets.Contains(draft.Payload.GuideId);
             Choosing = choosing;
             pulse.Run(choosing);
+        }
+
+        // UI-270: the Council's homelands — each companion who may start outside glows; its click selects it and lights
+        // its homelands on the map (a drag onto one is a shortcut); a placed companion shows where it starts.
+        private void Homelands(PlayerView view, TurnDraft draft, ActionOption option, bool enabled)
+        {
+            turnChoices = false;
+            var choosing = false;
+            var own = view.OwnCompanions.ToDictionary(character => character.Id);
+            foreach (var item in portraits)
+            {
+                var button = item.Value;
+                var choice = option.CharacterActions.FirstOrDefault(candidate => candidate.CharacterId == item.Key);
+                var placement = draft.Payload.Placements.FirstOrDefault(p => p.UnitId == item.Key);
+                var location = button.Q<Label>("homeland-location");
+                location.text = placement == null ? "" : "→ " + RegionName(placement.RegionId);
+                location.style.display = placement == null ? DisplayStyle.None : DisplayStyle.Flex;
+                var offered = enabled && choice != null;
+                choosing |= offered;
+                ChoiceGlow.Apply(button, offered && draft.Payload.CharacterId != item.Key);
+                button.SetEnabled(true);
+                button.EnableInClassList("legal-target", offered);
+                button.EnableInClassList("selected", choice != null && draft.Payload.CharacterId == item.Key);
+                button.userData = new DraftToken(choice != null ? DraftObject.CouncilPortrait : DraftObject.FellowshipPortrait, item.Key);
+                var description = descriptions.TryGetValue(item.Key, out var text) ? text : "";
+                button.tooltip = choice == null ? description + "\nStays with the Fellowship"
+                    : CompanionSetupPresentation.HomelandOffer(draft, choice, RegionName,
+                        own.TryGetValue(item.Key, out var character) ? character.NationIcon : "");
+            }
+            Choosing = choosing;
+            pulse.Run(choosing);
+        }
+
+        private void HideHomelands()
+        {
+            foreach (var item in portraits)
+            {
+                item.Value.Q<Label>("homeland-location").style.display = DisplayStyle.None;
+                item.Value.userData = new DraftToken(DraftObject.FellowshipPortrait, item.Key);
+            }
+        }
+
+        private void HideVersions()
+        {
+            foreach (var button in portraits.Values)
+                button.Q("versions-badge").style.display = DisplayStyle.None;
+            foreach (var crown in crowns.Values)
+                crown.style.display = DisplayStyle.None;
+        }
+
+        // UI-269: a click on a portrait compares its versions now, before the next view arrives.
+        public void Compare(string figure)
+        {
+            foreach (var item in portraits)
+                item.Value.EnableInClassList("selected", item.Key == figure);
         }
 
         public static string Offer(PlayerView view, string id, CommandKind? kind) => kind switch

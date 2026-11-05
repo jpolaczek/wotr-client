@@ -21,7 +21,10 @@ namespace Wotr.PlayTests
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource(TimeSpan.FromSeconds(70));
         public CancellationToken Token => lifetime.Token;
 
-        public static async Task<UI10TestRoom> Connect(string scenario, bool secondDevice = false, bool shadowBoundary = false)
+        // holdFreePeoples: the Free Peoples' interaction starts held (as a presentation holds it), so that a step the client
+        // answers itself (UI-482) waits until the test calls Hold(false).
+        public static async Task<UI10TestRoom> Connect(string scenario, bool secondDevice = false, bool shadowBoundary = false,
+            bool holdFreePeoples = false)
         {
             var path = Environment.GetEnvironmentVariable("WOTR_CLIENT_TEST_CONFIG");
             if (string.IsNullOrEmpty(path))
@@ -34,6 +37,8 @@ namespace Wotr.PlayTests
                 room.Boundary.MatchPath = "/api/matches/" + match;
                 room.Fp = new MountedMatchClient(fixture.Address, match, shadowBoundary ? null : room.Boundary);
                 room.Sh = new MountedMatchClient(fixture.Address, match, shadowBoundary ? room.Boundary : null);
+                if (holdFreePeoples)
+                    room.Fp.Interaction.Hold(true);
                 await room.Login(room.Fp, fixture.FreePeoplesUser, fixture.Password);
                 await room.Login(room.Sh, fixture.ShadowUser, fixture.Password);
                 if (secondDevice)
@@ -76,7 +81,7 @@ namespace Wotr.PlayTests
         }
 
         public static void Click(MountedMatchClient client, string name) =>
-            CardNetworkTests.Click(client.Board.Tray.Q<Button>(name));
+            CardNetworkTests.Click(client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name));
 
         public async Task SelectDrawCost(MountedMatchClient client, string die = null)
         {

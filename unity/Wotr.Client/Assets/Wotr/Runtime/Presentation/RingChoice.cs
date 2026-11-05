@@ -9,14 +9,19 @@ namespace Wotr.Client
 
     public readonly struct RingFace
     {
-        public RingFace(DieFace face, bool enabled)
+        public RingFace(DieFace face, bool enabled, string id = "", bool remove = false)
         {
             Face = face;
             Enabled = enabled;
+            Id = id;
+            Remove = remove;
         }
 
         public DieFace Face { get; }
         public bool Enabled { get; }
+        // UI-272: a card's result (Lore) names its choice and may keep a special die's Remove symbol.
+        public string Id { get; }
+        public bool Remove { get; }
     }
 
     // UI-161: the Elven Ring gesture ring → die → result, read only from the server's UseRing option (BASE p. 21,

@@ -16,6 +16,16 @@ namespace Wotr.Client.Diagnostics
 
         public static string Mode => Screen.fullScreenMode.ToString();
 
+        // UI-407: a Development Player profile run (the map review or a desktop suite) owns its window.
+        public static bool Requested
+        {
+            get
+            {
+                var args = System.Environment.GetCommandLineArgs();
+                return System.Array.IndexOf(args, "--wotr-map-review") >= 0 || System.Array.IndexOf(args, "--wotr-profile") >= 0;
+            }
+        }
+
         public static bool Matches(int width, int height) => Screen.width == width && Screen.height == height;
 
         public static IEnumerator Apply(int width, int height)

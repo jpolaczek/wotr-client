@@ -43,9 +43,7 @@ namespace Wotr.Client
                 if (characters.Count == 0)
                     continue;
                 var marker = ArmyMarker.From(group.Key, view.You, false, Enumerable.Empty<(string, UnitKind)>());
-                marker.Characters = characters.Count;
-                marker.CharacterAppearance = FigureAppearances.Art(characters[0]);
-                marker.CharacterNames = characters.Select(c => CharacterLibrary.Name(c.DefinitionId)).ToList();
+                marker.Carried.AddRange(characters.Select(CharacterFigure.From));
                 planned.Add(group.Key, marker);
             }
             return planned;

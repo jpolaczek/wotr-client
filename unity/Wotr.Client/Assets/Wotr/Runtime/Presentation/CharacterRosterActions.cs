@@ -31,17 +31,37 @@ namespace Wotr.Client
 
         // UI-108: an entry starts with a double-click in the Characters list and ends on the map, so it never
         // hosts its decision in the inspector.
+        // UI-450 (owner): nor does a ruler's recruiting ability, made in the Reserve with the console's ↶ and no new buttons.
         public static bool OwnsDecision(PlayerView view, TurnDraft draft) =>
             view?.Decision?.Kind == DecisionKind.Action && !view.Winner.HasValue && draft.Kind != CommandKind.EnterCharacter &&
-            DecisionFigure(view, draft).Length > 0;
+            DecisionFigure(view, draft).Length > 0 && !CharacterRecruitDraft.Ruler(view, draft);
 
+        // The Characters row of the entering version: UI-438, the character's one row, whichever version enters.
         public static string EnteringFigure(PlayerView view, TurnDraft draft) =>
             draft.Kind == CommandKind.EnterCharacter && draft.Payload.RegionId.Length == 0 && view.DecisionOwner == view.You
                 ? Figure(view, draft.Payload.CharacterId) : "";
 
+        // The Characters row that offers a component: UI-438, its character's one row, an entry of any version included.
+        public static string Row(PlayerView view, ComponentAction item) => Figure(view, item.OwnerId);
+
+        // UI-390: a deck choice from the character (Denethor's Palantír of Anárion) is made on the decks, not linked here.
+        // UI-423 (owner's playtest pattern, like UI-390): nor is a response made on its own object — Galadriel's Nenya at its
+        // socket after a Hunt Eye, the Chief's Spear of Terror at the Character deck and He Sees, He Knows at his figure —
+        // since no window holds it for Open decision to lead to.
         public static bool HasReaction(PlayerView view, string id) =>
             id.Length > 0 && view?.Decision != null && view.DecisionOwner == view.You && view.Decision.Kind != DecisionKind.Action &&
+            !DeckChoice.Pending(view) && !ObjectReaction(view) &&
             (Figure(view, view.Decision.SourceId) == id || view.Options.Any(option =>
-                option.EffectChoices.Any(choice => Figure(view, choice.SourceId) == id)));
+                option.EffectChoices.Any(choice => Figure(view, choice.SourceId) == id && !OnObject(view, choice.Id))));
+
+        // Every response offered now is made on its own object.
+        private static bool ObjectReaction(PlayerView view)
+        {
+            var responses = view.Options.Where(o => o.Enabled && o.Kind == CommandKind.RespondEffect).SelectMany(o => o.EligibleIds).ToList();
+            return responses.Count > 0 && responses.All(response => OnObject(view, response));
+        }
+
+        private static bool OnObject(PlayerView view, string response) =>
+            ChiefReactionObjects.OnObject(response) || NamedRings.OnSocket(view, response);
     }
 }

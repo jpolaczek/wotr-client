@@ -25,11 +25,15 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("shadow-lure", ScenarioKind.CardPack))
             {
-                // UI-214: Lure of the Ring's two options are console buttons naming the Companion.
-                AssertConsoleOptions(room.Fp, "effect-choice-lure.corruption", "effect-choice-lure.eliminate");
-                Assert.That(TrayOrConsole(room.Fp, "effect-choice-lure.corruption").text, Does.StartWith("Gimli"));
-                Click(room.Fp, "effect-choice-lure.corruption");
-                await room.Confirm(room.Fp);
+                // UI-431 (owner's rule, UI-430): Lure of the Ring's options are the Fellowship panel's objects — Gimli's red
+                // portrait and the offered corruption marker — not console buttons.
+                AssertConsoleOptions(room.Fp);
+                await room.Settle();
+                var marker = room.Fp.Board.Fellowship.CorruptionMarker;
+                StringAssert.StartsWith("Corruption +2 · Click to keep Gimli and take 2 Corruption", marker.tooltip);
+                var revision = room.Fp.Board.View.Revision;
+                CardNetworkTests.Click(marker);
+                await room.At(revision + 1);
                 Assert.AreEqual(2, room.Sh.Board.View.Fellowship.Corruption);
                 Assert.AreEqual(7, room.Sh.Board.View.Fellowship.CompanionCount);
             }
@@ -80,8 +84,17 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("shadow-worn", ScenarioKind.CardPack))
             {
-                Click(room.Sh, "effect-choice-base.fp.character.05");
-                await room.Confirm(room.Sh);
+                // UI-432 (owner's rule, UI-430): the table card is red in the Effects panel; its tile's click discards it.
+                await room.Settle();
+                if (!room.Sh.Board.TableEffects.Pinned)
+                    PointerGestureEvents.ClickAt(room.Sh.Board.TableEffects.Tab);
+                var tile = room.Sh.Board.TableEffects.Root.Q<Button>("effect-source-base.fp.character.05");
+                await room.Until(() => tile.enabledInHierarchy && tile.worldBound.width > 0);
+                await room.Settle();
+                Assert.IsTrue(tile.ClassListContains(TableEffectsView.DiscardClass));
+                var revision = room.Sh.Board.View.Revision;
+                PointerGestureEvents.ClickAt(tile);
+                await room.At(revision + 1);
                 Assert.IsFalse(room.Fp.Board.View.Effects.Any(e => e.SourceId == "base.fp.character.05"));
                 Assert.IsTrue(room.Sh.Board.View.Effects.Any(e => e.SourceId == "base.sh.character.15"));
                 Assert.AreEqual(1, room.Sh.Board.View.Fellowship.Corruption);
@@ -130,7 +143,7 @@ namespace Wotr.PlayTests
                 PointerGestureEvents.ClickAt(room.Sh.Board.Tray.Q("portrait-base.character.gimli"));
                 await room.Confirm(room.Sh);
                 Assert.Contains("base.character.gimli", room.Fp.Board.View.Battle.Defender.CancelledAbilities);
-                Assert.IsTrue(room.Fp.Board.Tray.Query<Label>("battle-characters").ToList().Any(label => label.text.Contains("⦸ Gimli")));
+                Assert.IsTrue(room.Fp.Board.Tray.Query<Label>("battle-character-name").ToList().Any(label => label.text.Contains("⦸ Gimli")));
                 Assert.AreEqual(3, room.Sh.Board.View.Battle.Defender.Leadership);
             }
         }
@@ -155,12 +168,18 @@ namespace Wotr.PlayTests
                         hidden = view;
                 }
                 room.Fp.Connection.Updated += Seen;
+                // UI-493 (owner, 2026-11-04): the public count holds the table card that may be played, so the Free Peoples'
+                // board steps it with the commit like any other card's, and the server's next view agrees.
+                var hand = room.Fp.Board.View.Players.Single(p => p.Side == Side.Shadow).HandCount;
+                var count = room.Fp.Board.TopBar.Opponent.Root.Q("opponent-cards").Q<Label>(className: "summary-value");
                 PointerGestureEvents.ClickAt(choice);
                 await room.Until(() => room.Sh.Board.View.Revision > revision);
+                await room.Until(() => count.text == (hand - 1).ToString());
                 Assert.IsEmpty(room.Sh.Board.Cards.CardId);
                 await room.NoCard(room.Fp);
                 room.Fp.Connection.Updated -= Seen;
                 Assert.IsNotNull(hidden);
+                Assert.AreEqual(hand - 1, hidden.Players.Single(p => p.Side == Side.Shadow).HandCount, "The staged count was the true one.");
                 Assert.IsTrue(hidden.Effects.Any(e => e.SourceId == "base.sh.character.17"));
                 Assert.IsNull(hidden.Battle.Attacker.CardId);
                 Assert.IsFalse(room.Sh.Board.View.Effects.Any(e => e.SourceId == "base.sh.character.17"));

@@ -6,6 +6,12 @@ namespace Wotr.Client
 {
     public static class CharacterRecruitDraft
     {
+        // UI-450 (owner): a ruler's recruiting ability (Brand's Call to Arms, Dáin's Iron Guard, Théoden's Mustering of the
+        // Mark) is being drafted: the Reserve takes it at once, the character's window keeps its form, and the last figure's
+        // click sends it.
+        public static bool Ruler(PlayerView view, TurnDraft draft) => CharacterDraft.UsesCharacters(draft.Kind) &&
+            DraftOptions.For(view, draft) is { } option && CharacterDraft.Selected(draft, option)?.RulerRecruitment != null;
+
         public static IEnumerable<string> Targets(TurnDraft draft, CharacterActionOption choice) => choice?.Recruitment
             .Where(g => draft.ReserveId.Length == 0 || g.ReserveIds.Contains(draft.ReserveId))
             .SelectMany(g => g.Targets.Where(region => g.ReserveIds.Any(id => CanPlace(draft, choice, id, region)))).Distinct()
@@ -46,6 +52,17 @@ namespace Wotr.Client
             if (CanPlace(draft, choice, id, draft.Payload.RegionId))
                 return Drop(draft, choice, id, draft.Payload.RegionId);
             draft.Change(_ => draft.ReserveId = draft.ReserveId == id ? "" : id);
+            return true;
+        }
+
+        // UI-454 (owner, 2026-11-03): a token taken up to be carried is armed, never placed in the chosen region nor
+        // released, so the settlements it may be dropped on light.
+        public static bool Arm(TurnDraft draft, CharacterActionOption choice, string id)
+        {
+            if (choice == null || !choice.Recruitment.Any(g => g.ReserveIds.Contains(id) && g.Targets.Any(r => CanPlace(draft, choice, id, r))))
+                return false;
+            if (draft.ReserveId != id)
+                draft.Change(_ => draft.ReserveId = id);
             return true;
         }
 

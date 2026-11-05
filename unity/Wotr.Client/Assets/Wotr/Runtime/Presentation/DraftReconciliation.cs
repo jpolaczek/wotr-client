@@ -25,6 +25,11 @@ namespace Wotr.Client
                     draft.Payload.DieId = "";
                     return true;
                 }
+                if (PalantirConversion.Armed(draft) && PalantirConversion.Dice(view, draft).Count == 0)
+                {
+                    draft.Clear();
+                    return true;
+                }
                 if (draft.Payload.DieId.Length == 0 || view.Dice.Any(die => die.Id == draft.Payload.DieId &&
                     die.Owner == view.You && die.Location == DieLocation.Available))
                     return false;
@@ -96,7 +101,7 @@ namespace Wotr.Client
         internal static bool Same(TurnDraft left, TurnDraft right) =>
             left.Kind == right.Kind && left.MoveFocus == right.MoveFocus && left.ReserveId == right.ReserveId &&
             left.CompanionFocus == right.CompanionFocus && left.HuntChoice == right.HuntChoice && left.ArmedSource == right.ArmedSource &&
-            SamePayload(left.Payload, right.Payload);
+            left.WillFace == right.WillFace && SamePayload(left.Payload, right.Payload);
 
         private static bool SamePayload(CommandPayload left, CommandPayload right) =>
             left.DieId == right.DieId && left.RingId == right.RingId && left.RulerTokenId == right.RulerTokenId &&

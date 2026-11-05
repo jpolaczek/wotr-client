@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -165,6 +166,8 @@ namespace Wotr.PlayTests
                     foreach (var name in new[] { "quit-confirm", "quit-cancel" })
                         Fits(menu.Root.Q<Button>(name), menu.Root.Q("quit-window"));
                     Fits(menu.Root.Q("quit-window"), content);
+                    // UI-470 (owner, 2026-11-03): the question over the menu, in the menus' thin-line style.
+                    LayoutTests.Save(target, $"ui470-quit-{width}-{scale:0.00}.png");
                     BoardMenuLayoutTests.Key(menu.Root.Q<Button>("quit-cancel"), true);
                     BoardMenuLayoutTests.Key(menu.Root.Q<Button>("quit-cancel"), false);
                     yield return Settle();
@@ -237,12 +240,21 @@ namespace Wotr.PlayTests
                     Assert.IsFalse(menu.Root.Q<Button>("host-fp").ClassListContains("selected"));
                     ReturnTestFixture.Click(menu.Root.Q<Button>("host-fp"));
                     yield return Settle();
+                    // UI-470 (owner, 2026-11-03): the Host a game page itself.
+                    LayoutTests.Save(target, $"ui470-host-form-{width}-{scale:0.00}.png");
                     // MENU-31: the demo page asks only for the side, with its cards in the same window.
                     ReturnTestFixture.Click(menu.Root.Q<Button>("menu-demo"));
                     yield return Settle();
                     Assert.AreEqual("Demo vs CPU", menu.Root.Q<Label>("menu-window-title").text);
                     foreach (var part in new[] { "demo-fp", "demo-shadow", "cancel-demo" })
                         Fits(menu.Root.Q<Button>(part), window);
+                    // DEMO-06: the rules above the side cards, every module offered and every rule on.
+                    menu.ShowDemoModules(new[] { "fate", "lords", "kings" });
+                    yield return Settle();
+                    foreach (var control in menu.DemoPage.Rules.Root.Query<Button>().ToList())
+                        Fits(control, window);
+                    Assert.IsFalse(menu.DemoPage.Rules.Root.Q<Button>("rules-module-lords").worldBound.Overlaps(
+                        menu.Root.Q<Button>("demo-fp").worldBound), "The rules stand above the side cards.");
                     Assert.AreEqual(size, window.worldBound.size);
                     Fits(menu.Root.Q<Button>("menu-demo"), menu.Root.Q("menu-actions"));
                     Fits(menu.Root.Q<Button>("quit-game"), menu.Root.Q("menu-actions"));
@@ -253,7 +265,9 @@ namespace Wotr.PlayTests
                     content.Add(waiting.Root);
                     waiting.Update(new RoomView { Id = "room", Name = new string('N', 64), Host = "PlayerWithLongUsername12345678901",
                         IsHost = true, Managed = true, Visibility = RoomVisibility.Public, FreePeoples = "PlayerWithLongUsername12345678901",
-                        JoinCode = new string('A', 43), ObserverLimit = 16, Observers = Audience() });
+                        JoinCode = new string('A', 43), ObserverLimit = 16, Observers = Audience(), ExpansionsAvailable = true,
+                        Configuration = new MatchConfiguration { Lords = true, Kings = true, Fate = true, Council = true, Dismay = true,
+                            VisibleCorruption = true, SequentialCorruption = true, RemovingRulerTokens = true, NewCities = true } });
                     waiting.Status.text = "Connection interrupted. Your seat is kept. Retry Refresh when the server is available.";
                     // MENU-26: the chat in its place, with a long line and markup shown as plain text.
                     var chat = new RoomChatPanel();
@@ -282,9 +296,18 @@ namespace Wotr.PlayTests
                         Assert.IsFalse(waiting.Root.Q<Button>("seat-" + key + "-take").worldBound.Overlaps(waiting.Root.Q<Button>("seat-" + key + "-remove").worldBound));
                     }
                     Fits(waiting.Root.Q<Button>("remove-observer-Observer01"), waiting.Root.Q("waiting-observers"));
-                    Assert.AreEqual(52, waiting.Root.Q("waiting-observers").resolvedStyle.height, 0.5f);
-                    Assert.AreEqual(waiting.Root.Q("seat-free").worldBound.width, waiting.Root.Q("seat-shadow").worldBound.width, 0.5f, "Two equal seats.");
-                    Assert.AreEqual(waiting.Root.Q("seat-free").worldBound.height, waiting.Root.Q("seat-shadow").worldBound.height, 0.5f, "Two equal seats.");
+                    // UI-263: the rules' three medallions and six chips stay inside the window beside the chat.
+                    foreach (var control in waiting.Rules.Root.Query<Button>().ToList())
+                        Fits(control, waitingWindow);
+                    Assert.AreEqual(9, waiting.Rules.Root.Query<Button>().ToList().Count);
+                    Assert.AreEqual(174, waiting.Root.Q("waiting-rules-modules").resolvedStyle.height, 0.5f);
+                    Fits(waiting.Root.Q("waiting-rules"), waitingWindow);
+                    // UI-415 (owner): the audience line keeps a fixed, compact height.
+                    Assert.AreEqual(48, waiting.Root.Q("waiting-observers").resolvedStyle.height, 0.5f);
+                    // UI-415: the panel scales from 1366 x 768, so at 1920 and 125% a point is 1.76 pixels; two equal seats may
+                    // round one physical pixel apart (up to 0.57 points), never more.
+                    Assert.AreEqual(waiting.Root.Q("seat-free").worldBound.width, waiting.Root.Q("seat-shadow").worldBound.width, 1f, "Two equal seats.");
+                    Assert.AreEqual(waiting.Root.Q("seat-free").worldBound.height, waiting.Root.Q("seat-shadow").worldBound.height, 1f, "Two equal seats.");
                     Assert.AreEqual("Back", waiting.Root.Q<Button>("waiting-back").text);
                     Assert.AreEqual(markup, waiting.Root.Q("room-chat-message-12").Q<Label>(className: "room-chat-text").text);
                     Assert.IsFalse(waiting.Root.Q("room-chat-message-12").Q<Label>(className: "room-chat-text").enableRichText);
@@ -292,6 +315,15 @@ namespace Wotr.PlayTests
                     CoversWithMap(waiting.Root, content);
                     CreditsClear(waiting.Root, content, waitingWindow, waiting.Root.Q("waiting-actions"), waiting.Status);
                     LayoutTests.Save(target, $"menu09-waiting-{width}-{scale:0.00}.png");
+                    // UI-364: the host's Ready greys the three expansion checkboxes and the variants out, in place.
+                    waiting.Update(new RoomView { Id = "room", Name = "Table", Host = "Host", IsHost = true, Managed = true,
+                        Visibility = RoomVisibility.Public, FreePeoples = "Host", Shadow = "Guest", FreePeoplesAccepted = true,
+                        JoinCode = "ABCDEFGH", ObserverLimit = 16, Observers = Audience(), ExpansionsAvailable = true,
+                        Configuration = new MatchConfiguration { Fate = true, Kings = true, NewCities = true, VisibleCorruption = true } });
+                    yield return Settle();
+                    Assert.IsTrue(waiting.Rules.Root.Query<Button>().ToList().All(control => !control.enabledSelf));
+                    Assert.AreEqual(174, waiting.Root.Q("waiting-rules-modules").resolvedStyle.height, 0.5f);
+                    LayoutTests.Save(target, $"menu09-waiting-ready-{width}-{scale:0.00}.png");
                     client.Panel.targetTexture = null;
                     target.Release();
                     Object.Destroy(target);

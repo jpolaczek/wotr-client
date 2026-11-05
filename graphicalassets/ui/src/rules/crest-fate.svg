@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- UI-263: Fate of Erebor: the Lonely Mountain under the Arkenstone. Original simplified symbol; ivory and gilt with
+       an ink outline, drawn over a medallion's enamel or beside a row's title. -->
+  <defs>
+    <linearGradient id="crest-fate-stone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.6" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#cdb57c"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M2.4 28 L12.2 13.6 L15.2 17 L17.6 12.4 L29.6 28 Z" fill="url(#crest-fate-stone)" style="stroke: var(--ink)"
+      stroke-width="1.5"/>
+    <path d="M12.2 13.6 L14.2 19.6 L15.2 17 L16.6 20.4 L17.6 12.4" fill="none" style="stroke: var(--ink)" stroke-width="0.9"/>
+    <path d="M7.4 28 L14.6 21.6 L18.2 24.4 L22.4 21.2 L26 28" fill="none" style="stroke: var(--gilt-shadow)"
+      stroke-width="1"/>
+    <path d="M16 1.6 L17.5 5.6 L21.6 7.1 L17.5 8.6 L16 12.6 L14.5 8.6 L10.4 7.1 L14.5 5.6 Z" fill="url(#gilt)"
+      style="stroke: var(--ink)" stroke-width="1.1"/>
+    <circle cx="16" cy="7.1" r="1.2" fill="#fffdf2"/>
+  </g>
+</svg>

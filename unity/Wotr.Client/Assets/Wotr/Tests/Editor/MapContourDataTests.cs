@@ -97,23 +97,16 @@ namespace Wotr.EditorTests
             Assert.AreEqual(expected, canvas.HitTest(canvas.Camera.ToScreen(point)));
         }
 
-        // UI-228: the Fellowship's figure stands with its feet inside its region; in Gorgoroth, whose point lies just
-        // under Barad-dûr, it stands below the forces instead of above them. Elsewhere it keeps its place above.
-        [TestCase(.5f)]
-        [TestCase(1f)]
-        [TestCase(1.5f)]
-        public void FellowshipFigureStandsInsideGorgoroth(float zoom)
+        // UI-228, UI-401: the Fellowship's figure stands with its feet on its region's Fellowship place, inside the region,
+        // at every zoom — also in Gorgoroth, whose point lies just under Barad-dûr.
+        [TestCase("gorgoroth")]
+        [TestCase("rivendell")]
+        public void FellowshipFigureStandsInsideItsRegion(string region)
         {
             var board = BoardPresentation.Load();
-            var camera = new CameraState { Zoom = zoom, Pan = new Vector2(-300, -200) };
-            var gorgoroth = board.Shapes["gorgoroth"];
-            var anchor = camera.ToScreen(new Vector2(gorgoroth.Anchor[0], gorgoroth.Anchor[1]));
-            var centre = MapFellowshipMarker.RegionCentre(gorgoroth, anchor, camera);
-            Assert.IsTrue(MapContourMath.Contains(gorgoroth, camera.ToBoard(MapFellowshipMarker.Feet(centre))));
-            Assert.Greater(centre.y, anchor.y, "Below Barad-dûr's border.");
-            var rivendell = board.Shapes["rivendell"];
-            var point = camera.ToScreen(new Vector2(rivendell.Anchor[0], rivendell.Anchor[1]));
-            Assert.AreEqual(point + new Vector2(0, -64), MapFellowshipMarker.RegionCentre(rivendell, point, camera));
+            var shape = board.Shapes[region];
+            var place = MapStandSlots.Load(board).For(shape, board.Regions[region]).Fellowship;
+            Assert.IsTrue(MapContourMath.Contains(shape, place), region);
         }
 
         [TestCase("version")]

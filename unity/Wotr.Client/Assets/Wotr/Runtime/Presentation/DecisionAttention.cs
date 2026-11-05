@@ -3,7 +3,7 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    public enum DecisionContext { Resources, Battle, Fellowship, Sovereign, Region, Hunt }
+    public enum DecisionContext { Resources, Battle, Fellowship, Sovereign, Region, Hunt, Hand }
 
     // Navigation only. Candidates are never treated as a player's chosen destination.
     public sealed class DecisionAttention
@@ -16,17 +16,30 @@ namespace Wotr.Client
         {
             if (view?.Decision == null || view.DecisionOwner != view.You || view.Winner.HasValue)
                 return null;
-            var sovereign = SovereignPresentation.DecisionTarget(view, null);
-            if (sovereign.Length > 0)
+            // UI-482 (owner, 2026-11-04): no companion to place, so no "Place Companions" notice for the moment the client
+            // takes to answer the step itself (CouncilHomelandSkip).
+            if (CouncilHomelandPresentation.NothingToPlace(view))
+                return null;
+            // UI-274: a king's decision is made in the Characters panel, on his portrait or tiles. UI-278 (D16): a Combat
+            // card's choice of a king is made with the battle window open, where a king who takes part glows.
+            if (SovereignPresentation.OwnsDecision(view, null) && !SovereignChoices.InBattleWindow(view))
             {
+                var sovereign = SovereignPresentation.DecisionTarget(view, null);
                 return At(DecisionContext.Sovereign, view.Sovereigns.FirstOrDefault(s => s.Id == sovereign)?.RegionId, sovereign);
             }
             if (view.Battle != null || view.EventLoss != null)
                 return At(DecisionContext.Battle, view.EventLoss?.RegionId ?? view.Battle.RegionId);
             if (HuntActions.UsesPanel(view))
                 return At(DecisionContext.Hunt, "");
+            // UI-395: Nenya's socket and Pass stand in the console; no window or region holds this reaction.
+            if (HuntActions.ConsoleReaction(view))
+                return At(DecisionContext.Resources, "");
             if (FellowshipActions.UsesPanel(view, null) && !CompanionJourneyDraft.OnMap(view))
                 return At(DecisionContext.Fellowship, view.Fellowship.MordorStep.HasValue ? "" : view.Fellowship.RegionId);
+            // UI-390: a deck choice (the Palantír of Anárion's extra card) is made on the decks in the hand drawer, never in
+            // its source character's region.
+            if (DeckChoice.Pending(view))
+                return At(DecisionContext.Hand, "");
             var figures = FigureRegion(view);
             if (figures.Length > 0)
                 return At(DecisionContext.Region, figures);

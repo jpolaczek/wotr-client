@@ -67,7 +67,9 @@ namespace Wotr.PlayTests
                 // UI-144: the step shows without a selecting click on the token.
                 var arrow = board.Nations.Drawer.Q<Button>("political-slot-elves-1");
                 Assert.IsTrue(arrow.enabledSelf);
-                Assert.IsTrue(arrow.ClassListContains("legal-target"));
+                // UI-410: the station stays dark; the nation's token glows.
+                Assert.IsFalse(arrow.ClassListContains("legal-target"));
+                Assert.IsTrue(board.Nations.Drawer.Q<Button>("nation-status-elves").ClassListContains("legal-target"));
                 Assert.AreEqual(cost.Length == 0 ? "muster" : cost, board.ActionDie.DieId);
                 Assert.AreEqual(0, view.Revision, "Restoring and choosing components do not submit a command.");
             }

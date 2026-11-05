@@ -19,19 +19,24 @@ namespace Wotr.Client
     {
         public static string Key(string source, Side owner) => owner + ":" + source;
 
+        // UI-446 (owner): a card source shows only the part of the card in effect — its Combat text when every effect it
+        // has lasts a battle or a combat round, otherwise its Event text (a table card's, a lasting event's).
+        public static bool CombatPart(EffectSource source) => source != null && source.Effects.Count > 0 &&
+            source.Effects.All(effect => effect.Duration is "EndBattle" or "EndCombatRound");
+
         public static IReadOnlyList<EffectSource> Sources(PlayerView view)
         {
             var sources = new Dictionary<string, EffectSource>();
             foreach (var effect in view.Effects)
             {
-                var key = Key(effect.SourceId, effect.Owner);
+                var key = SourceKey(sources, effect);
                 if (!sources.TryGetValue(key, out var source))
                 {
                     source = new EffectSource
                     {
                         Key = key, SourceId = effect.SourceId, Owner = effect.Owner,
                         Kind = effect.SourceKind.Length > 0 ? effect.SourceKind : "Card",
-                        Title = effect.Title.Length > 0 ? effect.Title : CardLibrary.Title(effect.SourceId)
+                        Title = Title(effect)
                     };
                     sources.Add(key, source);
                 }
@@ -54,6 +59,16 @@ namespace Wotr.Client
                 }
             return sources.Values.OrderBy(s => s.Owner).ThenBy(s => s.Title).ToList();
         }
+
+        // UI-414 (owner): each titled ability of a source has its own button (Théoden's Corrupted ruler and Mark of the White
+        // Hand); a card's effects share its title, so it keeps one button and its key.
+        private static string SourceKey(Dictionary<string, EffectSource> sources, ActiveEffectView effect)
+        {
+            var key = Key(effect.SourceId, effect.Owner);
+            return sources.TryGetValue(key, out var first) && first.Title != Title(effect) ? key + "/" + Title(effect) : key;
+        }
+
+        private static string Title(ActiveEffectView effect) => effect.Title.Length > 0 ? effect.Title : CardLibrary.Title(effect.SourceId);
 
         public static IEnumerable<string> LocalRegions(PlayerView view, ActiveEffectView effect)
         {
@@ -86,10 +101,10 @@ namespace Wotr.Client
             if (action.Kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardLore)
             {
                 if (action.DieId.Length == 0 && option?.DiceWithoutRing.Count > 0)
-                    return "Spend a Will of the West, or another eligible die and one chosen Elven Ring transferred to Shadow.";
+                    return "Spend a Will of the West, or another eligible die and give one Elven Ring to the Shadow.";
                 return option?.DiceWithoutRing.Contains(action.DieId) == true
                     ? "Spend this Will of the West. No Ring is required."
-                    : "Spend this die and transfer one chosen Elven Ring to Shadow.";
+                    : "Spend this die and give one Elven Ring to the Shadow.";
             }
             return "Spend the selected eligible die.";
         }

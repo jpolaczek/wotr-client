@@ -24,7 +24,7 @@ From MENU-28 host addresses are not in git (`ServerConfiguration`, `ClientEnviro
 
 The menu shows open games and My games and Host a game, Join by code, Settings and Sign out; screen layout from MENU-11 describes the section “ Menu layout — MENU-11 Public means visibility for logged users of this server, without automatic matchmaking. The list refreshes every 5 s, waiting room what 2 p. Requests are cancelled when changing the screen. From MENU-09 lists contain more rows and scroll without filters All/Your decision/Waiting/Finished and without Previous/Next. Further pages API load after scrolling to the end; refresh includes the loaded part, retains rows and position. Another page without scrolling only loads the list shorter than the view, evaluated after the new rows are placed ( DIST-01 Field Game code and Join by code stand by MENU-11 in column action One list error does not hide the others. Back at 404 returns to the menu. Source of this product adjustment: user request 2026-10-12 .
 
-Host game: name (default {username}'s game, 1–64 characters after trim, no controls), Public/Private (default Public), Free Peoples/Shadow (default Free Peoples). Always base game and two seats. The new menu does not show expansions also in Development. Name/widocznoity/page are constant since creation. The public line opens and takes a free seat with one click.
+Host game: name (default {username}'s game, 1–64 characters after trim, no controls), Public/Private (default Public), Free Peoples/Shadow (default Free Peoples). A new table starts as the base game with two seats; since UI-263 (2026-10-19) its host chooses the expansions and variants in the waiting room ([WAITING_ROOM_UX](WAITING_ROOM_UX.md#rules-strip--ui-263-2026-10-19)), and the server offers only the released modules (wotr-server EXP-01). Name/widocznoity/page are constant since creation. The public line opens and takes a free seat with one click.
 
 Private room does not enter the public list. Host public and private room generates/copy random code; at the same time, one code is active, generating is impotent. Joining a member repeated after losing the reply does not take second place. Upon the guest's departure, the code is invalidated; the host can generate a new one. Start/close sizing prevents new attachments. The code never goes to public DTO.
 
@@ -40,8 +40,9 @@ The screen (`MainMenuScreen`) has three layers:
 - background**: dim map (`MapCanvas/terrain`), without interaction;
 - **header**: ‘WAR OF THE RING’ in Cinzel and ‘Signed in as {username}’;
 - **Body** of constant size 980×540, (reduces only on the screen that does not accommodate it):
-  - **window** (`menu-window`, `frames/panel` frame, `frames/panel-header` header with page title
-    and Fresh button);
+  - **window** (`menu-window`; since UI-470 the thin `frontend/card` with the page title centred over
+    `frontend/divider` and the Refresh button at the header's right end; formerly `frames/panel` and
+    `frames/panel-header`);
   - **column action** (`menu-actions`, 250 entitled, same frame).
 
 The window shows one page at a time and does not change the size between the pages:
@@ -251,6 +252,11 @@ The menu has a button in the action column (from MENU-11; previously in the head
   its combat card, under Character and Strategy. The tab comes from the server's group text before " · "
   (`TestScenarioTabs`), so no contract changed; a tab without scenarios stays in place, disabled, and a refreshed
   catalog keeps the open tab. Server side and proof that every card is playable: `wotr-server:docs/TEST_SCENARIOS.md`.
+- TEST-10 (2026-10-19): three narrow expansion tabs follow, **Fate**, **Lords** and **Kings** (`test-tab-fate`,
+  `test-tab-lords`, `test-tab-kings`, 72 px each). An expansion scenario stands in the tab of its module
+  (`TestScenarioView.Modules`, Contracts 0.13.0), its group named without the module ("Special dice", "Council of
+  Rivendell"). The server lists only the scenarios of released modules, so the tab of a module it does not release
+  has none and stays in place, disabled, with the tooltip "… · Not yet available on this server."
 
 <a id="wyjście-z-gry--menu-14-2026-10-15"></a>
 ## Out of the game — MENU-14 (2026-10-15)
@@ -333,7 +339,7 @@ Focus starts at “Cancel”. Esc, “Cancel” and click next to the window do 
     „Main menu” (`game-deleted-menu`), that goes back to menu Main.
 
 Esc and click next to it do not close this window. The player who selected the “Delete” himself does not get this window.
-- Test scenario: ‘Delete game’ ends the scenario like ‘Games’.
+- Test scenario: ‘Delete game’ ends the scenario and, like Exit, returns to Test scenarios (UI-368).
 - Local data of the deleted batch play remain on the disk, but are no longer read because the batch
   is not on the list “My games”.
 - Common Question Window: `ConfirmationDialog` with name prefix (`quit-…`, `delete-…`) and
@@ -379,12 +385,14 @@ User application from 2026-10-16: "Adjust host view a game to the rest of the de
 
 - the row ‘Game name’ with the name field (`room-name`), the label in the constant column 150
   entitled;
-- "Choose your side": two card pages `SideChoice` in the frame `frames/entry`, like the seats in the
-  waiting room, with the emblem (ring, eye), name and one sentence about how the page wins
-  (`host-fp`, `host-shadow`); the selected card shines and has a golden outline;
+- "Choose your side": two card pages `SideChoice` in the frame `frontend/row` (UI-470; formerly
+  `frames/entry`), like the seats in the waiting room, with the emblem (ring, eye), name and one sentence
+  about how the page wins (`host-fp`, `host-shadow`); the selected card wears `frontend/row-selected`
+  (a thin gold line over a warm field);
 - ‘Visibility’: segment buttons ‘Public’ and ‘Private’ (`host-public`, `host-private`) with one
   sentence of the explanation below;
-- the line of rules „Base game · Two players · Play at your own pace”;
+- the line of rules „Two players · Play at your own pace · Choose expansions in the waiting room” (`host-rules-note`,
+  UI-263: the rules are chosen in the waiting room, after the table exists);
 - Footer: ‘Back’ (`cancel-host`) to the left, message of the middle error, ‘Create game’
   (`submit-host`) to the right.
 
@@ -407,6 +415,13 @@ The user request from 2026-10-16: "Do the best from the main menu option demo mo
   4. opens the party as each started.
 
 The error appears in the status of the menu, and the room is released anyway.
+
+DEMO-06 (2026-10-19): above the side cards the page has the same rules as a waiting room, in one row (`RulesStrip`
+with `.rules-row`: the Fate, Lords and Kings medallions, then the six variant chips in two rows of three). The page
+asks `GET /api/rooms/offered-modules` when it opens; a module the server does not release stays disabled with its
+reason, and a server without the route offers the base game. The rules are set before the click on a side card (still
+the whole selection); their tooltips leave out Ready. The client then configures the private room
+(`PUT …/configuration`) before starting the demo, so the demo plays with those rules.
 
 <a id="logowanie-bez-rejestracji--auth-03-2026-10-16"></a>
 ## Logging without registration — AUTH-03 (2026-10-16)
@@ -571,3 +586,13 @@ accents ("smeagol" finds "Sméagol", "nazgul strike" finds "The Nazgûl Strike!"
 names, no tab is marked as the list meanwhile, and a query that matches nothing says so. The × beside the field clears
 it, and so does a click on a tab, which shows that tab again (`TestScenarioSearch`, `TestScenarioList.Find`). Tests:
 `TestScenarioClientTests.TheSearchFindsScenariosByNameAcrossTabs`, `TestScenarioNetworkTests` (typing in the real menu).
+
+<a id="leaving-a-test-scenario--ui-368-2026-10-27"></a>
+## Leaving a test scenario returns to the list — UI-368 (2026-10-27)
+
+The owner's request: leaving a test scenario goes back to Test scenarios, not to the main menu's first page. Exit on the
+test bar, and the way back after deleting the test game, end the test on the server and reopen the Test scenarios
+page as soon as the catalog is loaded, on the tab, search and scroll the player started from
+(`TestScenarioList.Place`, `MainMenuScreen.ReturnToTestScenarios`). Games and Quit in the board menu keep their own
+destinations; a catalog that cannot be read leaves the main menu. Test: `TestScenarioNetworkTests` (the list after
+Exit with the search kept, `ui368-back-to-test-scenarios.png`).

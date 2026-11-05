@@ -3,18 +3,12 @@
    cards above as a read-only preview. HandView sets slot and face geometry; this sheet draws them.
    Rules carry #board-screen so they win over the older hand rules declared later in Wotr.uss. */
 
-/* The cards area closes the right column with the same frame as the panels above it. */
+/* The cards area closes the right column with the same thin card as the panels above it (UI-472, GameChrome.uss). */
 #board-screen .board-right-panels .edge-cards {
     padding: 6px 7px 7px 7px;
     border-width: 0;
     border-radius: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 #board-screen .edge-cards .edge-hand { padding: 0; border-width: 0; background-color: rgba(0, 0, 0, 0); }
 
@@ -43,7 +37,7 @@
 #board-screen .edge-cards .card-decks #deck-character { margin-right: 6px; }
 #board-screen .edge-cards .card-decks .card-deck:hover,
 #board-screen .edge-cards .card-decks .card-deck:focus { background-color: rgba(0, 0, 0, 0); background-image: resource("Wotr/Art/UI/cards/back-hover"); }
-#board-screen .edge-cards .card-decks .card-deck.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+#board-screen .edge-cards .card-decks .card-deck.legal-target { border-width: 2px; border-color: rgb(255, 214, 112); }
 #board-screen .edge-cards .card-deck .unity-label { margin: 0 3px; font-size: 12px; letter-spacing: 1px; -unity-font-style: bold; }
 #board-screen .edge-cards .card-deck #deck-count { color: rgb(214, 190, 140); letter-spacing: 0; -unity-font-style: normal; }
 #board-screen .edge-cards .card-deck .action-symbol { width: 18px; height: 18px; }
@@ -164,7 +158,9 @@
     -unity-slice-scale: 0.5px;
 }
 #board-screen .card-inspector Label { color: rgb(58, 42, 24); }
-#board-screen .card-inspector .card-header .title { font-size: 16px; -unity-font-style: bold; color: rgb(58, 42, 24); }
+/* UI-473: the title in quiet ink over the hairline of every window's header, tinted for parchment (GameChrome.uss). */
+#board-screen .card-inspector .card-header { -unity-background-image-tint-color: var(--game-title-rule-ink); }
+#board-screen .card-inspector .card-header .title { font-size: 16px; letter-spacing: 1px; -unity-font-style: normal; color: var(--game-title-ink); }
 #board-screen .card-inspector #card-window { color: rgb(122, 74, 30); }
 #board-screen .card-inspector .card-effect { border-left-color: rgba(140, 106, 51, 0.7); background-color: rgba(0, 0, 0, 0); }
 #board-screen .card-inspector .card-effect-heading,
@@ -177,19 +173,9 @@
 #board-screen .card-inspector .card-effect.playable-effect { border-left-color: rgb(46, 112, 84); background-color: rgba(46, 112, 84, 0.12); }
 #board-screen .card-inspector .card-rules { color: rgb(58, 42, 24); }
 #board-screen .card-inspector .card-header Button {
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
 }
-#board-screen .card-inspector .card-header Button:hover,
-#board-screen .card-inspector .card-header Button:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
 
 
 /* UI-111: cards that cannot be committed in this battle stay visible but dimmed, with their unmet condition. */
@@ -199,6 +185,8 @@
 #board-screen .hand-card.card-unplayable { opacity: 0.5; }
 #board-screen .hand-card.card-unplayable.card-expanded { opacity: 1; }
 
+/* UI-272: a Shadow card Wind from the West inspects stands in the Free Peoples' drawer with a Shadow-red edge. */
+#board-screen .hand .hand-card.inspected-card { border-width: 2px; border-color: rgb(150, 46, 34); border-radius: 4px; }
 /* UI-326: a discard — two card backs, slightly fanned, rise from where the cards leave and dissolve in the air: they fade,
    soften and swell a little over 0.6 s (CardDissolve), never taking the pointer; nothing is drawn under Skip animations. */
 .card-dissolve {
@@ -221,4 +209,14 @@
     opacity: 0;
     scale: 1.12 1.12;
     filter: blur(6px);
+}
+/* UI-463: the player's own card that stays on the table — its stand-in (Presentation.uss) leaves its place in the hand and
+   shrinks into the Effects tab (PlayedCardFlight moves only its translate, scale and opacity), above the HUD, never taking
+   the pointer; nothing flies under Skip animations. */
+.played-card-flight {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }

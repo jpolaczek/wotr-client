@@ -18,10 +18,12 @@ namespace Wotr.Client
         private readonly Label sources = new Label { name = "hunt-reroll-sources" };
         private readonly Label rerollBonus = new Label { name = "hunt-reroll-bonus" };
         private readonly Label budget = new Label { name = "hunt-reroll-budget" };
+        private readonly ChoicePulse pulse;
         private string roster = "";
 
         public HuntDiceStrip()
         {
+            pulse = new ChoicePulse(results);
             var overview = BoardScreen.Row("hunt-roll-overview");
             overview.Add(results);
             var totals = BoardScreen.Row("hunt-roll-totals");
@@ -54,14 +56,11 @@ namespace Wotr.Client
                 first.text = die.First + " → " + die.Result;
                 first.style.display = die.Rerolled ? DisplayStyle.Flex : DisplayStyle.None;
                 button.EnableInClassList("hunt-hit", die.Success);
-                button.tooltip = "Natural " + die.Result + (die.Rerolled ? " · First " + die.First + " → Reroll " + die.Result : "") +
-                    "\nBonus +" + hunt.Bonus + (die.Rerolled ? " · Reroll bonus +" + hunt.RerollBonus : "") +
-                    (die.Success ? " · Hit" : " · Miss") + "\nNatural 1 always misses; 6 or more after bonuses hits.";
+                button.tooltip = DieTooltip(die, hunt);
             }
             var hits = hunt.Dice.Count(d => d.Success);
             bonus.text = hunt.Dice.Count + (hunt.Dice.Count == 1 ? " die · " : " dice · ") + hits + (hits == 1 ? " hit" : " hits");
-            bonus.tooltip = "Hunt roll bonus +" + hunt.Bonus + " · Reroll bonus +" + hunt.RerollBonus +
-                "\nRerolls: " + (hunt.RerollSources.Count == 0 ? "None" : string.Join(", ", hunt.RerollSources.Select(Source)));
+            bonus.tooltip = TooltipText.Lines(Bonuses(hunt), Rerolls(hunt.RerollSources));
             movement.text = hunt.MovementBonus.HasValue ? "Earlier FP moves +" + hunt.MovementBonus.Value :
                 "Roll bonus +" + hunt.Bonus + " · Breakdown unavailable";
             movement.tooltip = hunt.MovementBonus.HasValue ? "Earlier Free Peoples movement dice only. The current Resolving cost is not included." :
@@ -69,8 +68,7 @@ namespace Wotr.Client
             effects.text = "Effects +" + hunt.EffectBonus;
             effects.tooltip = "Public effect bonus applied to the roll and its rerolls.";
             effects.style.display = hunt.EffectBonus.HasValue && hunt.EffectBonus.Value != 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            sources.text = hunt.RerollSources.Count == 0 ? "No reroll sources" :
-                "Rerolls · " + string.Join(" · ", hunt.RerollSources.Select(Source));
+            sources.text = Rerolls(hunt.RerollSources);
             sources.tooltip = "One reroll per named source, up to the number of failed dice. Natural 1 always misses.";
             rerollBonus.text = "Reroll bonus +" + hunt.RerollBonus;
             rerollBonus.style.display = hunt.RerollBonus != 0 ? DisplayStyle.Flex : DisplayStyle.None;
@@ -110,6 +108,7 @@ namespace Wotr.Client
             budget.style.display = option == null ? DisplayStyle.None : DisplayStyle.Flex;
             if (option != null)
                 budget.text = "Rerolls " + draft.Payload.Ids.Count + "/" + option.Maximum;
+            var lit = false;
             foreach (var pair in dice)
             {
                 var selected = option != null && draft.Payload.Ids.Contains(pair.Key);
@@ -119,8 +118,27 @@ namespace Wotr.Client
                 pair.Value.EnableInClassList("selected", selected);
                 ReadOnlyControl.Apply(pair.Value, legal || selected);
                 // Keep public results inspectable for either player; the controller guards choices.
+                // UI-423 (owner's playtest pattern, like UI-419): a die a click may still add to the reroll glows and
+                // pulses until the budget is full; a chosen one shows its gilt die instead.
+                ChoiceGlow.Apply(pair.Value, legal && !selected);
+                lit |= legal && !selected;
             }
+            pulse.Run(lit);
         }
+
+        // UI-420 (owner): the die's roll and its result first ("First 2 → Reroll 4 · Hit"), then the bonuses by the names
+        // the strip shows ("Roll bonus", "Reroll bonus").
+        private static string DieTooltip(HuntDieView die, HuntView hunt) => TooltipText.Lines(
+            TooltipText.Parts(die.Rerolled ? "First " + die.First + " → Reroll " + die.Result : "Natural " + die.Result,
+                die.Success ? "Hit" : "Miss"),
+            TooltipText.Parts("Roll bonus +" + hunt.Bonus, die.Rerolled ? "Reroll bonus +" + hunt.RerollBonus : ""),
+            "Natural 1 always misses; 6 or more after bonuses hits.");
+
+        public static string Bonuses(HuntView hunt) => "Roll bonus +" + hunt.Bonus + " · Reroll bonus +" + hunt.RerollBonus;
+
+        // "Rerolls · Shadow stronghold · Nazgûl", or "No reroll sources".
+        public static string Rerolls(IReadOnlyCollection<string> sources) =>
+            sources.Count == 0 ? "No reroll sources" : "Rerolls · " + string.Join(" · ", sources.Select(Source));
 
         private static string Source(string source) => source switch
         {

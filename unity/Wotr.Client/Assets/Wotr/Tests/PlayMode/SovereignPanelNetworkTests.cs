@@ -5,6 +5,7 @@ using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
+using Wotr.Client;
 using static Wotr.PlayTests.MatchTestRoom;
 
 namespace Wotr.PlayTests
@@ -26,37 +27,34 @@ namespace Wotr.PlayTests
         [UnityTest]
         public IEnumerator PoliticalTileReturnIsOptionalRandomAndDistinctFromRemovingTheSovereign() => Wait(Cleansing());
 
+        // UI-274: die → king → destination: the lit portrait takes the awakening; a single destination (the king's home)
+        // completes it with that click, otherwise the lit region on the map does. No window or inspector hosts it.
         private static async Task Awaken(bool variant)
         {
             using var room = await Connect(variant ? "ui59-awaken-variant" : "ui59-awaken", ScenarioKind.Interaction, openPanels: false);
+            using var watch = new GenericWindowWatch(room.Fp, room.Sh);
             var board = room.Fp.Board;
             var id = variant ? "kings.sovereign.thranduil" : "kings.sovereign.dain";
             var option = board.View.Options.Single(o => o.Kind == CommandKind.AwakenSovereign && o.EligibleIds.Contains(id));
             var die = option.EligibleDice.First();
+            var targets = option.Travel.Single(t => t.Id == id).Targets;
             var revision = board.View.Revision;
-            var pan = board.Map.Camera.Pan;
             Assert.AreEqual(variant ? 3 : 5, board.Sovereigns.Root.childCount);
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(die));
             await room.Settle();
-            PointerGestureEvents.ClickAt(await BoardNavigation.Sovereign(board, id));
-            await room.Settle();
-            Assert.AreSame(board.Sovereigns.DecisionHost, board.Tray.parent);
-            Assert.AreEqual(id, board.Sovereigns.Selected);
-            Assert.IsNull(board.Tray.Q<Button>("confirm-decision"));
-            Assert.IsNull(board.Tray.Q<Button>("cost-" + die));
-            StringAssert.Contains(variant ? "tokens are not used" : "Ruler token", board.Sovereigns.Inspector.Q<Label>("sovereign-consequence").text);
-            PointerGestureEvents.ClickAt(board.Sovereigns.Inspector.Q<Button>("sovereign-close"));
+            var portrait = await BoardNavigation.Sovereign(board, id);
+            Assert.IsTrue(portrait.ClassListContains("legal-target"), "The die lights the king it can awaken.");
+            await SovereignPanelLayoutChecks.Slots(room, room.Fp, variant ? "awaken-variant" : "awaken");
             await KingsCardNetworkChecks.Reconnect(room, room.Fp);
-            Assert.IsFalse(board.Sovereigns.IsOpen);
-            Assert.AreEqual(revision, board.View.Revision);
-            Assert.IsTrue(board.OwnDice.Q<Button>(die).ClassListContains("selected"));
-            PointerGestureEvents.ClickAt(board.Notice.Button);
-            await room.Settle();
-            Assert.AreEqual(id, board.Sovereigns.Selected);
-            Assert.AreEqual(pan, board.Map.Camera.Pan);
-            await SovereignPanelLayoutChecks.Layout(room, room.Fp, variant ? "awaken-variant" : "awaken");
-            await Ready(room, board.Tray.Q<Button>("travel-stay"));
-            PointerGestureEvents.ClickAt(board.Tray.Q<Button>("travel-stay"));
+            portrait = await BoardNavigation.Sovereign(board, id);
+            PointerGestureEvents.ClickAt(portrait);
+            if (targets.Count > 1)
+            {
+                await room.Settle();
+                Assert.IsFalse(board.Sovereigns.IsOpen);
+                Assert.IsTrue(board.Map.DraftOverlay.Targets.Contains(targets[0]));
+                board.Map.Select(targets[0]);
+            }
             await room.At(revision + 1);
             foreach (var client in new[] { room.Fp, room.Sh })
             {
@@ -69,128 +67,153 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DieLocation.Removed, view.Dice.Single(d => d.Owner == Side.FreePeoples && d.Source == "ruler").Location);
                 Assert.AreEqual(DieLocation.Spent, view.Dice.Single(d => d.Id == die).Location);
             }
-            await KingsCardNetworkChecks.Reconnect(room, room.Fp);
-            Assert.AreEqual(revision + 1, board.View.Revision);
-            room.Sh.Board.Sovereigns.Show(id);
-            await SovereignPanelLayoutChecks.Layout(room, room.Sh, "awakened-public-" + variant);
+            Assert.IsTrue(room.Sh.Board.Sovereigns.Root.Q("sovereign-slot-" + id).Q("sovereign-status").ClassListContains("sovereign-status-awakened"),
+                "The awakened king keeps his slot for both players.");
+            watch.NeverOpened();
         }
 
+        // UI-274: Sequential corruption: the latest tile stands beside the king for the Shadow (the Free Peoples see its
+        // back); Draw again is the console's button; a click on the latest tile keeps it.
         private static async Task Sequential()
         {
             using var room = await Connect("ui59-sequential", ScenarioKind.Interaction, openPanels: false);
+            using var watch = new GenericWindowWatch(room.Fp, room.Sh);
             var board = room.Sh.Board;
             var id = board.View.CorruptionAttempt.SovereignId;
             var first = board.View.CorruptionAttempt.OwnChoices.Single().TileId;
             Assert.AreEqual(3, board.View.CorruptionAttempt.OwnChoices.Single().Value);
-            Assert.AreSame(board.Sovereigns.DecisionHost, board.Tray.parent);
-            Assert.AreEqual(id, board.Sovereigns.Selected);
-            Assert.IsNull(board.Tray.Q<Button>("action-ChooseCorruptionTile"), "Tile selection must not need a redundant mode button.");
-            room.Fp.Board.Sovereigns.Show(id);
-            Assert.IsEmpty(room.Fp.Board.Sovereigns.DecisionHost.Children());
-            Assert.IsEmpty(room.Fp.Board.View.CorruptionAttempt.OwnChoices);
-            Assert.IsNull(room.Fp.Board.Root.Q<Button>("corruption-choice-" + first));
-            await SovereignPanelLayoutChecks.Layout(room, room.Fp, "visible-private-fp");
-            await SovereignPanelLayoutChecks.Layout(room, room.Sh, "sequential-sh");
-            var other = board.View.Sovereigns.First(s => s.Id != id).Id;
-            board.Sovereigns.Show(other);
-            Assert.AreEqual(DisplayStyle.None, board.Sovereigns.DecisionHost.style.display.value);
-            Assert.AreSame(board.Sovereigns.DecisionHost, board.Tray.parent);
-            PointerGestureEvents.ClickAt(board.Notice.Button);
             await room.Settle();
+            watch.OnItsObject(room.Sh);
+            var tile = await Tile(room, room.Sh, id, first);
+            Assert.AreEqual("3", tile.Q<Label>().text);
+            Assert.IsNull(room.Fp.Board.Root.Q<Button>("corruption-choice-" + first), "The Free Peoples never see the tile.");
+            Assert.IsTrue(room.Fp.Board.Sovereigns.Root.Q("sovereign-slot-" + id).Q<Button>("corruption-choice-drawn-0").ClassListContains("sovereign-tile-back"));
+            await SovereignPanelLayoutChecks.Slots(room, room.Fp, "sequential-fp");
+            await SovereignPanelLayoutChecks.Slots(room, room.Sh, "sequential-sh");
             var revision = board.View.Revision;
-            await Draw(room, room.Sh);
+            var draw = board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile");
+            await Ready(room, draw);
+            PointerGestureEvents.ClickAt(draw);
             await room.At(revision + 1);
             var latest = board.View.CorruptionAttempt.OwnChoices.Single();
             Assert.AreEqual(1, latest.Value);
             Assert.AreNotEqual(first, latest.TileId);
-            Assert.IsNull(board.Tray.Q<Button>("corruption-choice-" + first));
-            Assert.IsFalse(board.Hunt.Pinned);
-            PointerGestureEvents.ClickAt(board.Sovereigns.Inspector.Q<Button>("sovereign-close"));
             await KingsCardNetworkChecks.Reconnect(room, room.Sh);
-            Assert.IsFalse(board.Sovereigns.IsOpen);
-            PointerGestureEvents.ClickAt(board.Notice.Button);
-            await room.Settle();
-            await Ready(room, board.Tray.Q<Button>("corruption-choice-" + latest.TileId));
-            PointerGestureEvents.ClickAt(board.Tray.Q<Button>("corruption-choice-" + latest.TileId));
+            tile = await Tile(room, room.Sh, id, latest.TileId);
+            Assert.IsNull(board.Root.Q<Button>("corruption-choice-" + first));
+            PointerGestureEvents.ClickAt(tile);
             await room.At(revision + 2);
             Assert.IsNull(board.View.CorruptionAttempt);
             Assert.AreEqual(1, board.View.Sovereigns.Single(s => s.Id == id).Corruption);
             Assert.AreEqual(1, room.Fp.Board.View.Sovereigns.Single(s => s.Id == id).Tiles.Single().Value);
-            Assert.IsTrue(board.Sovereigns.IsOpen);
+            watch.NeverOpened();
         }
 
+        // UI-442 (owner): the attempt's click draws every tile in its one command: the Eye tile drawn is revealed and
+        // replaced, the emptied pool refills with the Kings tile, and the Kings tile ends the attempt on the king, face up
+        // and worth zero. Opening the game and choosing the Eye send nothing (UI-12); no Draw tiles stands in the console.
         private static async Task Replacement()
         {
             using var room = await Connect("ui59-replacement-kings", ScenarioKind.Interaction, openPanels: false);
+            using var watch = new GenericWindowWatch(room.Fp, room.Sh);
+            const string id = "kings.sovereign.thranduil";
             var board = room.Sh.Board;
-            var attempt = board.View.CorruptionAttempt;
-            Assert.AreEqual(0, attempt.DrawnCount);
-            Assert.AreEqual(1, attempt.RevealedTiles.Count);
-            Assert.IsEmpty(attempt.OwnChoices);
-            Assert.IsTrue(board.Sovereigns.IsOpen);
-            room.Fp.Board.Sovereigns.Show(attempt.SovereignId);
-            foreach (var client in new[] { room.Fp, room.Sh })
-            {
-                StringAssert.Contains("Eye", client.Board.Sovereigns.Inspector.Q<Label>("sovereign-revealed").text);
-                Assert.IsFalse(client.Board.Hunt.Pinned);
-                await SovereignPanelLayoutChecks.Layout(room, client, "replacement-" + client.Board.View.You);
-            }
             var revision = board.View.Revision;
-            await Draw(room, room.Sh);
+            Assert.IsNull(board.View.CorruptionAttempt, "The seed waits before the attempt.");
+            var option = board.View.Options.Single(o => o.Enabled && o.Kind == CommandKind.AttemptCorruption);
+            var die = option.EligibleDice.First();
+            var eye = board.OwnDice.Q<Button>(die);
+            Assert.IsNotNull(eye, "The Eye that may pay stands in the Shadow's row.");
+            PointerGestureEvents.ClickAt(eye);
+            await room.Settle();
+            board.Characters.Open();
+            await room.Settle();
+            var attempt = board.Sovereigns.Root.Q<Button>("sovereign-attempt-" + id);
+            await Ready(room, attempt);
+            Assert.IsTrue(attempt.ClassListContains("legal-target"), "The chosen Eye lights Thranduil's attempt.");
+            StringAssert.Contains("\nDraws 3 Corruption tiles at once · Then click the one to place on Thranduil", attempt.tooltip);
+            Assert.AreEqual(revision, board.View.Revision, "Opening the game and choosing the Eye send nothing.");
+            PointerGestureEvents.ClickAt(attempt);
             await room.At(revision + 1);
+            Assert.IsNull(board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile"));
             foreach (var client in new[] { room.Fp, room.Sh })
             {
-                Assert.IsNull(client.Board.View.CorruptionAttempt);
-                var tile = client.Board.View.Sovereigns.Single(s => s.Id == attempt.SovereignId).Tiles.Single();
+                Assert.IsNull(client.Board.View.CorruptionAttempt, "The Kings tile ended the attempt in its one command.");
+                Assert.AreNotEqual(DecisionKind.CorruptionTile, client.Board.View.Decision?.Kind);
+                var tile = client.Board.View.Sovereigns.Single(s => s.Id == id).Tiles.Single();
                 Assert.IsTrue(tile.Kings);
                 Assert.AreEqual(0, tile.Value);
-                Assert.AreEqual(DieLocation.Spent, client.Board.View.Dice.Single(d => d.Id == attempt.DieId).Location);
+                Assert.AreEqual(DieLocation.Spent, client.Board.View.Dice.Single(d => d.Id == die).Location);
                 Assert.IsFalse(client.Board.Hunt.Pinned);
             }
-            Assert.IsTrue(board.Sovereigns.IsOpen);
-            Assert.AreEqual(DisplayStyle.None, board.Sovereigns.DecisionHost.style.display.value);
+            watch.NeverOpened();
         }
 
+        // UI-274: the cleanse is the glowing king's click; UI-278 (D7): Keep tiles is the console's Pass.
         private static async Task Cleansing()
         {
             foreach (var choice in new[] { "remove", "decline" })
             {
                 using var room = await Connect("ui59-cleanse-" + choice, ScenarioKind.Interaction, openPanels: false);
+                using var watch = new GenericWindowWatch(room.Fp, room.Sh);
                 var board = room.Fp.Board;
                 var id = "kings.sovereign.dain";
                 var revision = board.View.Revision;
                 var cost = board.View.Dice.Single(d => d.Location == DieLocation.Resolving).Id;
                 Assert.AreEqual("CorruptionRemoval", board.View.Decision.Presentation);
-                Assert.AreEqual(id, board.Sovereigns.Selected);
-                Assert.AreSame(board.Sovereigns.DecisionHost, board.Tray.parent);
                 Assert.IsNull(board.View.CorruptionAttempt);
-                StringAssert.Contains("random non-Kings", board.Sovereigns.Inspector.Q<Label>("sovereign-consequence").text);
-                Assert.IsNull(board.Tray.Q<Button>("confirm-decision"));
                 Assert.AreEqual("Return a Corruption tile?", Wotr.Client.DecisionNoticeText.Describe(board.View));
-                foreach (var button in board.Tray.Query<Button>().ToList())
-                    StringAssert.DoesNotContain("kings.sovereign", button.text.ToLowerInvariant());
-                await SovereignPanelLayoutChecks.Layout(room, room.Fp, "cleanse-" + choice);
-                PointerGestureEvents.ClickAt(board.Sovereigns.Inspector.Q<Button>("sovereign-close"));
-                await KingsCardNetworkChecks.Reconnect(room, room.Fp);
-                Assert.IsFalse(board.Sovereigns.IsOpen);
-                PointerGestureEvents.ClickAt(board.Notice.Button);
                 await room.Settle();
-                await Ready(room, board.Tray.Q<Button>("effect-choice-" + choice));
-                PointerGestureEvents.ClickAt(board.Tray.Q<Button>("effect-choice-" + choice));
+                watch.OnItsObject(room.Fp);
+                var portrait = await BoardNavigation.Sovereign(board, id);
+                Assert.IsTrue(portrait.ClassListContains("legal-target"));
+                StringAssert.StartsWith("Click to return one random tile", portrait.tooltip);
+                Assert.IsNull(board.Console.Status.Options.Q<Button>("effect-choice-decline"), "No Keep tiles button.");
+                await SovereignPanelLayoutChecks.Slots(room, room.Fp, "cleanse-" + choice);
+                await KingsCardNetworkChecks.Reconnect(room, room.Fp);
+                if (choice == "remove")
+                    PointerGestureEvents.ClickAt(await BoardNavigation.Sovereign(board, id));
+                else
+                    await room.Pass(room.Fp, "Pass · Keep the king's tiles in place");
                 await room.At(revision + 1);
                 var sovereign = board.View.Sovereigns.Single(s => s.Id == id);
                 Assert.AreEqual(SovereignStatus.Initial, sovereign.Status);
                 Assert.AreEqual(choice == "remove" ? 1 : 2, sovereign.Tiles.Count);
                 Assert.IsTrue(sovereign.Tiles.Any(t => t.Kings));
                 Assert.AreEqual(DieLocation.Spent, board.View.Dice.Single(d => d.Id == cost).Location);
+                watch.NeverOpened();
             }
         }
 
-        private static async Task Draw(MatchTestRoom room, MountedMatchClient client)
+        // A tile beside the king in the Characters panel, lit and enabled.
+        private static async Task<Button> Tile(MatchTestRoom room, MountedMatchClient client, string king, string tile)
         {
-            var button = client.Board.Tray.Q<Button>("action-DrawCorruptionTile") ?? client.Board.Tray.Q<Button>("confirm-decision");
-            await Ready(room, button);
-            PointerGestureEvents.ClickAt(button);
+            client.Board.Characters.Open();
+            await room.Settle();
+            var button = client.Board.Sovereigns.Root.Q("sovereign-slot-" + king).Q<Button>("corruption-choice-" + tile);
+            Assert.IsNotNull(button, tile + " stands beside the king.");
+            Assert.IsTrue(button.ClassListContains("legal-target"));
+            // UI-411 (owner): a tile that can be chosen wears the choice glow and its panel pulses it.
+            Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), "The tile wears the choice glow.");
+            var pulsing = Pulsing(button);
+            for (var waited = 0; waited < 2000 && !pulsing; waited += 50)
+            {
+                await Task.Delay(50);
+                pulsing = Pulsing(button);
+            }
+            Assert.IsTrue(pulsing, "The tile pulses.");
+            return button;
+        }
+
+        // The shared rhythm toggles its class on an ancestor (the Characters panel) every 750 ms.
+        private static bool Pulsing(VisualElement element)
+        {
+            for (var parent = element.parent; parent != null; parent = parent.parent)
+            {
+                if (parent.ClassListContains(ChoiceGlow.PulseClass))
+                    return true;
+            }
+            return false;
         }
 
         private static Task Ready(MatchTestRoom room, Button button)

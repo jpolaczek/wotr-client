@@ -58,7 +58,7 @@ namespace Wotr.Client
                     button.EnableInClassList("loss-removed", loss?.Kind == BattleLossKind.Remove);
                     overlay.EnableInClassList("loss-overlay-downgrade", loss?.Kind == BattleLossKind.Downgrade);
                     overlay.EnableInClassList("loss-overlay-remove", loss?.Kind == BattleLossKind.Remove);
-                    button.tooltip = FigureGrid.Name(unit.Nation) + " " + unit.Kind + (loss == null ? " · Keep" : " · " + loss.Kind + " · Order " + (draft.Payload.Losses.IndexOf(loss) + 1)) +
+                    button.tooltip = TooltipText.Unit(unit.Nation, unit.Kind) + (loss == null ? " · Keep" : " · " + loss.Kind + " · Order " + (draft.Payload.Losses.IndexOf(loss) + 1)) +
                         (unit.Kind == UnitKind.Elite ? "\nClick: keep → downgrade (1 hit) → remove (2 hits) → keep" : "\nClick: keep ↔ remove (1 hit)") +
                         "\nOrder controls replacement availability. Clear and reselect a figure to move it last.";
                 });

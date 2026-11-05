@@ -11,10 +11,12 @@ namespace Wotr.Client
 
         public static string Hint(PlayerView view, TurnDraft draft, ActionDieContext die)
         {
+            if (ResourcePresentation.CouncilMarked(draft, ExpansionDraft.CouncilPolitics))
+                return ResourcePresentation.CouncilHint(view, draft);
             if (AdvanceOption(view, draft, die) != null)
                 return "Politics → click a nation’s arrow or token to move it one step toward war.";
             if (draft.Kind == CommandKind.UseCouncilToken)
-                return "The Council politics token is not available in this decision.";
+                return "The Council Politics token cannot be used now.";
             return "Select an available Muster result from your dice, then continue in Politics.";
         }
 
@@ -22,7 +24,9 @@ namespace Wotr.Client
         {
             if (view?.DecisionOwner != view?.You || view?.Decision?.Kind != DecisionKind.Action)
                 return null;
-            if (draft.Kind == CommandKind.UseCouncilToken && draft.Payload.AbilityId == ExpansionDraft.CouncilPolitics)
+            // UI-388: a marked token's printed use is lit beside its Chieftain's entry.
+            if (draft.Kind == CommandKind.UseCouncilToken && draft.Payload.AbilityId == ExpansionDraft.CouncilPolitics ||
+                ResourcePresentation.CouncilMarked(draft, ExpansionDraft.CouncilPolitics))
                 return view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.UseCouncilToken &&
                     o.EligibleIds.Contains(ExpansionDraft.CouncilPolitics));
             return MusterActions.Active(view, draft, die) ? MusterActions.Option(view, die, CommandKind.AdvancePolitics) : null;
@@ -78,16 +82,24 @@ namespace Wotr.Client
         {
             if (!ActivationOffered(view, draft, nation))
                 return "";
-            return (CanActivate(view, draft, nation) ? "Use Narya with the selected die." : "Select an available action die to use Narya.") +
-                "\nSpend the die and transfer Narya to the Shadow. Activate this nation and place it At War.";
+            return (CanActivate(view, draft, nation) ? "Click to use Narya with the selected die." : "Select an available action die to use Narya.") +
+                "\nSpend the die and transfer Narya to the Shadow. Activate this nation and place it at war.";
         }
 
         public const string ActivationSources =
             "Activation follows an eligible Fellowship declaration, companion arrival, enemy incursion or attack, or a card effect." +
             "\nMuster advances the track; it does not activate a nation. Card restrictions still apply.";
 
-        public static string Describe(NationView nation) => FigureGrid.Name(nation.Id) + " · " +
-            (nation.Active ? "Active" : "Passive") + " · " +
-            (nation.StepsToWar == 0 ? "At war" : nation.StepsToWar + (nation.StepsToWar == 1 ? " step" : " steps") + " to war");
+        // UI-420 (owner): "Southrons & Easterlings · Passive · 1 step to war"; "At war" as the track's caption reads.
+        public static string Describe(NationView nation) =>
+            TooltipText.Parts(TooltipText.Nation(nation.Id), nation.Active ? "Active" : "Passive", Distance(nation.StepsToWar));
+
+        // "At war", "1 step to war", "3 steps to war".
+        public static string Distance(int stepsToWar) => stepsToWar == 0 ? "At war" : TooltipText.Count(stepsToWar, "step") + " to war";
+
+        // UI-420 (owner): the arrow says what its click does and with what — the selected die, or the Council token.
+        public static string AdvanceTooltip(ActionOption option, string nation) =>
+            "Click to move " + TooltipText.NationPhrase(nation) + " one step toward war with " +
+            (option?.Kind == CommandKind.UseCouncilToken ? "the Council token" : "the selected die");
     }
 }

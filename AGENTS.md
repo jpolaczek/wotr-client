@@ -96,13 +96,29 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
   committed step is ignored. Grouped casualties/rerolls have one confirmation.
   Discard excess hand cards one at a time with a single click and no Confirm;
   since UI-222 every discard from the hand is made by clicking red-marked cards
-  in the hand and is sent once the selection is complete. The permanent tray shows the
+  in the hand and is sent once the selection is complete. Since UI-389 (user decision), a
+  click on any die or token lights all of its available uses at once (a token with several
+  uses opens no panel, UI-388), and a second click releases it; since UI-443 (owner) nothing that
+  needs a die lights or acts before a die or token is chosen, even when one die alone could pay. UI-421 (owner, 2026-10-28)
+  plans units and characters as tabletop miniatures that a click lifts and a drag carries, a drop
+  sending exactly what the target click sends (docs/ui/TABLETOP_FIGURES_UX.md, UI-400–UI-407);
+  since UI-405 they can also be carried: a press on the player's own legal (or chosen) figure that
+  crosses the drag threshold lifts it, a drop on a lit target is that target's click, and any other
+  release or Esc puts it back without changing the draft. The permanent tray shows the
   active die and remaining budget; panels sit beside their objects. Do not require
   numeric entry or scrolling in decision panels. Do not automate strategic
   choices. Since 2026-10-14 (user decision), the layout has fixed sizes (the bottom
   bar does not change height), minimal empty space and a stable position for every
   control: unavailable controls are disabled rather than hidden, and a mechanic's
   control belongs to its object's panel rather than the shared bar (TURN_CONSOLE_UX).
+  Since UI-430 (owner, 2026-10-30), a new button stands only for an option with no other picture
+  on the board; otherwise the map, the UI and tooltips signal the option (the lit object's tooltip
+  names the action and the effect that offers it) and a click on the lit object sends exactly what
+  the button sent. A Finish that ends an event is the console's ✓; a decline of a response stays
+  Pass / Skip effect. Owner exception (UI-461, 2026-11-03): a chosen Will of the West die lights only its as-itself uses
+  until the console's small face menu turns it into Character, Army, Muster or Event (TURN_CONSOLE_UX). Since UI-455 (owner, 2026-11-03) the console's small, always present Cancel under its four actions
+  drops the whole unsent draft and is greyed while there is nothing to cancel; no panel or console line has its own
+  Cancel, and every step's instruction is the console's hint, not a panel's line (UI-456).
   Details and implementation boundary: UX_SPEC and UI-14–UI-24.
 - Card and expansion exceptions must follow explicit integration rules. Do not
   resolve conflicts through file loading order.

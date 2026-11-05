@@ -30,16 +30,23 @@ namespace Wotr.PlayTests
             var client = room.Fp;
             var board = client.Board;
             var die = await Select(room, face);
-            Assert.IsTrue(board.Map.Q<Button>("army-minas-tirith-FreePeoples").ClassListContains("eligible-army"));
+            // UI-461 (owner, 2026-11-03): a Will die is first turned in the console into the result its use takes; then it
+            // lights what that result does, as the Army/Muster die lights both of its results.
+            var turned = face == DieFace.WillOfTheWest ? WillFace(use) : (DieFace?)null;
+            if (turned.HasValue)
+                await Turn(room, turned.Value);
+            var armies = turned is null or DieFace.Army;
+            var musters = turned is null or DieFace.Muster;
+            Assert.AreEqual(armies, board.Map.Q<Button>("army-minas-tirith-FreePeoples").ClassListContains("eligible-army"));
             board.Nations.Open();
             await room.Settle();
-            Assert.IsTrue(board.Nations.Drawer.Q<Button>("nation-status-elves").ClassListContains("legal-target"));
+            Assert.AreEqual(musters, board.Nations.Drawer.Q<Button>("nation-status-elves").ClassListContains("legal-target"));
             Assert.IsFalse(board.Nations.Drawer.Q<Button>("nation-activate-rohan").enabledSelf,
                 "Ordinary die uses do not grant an activation effect.");
             board.Hover.Open("minas-tirith");
             await room.Settle();
             var elite = board.Reinforcements.Root.Q<Button>("reserve-token-gondor-Elite");
-            Assert.IsTrue(elite.enabledInHierarchy, "Recruitment is ready alongside army movement.");
+            Assert.AreEqual(musters, elite.enabledInHierarchy, "Recruitment is ready alongside army movement.");
             Assert.AreEqual(0, board.View.Revision, "Hover and selection do not spend the die.");
             if (use == "politics")
             {
@@ -60,7 +67,7 @@ namespace Wotr.PlayTests
                 // choose the payment explicitly.
                 var inspected = board.Cards.CardId == "base.fp.strategy.08";
                 if (use == "card-alternate")
-                    Assert.IsTrue(inspected, "Two payments open the preview with both Play buttons.");
+                    Assert.IsFalse(inspected, "UI-461: the chosen result pays one way, so the card's click plays it.");
                 if (inspected)
                 {
                     var play = use == "card-alternate" ? "play-card-alternate" : "play-card";
@@ -78,7 +85,7 @@ namespace Wotr.PlayTests
                 // UI-148: the card waits for a nation, so Politics opens by itself with the nations highlighted.
                 Assert.AreEqual(DisplayStyle.Flex, board.Nations.Drawer.resolvedStyle.display, "Politics opens for the card's nation.");
                 Assert.IsTrue(board.Nations.Drawer.Q<Button>("nation-status-north").ClassListContains("legal-target"));
-                Assert.IsFalse(board.Nations.Drawer.Query<Button>(className: "nation-slot").ToList().Any(slot => slot.ClassListContains("legal-target")),
+                Assert.IsFalse(board.Nations.Drawer.Query<Button>(className: "nation-slot").ToList().Any(slot => slot.enabledSelf),
                     "While the card picks its nation, the die's own political steps step aside.");
                 LayoutTests.Save(client.Viewport, "ui148-politics-card-" + face + "-" + use + ".png");
                 PointerGestureEvents.ClickAt(board.Nations.Drawer.Q<Button>("nation-status-north"));
@@ -98,7 +105,7 @@ namespace Wotr.PlayTests
                     var pass = board.Console.Actions.Pass;
                     Assert.IsTrue(pass.enabledInHierarchy);
                     Assert.IsTrue(pass.ClassListContains(ChoiceGlow.ClassName));
-                    StringAssert.Contains("Skip Gandalf the Grey", pass.tooltip);
+                    StringAssert.Contains("Skip Draw matching card (Gandalf the Grey)", pass.tooltip);
                     LayoutTests.Save(client.Viewport, "ui291-gandalf-draw-pass.png");
                     Assert.AreEqual("Click the Guide's glowing portrait in the Fellowship panel to use Draw matching card · or Pass to skip it.",
                         board.Console.Status.Hint.text, "The console's hint says where the draw is and that Pass skips it.");
@@ -176,6 +183,7 @@ namespace Wotr.PlayTests
                 using var room = await Connect("ui28-WillOfTheWest-" + use, ScenarioKind.BaseAcceptance);
                 var client = room.Fp;
                 var die = await Select(room, DieFace.WillOfTheWest);
+                await Turn(room, use == "draw" ? DieFace.Event : DieFace.Character);
                 if (use == "draw")
                     await CardGestures.Draw(room, client, "strategy");
                 else
@@ -196,6 +204,21 @@ namespace Wotr.PlayTests
                 }
                 T22NetworkActions.Spent(room, Side.FreePeoples, die);
             }
+        }
+
+        // The result each use takes from Will of the West: Wisdom of Elrond's other payment is a Muster result.
+        private static DieFace WillFace(string use) => use switch
+        {
+            "march" => DieFace.Army,
+            "card" => DieFace.Event,
+            _ => DieFace.Muster
+        };
+
+        private static async Task Turn(MatchTestRoom room, DieFace face)
+        {
+            WillFaceGestures.Click(room.Fp, face);
+            await room.Settle();
+            Assert.IsTrue(room.Fp.Board.Console.Status.Faces[face].ClassListContains(ConsoleFaceMenu.ChosenClass));
         }
 
         private static async Task<string> Select(MatchTestRoom room, DieFace face)

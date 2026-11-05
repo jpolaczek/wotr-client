@@ -88,7 +88,7 @@ namespace Wotr.PlayTests
                     cue =>
                     {
                         board.Add(Board(fp, march.Army));
-                        staged.Add(fp.Board.Presentation.Armies.Where(a => a.RegionId == march.Target.RegionId && a.Side == Side.Shadow).Sum(a => a.Total));
+                        staged.Add(fp.Board.Presentation.FigureCount(march.Target.RegionId, Side.Shadow));
                     });
                 fp.Playback.Register(presenter);
                 await session.Send(Side.Shadow, CommandKind.MoveArmies, Move(ArmyDie(sh.Board.View), march.Army, march.Target));

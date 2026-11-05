@@ -7,6 +7,13 @@ namespace Wotr.Client
     {
         public const string CouncilPolitics = "council.advance-politics";
         public const string CouncilTravel = "council.move-shadow-characters";
+        // UI-376: the console's hint while the political token waits for its nation on the open Politics panel. UI-423
+        // (owner's playtest pattern, like UI-374): it names what glows — the nation's token and its arrow — since no
+        // station glows (UI-410).
+        public const string CouncilPoliticsHint = "Council token · Click a glowing Shadow nation's token or its → arrow in Politics.";
+
+        public static bool CouncilPoliticsPending(TurnDraft draft) => draft?.Kind == CommandKind.UseCouncilToken &&
+            draft.Payload.AbilityId == CouncilPolitics && draft.Payload.NationId.Length == 0;
 
         public static bool Handles(CommandKind? kind) => CouncilDraft.Handles(kind) || kind is
             CommandKind.ChooseSpecialDie or CommandKind.DiscardRulerDie or CommandKind.UseDismay or
@@ -41,7 +48,7 @@ namespace Wotr.Client
             p.RulerTokenId = token;
             if (token.Length > 0)
             {
-                p.AbilityId = view.RulerTokenActions.First(o => o.TokenId == token && o.Action.Kind == draft.Kind).AbilityId;
+                p.AbilityId = TokenAbility(view, token, draft.Kind);
                 if (option.EligibleDice.Count == 1)
                     p.DieId = option.EligibleDice[0];
             }
@@ -51,19 +58,15 @@ namespace Wotr.Client
                 p.NationId = option.Targets[0];
         }
 
+        // The ability a Ruler token's action names (Far-sighted for Thranduil's travel, a king's recruiting ability);
+        // empty without a token. UI-389: every place that starts a token's action sends it.
+        public static string TokenAbility(PlayerView view, string token, CommandKind? kind) => token.Length == 0 ? ""
+            : view.RulerTokenActions.FirstOrDefault(o => o.TokenId == token && o.Action.Kind == kind)?.AbilityId ?? "";
+
         public static void CouncilToken(TurnDraft draft, string id) => draft.Change(p =>
         {
             p.AbilityId = id;
             p.NationId = "";
-            p.CompanionMoves.Clear();
-            draft.CompanionFocus = -1;
-        });
-
-        public static void TravelMode(TurnDraft draft, ActionOption option, bool ruler) => draft.Change(p =>
-        {
-            p.AbilityId = ruler ? option.RulerTravel.AbilityId : "";
-            p.DieId = "";
-            p.Route.Clear();
             p.CompanionMoves.Clear();
             draft.CompanionFocus = -1;
         });

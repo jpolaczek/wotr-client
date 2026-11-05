@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Decision: Evil Knowledge extends the siege, a tower watched by a lidless eye. -->
+  <g filter="url(#lift)">
+    <rect x="10" y="15" width="12" height="14" style="fill: var(--scene-stone); stroke: var(--emblem-outline)" stroke-width="0.8"/>
+    <g style="fill: var(--scene-stone)"><rect x="10" y="11" width="3" height="4"/><rect x="14.5" y="11" width="3" height="4"/><rect x="19" y="11" width="3" height="4"/></g>
+    <path d="M3 7 Q16 -3 29 7 Q16 17 3 7 Z" style="fill: var(--ember-light); stroke: var(--ember-dark)" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M16 1.6 Q18.4 7 16 12.4 Q13.6 7 16 1.6 Z" style="fill: var(--ink)"/>
+    <path d="M14.5 21 H17.5 V29 H14.5 Z" style="fill: var(--ember-dark)"/>
+  </g>
+</svg>

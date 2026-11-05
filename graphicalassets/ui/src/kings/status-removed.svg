@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+  <!-- UI-274: a king removed from the game: a struck-through grey crown. -->
+  <path d="M2 9.4 L1.5 3.6 L4.2 5.8 L6 2.6 L7.8 5.8 L10.5 3.6 L10 9.4 Z" style="fill: var(--scene-ash); stroke: var(--steel-dark)" stroke-width="0.6" stroke-linejoin="round"/>
+  <path d="M1.6 10.6 L10.4 1.6" style="stroke: var(--ember)" stroke-width="1.3" stroke-linecap="round"/>
+</svg>

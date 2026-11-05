@@ -191,6 +191,23 @@ namespace Wotr.Client
             return true;
         }
 
+        // UI-435: centred across the board's middle like Centre, but flush to its top or bottom edge, so the map regions a
+        // decision lights on the other side stay clear. False before it can.
+        public bool Flush(bool top, float keepRight = 0)
+        {
+            if (!Ready() || !(layout.Middle?.Invoke() is Rect world))
+                return false;
+            glide?.Pause();
+            var area = Local(world);
+            area.xMax -= keepRight;
+            var size = root.layout.size;
+            var y = top ? area.yMin : Mathf.Max(area.yMin, area.yMax - size.y);
+            var place = new Vector2(area.center.x - size.x / 2, y);
+            if (!applied || !WithinPixel(root.layout.position, place))
+                Place(OnPixels(place), remember: false);
+            return true;
+        }
+
         // UI-327: a window that stays where it stands while its content changes — centred across the middle (its width may
         // change), its top kept unless it would leave the middle — gliding to a corrected place (at once under Skip
         // animations). False before it can.

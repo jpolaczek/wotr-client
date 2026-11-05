@@ -46,9 +46,8 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-service", ScenarioKind.CardPack))
             {
-                Click(room.Fp, "effect-choice-kings.sovereign.dain");
                 await Layout(room, room.Fp, "service-sovereign");
-                await room.Confirm(room.Fp);
+                await ChooseKing(room, room.Fp, "kings.sovereign.dain");
                 Click(room.Fp, "event-reserve-dwarves-Elite");
                 MapContourProbe.ClickRegion(room.Fp.Board.Map, "erebor");
                 await Layout(room, room.Fp, "service-recruit");
@@ -81,11 +80,12 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-west", ScenarioKind.CardPack))
             {
-                Click(room.Sh, "effect-choice-kings.sovereign.dain");
                 await Layout(room, room.Sh, "west-target");
-                await room.Confirm(room.Sh);
+                await ChooseKing(room, room.Sh, "kings.sovereign.dain");
                 Assert.AreEqual(2, room.Sh.Board.View.Dice.Count(d => d.Location == DieLocation.Hunt && d.Face == DieFace.Eye));
-                Assert.AreEqual(1, room.Sh.Board.View.CorruptionAttempt.DrawnCount);
+                // UI-442: the king's click draws both of the event's tiles at once; the private choice waits.
+                await AtTileChoice(room, room.Sh, 2);
+                Assert.AreEqual(2, room.Fp.Board.View.CorruptionAttempt.DrawnCount);
                 Assert.IsNull(room.Fp.Board.View.Decision);
             }
         }
@@ -94,18 +94,19 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-west-draw", ScenarioKind.CardPack))
             {
-                Assert.IsNotNull(room.Sh.Board.Tray.Q<VisualElement>("corruption-attempt"));
-                await Layout(room, room.Sh, "west-draw");
-                await room.Confirm(room.Sh);
+                // UI-442: the event's choice of Dáin drew both tiles; the seed waits at the private choice.
+                await AtTileChoice(room, room.Sh, 2);
                 var choices = room.Sh.Board.View.CorruptionAttempt.OwnChoices;
-                Assert.AreEqual(2, choices.Count);
+                await room.Until(() => room.Fp.Board.View.Revision == room.Sh.Board.View.Revision);
                 Assert.IsEmpty(room.Fp.Board.View.CorruptionAttempt.OwnChoices);
                 var tile = choices.First(t => t.Value == 1).TileId;
-                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("corruption-choice-" + tile));
+                Assert.IsNull(room.Fp.Board.Root.Q<Button>("corruption-choice-" + tile), "The Free Peoples see the drawn tiles' backs.");
                 await Layout(room, room.Sh, "west-choice");
                 await Reconnect(room, room.Sh);
                 var revision = room.Sh.Board.View.Revision;
-                Click(room.Sh, "corruption-choice-" + tile);
+                var button = await InspectedTile(room, room.Sh, "kings.sovereign.dain", tile);
+                Assert.IsNotNull(button, "The drawn tile stands beside Dáin.");
+                PointerGestureEvents.ClickAt(button);
                 await room.At(revision + 1);
                 var hidden = room.Fp.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.dain").Tiles.Single();
                 Assert.IsNull(hidden.Value);
@@ -119,10 +120,18 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-hope", ScenarioKind.CardPack))
             {
-                Click(room.Fp, "effect-choice-kings.sovereign.theoden");
                 await Layout(room, room.Fp, "hope");
                 await Reconnect(room, room.Fp);
-                await room.Confirm(room.Fp);
+                // UI-278 (D16): both kings take part in the attack, so they glow in the battle window's army, not by
+                // their portraits.
+                var theoden = await KingsBranchNetworkTests.BattleKing(room, room.Fp.Board, "battle-attacker", "battle-figure-rohan-Leader");
+                StringAssert.StartsWith("Théoden · Awaken here if permitted", theoden.tooltip);
+                Assert.IsNotNull(await KingsBranchNetworkTests.BattleKing(room, room.Fp.Board, "battle-attacker", "battle-figure-gondor-Leader"));
+                // The portrait is read without unrolling the Characters panel, which would cover the attacker's column.
+                Assert.IsFalse(room.Fp.Board.Sovereigns.Root.Q<Button>("sovereign-kings.sovereign.theoden").ClassListContains("legal-target"));
+                var revision = room.Fp.Board.View.Revision;
+                PointerGestureEvents.ClickAt(theoden);
+                await room.At(revision + 1);
                 Assert.AreEqual(SovereignStatus.Awakened, room.Sh.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.theoden").Status);
                 Assert.AreEqual(SovereignStatus.Initial, room.Sh.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.denethor").Status);
                 Assert.AreEqual("lossarnach", room.Sh.Board.View.Characters.Single(c => c.Id == "kings.sovereign.theoden").Location);

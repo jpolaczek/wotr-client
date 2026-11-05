@@ -79,7 +79,11 @@ namespace Wotr.PlayTests
             Assert.IsTrue(Visible(tooltip), source.name);
             Assert.AreEqual(source.tooltip, tooltip.text);
             Bounds(tooltip, client.Interface.Content.parent.worldBound);
-            FullText(tooltip);
+            // UI-440: a skill's formatted description (rich text) is sized by the layout that draws it, with no height of its
+            // own to clip it; MeasureTextSize measures its tags otherwise (a line taller), so only a plain tooltip is
+            // measured here. CharacterWindowLayoutTests shows the longest description whole.
+            if (!tooltip.enableRichText)
+                FullText(tooltip);
             source.Blur();
             PointerGestureEvents.ClickAt(client.Board.Phase);
             Assert.IsFalse(Visible(tooltip), "An outside click dismisses the description.");
@@ -111,7 +115,7 @@ namespace Wotr.PlayTests
             }
         }
 
-        private static void FullText(TextElement text)
+        internal static void FullText(TextElement text)
         {
             if (string.IsNullOrEmpty(text.text))
                 return;
@@ -191,7 +195,7 @@ namespace Wotr.PlayTests
             return true;
         }
 
-        private sealed class LayoutViewport : IDisposable
+        internal sealed class LayoutViewport : IDisposable
         {
             public RenderTexture Texture { get; }
             private readonly MountedMatchClient client;

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56">
+  <!-- UI-263: an expansion's medallion in the waiting room's rules strip: a gilt rim ringed with beads round domed
+       enamel. The crest (rules/crest-*) is drawn by USS on top. Off it is the board's neutral carbon enamel; each module
+       lights it in its own enamel with a gold glow (fate-on, lords-on, kings-on); hover brightens the gilt and pressed
+       darkens it. The disabled state is the off medallion faded by USS. -->
+  <defs>
+    <radialGradient id="rules-rim" cx="28" cy="28" r="25.4" gradientUnits="userSpaceOnUse">
+      <stop offset="0.84" style="stop-color: var(--gilt-highlight)"/>
+      <stop offset="0.89" style="stop-color: var(--gilt-light)"/>
+      <stop offset="0.94" style="stop-color: var(--gilt-shadow)"/>
+      <stop offset="0.98" style="stop-color: var(--gilt-mid)"/>
+      <stop offset="1" style="stop-color: var(--gilt-light)"/>
+    </radialGradient>
+    <radialGradient id="rules-enamel" cx="28" cy="24" r="21" gradientUnits="userSpaceOnUse">
+      <stop offset="0" style="stop-color: var(--enamel-light)"/>
+      <stop offset="0.62" style="stop-color: var(--enamel-mid)"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark)"/>
+    </radialGradient>
+    <filter id="rules-lift" x="-20%" y="-20%" width="140%" height="145%">
+      <feDropShadow dx="0" dy="0.9" stdDeviation="0.9" flood-color="#000" flood-opacity="0.75"/>
+    </filter>
+  </defs>
+  <circle cx="28" cy="28" r="26.6" fill="none" style="stroke: var(--gilt-highlight); opacity: var(--glow-opacity)"
+    stroke-width="2.2" filter="url(#glow)"/>
+  <g filter="url(#rules-lift)">
+    <circle cx="28" cy="28" r="25.6" fill="url(#button-fill)" stroke="url(#gilt)" stroke-width="0.9"/>
+    <circle cx="28" cy="28" r="25.4" fill="url(#rules-rim)" style="stroke: var(--gilt-edge)" stroke-width="0.6"/>
+    <g style="fill: var(--gilt-highlight)">
+      <circle cx="51.90" cy="28.00" r="0.7"/>
+      <circle cx="50.08" cy="37.15" r="0.7"/>
+      <circle cx="44.90" cy="44.90" r="0.7"/>
+      <circle cx="37.15" cy="50.08" r="0.7"/>
+      <circle cx="28.00" cy="51.90" r="0.7"/>
+      <circle cx="18.85" cy="50.08" r="0.7"/>
+      <circle cx="11.10" cy="44.90" r="0.7"/>
+      <circle cx="5.92" cy="37.15" r="0.7"/>
+      <circle cx="4.10" cy="28.00" r="0.7"/>
+      <circle cx="5.92" cy="18.85" r="0.7"/>
+      <circle cx="11.10" cy="11.10" r="0.7"/>
+      <circle cx="18.85" cy="5.92" r="0.7"/>
+      <circle cx="28.00" cy="4.10" r="0.7"/>
+      <circle cx="37.15" cy="5.92" r="0.7"/>
+      <circle cx="44.90" cy="11.10" r="0.7"/>
+      <circle cx="50.08" cy="18.85" r="0.7"/>
+    </g>
+    <circle cx="28" cy="28" r="21.6" fill="url(#gilt-bevel)" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <circle cx="28" cy="28" r="20.3" style="fill: var(--ink)"/>
+    <circle cx="28" cy="28" r="19.7" fill="url(#rules-enamel)"/>
+    <path d="M14.6 21.4 A15.6 15.6 0 0 1 33.6 12.9" fill="none" stroke="#fff" stroke-opacity="0.1" stroke-width="2"
+      stroke-linecap="round"/>
+  </g>
+</svg>

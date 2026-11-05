@@ -6,6 +6,12 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
+    // UI-432 (owner's rule, UI-430): the tray keeps only the buttons no object draws. Stay here is the click on the group's
+    // lit origin region (TravelDraft.RouteTo), Stay all the console's ✓ with an empty plan, and Far-sighted Thranduil's
+    // ability picture (UI-276, D18) — the standard move its plain gesture — so none of them is a button. UI-448 moved the
+    // route's Undo step and Cancel to the console (↶ and, UI-455, its fixed Cancel). UI-456 (owner, 2026-11-03): every
+    // instruction is the console's hint; the panel shows no rule note ("Separated companions cannot rejoin") and no
+    // "Choose a group" or "Choose a destination", only the state of the move.
     public sealed class FellowshipChoices
     {
         private readonly List<Action> refresh = new List<Action>();
@@ -24,36 +30,27 @@ namespace Wotr.Client
             this.data = data;
             this.contextual = contextual;
             option = DraftOptions.For(view, draft);
-            if (header == null && (option.RulerTravel != null || TravelDraft.IsGrouped(draft.Kind) && option.MaximumGroups != 1))
+            if (header == null && (FarSighted() || TravelDraft.IsGrouped(draft.Kind) && option.MaximumGroups != 1))
             {
                 header = BoardScreen.Row();
                 root.Add(header);
             }
-            if (option.RulerTravel != null)
-                RulerMode(header);
+            if (FarSighted())
+                header.Add(new Label(FarSightedLabel) { name = "travel-far-sighted" });
             if (TravelDraft.IsGrouped(draft.Kind) && option.MaximumGroups != 1)
                 Groups(header);
-            if (draft.Kind == CommandKind.SeparateCompanions)
-                root.Add(new Label("Separated companions cannot rejoin") { name = "fellowship-separation-hint" });
             if (draft.Kind is CommandKind.SelectGuide or CommandKind.SeparateCompanions || TravelDraft.IsGrouped(draft.Kind))
                 Portraits(root, PortraitIds());
             if (FellowshipDraft.UsesRoute(draft.Kind) && option.Travel.Count > 0)
                 Route(root);
         }
 
-        private void RulerMode(VisualElement root)
-        {
-            var label = option.RulerTravel.HuntDiceReduction > 0 ? "Far-sighted · Hunt −1" : "Far-sighted · Range +1";
-            if (draft.Payload.RulerTokenId.Length > 0)
-            {
-                root.Add(new Label(label));
-                return;
-            }
-            root.Add(Choice("Standard", "travel-standard", () => draft.Payload.AbilityId.Length == 0,
-                () => ExpansionDraft.TravelMode(draft, option, false)));
-            root.Add(Choice(label, "travel-ruler", () => draft.Payload.AbilityId == option.RulerTravel.AbilityId,
-                () => ExpansionDraft.TravelMode(draft, option, true)));
-        }
+        // UI-432: a move that uses Far-sighted (Thranduil's picture or his Ruler token) names it; the standard one shows
+        // nothing.
+        private bool FarSighted() => option.RulerTravel != null &&
+            (draft.Payload.RulerTokenId.Length > 0 || draft.Payload.AbilityId == option.RulerTravel.AbilityId);
+
+        private string FarSightedLabel => option.RulerTravel.HuntDiceReduction > 0 ? "Far-sighted · Hunt −1" : "Far-sighted · Range +1";
 
         // UI-298: in the Fellowship panel its roster already offers the Fellowship's own companions; the tray repeats none of
         // them and shows only the rest (a Guide outside the roster, such as Gollum).
@@ -143,61 +140,36 @@ namespace Wotr.Client
             root.Add(progress);
         }
 
-        private void GroupActions(VisualElement root)
-        {
-            if (option.AllowEmptySelection)
-                root.Add(Choice("Stay all", "travel-stay-all", () => draft.Payload.CompanionMoves.Count == 0,
-                    () => draft.Change(p => { p.CompanionMoves.Clear(); draft.CompanionFocus = -1; })));
-        }
-
+        // UI-448 (owner): the route's summary only — no "Declare position · Remain hidden" line, no Undo step (the console's
+        // Back undoes a step) and no Cancel (the console's fixed Cancel clears the route, UI-455). UI-456 (owner): the
+        // summary states where the move stands — its origin, then its end and steps — and asks for nothing.
         private void Route(VisualElement root)
         {
-            if (FellowshipDraft.LocationRoute(draft.Kind))
-                root.Add(new Label(draft.Kind == CommandKind.DeclareFellowship
-                    ? "Declare position · Remain hidden" : "Reveal position · Become revealed") { name = "fellowship-route-effect" });
             var row = BoardScreen.Row("travel-summary");
             root.Add(row);
-            if (TravelDraft.IsGrouped(draft.Kind) && option.MaximumGroups != 1)
-                GroupActions(row);
-            if (!contextual || TravelDraft.IsGrouped(draft.Kind))
-            {
-                var stay = Choice("Stay here", "travel-stay", () => TravelDraft.Route(draft)?.Count == 1, () => TravelDraft.Stay(draft, option));
-                refresh.Add(() => stay.SetEnabled(TravelDraft.Travel(draft, option) is { } travel && travel.Targets.Contains(travel.Origin)));
-                row.Add(stay);
-            }
             var summary = new Label { name = "travel-summary" };
             row.Add(summary);
             refresh.Add(() =>
             {
                 var route = TravelDraft.Route(draft);
                 var travel = TravelDraft.Travel(draft, option);
-                summary.text = travel == null ? "Choose a group" : route.Count == 0 ? Region(travel.Origin) + " · " + Prompt
-                    : "→ " + Region(route[route.Count - 1]) + (travel.Flight ? " · Flying" : $" · {route.Count - 1} / {travel.Range}");
+                summary.text = Summary(route, travel);
+                row.style.display = summary.text.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
                 summary.tooltip = route == null ? "" : string.Join(" → ", route.Select(Region));
                 if (draft.Kind == CommandKind.AwakenSovereign)
                     summary.tooltip = "Click a highlighted destination, or this region to stay." +
                         (summary.tooltip.Length > 0 ? "\n" + summary.tooltip : "");
             });
-            if (FellowshipDraft.SingleRoute(draft.Kind))
-            {
-                var actions = BoardScreen.Row();
-                // UI-105: only a drawn Fellowship route has steps to undo; a destination click moves at once.
-                if (FellowshipDraft.LocationRoute(draft.Kind))
-                {
-                    var undo = Choice("Undo step", "route-undo", () => false, () => FellowshipDraft.UndoRoute(draft));
-                    refresh.Add(() => undo.SetEnabled(draft.Payload.Route.Count > 0));
-                    actions.Add(undo);
-                }
-                var cancel = Choice("Cancel", "route-cancel", () => false, () => FellowshipDraft.CancelRoute(draft, view));
-                cancel.tooltip = "Clear this local selection · A required decision remains pending";
-                // UI-298: a forced separation starts with its companions chosen; Cancel waits until there is something to clear.
-                refresh.Add(() => cancel.SetEnabled(FellowshipDraft.CancelChanges(draft, view)));
-                actions.Add(cancel);
-                root.Add(actions);
-            }
         }
 
-        private string Prompt => TravelDraft.TargetRoute(draft.Kind) ? "Choose a destination" : "Choose a route";
+        private string Summary(System.Collections.Generic.IReadOnlyList<string> route, TravelOption travel)
+        {
+            if (travel == null)
+                return "";
+            if (route == null || route.Count == 0)
+                return Region(travel.Origin);
+            return "→ " + Region(route[route.Count - 1]) + (travel.Flight ? " · Flying" : $" · {route.Count - 1} / {travel.Range}");
+        }
 
         private string Region(string id) => data.Regions.TryGetValue(id, out var region) ? region.Name : id;
         private Button Choice(string label, string name, Func<bool> selected, Action change)

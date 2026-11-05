@@ -4,6 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using Wotr.Fixtures;
 using Object = UnityEngine.Object;
@@ -12,6 +13,8 @@ namespace Wotr.PlayTests
 {
     public class Strategy04LayoutTests
     {
+        private const float LandingSeconds = 5;
+
         [UnityTest]
         public IEnumerator TwoNationalGroupsAndMapGhostsFitWithoutScrolling()
         {
@@ -34,6 +37,8 @@ namespace Wotr.PlayTests
                         Assert.IsEmpty(client.Board.Tray.Query<TextField>().ToList());
                         Assert.IsTrue(client.Board.Map.DraftOverlay.PlannedRegions.Contains("the-shire"));
                         Assert.IsTrue(client.Board.Map.DraftOverlay.PlannedRegions.Contains("ered-luin"));
+                        // UI-454: a planned recruit flies from the Reserve, and its ghost shows once it has landed.
+                        yield return RecruitsLanded(client.Board.Map, 2);
                         // UI-131: each planned region shows a ghost with × on the map.
                         CollectionAssert.AreEquivalent(new[] { "the-shire", "ered-luin" }, client.Board.Map.PlannedRecruits.Regions);
                         Assert.IsNotNull(client.Board.Map.Q<Button>("planned-recruit-remove-the-shire"));
@@ -48,6 +53,13 @@ namespace Wotr.PlayTests
                         target.Release();
                         Object.Destroy(target);
                     }
+        }
+
+        private static IEnumerator RecruitsLanded(MapCanvas map, int regions)
+        {
+            var deadline = Time.realtimeSinceStartup + LandingSeconds;
+            while (map.PlannedRecruits.Regions.Count() < regions && Time.realtimeSinceStartup < deadline)
+                yield return null;
         }
 
         private static IEnumerator Settle()

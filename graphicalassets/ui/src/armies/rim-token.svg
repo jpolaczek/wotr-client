@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="36" viewBox="0 0 44 36">
+  <!-- UI-406: the state of a far-zoom token drawn round the puck's outline (its top face, side band and bottom edge),
+       2 points clear of the 40 × 32 puck art on every side: eligible (legal green), selected (gold), pressed (dim gold),
+       ability owner (amber); moved veils the puck. It replaces the twenty state pictures of UI-125's tokens. -->
+  <path d="M2.4 14.5 A19.6 12.5 0 0 1 41.6 14.5 L41.6 21.2 A19.6 12.5 0 0 1 2.4 21.2 Z" style="fill: var(--ink); opacity: var(--rim-veil-opacity)"/>
+  <path d="M2.4 14.5 A19.6 12.5 0 0 1 41.6 14.5 L41.6 21.2 A19.6 12.5 0 0 1 2.4 21.2 Z" fill="none" style="stroke: var(--rim-color); opacity: var(--rim-opacity)" stroke-width="2.8" filter="url(#glow)"/>
+  <path d="M2.4 14.5 A19.6 12.5 0 0 1 41.6 14.5 L41.6 21.2 A19.6 12.5 0 0 1 2.4 21.2 Z" fill="none" style="stroke: var(--rim-color); opacity: var(--rim-opacity)" stroke-width="1.2"/>
+</svg>

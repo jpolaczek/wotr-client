@@ -27,7 +27,8 @@ namespace Wotr.Client
             foreach (var line in CharacterActionFacts.Setup(step))
                 yield return line;
             if (step.Movements.Count == 0)
-                foreach (var change in facts.Figures)
+                // UI-485 (owner, 2026-11-04): a recruit recorded twice is one line of the record.
+                foreach (var change in FigureCues.Once(facts.Figures))
                 {
                     var line = CharacterActionFacts.Figure(change, data);
                     if (line.Length > 0)

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+  <!-- UI-274: a Corrupted king: a darkened crown under an ember Eye. -->
+  <g filter="url(#lift)">
+    <path d="M2 10 L1.5 4.6 L4.2 6.6 L6 3.8 L7.8 6.6 L10.5 4.6 L10 10 Z" style="fill: var(--scene-ash); stroke: var(--ember-dark)" stroke-width="0.6" stroke-linejoin="round"/>
+    <path d="M3.2 3.2 Q6 0.6 8.8 3.2 Q6 5.4 3.2 3.2 Z" style="fill: var(--ember)"/>
+  </g>
+</svg>

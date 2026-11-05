@@ -93,7 +93,16 @@ namespace Wotr.Client
             text.Add(title);
             text.Add(detail);
             row.Add(text);
-            row.tooltip = title.text + "\n" + detail.text;
+            // UI-263: the crests of the replayed game's expansions, the variants in their tooltip.
+            var crests = ExpansionCrests.Row("replay-crests-" + key);
+            if (entry.Usable)
+                ExpansionCrests.Show(crests, entry.Manifest.Configuration);
+            else
+                crests.AddToClassList("base-game");
+            row.Add(crests);
+            // UI-262: the row's lines end in an ellipsis, so its tooltip holds them in full. UI-420 (owner): and the rules
+            // the game was played with, which the row shows only as crests.
+            row.tooltip = TooltipText.Lines(title.text, detail.text, entry.Usable ? ExpansionCrests.Rules(entry.Manifest.Configuration) : "");
             row.Add(Action("replay-play-" + key, "Play", () => Play?.Invoke(entry), entry.Usable));
             row.Add(Action("replay-export-" + key, "Export", () => Export?.Invoke(entry), entry.Usable));
             var delete = Action("replay-delete-" + key, "Delete", () => Delete?.Invoke(entry), true);

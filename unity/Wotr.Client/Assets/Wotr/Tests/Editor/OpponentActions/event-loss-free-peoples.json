@@ -1,0 +1,1008 @@
+{
+  "scenario": "event-loss",
+  "viewer": "FreePeoples",
+  "baselineRevision": 0,
+  "baseline": {
+    "matchId": "fixture-event-loss",
+    "steps": [
+      {
+        "id": "6c7d4ab6f118c22ded7b02c525df7d3265db0366a5e6fedc18311ddc9539a8fc",
+        "actionId": "6c7d4ab6f118c22ded7b02c525df7d3265db0366a5e6fedc18311ddc9539a8fc",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 1,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "PhaseChanged",
+        "text": "Turn 1: RecoverDraw.",
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "phase": "RecoverDraw",
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "edfc9944b3b8283ca69d8c2b0d8b7db2b5f1760e7bfe0078b0268541bd494a7d",
+        "actionId": "edfc9944b3b8283ca69d8c2b0d8b7db2b5f1760e7bfe0078b0268541bd494a7d",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 2,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardDrawn",
+        "text": "Drew There is Another Way.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.character.10",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "base.fp.character.10",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "base.fp.character.10",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "10a52f951cc6de92ff7a0748ec8f269662e5fce8fb6d4c9b419a48b6b27b8c1f",
+        "actionId": "10a52f951cc6de92ff7a0748ec8f269662e5fce8fb6d4c9b419a48b6b27b8c1f",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 3,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "FreePeoples drew a character card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "4627850981cf859d0d513b348b6abfb97f8f37dfbae0686890db620029747222",
+        "actionId": "4627850981cf859d0d513b348b6abfb97f8f37dfbae0686890db620029747222",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 4,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardDrawn",
+        "text": "Drew The Power of Tom Bombadil.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.strategy.03",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "base.fp.strategy.03",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "base.fp.strategy.03",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "4bc4c7bf443e87b50a0cf0d33274951d9584d8d00de0cc0b1fdf60498b1eaf85",
+        "actionId": "4bc4c7bf443e87b50a0cf0d33274951d9584d8d00de0cc0b1fdf60498b1eaf85",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 5,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "FreePeoples drew a strategy card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "066085e787974c26c9c8e309afbc8f8a9c7710151cd5848a6df984619a3cdf01",
+        "actionId": "066085e787974c26c9c8e309afbc8f8a9c7710151cd5848a6df984619a3cdf01",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 6,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "Shadow drew a character card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "Shadow",
+              "use": "Draw",
+              "id": "",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "1c7380316f2fdc04b5cda8d6befcb4e69a7460e104b6d78d033dcadc4473506d",
+        "actionId": "1c7380316f2fdc04b5cda8d6befcb4e69a7460e104b6d78d033dcadc4473506d",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 7,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "Shadow drew a strategy card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "Shadow",
+              "use": "Draw",
+              "id": "",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "ac7ab3b5339831f6aef4fc644a197b437057d53e914b8ccb755eb808d45e71f6",
+        "actionId": "ac7ab3b5339831f6aef4fc644a197b437057d53e914b8ccb755eb808d45e71f6",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 8,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "PhaseChanged",
+        "text": "Turn 1: Fellowship.",
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "phase": "Fellowship",
+          "rolls": []
+        },
+        "status": "Completed"
+      }
+    ],
+    "actions": [
+      {
+        "id": "6c7d4ab6f118c22ded7b02c525df7d3265db0366a5e6fedc18311ddc9539a8fc",
+        "version": "6c7d4ab6f118c22ded7b02c525df7d3265db0366a5e6fedc18311ddc9539a8fc",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "edfc9944b3b8283ca69d8c2b0d8b7db2b5f1760e7bfe0078b0268541bd494a7d",
+        "version": "edfc9944b3b8283ca69d8c2b0d8b7db2b5f1760e7bfe0078b0268541bd494a7d",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.character.10",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "10a52f951cc6de92ff7a0748ec8f269662e5fce8fb6d4c9b419a48b6b27b8c1f",
+        "version": "10a52f951cc6de92ff7a0748ec8f269662e5fce8fb6d4c9b419a48b6b27b8c1f",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "4627850981cf859d0d513b348b6abfb97f8f37dfbae0686890db620029747222",
+        "version": "4627850981cf859d0d513b348b6abfb97f8f37dfbae0686890db620029747222",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.strategy.03",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "4bc4c7bf443e87b50a0cf0d33274951d9584d8d00de0cc0b1fdf60498b1eaf85",
+        "version": "4bc4c7bf443e87b50a0cf0d33274951d9584d8d00de0cc0b1fdf60498b1eaf85",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "066085e787974c26c9c8e309afbc8f8a9c7710151cd5848a6df984619a3cdf01",
+        "version": "066085e787974c26c9c8e309afbc8f8a9c7710151cd5848a6df984619a3cdf01",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "1c7380316f2fdc04b5cda8d6befcb4e69a7460e104b6d78d033dcadc4473506d",
+        "version": "1c7380316f2fdc04b5cda8d6befcb4e69a7460e104b6d78d033dcadc4473506d",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "ac7ab3b5339831f6aef4fc644a197b437057d53e914b8ccb755eb808d45e71f6",
+        "version": "ac7ab3b5339831f6aef4fc644a197b437057d53e914b8ccb755eb808d45e71f6",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      }
+    ],
+    "nextCursor": "",
+    "latestCursor": "ac7ab3b5339831f6aef4fc644a197b437057d53e914b8ccb755eb808d45e71f6"
+  },
+  "updates": [
+    {
+      "viewRevision": 1,
+      "page": {
+        "matchId": "fixture-event-loss",
+        "steps": [
+          {
+            "id": "b5b35d4c8fda123ae5296041fdcc537e064c800fb766f833b1b02af782dd73cf",
+            "actionId": "e574e4d7756add5397c6acd90b8586cf7ad8a8e2436b13053c0654eb1f66e17e",
+            "parentStepId": "",
+            "revision": 1,
+            "order": 1,
+            "turn": 1,
+            "actor": "Shadow",
+            "command": "PlayEvent",
+            "automatic": false,
+            "legacy": false,
+            "kind": "EventPlayed",
+            "text": "Shadow played Dreadful Spells.",
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "base.sh.character.19",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "Shadow.standard.4",
+                "owner": "Shadow",
+                "source": "standard",
+                "face": "Event",
+                "use": "Event",
+                "abilityId": "",
+                "count": 1
+              },
+              {
+                "kind": "Card",
+                "id": "base.sh.character.19",
+                "owner": "Shadow",
+                "source": "",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "movements": [],
+            "facts": {
+              "sourceId": "base.sh.character.19",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [
+                {
+                  "id": "Shadow.standard.4",
+                  "owner": "Shadow",
+                  "source": "standard",
+                  "before": "Event",
+                  "after": "Event",
+                  "from": "Available",
+                  "to": "Resolving",
+                  "huntOrigin": ""
+                }
+              ],
+              "cards": [
+                {
+                  "owner": "Shadow",
+                  "use": "Event",
+                  "id": "base.sh.character.19",
+                  "deck": "character",
+                  "count": 1
+                }
+              ],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "InProgress"
+          }
+        ],
+        "actions": [
+          {
+            "id": "e574e4d7756add5397c6acd90b8586cf7ad8a8e2436b13053c0654eb1f66e17e",
+            "version": "939bf8636769f84399718f206f903a98669e9d950fd853270336d7bd1dc60dc1",
+            "initiator": "Shadow",
+            "command": "PlayEvent",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "base.sh.character.19",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "Shadow.standard.4",
+                "owner": "Shadow",
+                "source": "standard",
+                "face": "Event",
+                "use": "Event",
+                "abilityId": "",
+                "count": 1
+              },
+              {
+                "kind": "Card",
+                "id": "base.sh.character.19",
+                "owner": "Shadow",
+                "source": "",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 5
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "b5b35d4c8fda123ae5296041fdcc537e064c800fb766f833b1b02af782dd73cf"
+      }
+    },
+    {
+      "viewRevision": 2,
+      "page": {
+        "matchId": "fixture-event-loss",
+        "steps": [
+          {
+            "id": "9b2afaf42790bf0378ec0e4717eeb129f7eb5bce35506a20eadcf8c409762197",
+            "actionId": "e574e4d7756add5397c6acd90b8586cf7ad8a8e2436b13053c0654eb1f66e17e",
+            "parentStepId": "b5b35d4c8fda123ae5296041fdcc537e064c800fb766f833b1b02af782dd73cf",
+            "revision": 2,
+            "order": 1,
+            "turn": 1,
+            "actor": "Shadow",
+            "command": "ChooseEffect",
+            "automatic": false,
+            "legacy": false,
+            "kind": "ActionDecision",
+            "text": "Resolved an effect choice.",
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "base.sh.character.19",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "base.sh.character.19",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "6988ce19b294106895802f44d3f664f1b9e01ed86f9b0f83910d4afd4b36fe02",
+            "actionId": "e574e4d7756add5397c6acd90b8586cf7ad8a8e2436b13053c0654eb1f66e17e",
+            "parentStepId": "9b2afaf42790bf0378ec0e4717eeb129f7eb5bce35506a20eadcf8c409762197",
+            "revision": 2,
+            "order": 2,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "DreadfulSpells",
+            "text": "Dreadful Spells in parth-celebrant: [5, 6, 1].",
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "base.sh.character.19",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "base.sh.character.19",
+              "targets": [
+                "parth-celebrant"
+              ],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": [
+                5,
+                6,
+                1
+              ],
+              "hitTarget": 5,
+              "hits": 2
+            },
+            "status": "InProgress"
+          }
+        ],
+        "actions": [
+          {
+            "id": "e574e4d7756add5397c6acd90b8586cf7ad8a8e2436b13053c0654eb1f66e17e",
+            "version": "939bf8636769f84399718f206f903a98669e9d950fd853270336d7bd1dc60dc1",
+            "initiator": "Shadow",
+            "command": "PlayEvent",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "base.sh.character.19",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "Shadow.standard.4",
+                "owner": "Shadow",
+                "source": "standard",
+                "face": "Event",
+                "use": "Event",
+                "abilityId": "",
+                "count": 1
+              },
+              {
+                "kind": "Card",
+                "id": "base.sh.character.19",
+                "owner": "Shadow",
+                "source": "",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 5
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "6988ce19b294106895802f44d3f664f1b9e01ed86f9b0f83910d4afd4b36fe02"
+      }
+    },
+    {
+      "viewRevision": 3,
+      "page": {
+        "matchId": "fixture-event-loss",
+        "steps": [
+          {
+            "id": "686cf22ccaecb6199a87674069281133881799988c93d096c9785527f5dd3627",
+            "actionId": "e574e4d7756add5397c6acd90b8586cf7ad8a8e2436b13053c0654eb1f66e17e",
+            "parentStepId": "6988ce19b294106895802f44d3f664f1b9e01ed86f9b0f83910d4afd4b36fe02",
+            "revision": 3,
+            "order": 1,
+            "turn": 1,
+            "actor": "FreePeoples",
+            "command": "TakeEventLosses",
+            "automatic": false,
+            "legacy": false,
+            "kind": "ActionDecision",
+            "text": "Assigned Event losses.",
+            "context": {
+              "kind": "Army",
+              "regions": [],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [
+                {
+                  "before": {
+                    "id": "base.elves.regular.04",
+                    "side": "FreePeoples",
+                    "nationId": "elves",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "after": {
+                    "id": "base.elves.regular.04",
+                    "side": "FreePeoples",
+                    "nationId": "elves",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "from": "parth-celebrant",
+                  "to": "casualties"
+                },
+                {
+                  "before": {
+                    "id": "base.elves.regular.05",
+                    "side": "FreePeoples",
+                    "nationId": "elves",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "after": {
+                    "id": "base.elves.regular.05",
+                    "side": "FreePeoples",
+                    "nationId": "elves",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "from": "parth-celebrant",
+                  "to": "casualties"
+                }
+              ],
+              "nations": [],
+              "control": [],
+              "dice": [
+                {
+                  "id": "Shadow.standard.4",
+                  "owner": "Shadow",
+                  "source": "standard",
+                  "before": "Event",
+                  "after": "Event",
+                  "from": "Resolving",
+                  "to": "Spent",
+                  "huntOrigin": ""
+                }
+              ],
+              "cards": [],
+              "resources": [],
+              "losses": [
+                {
+                  "unitId": "base.elves.regular.04",
+                  "kind": "Remove"
+                },
+                {
+                  "unitId": "base.elves.regular.05",
+                  "kind": "Remove"
+                }
+              ],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "Completed"
+          },
+          {
+            "id": "939bf8636769f84399718f206f903a98669e9d950fd853270336d7bd1dc60dc1",
+            "actionId": "e574e4d7756add5397c6acd90b8586cf7ad8a8e2436b13053c0654eb1f66e17e",
+            "parentStepId": "686cf22ccaecb6199a87674069281133881799988c93d096c9785527f5dd3627",
+            "revision": 3,
+            "order": 2,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "EventLosses",
+            "text": "FreePeoples resolved 2 hit(s) from base.sh.character.19.",
+            "context": {
+              "kind": "Army",
+              "regions": [
+                "parth-celebrant"
+              ],
+              "definitionId": "base.sh.character.19",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "base.sh.character.19",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [
+                {
+                  "figure": {
+                    "id": "base.elves.regular.04",
+                    "side": "FreePeoples",
+                    "nationId": "elves",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "operation": "Remove",
+                  "regionId": "parth-celebrant",
+                  "hits": 1,
+                  "replacementId": "",
+                  "replacementFrom": ""
+                },
+                {
+                  "figure": {
+                    "id": "base.elves.regular.05",
+                    "side": "FreePeoples",
+                    "nationId": "elves",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "operation": "Remove",
+                  "regionId": "parth-celebrant",
+                  "hits": 1,
+                  "replacementId": "",
+                  "replacementFrom": ""
+                }
+              ],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": [
+                5,
+                6,
+                1
+              ],
+              "hits": 2
+            },
+            "status": "Completed"
+          }
+        ],
+        "actions": [
+          {
+            "id": "e574e4d7756add5397c6acd90b8586cf7ad8a8e2436b13053c0654eb1f66e17e",
+            "version": "939bf8636769f84399718f206f903a98669e9d950fd853270336d7bd1dc60dc1",
+            "initiator": "Shadow",
+            "command": "PlayEvent",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "base.sh.character.19",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "Shadow.standard.4",
+                "owner": "Shadow",
+                "source": "standard",
+                "face": "Event",
+                "use": "Event",
+                "abilityId": "",
+                "count": 1
+              },
+              {
+                "kind": "Card",
+                "id": "base.sh.character.19",
+                "owner": "Shadow",
+                "source": "",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 5
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "939bf8636769f84399718f206f903a98669e9d950fd853270336d7bd1dc60dc1"
+      }
+    }
+  ]
+}

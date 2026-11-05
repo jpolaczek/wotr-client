@@ -7,10 +7,26 @@ namespace Wotr.Client
     public static class DieHints
     {
         // UI-97: a short description with the uses legal right now; full conditions stay behind "Why?".
+        // UI-267: a Lords special die says what the special-die choice does with it, why it waits, or what its Remove
+        // star means.
         public static string Describe(PlayerView view, DieView die)
         {
+            var choice = SpecialDice.Tooltip(view, die);
+            if (choice.Length > 0)
+                return choice;
+            // UI-276 (D20): a Ruler die Dismay may re-roll says which token its click spends.
+            if (DismayChoice.Token(view, die.Id).Length > 0)
+                return DieDescriptions.Tooltip(die) + "\n" + DismayChoice.Offer(view, die.Id);
+            // UI-273: a die the Ruler discard may take says what its click does; a discarded one when it comes back.
+            if (RulerDice.Candidate(view, die))
+                return RulerDice.CandidateTooltip(die);
+            if (RulerDice.Discarded(view, die))
+                return RulerDice.DiscardedTooltip(die);
             var usable = die.Owner == view.You && die.Location == DieLocation.Available && view.Decision?.Kind == DecisionKind.Action;
-            return DieDescriptions.Tooltip(die, usable ? Uses(view, die.Id).Distinct().ToArray() : null);
+            var uses = usable ? Uses(view, die.Id).Distinct().ToArray() : null;
+            // UI-420 (owner): the line explaining the Remove star replaces the bare "★ Remove" mark.
+            var removeLine = SpecialDice.IsLords(die) && die.RemoveSymbol ? SpecialDice.RemoveLine(die, true) : "";
+            return DieDescriptions.Tooltip(die, uses, removeLine);
         }
 
         private static IEnumerable<string> Uses(PlayerView view, string die)

@@ -8,11 +8,15 @@ namespace Wotr.Client
 {
     public sealed class ActionPoolView
     {
-        // The own panel's header band in red lacquer names the side (UI-173: without Help links).
+        // UI-466 (owner, 2026-11-03): the Free Peoples' band is blue lacquer, unlike the Shadow's red one.
+        public const string FreePeoplesHeaderClass = "dice-header-free";
+
+        // The own panel's header band names the side (UI-173: without Help links), in its side's lacquer (UI-466).
         private static VisualElement Header(Side side)
         {
             var header = BoardScreen.Row("dice-header");
             header.name = "dice-header";
+            header.EnableInClassList(FreePeoplesHeaderClass, side == Side.FreePeoples);
             var title = BoardScreen.Title(BoardScreen.SideName(side).ToUpperInvariant());
             title.AddToClassList("dice-side-title");
             header.Add(title);
@@ -26,12 +30,23 @@ namespace Wotr.Client
 
         private readonly Action<string> dieChosen;
         private readonly Action<string> tokenChosen;
+        public const string LordsDieClass = "lords-die";
+        public const string SetAsideClass = "set-aside";
+        // UI-273: the Kings Ruler die's crown, and a die discarded after the roll dimmed in its slot.
+        public const string RulerDieClass = "ruler-die";
+        public const string DiscardedClass = "ruler-discarded";
+        public const string CouncilTokenClass = "council-token";
         public Action<string> CouncilChosen { get; set; }
         private readonly Dictionary<VisualElement, string> snapshots = new Dictionary<VisualElement, string>();
         // UI-322: the last shown count of each side's spent, Hunt and out dice, so a rebuilt count that changed pulses.
         private readonly Dictionary<(string, Side, DieLocation), int> shownCounts = new Dictionary<(string, Side, DieLocation), int>();
         // UI-322: the faces each pool showed (by match and die), so a die whose face changed in place crossfades to its new
         // face; a die that joins the pool shows its face at once.
+        // UI-345: the tokens each pool showed (by match), so a token that joins it arrives; and each Council medallion's
+        // last state, so a change pulses.
+        private readonly Dictionary<VisualElement, (string Match, HashSet<string> Ids)> shownTokens =
+            new Dictionary<VisualElement, (string, HashSet<string>)>();
+        private readonly Dictionary<string, CouncilTokenState> councilStates = new Dictionary<string, CouncilTokenState>();
         private readonly ShownBefore<VisualElement, IReadOnlyDictionary<string, DieFace?>> shownFaces =
             new ShownBefore<VisualElement, IReadOnlyDictionary<string, DieFace?>>(new Dictionary<string, DieFace?>());
 
@@ -52,7 +67,12 @@ namespace Wotr.Client
             snapshots[root] = snapshot;
             root.Clear();
             root.EnableInClassList("expanded-resources", view.Configuration.Lords || view.Configuration.Kings);
-            var visibleDice = view.Dice.Where(d => d.Owner == side && (DiceOutsidePool.InPool(d) || own && DiceOutsidePool.Offered(view, d))).ToArray();
+            // UI-267: a special die not kept this turn keeps its slot, dimmed, until the next roll; UI-273: so does a die
+            // discarded after the roll in a Kings game, until the next Recover.
+            // UI-274: a Free Peoples Keeper Eye in the Hunt Box that pays a corruption attempt stands in the Shadow's row.
+            var visibleDice = view.Dice.Where(d => d.Owner == side && (DiceOutsidePool.InPool(d) || SpecialDice.SetAside(d) ||
+                RulerDice.Discarded(view, d) || own && DiceOutsidePool.Offered(view, d)) ||
+                own && d.Owner != side && d.Location == DieLocation.Hunt && DiceOutsidePool.Offered(view, d)).ToArray();
             root.EnableInClassList("dense-resources", visibleDice.Length > 8);
             // Opponent counters live in the top bar's OpponentSummary.
             root.Add(own ? Header(side) : OwnerLabel(side));
@@ -63,7 +83,7 @@ namespace Wotr.Client
             foreach (var die in visibleDice)
             {
                 var key = view.MatchId + "/" + die.Id;
-                available.Add(Die(die, own, key, before));
+                available.Add(Die(die, own, RulerDice.Discarded(view, die), key, before));
                 faces[key] = die.Face;
             }
             if (!own)
@@ -82,18 +102,30 @@ namespace Wotr.Client
             return label;
         }
 
+        // UI-467 (owner, 2026-11-03): the counters stand under the dice, as in the base game; beside the dice only a narrow
+        // column of tokens, in a game that has them, so the panel stays compact and the console's hint line wide.
         private void OwnResources(VisualElement root, VisualElement available, PlayerView view, Side side)
         {
+            root.EnableInClassList(TokenColumnClass, HasTokens(view, side));
             var columns = new VisualElement { name = "own-resource-columns" };
             columns.AddToClassList("own-resource-columns");
             root.Add(columns);
-            columns.Add(available);
+            var dice = new VisualElement { name = "own-dice-column" };
+            dice.AddToClassList("own-dice-column");
+            columns.Add(dice);
+            dice.Add(available);
+            Locations(dice, view, side);
             var reserves = new VisualElement { name = "own-resource-reserves" };
             reserves.AddToClassList("own-resource-reserves");
             columns.Add(reserves);
-            Locations(reserves, view, side);
             Tokens(reserves, view, side);
         }
+
+        public const string TokenColumnClass = "token-column";
+
+        // Kings' Ruler and Dismay tokens, or the Shadow's Council tokens: the game's tokens stand beside the dice.
+        private static bool HasTokens(PlayerView view, Side side) =>
+            view.Configuration.Kings || CouncilTokenSlots.Shown(view, side);
 
         // Compare the small public resource projection; unrelated board updates retain controls and focus.
         private static string Snapshot(PlayerView view, Side side, bool own) =>
@@ -104,9 +136,11 @@ namespace Wotr.Client
                 string.Join("|", view.CouncilTokens.Select(t => t.Id + ":" + t.Spent + ":" + t.UsedTokenThisTurn))
                 : "");
 
-        private Button Die(DieView die, bool own, string key, IReadOnlyDictionary<string, DieFace?> before)
+        private Button Die(DieView die, bool own, bool discarded, string key, IReadOnlyDictionary<string, DieFace?> before)
         {
-            var special = ExpansionLabels.Special(die);
+            var lordsOrigin = SpecialDice.Origin(die);
+            // ART-07: the Ruler die has its own round body and crown (no framed tile, no caption).
+            var special = ExpansionLabels.Special(die) && lordsOrigin.Length == 0 && !RulerDice.IsRuler(die);
             var button = BoardScreen.Die("", () => dieChosen(die.Id));
             ShowFace(button, die.Face, key, before);
             button.name = die.Id;
@@ -114,22 +148,62 @@ namespace Wotr.Client
             button.AddToClassList(die.Owner == Side.FreePeoples ? "die-free" : "die-shadow");
             button.EnableInClassList("special-die", special);
             button.EnableInClassList("paid-die", die.Location == DieLocation.Resolving);
-            if (special)
+            button.userData = new DraftToken(DraftObject.Die, die.Id);
+            if (lordsOrigin.Length > 0)
+                LordsDie(button, die, lordsOrigin);
+            else if (special)
             {
                 var origin = new Label(ExpansionLabels.DieSource(die)) { pickingMode = PickingMode.Ignore };
                 origin.AddToClassList("die-origin");
                 button.Add(origin);
             }
-            if (die.Location == DieLocation.Resolving || die.RemoveSymbol)
+            if (die.Location == DieLocation.Resolving || die.RemoveSymbol && lordsOrigin.Length == 0)
             {
                 var badge = new Label(die.Location == DieLocation.Resolving ? "•" : "×") { pickingMode = PickingMode.Ignore };
                 badge.AddToClassList("die-badge");
                 button.Add(badge);
             }
-            button.userData = new DraftToken(DraftObject.Die, die.Id);
+            if (RulerDice.IsRuler(die))
+                Crown(button);
+            button.EnableInClassList(DiscardedClass, discarded);
+            if (discarded)
+                button.tooltip = RulerDice.DiscardedTooltip(die);
             // An opponent's retained Ruler die can be the target of Dismay.
-            button.SetEnabled(die.Location != DieLocation.Resolving);
+            button.SetEnabled(die.Location != DieLocation.Resolving && !SpecialDice.SetAside(die) && !discarded);
             return button;
+        }
+
+        // UI-273: the Ruler die wears its crown on its top edge.
+        private static void Crown(Button button)
+        {
+            button.AddToClassList(RulerDieClass);
+            var crown = new VisualElement { name = "ruler-crown", pickingMode = PickingMode.Ignore };
+            crown.AddToClassList("ruler-crown");
+            button.Add(crown);
+        }
+
+        // UI-267: a Lords special die wears its origin's art and emblem and, for a Remove result, the star; a die not
+        // kept this turn stays dimmed in its slot.
+        private static void LordsDie(Button button, DieView die, string origin)
+        {
+            button.AddToClassList(LordsDieClass);
+            button.AddToClassList(LordsDieClass + "-" + origin);
+            var emblem = new VisualElement { name = "die-origin-emblem", pickingMode = PickingMode.Ignore };
+            emblem.AddToClassList("die-origin-emblem");
+            emblem.AddToClassList("die-origin-" + origin);
+            button.Add(emblem);
+            if (die.RemoveSymbol)
+            {
+                var star = new VisualElement { name = "die-remove-star", pickingMode = PickingMode.Ignore };
+                star.AddToClassList("die-remove-star");
+                button.Add(star);
+            }
+            var setAside = SpecialDice.SetAside(die);
+            button.EnableInClassList(SetAsideClass, setAside);
+            if (setAside)
+                button.tooltip = SpecialDice.SetAsideTooltip(die);
+            else if (die.RemoveSymbol)
+                button.tooltip = DieDescriptions.Tooltip(die, null, SpecialDice.RemoveLine(die, true));
         }
 
         // A rolled die, a turned one (a Ring, a card) or a die that became unrolled again changes its face where it stands.
@@ -148,18 +222,23 @@ namespace Wotr.Client
         {
             var row = BoardScreen.Row("resource-locations");
             root.Add(row);
-            foreach (var location in new[] { DieLocation.Spent, DieLocation.Hunt, DieLocation.Discarded })
+            var locations = new List<DieLocation> { DieLocation.Spent, DieLocation.Hunt, DieLocation.Discarded };
+            // UI-270: in a Council game the Free Peoples' dice in the Fellowship Box (Strider, Dúnadan) have a fourth count.
+            if (side == Side.FreePeoples && view.Configuration.Council)
+                locations.Add(DieLocation.FellowshipBox);
+            foreach (var location in locations)
             {
+                // UI-267: a special die set aside this turn stands in the pool's row, not among the dice out of play.
                 var dice = view.Dice.Where(d => location == DieLocation.Spent
-                    ? d.Location == location && (d.SpentWith ?? d.Owner) == side : d.Location == location && d.Owner == side).ToList();
-                var label = location == DieLocation.Discarded ? "Out" : location.ToString();
+                    ? d.Location == location && (d.SpentWith ?? d.Owner) == side
+                    : d.Location == location && d.Owner == side && !SpecialDice.SetAside(d) && !RulerDice.Discarded(view, d)).ToList();
                 // UI-97: icon and count, as in the top bar; the name leads the description. UI-230: the count is
                 // information only; a die there that a decision may choose stands in the pool's row instead.
                 var button = BoardScreen.Button(dice.Count.ToString(), null);
                 button.focusable = false;
                 ReadOnlyControl.Apply(button, false);
                 button.name = "pool-" + location;
-                button.tooltip = dice.Count == 0 ? label + " · none" : label + "\n" + string.Join("\n", dice.Select(DieDescriptions.Summary));
+                button.tooltip = LocationTooltip(location, dice);
                 button.AddToClassList("pool-count-" + location.ToString().ToLowerInvariant());
                 button.Add(new VisualElement { name = "pool-count-icon", pickingMode = PickingMode.Ignore });
                 row.Add(button);
@@ -170,53 +249,123 @@ namespace Wotr.Client
             }
         }
 
+        // UI-420 (owner): "In the Hunt Box · 2", then one line per die without repeating the location ("Eye · rolled").
+        private static string LocationTooltip(DieLocation location, IReadOnlyList<DieView> dice)
+        {
+            var title = TooltipText.Parts(LocationName(location), dice.Count == 0 ? "none" : dice.Count.ToString());
+            return TooltipText.Lines(new[] { title }.Concat(dice.Select(DieDescriptions.Entry)).ToArray());
+        }
+
+        private static string LocationName(DieLocation location) => location switch
+        {
+            DieLocation.Spent => "Spent",
+            DieLocation.Hunt => "In the Hunt Box",
+            DieLocation.Discarded => "Out",
+            DieLocation.FellowshipBox => "Fellowship Box",
+            _ => location.ToString()
+        };
+
         private void Tokens(VisualElement root, PlayerView view, Side side)
         {
             var row = BoardScreen.Row("pool-tokens");
             root.Add(row);
+            var before = shownTokens.TryGetValue(root, out var shown) && shown.Match == view.MatchId ? shown.Ids : null;
+            var now = new HashSet<string>();
+            shownTokens[root] = (view.MatchId, now);
             foreach (var token in view.RulerTokens.Where(t => t.Location == (side == Side.FreePeoples ? "free-peoples" : "dismay")))
             {
-                var name = ExpansionLabels.Token(view, token.Id).Split(' ')[0];
-                var button = BoardScreen.Button((side == Side.FreePeoples ? "♛ " : "◈ ") + name.Substring(0, Math.Min(3, name.Length)), () => tokenChosen(token.Id));
-                button.name = "ruler-token-" + token.Id;
-                button.AddToClassList("ruler-token");
-                button.tooltip = ResourcePresentation.WithExplanation(view, token.Id,
-                    (side == Side.FreePeoples ? "Ruler token · " : "Dismay · ") + ExpansionLabels.Token(view, token.Id));
-                button.EnableInClassList("resource-unavailable", !DraftOptions.CanSelectToken(view, token.Id));
-                button.userData = new DraftToken(DraftObject.RulerToken, token.Id);
+                var button = RulerToken(view, token, side);
+                row.Add(button);
+                now.Add(token.Id);
+                if (before != null && !before.Contains(token.Id))
+                    Appearance.Arrive(button);
+            }
+            if (!CouncilTokenSlots.Shown(view, side))
+                return;
+            // UI-270: the two Council Action Tokens in fixed slots, as medallions; RefreshDetails gives their state.
+            foreach (var id in CouncilTokenSlots.Ids)
+            {
+                var token = id;
+                var button = new Button(() => CouncilChosen?.Invoke(token)) { name = "pool-" + token };
+                button.AddToClassList(CouncilTokenClass);
+                button.AddToClassList(CouncilTokenClass + "-" + CouncilTokenSlots.Key(token));
                 row.Add(button);
             }
-            if (side == Side.Shadow)
-                foreach (var token in view.CouncilTokens)
-                {
-                    var button = BoardScreen.Button((token.Spent ? "×" : "") +
-                        (token.Id == ExpansionDraft.CouncilPolitics ? "C·P" : "C·T"), () => CouncilChosen?.Invoke(token.Id));
-                    button.name = "pool-" + token.Id;
-                    button.tooltip = ResourcePresentation.WithExplanation(view, token.Id, ExpansionLabels.CouncilToken(token.Id));
-                    button.EnableInClassList("resource-unavailable", token.Spent || token.UsedTokenThisTurn);
-                    row.Add(button);
-                }
         }
 
-        private static void RefreshDetails(VisualElement root, PlayerView view, bool own)
+        // UI-276 (D19): a Ruler token is a crowned coin with its king's nation emblem: blue while the Free Peoples hold it,
+        // lit while a die can use it now; a Dismay token is the red coin the Shadow holds, information only, since a Ruler
+        // die's click spends one (D20).
+        private Button RulerToken(PlayerView view, RulerTokenView token, Side side)
+        {
+            var free = side == Side.FreePeoples;
+            var button = new Button(() => tokenChosen(token.Id)) { name = "ruler-token-" + token.Id };
+            button.AddToClassList("ruler-token");
+            button.AddToClassList(free ? "ruler-token-free" : "ruler-token-dismay");
+            var emblem = new VisualElement { name = "ruler-token-emblem", pickingMode = PickingMode.Ignore };
+            emblem.AddToClassList("ruler-token-emblem");
+            var nation = view.Sovereigns.FirstOrDefault(s => s.Id == token.SovereignId)?.Nation ?? "";
+            if (nation.Length > 0)
+                emblem.AddToClassList("nation-emblem-" + nation);
+            button.Add(emblem);
+            if (free)
+                button.userData = new DraftToken(DraftObject.RulerToken, token.Id);
+            else
+                ReadOnlyControl.Apply(button, false);
+            TokenDetails(button, view, token.Id, free);
+            return button;
+        }
+
+        private static void TokenDetails(Button button, PlayerView view, string id, bool free)
+        {
+            var usable = free && DraftOptions.CanSelectToken(view, id);
+            // UI-365: a lit token says what its click does.
+            var ruler = usable ? RulerTokenOffer(view, id) : "Ruler token · " + ExpansionLabels.Token(view, id);
+            button.tooltip = free
+                ? ResourcePresentation.WithExplanation(view, id, ruler)
+                : "Dismay · " + ExpansionLabels.Token(view, id) + "'s token\nSpent by clicking a glowing Ruler die after the roll";
+            button.EnableInClassList("ruler-token-lit", usable);
+            button.EnableInClassList("resource-unavailable", free && !usable);
+        }
+
+        // UI-420 (owner): what the token's click does (UI-389): the Ruler die takes the token's result, whose uses light up.
+        private static string RulerTokenOffer(PlayerView view, string id)
+        {
+            var offer = "Click to use " + ExpansionLabels.Token(view, id) + "'s Ruler token";
+            var token = view.RulerTokens.FirstOrDefault(t => t.Id == id);
+            if (token == null)
+                return offer + " with your Ruler die";
+            var face = DieDescriptions.Face(token.Face);
+            return offer + " · Your Ruler die acts as " + Article(face) + " " + face + " die and its uses light up";
+        }
+
+        private static string Article(string word) => "AEIOU".IndexOf(word[0]) >= 0 ? "an" : "a";
+
+        // UI-270: a Council token's slot shows whether it was received, is offered, ready, usable now or spent.
+        private void CouncilToken(Button button, PlayerView view)
+        {
+            var id = button.name.Substring("pool-".Length);
+            var state = CouncilTokenSlots.State(view, id);
+            var key = view.MatchId + "/" + id;
+            if (councilStates.TryGetValue(key, out var previous) && previous != state)
+                ValuePulse.Pulse(button);
+            councilStates[key] = state;
+            button.tooltip = CouncilTokenSlots.Tooltip(view, id);
+            button.EnableInClassList("legal-target", state is CouncilTokenState.Offered or CouncilTokenState.Usable);
+            button.EnableInClassList("council-spent", state is CouncilTokenState.Spent or CouncilTokenState.Missing);
+            button.SetEnabled(state is CouncilTokenState.Offered or CouncilTokenState.Usable or CouncilTokenState.Ready);
+        }
+
+        private void RefreshDetails(VisualElement root, PlayerView view, bool own)
         {
             if (!own)
                 return;
             foreach (var button in root.Query<Button>().ToList())
             {
-                if (button.userData is DraftToken ruler && ruler.Object == DraftObject.RulerToken)
-                {
-                    button.tooltip = ResourcePresentation.WithExplanation(view, ruler.Id,
-                        (view.You == Side.FreePeoples ? "Ruler token · " : "Dismay · ") + ExpansionLabels.Token(view, ruler.Id));
-                    button.EnableInClassList("resource-unavailable", !DraftOptions.CanSelectToken(view, ruler.Id));
-                }
-                else if (button.name.StartsWith("pool-council."))
-                {
-                    var id = button.name.Substring("pool-".Length);
-                    button.tooltip = ResourcePresentation.WithExplanation(view, id, ExpansionLabels.CouncilToken(id));
-                    var ready = ResourcePresentation.CanSelectCouncil(view, id);
-                    button.EnableInClassList("legal-target", ready);
-                }
+                if (button.ClassListContains("ruler-token"))
+                    TokenDetails(button, view, button.name.Substring("ruler-token-".Length), view.You == Side.FreePeoples);
+                else if (button.ClassListContains(CouncilTokenClass))
+                    CouncilToken(button, view);
             }
         }
     }

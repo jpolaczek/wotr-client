@@ -11,7 +11,7 @@ namespace Wotr.Client
         public event System.Action Opening;
         public System.Func<string, bool> Excluded { get; set; }
         public System.Func<VisualElement, bool> RelatedInspection { get; set; }
-        public RegionHoverPanel Panel { get; } = new RegionHoverPanel();
+        public RegionHoverPanel Panel { get; }
         private readonly VisualElement root;
         private readonly MapCanvas map;
         private PlayerView view;
@@ -36,6 +36,8 @@ namespace Wotr.Client
         {
             this.root = root;
             this.map = map;
+            // UI-402: the panel's chips and the map's character miniatures read one model of the figures' choices.
+            Panel = new RegionHoverPanel(map.Choices);
             stage.Add(Panel.Root);
             root.RegisterCallback<PointerMoveEvent>(Move, TrickleDown.TrickleDown);
             root.RegisterCallback<PointerLeaveEvent>(e => { if (e.target == root) Leave(); });
@@ -68,6 +70,9 @@ namespace Wotr.Client
 
         public bool HoldsDecision => decision.Length > 0 && explicitRegion.Length > 0;
 
+        // UI-405: while a press lifts a figure to carry it, its click makes the selection without opening a panel.
+        public bool Quiet { get; set; }
+
         public bool HoldsDecisionOf(string decisionId) => HoldsDecision && decision == decisionId;
 
         public void Apply(PlayerView latest)
@@ -84,6 +89,8 @@ namespace Wotr.Client
 
         public void Open(string region)
         {
+            if (Quiet)
+                return;
             if (Excluded?.Invoke(region) == true) { Close(); return; }
             CancelLeave();
             decision = "";
@@ -95,6 +102,8 @@ namespace Wotr.Client
         // UI-254: opens the region panel that hosts a decision and keeps it while that decision waits.
         public void OpenDecision(string region, string decisionId)
         {
+            if (Quiet)
+                return;
             Open(region);
             decision = explicitRegion == region ? decisionId ?? "" : "";
         }
@@ -102,6 +111,8 @@ namespace Wotr.Client
         // UI-103: a click on the region whose panel is open closes that panel; another region switches to it.
         public void Toggle(string region)
         {
+            if (Quiet)
+                return;
             var open = pressedOpen == region ||
                 explicitRegion == region && Panel.Root.style.display.value != DisplayStyle.None;
             pressedOpen = "";
@@ -116,7 +127,8 @@ namespace Wotr.Client
             foreach (var entry in dragPicking)
                 entry.Key.pickingMode = entry.Value;
             dragPicking.Clear();
-            var active = source?.Object == DraftObject.Reserve;
+            // UI-405: a carried army or character, like a reserve figure, is dropped on the map under the panel.
+            var active = source?.Object is DraftObject.Reserve or DraftObject.Army or DraftObject.Miniature;
             Panel.Root.style.opacity = active ? .25f : 1f;
             if (!active)
                 return;
@@ -143,7 +155,7 @@ namespace Wotr.Client
             if (!map.Contains(target))
                 return false;
             for (var current = target; current != null && current != map; current = current.parent)
-                if (current is Button && current.ClassListContains("army"))
+                if (current is Button && (current.ClassListContains("army") || current.ClassListContains(MapCharacterArtwork.MiniatureClass)))
                     return true;
             return false;
         }
@@ -200,8 +212,8 @@ namespace Wotr.Client
                 {
                     if (token.Object == DraftObject.Fellowship)
                         return "";
-                    if (token.Object is DraftObject.Region or DraftObject.Army)
-                        return token.Id;
+                    if (token.Object is DraftObject.Region or DraftObject.Army or DraftObject.Miniature)
+                        return token.RegionId;
                 }
             return map.HitTest(map.WorldToLocal(position)) ?? "";
         }
@@ -249,7 +261,7 @@ namespace Wotr.Client
             if (size.x <= 0 || size.y <= 0 || float.IsNaN(size.x) || float.IsNaN(size.y))
                 return;
             var anchor = map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]));
-            var bounds = MapPanelPlacement.Near(map, Panel.Root, anchor, markers: map.MarkerBounds(explicitRegion));
+            var bounds = MapPanelPlacement.Near(map, Panel.Root, anchor, markers: map.FigureBounds(explicitRegion));
             Panel.Root.style.left = bounds.x;
             Panel.Root.style.top = bounds.y;
         }

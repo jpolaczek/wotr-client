@@ -12,6 +12,7 @@ using static Wotr.PlayTests.MatchTestRoom;
 
 namespace Wotr.PlayTests
 {
+    // UI-269: the private companion versions and the starting Guide on the Fellowship panel (formerly the setup panel).
     public sealed partial class CompanionSetupPanelNetworkTests
     {
         private const string Grey = "base.character.gandalf-grey";
@@ -24,6 +25,46 @@ namespace Wotr.PlayTests
         [UnityTest]
         public IEnumerator ComparisonAndGuideRemainReachableWithoutScrollAtFourLayouts() => Wait(Layouts());
 
+        // UI-482 (owner, 2026-11-04): "I have to press confirm twice and one of them does not really confirm anything".
+        [UnityTest]
+        public IEnumerator BaseVersionsReachTheFellowshipPhaseWithOneConfirm() => Wait(OneConfirm());
+
+        private static async Task OneConfirm()
+        {
+            using var room = await CreateNormalGame(new MatchConfiguration { Lords = true, Council = true });
+            var board = room.Fp.Board;
+            await room.Until(() => board.Console.Actions.Confirm.enabledInHierarchy);
+            var revision = board.View.Revision;
+            await Press(room, board, "console-confirm");
+            await room.Until(() => board.View.Revision > revision);
+            Assert.AreEqual(DecisionKind.CouncilHomelands, board.View.Decision.Kind, "The server still opens the step.");
+            Assert.IsEmpty(board.View.Options.Single().CharacterActions);
+            AssertWaitingShadow(await room.Sh.Api.Get<PlayerView>("api/matches/" + board.View.MatchId, room.Token), revision + 1);
+            await room.Until(() => board.Console.Status.Hint.text == CouncilHomelandPresentation.AllStay);
+            // A reconnection during the pause arms the same open decision again; it still leaves once.
+            await KingsCardNetworkChecks.Reconnect(room, room.Fp);
+            await room.Until(() => board.View.Decision?.Kind == DecisionKind.FellowshipPhase);
+            await room.At(revision + 2);
+            Assert.AreEqual(revision + 2, board.View.Revision, "One answer, sent by the client.");
+            Assert.IsEmpty(room.Sh.Board.View.CouncilTokens);
+            Assert.AreEqual(DecisionKind.FellowshipPhase, room.Fp.Board.View.Decision.Kind);
+            Assert.IsFalse(CompanionSetupPresentation.Setup(board.View));
+            AssertPrivate(room.Sh.Board);
+        }
+
+        // The same waiting view whichever versions were chosen (CouncilHomelandPanelNetworkTests compares the two whole).
+        private static void AssertWaitingShadow(PlayerView shadow, long revision)
+        {
+            Assert.AreEqual(revision, shadow.Revision, "The step is open while the Shadow reads it.");
+            Assert.IsNull(shadow.Decision);
+            Assert.AreEqual(Side.FreePeoples, shadow.DecisionOwner);
+            Assert.IsEmpty(shadow.Options);
+            Assert.IsEmpty(shadow.OwnCompanionVersions);
+            Assert.IsEmpty(shadow.OwnCompanions);
+        }
+
+        // UI-269: the private versions and the starting Guide are chosen on the Fellowship panel's portraits — the
+        // two-faces badge compares a companion's two version cards, a crown makes the starting Guide, the ✓ sends.
         private static async Task Variants()
         {
             var configurations = new[]
@@ -39,66 +80,82 @@ namespace Wotr.PlayTests
                 var board = room.Fp.Board;
                 if (!configuration.Lords)
                 {
-                    Assert.IsFalse(board.CompanionSetup.Active);
-                    Assert.IsFalse(board.CompanionSetup.IsOpen);
+                    Assert.IsFalse(CompanionSetupPresentation.Setup(board.View));
                     continue;
                 }
+                await room.Settle();
                 var option = board.View.Options.Single(o => o.Kind == CommandKind.ChooseCompanionVersions);
-                Assert.AreSame(board.CompanionSetup.DecisionHost, board.Tray.parent);
-                Assert.IsTrue(board.CompanionSetup.IsOpen);
+                Assert.AreSame(board.Fellowship.Root, board.Tray.parent, "The versions are chosen on the Fellowship panel.");
+                Assert.IsTrue(board.Fellowship.IsOpen);
                 Assert.AreEqual(configuration.Council ? 7 : 1, option.CompanionVersions.Count);
-                Assert.IsFalse(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
+                // UI-370: Gandalf is the starting Guide by default, so Confirm is ready at once. UI-481 (owner): with the
+                // console's ✓; the panel keeps no confirm or instruction of its own, the console says what to do.
+                Assert.IsTrue(board.Console.Actions.Confirm.enabledInHierarchy, "The default setup can be confirmed at once.");
+                // UI-483 (owner): a ✓ that can be clicked stands out.
+                Assert.IsTrue(board.Console.Actions.Confirm.ClassListContains(ChoiceGlow.ClassName), "The available ✓ is lit.");
+                await room.Until(() => board.Console.Actions.Confirm.resolvedStyle.backgroundColor.r > .6f); // Solid gold, past its transition.
+                Assert.Less(board.Console.Actions.Confirm.Q(className: "icon-glyph").resolvedStyle.unityBackgroundImageTintColor.r, .3f, "With a dark check.");
+                Assert.IsFalse(PanelConfirmShown(board), "The Fellowship panel shows no ✓.");
+                Assert.IsNull(board.Fellowship.Root.Q<Label>("setup-hint"), "The instruction moved to the console.");
+                await room.Until(() => board.Console.Status.Hint.text.Contains(CompanionSetupPresentation.CompleteHint));
+                Assert.IsTrue(board.Root.Q<Button>("starting-guide-" + Grey).ClassListContains("selected"), "Gandalf wears the crown.");
+                LayoutTests.Save(room.Fp.Viewport, "ui370-council-setup-" + (configuration.Council ? "council" : "lords") + ".png");
                 var revision = board.View.Revision;
                 var decision = board.View.Decision.Id;
                 var camera = board.Map.Camera.Pan;
                 AssertPrivate(room.Sh.Board);
                 foreach (var group in option.CompanionVersions)
                 {
-                    await Press(room, board, "setup-portrait-" + group.FigureId);
+                    Assert.AreEqual(DisplayStyle.Flex, Portrait(board, group.FigureId).Q("versions-badge").resolvedStyle.display);
+                    await Press(room, board, "fellowship-portrait-" + group.FigureId);
+                    Assert.IsTrue(Portrait(board, group.FigureId).ClassListContains("selected"));
                     Assert.IsNotNull(board.Tray.Q<Button>("version-" + group.BaseId));
                     Assert.IsNotNull(board.Tray.Q<Button>("version-" + group.AlternateId));
                 }
-                Assert.IsFalse(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
+                foreach (var candidate in option.Targets)
+                    Assert.AreEqual(DisplayStyle.Flex, board.Root.Q<Button>("starting-guide-" + candidate).resolvedStyle.display);
+                Assert.IsTrue(board.Console.Actions.Confirm.enabledInHierarchy);
                 Assert.AreEqual(revision, board.View.Revision);
                 Assert.AreEqual(camera, board.Map.Camera.Pan);
-                await Press(room, board, "setup-portrait-" + Grey);
+                await Press(room, board, "fellowship-portrait-" + Grey);
                 await Press(room, board, "version-" + option.CompanionVersions.Single(g => g.FigureId == Grey).BaseId);
-                Assert.IsFalse(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
+                Assert.IsTrue(board.Console.Actions.Confirm.enabledInHierarchy);
                 if (configuration.Council)
                 {
-                    await Press(room, board, "setup-portrait-" + Gimli);
+                    await Press(room, board, "fellowship-portrait-" + Gimli);
                     var group = option.CompanionVersions.Single(g => g.FigureId == Gimli);
                     if (configuration.Fate)
                         Assert.AreEqual("fate.character.gimli-dwarven-lord", group.AlternateId);
                     await Press(room, board, "version-" + group.AlternateId);
+                    StringAssert.Contains("Alternate", Portrait(board, Gimli).tooltip, "The portrait shows the chosen version.");
                 }
                 await Press(room, board, "starting-guide-" + Strider);
-                await room.Until(() => board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
+                await room.Until(() => board.Console.Actions.Confirm.enabledInHierarchy);
+                Assert.IsTrue(board.Root.Q<Button>("starting-guide-" + Strider).ClassListContains("selected"));
                 await CheckKeyboardControls(room, board, revision);
-                await Press(room, board, "close-companion-setup");
                 await KingsCardNetworkChecks.Reconnect(room, room.Fp);
-                Assert.IsFalse(board.CompanionSetup.IsOpen, "Same decision does not reopen a closed private panel.");
                 Assert.AreEqual(decision, board.View.Decision.Id);
-                board.Notice.Open();
-                await room.Settle();
-                Assert.IsTrue(board.CompanionSetup.IsOpen);
-                Assert.IsTrue(board.Tray.Q<Button>("starting-guide-" + Strider).ClassListContains("selected"));
-                var confirm = board.Tray.Q<Button>("confirm-decision");
+                Assert.IsTrue(board.Fellowship.IsOpen, "The panel holds its decision across a reconnect.");
+                Assert.IsTrue(board.Root.Q<Button>("starting-guide-" + Strider).ClassListContains("selected"), "The draft survives.");
+                var confirm = board.Console.Actions.Confirm;
                 Assert.AreEqual("confirm", IconButton.Icon(confirm));
                 var confirmPoint = confirm.worldBound.center;
                 PointerGestureEvents.ClickAt(confirm);
                 RepeatClick(board.Root, confirmPoint);
                 await room.At(revision + 1);
-                Assert.AreEqual(configuration.Council, board.CompanionSetup.Active);
+                Assert.AreEqual(configuration.Council, CompanionSetupPresentation.Homelands(board.View));
                 Assert.IsNull(board.Tray.Q<VisualElement>("companion-setup-choices"));
                 Assert.AreNotEqual(decision, board.View.Decision.Id);
                 Assert.AreEqual(configuration.Council ? DecisionKind.CouncilHomelands : DecisionKind.FellowshipPhase,
                     board.View.Decision.Kind);
                 Assert.AreEqual(Strider, room.Sh.Board.View.Fellowship.Guide);
+                Assert.IsTrue(board.Root.Query(className: "versions-badge").ToList().All(b => b.style.display.value == DisplayStyle.None));
                 AssertPrivate(room.Sh.Board);
                 Assert.AreEqual(revision + 1, (await room.Fp.Api.Get<PlayerView>("api/matches/" + board.View.MatchId, room.Token)).Revision);
             }
         }
+
+        private static Button Portrait(BoardScreen board, string figure) => board.Fellowship.Root.Q<Button>("fellowship-portrait-" + figure);
 
         private static void RepeatClick(VisualElement root, Vector2 point)
         {
@@ -114,27 +171,19 @@ namespace Wotr.PlayTests
 
         private static async Task CheckKeyboardControls(MatchTestRoom room, BoardScreen board, long revision)
         {
-            var selected = board.CompanionSetup.Root.Query<Button>(className: "selected")
-                .ToList().Select(button => button.name).OrderBy(name => name).ToArray();
-            var ability = board.CompanionSetup.Root.Q<Label>(className: "setup-version-ability");
+            var ability = board.Tray.Q<Label>(className: "setup-version-ability");
             Assert.IsNotNull(ability);
             ability.Focus();
             Key(ability, KeyCode.Return);
             await room.Settle();
             Assert.AreEqual(revision, board.View.Revision, "Reading a focused ability cannot submit the whole setup.");
-            Assert.IsTrue(board.CompanionSetup.IsOpen);
-            Assert.IsTrue(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
-            Key(ability, KeyCode.Escape);
-            await room.Settle();
-            Assert.IsFalse(board.CompanionSetup.IsOpen);
-            Assert.AreSame(board.CompanionSetup.Tab, board.Root.panel.focusController.focusedElement);
-            Assert.AreEqual(revision, board.View.Revision);
-            await Press(room, board, "companion-setup-tab");
-            CollectionAssert.AreEqual(selected, board.CompanionSetup.Root.Query<Button>(className: "selected")
-                .ToList().Select(button => button.name).OrderBy(name => name).ToArray());
-            Assert.IsTrue(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy,
-                "Esc closes only the panel and retains every explicit setup choice.");
+            Assert.IsTrue(board.Fellowship.IsOpen);
+            Assert.IsTrue(board.Console.Actions.Confirm.enabledInHierarchy);
         }
+
+        // UI-481: the tray keeps its confirm hidden for the console's ✓.
+        private static bool PanelConfirmShown(BoardScreen board) =>
+            board.Fellowship.Root.Q<Button>("confirm-decision") is { } confirm && confirm.resolvedStyle.display != DisplayStyle.None;
 
         private static void Key(VisualElement target, KeyCode key)
         {
@@ -160,15 +209,15 @@ namespace Wotr.PlayTests
                     await room.Settle();
                     foreach (var group in option.CompanionVersions)
                     {
-                        await Press(room, client.Board, "setup-portrait-" + group.FigureId);
+                        await Press(room, client.Board, "fellowship-portrait-" + group.FigureId);
                         AssertPanel(client.Board);
-                        foreach (var ability in client.Board.CompanionSetup.Root.Query<Label>(className: "setup-version-ability").ToList())
+                        foreach (var ability in client.Board.Tray.Query<Label>(className: "setup-version-ability").ToList())
                         {
                             Assert.IsTrue(ability.focusable);
                             Assert.Greater(ability.tooltip.Length, ability.text.Length);
                         }
                     }
-                    await Press(room, client.Board, "setup-portrait-" + Gimli);
+                    await Press(room, client.Board, "fellowship-portrait-" + Gimli);
                     LayoutTests.Save(target, $"ui68-versions-{width}-{scale:0.00}.png");
                     AssertPrivate(room.Sh.Board);
                     Assert.AreEqual(before, JsonConvert.SerializeObject(client.Board.View), "Comparison cannot mutate any projected state.");
@@ -181,7 +230,7 @@ namespace Wotr.PlayTests
 
         private static void AssertPanel(BoardScreen board)
         {
-            var panel = board.CompanionSetup.Root;
+            var panel = board.Fellowship.Root;
             var viewport = board.Map.parent.worldBound;
             Assert.GreaterOrEqual(panel.worldBound.xMin, viewport.xMin);
             Assert.GreaterOrEqual(panel.worldBound.yMin, viewport.yMin);
@@ -216,14 +265,17 @@ namespace Wotr.PlayTests
             }
         }
 
+        // The Shadow's board shows none of the private setup: no badges, crowns or cards, only that the Free Peoples
+        // prepare the Fellowship.
         private static void AssertPrivate(BoardScreen board)
         {
-            Assert.IsFalse(board.CompanionSetup.Active);
-            Assert.IsFalse(board.CompanionSetup.IsOpen);
-            Assert.AreEqual(DisplayStyle.None, board.CompanionSetup.Tab.style.display.value);
             Assert.IsEmpty(board.View.OwnCompanionVersions);
-            Assert.IsEmpty(board.CompanionSetup.DecisionHost.Children());
-            Assert.IsNull(board.Root.Q<Button>("setup-portrait-" + Grey));
+            Assert.IsFalse(CompanionSetupPresentation.Setup(board.View));
+            Assert.AreNotSame(board.Fellowship.Root, board.Tray.parent);
+            Assert.IsTrue(board.Root.Query(className: "versions-badge").ToList().All(b => b.style.display.value == DisplayStyle.None));
+            Assert.IsTrue(board.Root.Query<Button>(className: "guide-crown").ToList().All(c => c.style.display.value == DisplayStyle.None));
+            if (board.View.Phase == GamePhase.Setup && board.View.DecisionOwner == Side.FreePeoples)
+                Assert.AreEqual("FREE PEOPLES PREPARE THE FELLOWSHIP", board.Console.Status.Headline.text);
         }
 
         private static async Task Press(MatchTestRoom room, BoardScreen board, string name)

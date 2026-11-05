@@ -16,7 +16,9 @@ namespace Wotr.Client
         DecisionRequired,
         ActionFailed,
         Victory,
-        Defeat
+        Defeat,
+        // AUDIO-12: a nation's token slides on the Politics track.
+        PoliticsMoved
     }
 
     public enum SoundChannel
@@ -29,7 +31,8 @@ namespace Wotr.Client
     // sound while the game is in the background.
     public static class SoundCues
     {
-        // AUDIO_UX: end of game → failure → battle → decision → Ring → Fellowship → dice → cards → accepted → click.
+        // AUDIO_UX: end of game → failure → battle → decision → Ring → Fellowship → politics → dice → cards → accepted →
+        // click. AUDIO-12: a political step outranks the card or die that caused it, and yields to the tracks.
         private static readonly Dictionary<SoundCue, int> Priorities = new Dictionary<SoundCue, int>
         {
             [SoundCue.UiClick] = 0,
@@ -37,16 +40,21 @@ namespace Wotr.Client
             [SoundCue.ActionAccepted] = 2,
             [SoundCue.CardMove] = 3,
             [SoundCue.DiceRoll] = 4,
-            [SoundCue.FellowshipAdvanced] = 5,
-            [SoundCue.CorruptionChanged] = 6,
-            [SoundCue.DecisionRequired] = 7,
-            [SoundCue.BattleStarted] = 8,
-            [SoundCue.ActionFailed] = 9,
-            [SoundCue.Victory] = 10,
-            [SoundCue.Defeat] = 10
+            [SoundCue.PoliticsMoved] = 5,
+            [SoundCue.FellowshipAdvanced] = 6,
+            [SoundCue.CorruptionChanged] = 7,
+            [SoundCue.DecisionRequired] = 8,
+            [SoundCue.BattleStarted] = 9,
+            [SoundCue.ActionFailed] = 10,
+            [SoundCue.Victory] = 11,
+            [SoundCue.Defeat] = 11
         };
 
         public static int Priority(SoundCue cue) => Priorities[cue];
+
+        // How long a playing clip keeps less important cues out: its whole length, except the Politics bell (AUDIO-12),
+        // which holds only through the token's 0.7 s slide; its quiet ring may then give way to a click.
+        public static double Holds(SoundCue cue, double length) => cue == SoundCue.PoliticsMoved ? System.Math.Min(length, 0.8) : length;
 
         public static double ShortestRepeat(SoundCue cue) => cue switch
         {

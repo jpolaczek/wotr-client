@@ -144,8 +144,20 @@ namespace Wotr.PlayTests
                 return;
             var die = client.Board.View.Dice.Where(d => option.EligibleDice.Contains(d.Id))
                 .OrderByDescending(d => d.Face is DieFace.Character or DieFace.WillOfTheWest).First();
-            ArmyGestures.Die(client, die.Id, die.Face == DieFace.ArmyMuster ? DieFace.Army : DieFace.Character);
+            // UI-461: an entry or ability takes a Will die as itself; any other use turns it in the console's menu.
+            if (die.Face == DieFace.WillOfTheWest && option.Kind is CommandKind.EnterCharacter or CommandKind.UseCharacterAbility)
+                CardNetworkTests.Click(client.Board.OwnDice.Q<Button>(die.Id));
+            else
+                ArmyGestures.Die(client, die.Id, UseFace(option.Kind));
         }
+
+        private static DieFace UseFace(CommandKind kind) => kind switch
+        {
+            CommandKind.Recruit or CommandKind.AdvancePolitics => DieFace.Muster,
+            CommandKind.MoveArmies or CommandKind.AttackArmy => DieFace.Army,
+            CommandKind.DrawCard or CommandKind.PlayEvent => DieFace.Event,
+            _ => DieFace.Character
+        };
 
         private static async Task<string> Route(MatchTestRoom room, MountedMatchClient client, TravelOption travel)
         {

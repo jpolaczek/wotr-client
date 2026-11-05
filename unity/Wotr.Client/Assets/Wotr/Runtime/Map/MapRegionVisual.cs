@@ -3,7 +3,7 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    public enum MapRegionEmphasis { None, Protection, Hover, Source, Selected, Target, Attack, Pressed, DraftSource }
+    public enum MapRegionEmphasis { None, Protection, Hover, Source, Selected, Target, Attack, Pressed, DraftSource, CarriedTarget, CarriedAttack, PlacementTarget }
 
     internal sealed class MapRegionVisual
     {
@@ -34,6 +34,12 @@ namespace Wotr.Client
             // UI-224: targets are filled more strongly; their edges also glow (MapTargetGlow).
             MapRegionEmphasis.Attack => new Color(.8f, .17f, .12f, .36f),
             MapRegionEmphasis.Target => new Color(.16f, .65f, .34f, .34f),
+            // UI-452 (owner): a region a recruitment or a companion's homeland may take, filled clearly enough to read on forest
+            // and mountain art (MapDraftOverlay.PlacementTargets); its edges glow as a target's.
+            MapRegionEmphasis.PlacementTarget => new Color(.12f, .72f, .36f, .56f),
+            // UI-405: the legal target under a carried figure, the same colour lit more strongly.
+            MapRegionEmphasis.CarriedAttack => new Color(.86f, .2f, .14f, .52f),
+            MapRegionEmphasis.CarriedTarget => new Color(.2f, .72f, .38f, .5f),
             // UI-323: the region the player's own draft moves from, a clear gold beside its targets (MapSourceGlow).
             MapRegionEmphasis.DraftSource => new Color(1f, .82f, .32f, .38f),
             MapRegionEmphasis.Selected => new Color(.9f, .56f, .12f, .26f),

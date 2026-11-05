@@ -42,6 +42,35 @@ namespace Wotr.EditorTests
             Assert.AreEqual(1, d.Armies.Count(a => a.RegionId == "helms-deep" && a.Garrison));
         }
 
+        // UI-452 (owner): a region a placement takes is lit as a target, more strongly than a move's.
+        [Test]
+        public void APlacementTargetIsLitMoreStronglyThanAMovesTarget()
+        {
+            var map = new MapCanvas(BoardPresentation.Load());
+            map.DraftOverlay.Targets.Add("osgiliath");
+            map.DraftOverlay.Targets.Add("erebor");
+            map.DraftOverlay.PlacementTargets.Add("erebor");
+            map.Redraw();
+            Assert.AreEqual(MapRegionEmphasis.Target, map.Renderer.CurrentEmphasis("osgiliath"));
+            Assert.AreEqual(MapRegionEmphasis.PlacementTarget, map.Renderer.CurrentEmphasis("erebor"));
+            // UI-453/UI-468 (owner): every target pulses — a placement's, a move's and an attack's — and a region that is
+            // no target does not; the layer repaints only on a new set.
+            Assert.IsTrue(map.Renderer.TargetPulses("erebor"));
+            Assert.IsTrue(map.Renderer.TargetPulses("osgiliath"));
+            Assert.IsFalse(map.Renderer.TargetPulses("minas-tirith"));
+            var repaints = map.Renderer.TargetPulseRepaints;
+            map.Redraw();
+            Assert.AreEqual(repaints, map.Renderer.TargetPulseRepaints, "The same set does not repaint.");
+            map.DraftOverlay.AttackTargets.Add("minas-morgul");
+            map.Redraw();
+            Assert.IsTrue(map.Renderer.TargetPulses("minas-morgul"), "An attack's target pulses too.");
+            map.DraftOverlay.Targets.Clear();
+            map.DraftOverlay.PlacementTargets.Clear();
+            map.DraftOverlay.AttackTargets.Clear();
+            map.Redraw();
+            Assert.IsFalse(map.Renderer.TargetsPulsing, "No target, no pulse.");
+        }
+
         [Test]
         public void HoverIsSubtleAndNeverOverridesSelectionOrLegalTargets()
         {

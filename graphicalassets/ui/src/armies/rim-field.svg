@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="116" height="50" viewBox="0 0 116 50">
+  <!-- UI-400: the state of a field or garrison base drawn round its outline (top face, side band, bottom edge):
+       eligible (legal green), selected (gold), pressed (dim gold), ability owner (amber); moved veils the base.
+       It replaces the eight plinth PNGs of UI-125; ChoiceGlow still pulses a live choice. -->
+  <path d="M3 20 A55 17 0 0 1 113 20 L113 29.5 A55 17 0 0 1 3 29.5 Z" style="fill: var(--ink); opacity: var(--rim-veil-opacity)"/>
+  <path d="M3 20 A55 17 0 0 1 113 20 L113 29.5 A55 17 0 0 1 3 29.5 Z" fill="none" style="stroke: var(--rim-color); opacity: var(--rim-opacity)" stroke-width="3.2" filter="url(#glow)"/>
+  <path d="M3 20 A55 17 0 0 1 113 20 L113 29.5 A55 17 0 0 1 3 29.5 Z" fill="none" style="stroke: var(--rim-color); opacity: var(--rim-opacity)" stroke-width="1.3"/>
+</svg>

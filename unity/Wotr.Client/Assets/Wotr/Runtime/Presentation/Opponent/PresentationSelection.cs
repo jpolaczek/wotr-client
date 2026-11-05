@@ -16,6 +16,23 @@ namespace Wotr.Client
             return group.Where(step => !step.Legacy && (Opponent(step, you) || !step.Actor.HasValue && (opponentActed || Shared(step))));
         }
 
+        // UI-488 (owner, 2026-11-04): what the opponent gained or lost through the player's own click is no replay of it, so
+        // these facts show even on a step that is not shown: the opponent's dice (rolled or recovered, its paying die leaving),
+        // its automatic draws (as counts) and the Fellowship's Mordor inactivity. The player's own payment with a die the
+        // opponent owns (a Keeper's Eye) stays theirs.
+        public static bool OpponentsChange(PresentationCue cue, ActionLogStep step, Side? you, ActionMemory memory, bool mordorInactivity)
+        {
+            if (!you.HasValue || step.Legacy)
+                return false;
+            return cue.Kind switch
+            {
+                PresentationCueKind.Die or PresentationCueKind.SpentDie => cue.Die.Owner != you && !memory.OwnCostDice.Contains(cue.Die.Id),
+                PresentationCueKind.Draw => cue.Card.Use == ActionCardUse.Draw && cue.Card.Owner != you && !step.Actor.HasValue,
+                PresentationCueKind.Fellowship => mordorInactivity,
+                _ => false
+            };
+        }
+
         // UI-330: an observer's presentation shows every side's recorded steps; only legacy steps without facts never qualify.
         public static IEnumerable<ActionLogStep> Every(IReadOnlyList<ActionLogStep> group) => group.Where(step => !step.Legacy);
 

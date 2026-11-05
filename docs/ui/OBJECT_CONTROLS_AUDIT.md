@@ -52,9 +52,9 @@ the protection window may open on a tile with no damage (`HuntCardSteps.ShadowHu
 | --- | --- | --- | --- |
 | 1 | Guide reactions in the Hunt: Merry, Pippin (`guide-separate-to-reduce-hunt-one`), Gollum's reveal (`hunt.guide`) | done by UI-360 (2026-10-26, owner's D9): the Guide's portrait in the response row; formerly text rectangles in the Hunt tray | the Guide's portrait as a response object in `HuntResponsesView` |
 | 2 | Fellowship-hosted tray footer: Declare/Reveal ("Undo step", "Cancel", text "Declare"/"Reveal"), separation ("Cancel"), Mordor ("Remove from play") | the footer duplicates the console | the console's ↶/✓ (greyed meanwhile) |
-| 3 | Worn with Sorrow and Toil (`CharacterCardDiscard`) | text "Mithril", "Axe and Bow", "Horn", "Staff", "Random hand", "Keep cards" in the Hunt tray; `DecisionRoutes` claims Hand (`:65`) but the hand lights nothing | the Effects panel's table cards with × (`TableEffectsView.Offer`) |
+| 3 | Worn with Sorrow and Toil (`CharacterCardDiscard`) | text "Mithril", "Axe and Bow", "Horn", "Staff", "Random hand", "Keep cards" in the Hunt tray; `DecisionRoutes` claims Hand (`:65`) but the hand lights nothing (done by UI-432, 2026-10-31: the table cards are red in Effects, the random card is the red hand counter, Keep cards the Skip effect / Pass) | the Effects panel's table cards with × (`TableEffectsView.Offer`) |
 | 4 | Character abilities and components (`Application/ComponentContextInteraction.cs`), e.g. Saruman's Voice | text buttons in the region panel, the Characters inspector and the decision dock | the figure's portrait, the inspector's ability chips |
-| 5 | Duplicates: the console's "Discard a table card" / "Use a table card" (`CardConsoleOptions.cs:94, 165`) only open an Effects tab that is already lit; Dreadful Spells' region-panel headers plus console buttons; "Open decision" / "Resume character action" (`UI/Characters/CharacterRosterContext.cs:44-46`) beside the console plaque and the row click; `VictoryPanel`'s "Fellowship" (`:63`) beside the Fellowship tab | two controls for one choice | the object already lit |
+| 5 | Duplicates: the console's "Discard a table card" / "Use a table card" (`CardConsoleOptions.cs:94, 165`) only open an Effects tab that is already lit (removed by UI-430, 2026-10-30: the offered cards are red and their tiles' click sends); Dreadful Spells' region-panel headers plus console buttons; "Open decision" / "Resume character action" (`UI/Characters/CharacterRosterContext.cs:44-46`) beside the console plaque and the row click; `VictoryPanel`'s "Fellowship" (`:63`) beside the Fellowship tab | two controls for one choice | the object already lit |
 | 6 | "Finish phase" hidden when not legal (`UI/Fellowship/FellowshipControls.cs:65`) | breaks disabled-not-hidden | — |
 | 7 | Missing graphics: the Effects panel's table cards are title rectangles; the Hunt response objects are glyphs ○ ★ ? | cosmetic | card art, portraits |
 | 8 | Latent text fallbacks reachable only if routing slips (`CardChoices.Event` nation and "Use as" rows, `ArmyFigures`/`CompanionDestination` rows, `EffectFigurePicker`, `AttackChoices`, FigureGrid in Army/Excess/EventArmy choices) | dead or nearly dead code | — |
@@ -75,10 +75,14 @@ does not place the tray either: "CharacterCardDiscard → Hand" has no object be
 - Owner-approved exceptions, not reported: the Politics advance arrow (2026-10-15), the red decision notice (UI-254),
   edge-tab hover (UI-92/98), object-less card options as console buttons (UI-210 rule 4), UI-142, UI-279, UI-11,
   UI-189.
-- Exceptions recorded only by agents, for the owner to confirm or drop: Stay / Stay all (UI-250), There Is Another
+- Exceptions recorded only by agents, for the owner to confirm or drop (UI-432, 2026-10-31: Stay / Stay all and the
+  tray's Standard / Far-sighted are gone, Undo step and Cancel stay — [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)): Stay / Stay all (UI-250), There Is Another
   Way's Stay and Lure of the Ring's console alternatives (UI-249), the Reserve panel's own ✓, Keep misses / hits / all
   (UI-245/246), Worn's alternatives (UI-247), the console's table-card opener (UI-214/247), the Dreadful Spells double
-  control (UI-251).
+  control (UI-251). UI-431 (2026-10-31): Lure of the Ring's alternatives and the Dreadful Spells double control are gone —
+  the portrait, the corruption marker and the force sections are the only controls ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
+  UI-432 (2026-10-31): Keep misses / Keep all are the battle window's Skip effect (Keep hits stays) and Worn's
+  alternatives are their objects ([UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)).
 
 ## Fixed with this audit
 

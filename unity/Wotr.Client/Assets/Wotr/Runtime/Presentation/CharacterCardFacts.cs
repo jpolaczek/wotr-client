@@ -45,28 +45,51 @@ namespace Wotr.Client
             {
                 new CharacterFact { Key = "level", Value = Number(level), Label = "Level " + Number(level) },
                 flying
-                    ? new CharacterFact { Key = "flight", Value = "∞", Label = "Move Flight", Meaning = "Unlimited movement" }
+                    ? new CharacterFact { Key = "flight", Value = "∞", Label = "Flight", Meaning = "Unlimited movement" }
                     : new CharacterFact { Key = "movement", Value = Number(movement), Label = "Move " + Number(movement), Meaning = "Level used to move" },
                 new CharacterFact { Key = "combat", Value = Number(combat), Label = "Combat level " + Number(combat), Meaning = "Level used for combat cards" },
                 new CharacterFact { Key = "leadership", Value = Number(leadership), Label = "Leadership " + Number(leadership) }
             };
+            // UI-420 (owner): the nation's emblem is named plainly ("Gondor", "Southrons & Easterlings").
             if (nation.Length > 0)
-                facts.Add(new CharacterFact { Key = "nation", Nation = nation, Label = "Nation " + NationName(nation) });
+                facts.Add(new CharacterFact { Key = "nation", Nation = nation, Label = NationName(nation) });
             return facts;
         }
 
-        // The statistics in words: the tooltip of the whole strip.
-        public static string Summary(IEnumerable<CharacterFact> facts) => string.Join(" · ", facts.Select(f => f.Label));
+        // The statistics in words: the tooltip of the whole strip and of a roster row. UI-420 (owner): Move and Combat
+        // level are named only where they differ from Level ("Level 3 · Leadership 1 · North").
+        public static string Summary(IEnumerable<CharacterFact> facts)
+        {
+            var list = facts.ToList();
+            var level = list.FirstOrDefault(f => f.Key == "level")?.Value;
+            return TooltipText.Parts(list.Where(f => !RepeatsLevel(f, level)).Select(f => f.Label).ToArray());
+        }
 
-        public static string NationName(string nation) => nation == AllFreePeoples ? "All Free Peoples" : FigureGrid.Name(nation);
+        private static bool RepeatsLevel(CharacterFact fact, string level) => fact.Key is "movement" or "combat" && fact.Value == level;
 
-        public static CharacterStatus Status(CharacterRosterView row, string region)
+        public static string NationName(string nation) => TooltipText.Nation(nation);
+
+        // UI-438: version is the one a roster row shows; a row of a character whose versions are not in play names it.
+        public static CharacterStatus Status(CharacterRosterView row, string region, string version = "")
         {
             var state = CharacterRosterPresentation.State(row);
             if (region.Length > 0)
                 return new CharacterStatus { Key = "on-board", Text = region + (row.Garrison ? " · Garrison" : ""), Short = region,
                     Tooltip = state + " · " + region };
-            var (key, words) = row.Lifecycle switch
+            var (key, words) = StatusWords(row, version);
+            // Beside the ring a roster row needs no "In".
+            var brief = key == "fellowship" ? "Fellowship" : words;
+            return new CharacterStatus { Key = key, Text = words, Short = brief, Tooltip = state };
+        }
+
+        // UI-271/UI-438: the one row of a character with versions not in play names the version it shows (Lieutenant,
+        // Númenórean), which switches to the version an offered entry brings in.
+        private static (string Key, string Words) StatusWords(CharacterRosterView row, string version)
+        {
+            var epithet = CharacterRosterPresentation.HasAlternatives(row) ? CharacterLibrary.ShortEpithet(version) : "";
+            if (epithet.Length > 0)
+                return ("waiting", epithet);
+            return row.Lifecycle switch
             {
                 CharacterRosterLifecycle.OnBoard => ("on-board", "On board"),
                 CharacterRosterLifecycle.InFellowship => ("fellowship", "In Fellowship"),
@@ -77,9 +100,6 @@ namespace Wotr.Client
                 CharacterRosterLifecycle.NotEntered => ("waiting", "Not entered"),
                 _ => ("waiting", "Unknown")
             };
-            // Beside the ring a roster row needs no "In".
-            var brief = key == "fellowship" ? "Fellowship" : words;
-            return new CharacterStatus { Key = key, Text = words, Short = brief, Tooltip = state };
         }
 
         private static string Number(int? value) => value.HasValue ? value.Value.ToString() : "?";

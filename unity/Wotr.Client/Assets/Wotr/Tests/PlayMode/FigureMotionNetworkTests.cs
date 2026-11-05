@@ -54,9 +54,11 @@ namespace Wotr.PlayTests
             await Until(() => fp.Board.View.Revision == 1, token);
             AssertJourney(fp, "minas-tirith", "osgiliath", Side.FreePeoples);
             var fpAfter = fp.Board.View;
-            var before = fp.Board.Map.Figures.Root.Children().First().transform.position;
+            // UI-404: where the flight's figures stand on the ground (the shadow), map-local.
+            var key = fp.Board.Map.Figures.Moves.First().To.Key;
+            var before = fp.Board.Map.Figures.Flight(key).Value.Ground;
             await Task.Delay(240, token);
-            var during = fp.Board.Map.Figures.Root.Children().First().transform.position;
+            var during = fp.Board.Map.Figures.Flight(key).Value.Ground;
             Assert.Greater(Vector2.Distance(before, during), 2);
             LayoutTests.Save(fp.Viewport, "ui76-network-army-fp-middle.png");
             // UI-305/UI-306: the observer presents the opponent's march — its die, the camera if needed, then the recorded

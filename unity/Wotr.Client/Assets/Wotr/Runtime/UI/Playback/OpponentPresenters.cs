@@ -19,12 +19,15 @@ namespace Wotr.Client
         private readonly StagedBoard staged;
         private readonly PoliticsPresenter politics;
         private readonly CardRevealPresenter cards;
+        private readonly CardRollPresenter rolls;
         private readonly CharacterPresenter characters;
         private readonly FellowshipReading fellowshipPanel;
         private readonly HuntPresenter hunt;
         private readonly FellowshipPresenter fellowship;
         private readonly BattlePresenter battles;
         private readonly ResourcePresenter resources;
+        private readonly SovereignPresenter sovereigns;
+        private readonly TokenPresenter tokens;
         public MapObservedTrace Trace { get; }
         public SkipControl Skip { get; }
         public PresentationCamera Camera => camera;
@@ -48,12 +51,15 @@ namespace Wotr.Client
             Playback.Register(new BattleWindowRetirement(board, Playback));
             // UI-343: and so does the Hunt window once its Hunt is over and the next action begins.
             Playback.Register(new HuntWindowRetirement(board, Playback));
-            politics = new PoliticsPresenter(board, staged, layer);
+            politics = new PoliticsPresenter(board, staged, layer, Sounds);
             Playback.Register(new PoliticsRetirement(politics, Playback));
             Playback.Register(cost);
             Playback.Register(camera);
-            cards = new CardRevealPresenter(board, Playback, camera, layer);
+            cards = new CardRevealPresenter(board, staged, Playback, camera, layer);
             Playback.Register(cards);
+            // UI-492: a card's dice, between its reveal and what they cause.
+            rolls = new CardRollPresenter(board, Trace, layer, Sounds);
+            Playback.Register(rolls);
             characters = new CharacterPresenter(board, staged, Trace, camera);
             Playback.Register(characters);
             Playback.Register(new ArmyMovementPresenter(board, staged, Trace));
@@ -63,6 +69,9 @@ namespace Wotr.Client
             Playback.Register(new ControlPresenter(board, staged, Trace));
             Playback.Register(new FigureChangePresenter(board, staged, Trace));
             Playback.Register(politics);
+            // UI-344: a Kings sovereign's change at his region.
+            sovereigns = new SovereignPresenter(board, staged, Trace, layer);
+            Playback.Register(sovereigns);
             fellowshipPanel = new FellowshipReading(board);
             hunt = new HuntPresenter(board, staged, layer, fellowshipPanel, Sounds);
             Playback.Register(hunt);
@@ -70,8 +79,14 @@ namespace Wotr.Client
             Playback.Register(fellowship);
             resources = new ResourcePresenter(board, staged, Playback, layer);
             Playback.Register(resources);
+            // UI-344: the expansions' tokens and the Rings' holders at their chips and pool.
+            tokens = new TokenPresenter(board, staged, layer);
+            Playback.Register(tokens);
             Playback.Paused = Reading;
             Playback.Released += Released;
+            // UI-490 (owner, 2026-11-04): what plays waits for the player's return, and their alert does not.
+            Playback.HeldAway += Sounds.Away;
+            board.Map.Figures.PresentationHolds = () => Playback.Holding;
             binding.Ticked += Skip.Refresh;
             board.Escape.SkipPresentation = Escape;
             board.Cards.Opening += CardOpening;
@@ -83,6 +98,9 @@ namespace Wotr.Client
             board.Escape.SkipPresentation = null;
             binding.Ticked -= Skip.Refresh;
             Playback.Released -= Released;
+            Playback.HeldAway -= Sounds.Away;
+            board.Map.Figures.PresentationHolds = null;
+            board.Map.Figures.Freeze(false);
             Playback.Paused = null;
             camera.Dispose();
             Trace.Root.RemoveFromHierarchy();
@@ -125,15 +143,19 @@ namespace Wotr.Client
 
         private void Released()
         {
+            board.Map.Figures.Freeze(false);
             cost.Clear();
             camera.Released();
             Trace.Clear();
             politics.Released();
             cards.Released();
+            rolls.Released();
             characters.Released();
             hunt.Released();
             battles.Released();
             resources.Released();
+            sovereigns.Released();
+            tokens.Released();
             fellowship.Released();
             fellowshipPanel.Released();
             staged.Reset();

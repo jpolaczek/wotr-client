@@ -6,6 +6,8 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
+    // A die's ability costs (an army event's Lords and Mouth costs). UI-278: the Palantír of Barad-dûr's conversion starts
+    // at its card on the table instead (PalantirConversion).
     public sealed class CardCostPicker
     {
         public VisualElement Root { get; } = BoardScreen.Row("card-cost-picker");
@@ -15,7 +17,8 @@ namespace Wotr.Client
         public void Refresh(PlayerView view, TurnDraft draft, ActionDieContext context, bool busy)
         {
             var costs = DraftOptions.All(view, draft).Where(o => o.Enabled).SelectMany(o => o.DrawCosts.Concat(o.Events.SelectMany(e => e.Costs)))
-                .Where(c => c.DieId == context.DieId && c.AbilityId.Length > 0).GroupBy(c => c.AbilityId + "/" + c.Face)
+                .Where(c => c.DieId == context.DieId && c.AbilityId.Length > 0 && c.AbilityId != CardDrawDraft.Palantir)
+                .GroupBy(c => c.AbilityId + "/" + c.Face)
                 .ToDictionary(g => g.Key, g => g.First());
             foreach (var id in buttons.Keys.Where(id => !costs.ContainsKey(id)).ToArray())
             {

@@ -102,7 +102,10 @@ namespace Wotr.PlayTests
                     Assert.IsTrue(map.Q<Button>("mordor-track-step-1").ClassListContains(MapMordorTrack.PassedClass));
                     Assert.IsFalse(map.Q<Button>("mordor-track-step-4").ClassListContains(MapMordorTrack.PassedClass));
                     Assert.That(figure.worldBound.center.x, Is.EqualTo(step.worldBound.center.x).Within(2f), "The figure stands on its step.");
-                    Assert.That(figure.worldBound.yMax, Is.EqualTo(step.worldBound.center.y + 4).Within(3f));
+                    // UI-406: the figure stands on its round base, the middle of the base's top face on the step.
+                    var stand = figure.Q("fellowship-stand").worldBound;
+                    Assert.That(stand.yMin + stand.height * .357f, Is.EqualTo(step.worldBound.center.y).Within(3f));
+                    Assert.That(stand.center.x, Is.EqualTo(step.worldBound.center.x).Within(2f));
                     Assert.AreEqual(DisplayStyle.Flex, step.Q<Label>("mordor-step-number").resolvedStyle.display, "Zoomed in, steps show numbers.");
                     Assert.AreEqual("7/12", map.Q<Label>("fellowship-mordor-corruption").text);
                     Assert.AreEqual(DisplayStyle.Flex, map.Q("fellowship-mordor-idle").resolvedStyle.display);
@@ -110,6 +113,12 @@ namespace Wotr.PlayTests
                     foreach (var gate in new[] { "morannon", "minas-morgul" })
                         Assert.AreEqual(DisplayStyle.Flex, map.Q<Button>("mordor-track-gate-" + gate).resolvedStyle.display);
                     StringAssert.Contains("Mordor step 3 of 5", figure.tooltip);
+                    // UI-427: zoomed in on the track the figure shows its state; the tooltip names it.
+                    var hidden = view.Fellowship.Hidden;
+                    // The Hunt window may lie over it at 125 %.
+                    if (TabletopObjectsTests.AssertFellowshipState(map.FellowshipMarker, hidden, $"track zoomed in {width}/{scale}"))
+                        TabletopObjectsTests.AssertDiamondPainted(map.FellowshipMarker, target, hidden, $"track zoomed in {width}/{scale}");
+                    StringAssert.Contains(hidden ? "Hidden" : "Revealed", figure.tooltip);
                     Assert.IsNull(map.Q("mordor-crack-caption"), "UI-157: the Crack of Doom has no caption on the map.");
                     LayoutTests.Save(target, $"ui154-mordor-zoom-{width}-{scale:0.00}.png");
                     var repaints = map.Renderer.Repaints;
@@ -121,6 +130,8 @@ namespace Wotr.PlayTests
                     yield return Settle();
                     Assert.AreEqual(DisplayStyle.None, step.Q<Label>("mordor-step-number").resolvedStyle.display,
                         "On the whole map the stones carry no numbers.");
+                    if (TabletopObjectsTests.AssertFellowshipState(map.FellowshipMarker, hidden, $"track, the whole map {width}/{scale}"))
+                        TabletopObjectsTests.AssertDiamondPainted(map.FellowshipMarker, target, hidden, $"track, the whole map {width}/{scale}");
                     LayoutTests.Save(target, $"ui154-mordor-fit-{width}-{scale:0.00}.png");
                     view.Fellowship.MordorStep = null;
                     view.Fellowship.RegionId = "minas-morgul";
@@ -205,7 +216,10 @@ namespace Wotr.PlayTests
                             var figure = map.FellowshipMarker.Root;
                             var stone = map.MordorTrack.StepButton(step);
                             Assert.That(figure.worldBound.center.x, Is.EqualTo(stone.worldBound.center.x).Within(2f));
-                            Assert.AreEqual(hidden ? "◇" : "◆", ((Button)figure).text);
+                            // UI-427: the state shows on the plaque on the figure's base, painted in the frame.
+                            var label = $"{side} {step} {width}/{scale}";
+                            Assert.IsTrue(TabletopObjectsTests.AssertFellowshipState(map.FellowshipMarker, hidden, label), label);
+                            TabletopObjectsTests.AssertDiamondPainted(map.FellowshipMarker, target, hidden, label);
                             for (var passed = 0; passed < step; passed++)
                                 Assert.IsTrue(map.MordorTrack.StepButton(passed).ClassListContains(MapMordorTrack.PassedClass));
                             Assert.AreEqual(step == 3 ? DisplayStyle.Flex : DisplayStyle.None, map.Q("fellowship-mordor-idle").resolvedStyle.display);

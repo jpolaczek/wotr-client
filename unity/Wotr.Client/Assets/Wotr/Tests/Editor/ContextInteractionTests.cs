@@ -45,8 +45,29 @@ namespace Wotr.EditorTests
             Assert.IsEmpty(hover.Visible);
         }
 
+        // UI-461 (owner, 2026-11-03): a Will die exposes a result's uses only once the console's face menu turns it into
+        // that result; the die itself keeps its face until the server pays it.
+        [Test]
+        public void WillOfTheWestExposesTheUsesOfTheResultItIsTurnedInto()
+        {
+            var fixture = new BoardFixture();
+            fixture.View.Dice[0].Face = DieFace.WillOfTheWest;
+            fixture.Refresh();
+            var context = new ActionDieContext();
+            context.Sync(fixture.View, "army");
+            Assert.IsFalse(MusterActions.Active(fixture.View, new TurnDraft(), context));
+            Assert.IsFalse(context.Supports(DieFace.Army));
+            Assert.IsEmpty(ContextArmySelection.Eligible(fixture.View, context));
+            context.Sync(fixture.View, "army", "", DieFace.Army);
+            Assert.IsTrue(context.Supports(DieFace.Army));
+            Assert.IsNotEmpty(ContextArmySelection.Eligible(fixture.View, context));
+            Assert.IsFalse(MusterActions.Active(fixture.View, new TurnDraft(), context));
+            context.Sync(fixture.View, "army", "", DieFace.Muster);
+            Assert.IsTrue(MusterActions.Active(fixture.View, new TurnDraft(), context));
+            Assert.AreEqual(DieFace.WillOfTheWest, fixture.View.Dice[0].Face);
+        }
+
         [TestCase(DieFace.ArmyMuster)]
-        [TestCase(DieFace.WillOfTheWest)]
         public void MultifunctionDiceExposeAllOrdinaryUsesWithoutChangingTheirFace(DieFace face)
         {
             var fixture = new BoardFixture();
@@ -79,7 +100,7 @@ namespace Wotr.EditorTests
             context.Sync(fixture.View, "army");
             Assert.IsTrue(context.Supports(DieFace.Muster));
             fixture.View.Dice[0].Face = DieFace.WillOfTheWest;
-            context.Sync(fixture.View, "army");
+            context.Sync(fixture.View, "army", "", DieFace.Muster);
             Assert.IsTrue(context.Supports(DieFace.Muster));
             fixture.View.DecisionOwner = Side.Shadow;
             context.Sync(fixture.View, "army");

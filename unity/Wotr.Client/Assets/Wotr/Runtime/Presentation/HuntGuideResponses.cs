@@ -7,7 +7,8 @@ namespace Wotr.Client
     // UI-360 (owner's decision D9 of EXP-15, 2026-10-26): every Guide response in the Hunt — Merry's and Pippin's
     // separation, Gollum's reveal, and the expansions' alternates (UI-270) — stands as a response object in the Hunt
     // window's response row, beside the damage responses: the Guide's portrait, its name and what the response does. A
-    // click uses it at once (UI-142) and the console's Pass declines (UI-291); the tray lists none of them.
+    // click uses it at once (UI-142) and the console's Pass declines (UI-291), as does the window's Skip effect (UI-423);
+    // the tray lists none of them.
     public static class HuntGuideResponses
     {
         public const string Window = "hunt.guide";
@@ -30,9 +31,13 @@ namespace Wotr.Client
 
         public static string Consequence(EffectChoiceView choice) => choice.Title.Length > 0 ? choice.Title : "Guide response";
 
-        public static string Tooltip(PlayerView view, EffectChoiceView choice) =>
-            "Click to use " + Owner(view, choice) + "'s response · " + Consequence(choice) +
-            (choice.Detail.Length > 0 ? "\n" + choice.Detail : "") + "\nOr Pass to skip it.";
+        // UI-420 (owner): "Click to use Merry's response · Separate · Reduce damage"; an untitled one is "Merry's Guide
+        // response", never "response · Guide response". UI-423: the last line names the window's Skip effect and Pass.
+        public static string Tooltip(PlayerView view, EffectChoiceView choice) => TooltipText.Lines(
+            TooltipText.Parts("Click to use " + Owner(view, choice) + (choice.Title.Length > 0 ? "'s response" : "'s Guide response"),
+                choice.Title),
+            choice.Detail == choice.Title ? "" : choice.Detail,
+            ReactionSkip.SkipLine(view));
 
         // The console's hint while the row offers the player's own Guide responses.
         public static string Guidance(PlayerView view, IReadOnlyList<EffectChoiceView> offered)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,14 @@ namespace Wotr.Client
         public Task LocalWrites => persistence?.Flushed ?? Task.CompletedTask;
         private TurnDraft draft => session.Draft;
         private readonly DraftInput input;
+        // UI-405: the map's armies and characters picked up and carried; a drop is the target's click.
+        private readonly FigureLiftInteraction lift;
+        // UI-454: a Reserve figure carried onto the map the same way, and the recruits flying from their Reserve slot.
+        private readonly ReserveCarryInteraction reserveCarry;
+        private readonly RecruitFlightInteraction recruitFlights;
+        // UI-405: a figure's click made to lift it never sends a step; one that would is undone and stays a click.
+        private bool lifting;
+        private bool liftWouldSend;
         private readonly ActionContextInteraction context;
         private readonly CardContextInteraction cards;
         private readonly BattleContextInteraction battles;
@@ -39,13 +48,24 @@ namespace Wotr.Client
         private readonly NazgulFlightInteraction flights;
         private readonly CardFigureInteraction cardFigures;
         private readonly CardArmyInteraction cardArmies;
+        private readonly FigureAbilityInteraction figureAbilities;
+        // UI-431: The Black Captain Commands' Move Nazgûl on the map's Nazgûl; Monsters Roused's halves on their regions.
+        private readonly CaptainOrderInteraction captainOrder;
+        private readonly MonstersHalfInteraction monsters;
+        private readonly CouncilTravelInteraction councilTravel;
+        private readonly LoreInteraction lore;
         private readonly FellowshipContextInteraction fellowshipContext;
         private readonly HuntContextInteraction huntContext;
         private readonly ResourceContextInteraction resources;
+        private readonly SovereignInteraction sovereigns;
         private readonly ComponentContextInteraction components;
         private readonly ConsoleOptionsInteraction consoleOptions;
+        // UI-461: the console's Will of the West face menu.
+        private readonly WillFaceInteraction willFaces;
         private readonly TurnConsoleInteraction console;
         private readonly RingInteraction rings;
+        // UI-482 (owner, 2026-11-04): the Council's homelands with no companion to place answer themselves.
+        private readonly CouncilHomelandSkip homelandSkip;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private PlayerView view;
         private ViewVersion version;
@@ -54,7 +74,11 @@ namespace Wotr.Client
         private CancellationTokenSource previewLifetime;
         private bool sending;
         // UI-304: an opponent presentation plays or waits for its history; no new command leaves until it ends.
+        // UI-278 (D15): the object a Kings card branch's click carries into the card's next step.
+        private readonly BranchCarry branchCarry = new BranchCarry();
         private bool held;
+        // UI-402: a character's own click acts as its region's click without opening the region panel.
+        private bool quietPanel;
         private bool online;
         private bool previewLegal;
         private int generation;
@@ -73,30 +97,31 @@ namespace Wotr.Client
             sender = new CommandSender(api, persistence?.Actions);
             policy = new BattlePolicyInteraction(api, connection, board.BattlePolicy, persistence?.Policy);
             policy.Changed += PolicyChanged;
-            tray = new DecisionTray(board.Tray, board.Presentation, board.Cards, board.CompanionSetup, board.Battles.Ribbon);
+            tray = new DecisionTray(board.Tray, board.Presentation, board.Cards, board.Fellowship.Versions, board.Battles.Ribbon);
             tray.ActionChosen += Choose;
             tray.RulerTokenChosen += ChooseRulerToken;
             tray.DirectChosen += DirectBattleChoice;
-            tray.DieChosen += ChooseDie;
             tray.CardInspected += id => { if (view?.Battle != null) board.Cards.ShowCombat(id); else board.Cards.Show(id, true); };
             tray.DraftEdited += EditChoice;
             tray.ChoiceCompleted += CompleteChoice;
-            tray.RingChosen += id => EditChoice(() => draft.Change(p => p.RingId = id));
-            tray.CardOrDieToggled += id => Edit(() => draft.Toggle(id));
-            tray.DeckChosen += deck => Edit(() => draft.Change(p => p.Deck = deck));
             tray.Cancel += Back;
             tray.Confirm += Confirm;
             tray.ReinforcementsRequested += board.Reinforcements.Show;
             tray.ConfirmChanged += board.Reinforcements.ConfirmLegal;
+            // UI-448: the Fellowship's Declare beside Finish phase sends the drawn declaration as the tray's ✓ does.
+            tray.ConfirmChanged += board.Fellowship.DeclareReady;
+            board.Fellowship.DeclareConfirmed += Confirm;
             context = new ActionContextInteraction(board, Edit, () => SelectionBusy);
+            willFaces = new WillFaceInteraction(board, Edit, () => SelectionBusy);
             cards = new CardContextInteraction(board, EditSelection,
-                () => SelectionBusy, ShowChoiceProblem);
+                () => SelectionBusy, ShowChoiceProblem, branchCarry);
             battles = new BattleContextInteraction(EditSelection,
                 () => SelectionBusy);
             muster = new MusterContextInteraction(board, EditSelection,
                 () => SelectionBusy);
-            reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.CanRecruit,
-                id => muster.RecruitAtOnly(id), Confirm, FinishSequence);
+            recruitFlights = new RecruitFlightInteraction(board);
+            reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.BacksReserve,
+                id => muster.RecruitAtOnly(id), ChooseComponent, CompleteChoice, branchCarry, recruitFlights);
             politics = new PoliticalContextInteraction(board, EditSelection, () => SelectionBusy);
             travel = new TravelContextInteraction(board, EditSelection,
                 () => SelectionBusy);
@@ -104,14 +129,25 @@ namespace Wotr.Client
                 () => SelectionBusy);
             huntContext = new HuntContextInteraction(board, EditSelection, () => SelectionBusy);
             resources = new ResourceContextInteraction(board, EditSelection,
-                () => SelectionBusy);
+                () => SelectionBusy, ChooseComponent);
+            sovereigns = new SovereignInteraction(board, EditSelection, () => SelectionBusy, branchCarry);
             flights = new NazgulFlightInteraction(board, EditSelection, () => SelectionBusy);
             cardFigures = new CardFigureInteraction(board, EditSelection, () => SelectionBusy);
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);
-            context.FigureSelector = id => flights.Figure(id) || cardFigures.Figure(id) || cardArmies.Figure(id) || travel.Figure(id);
+            figureAbilities = new FigureAbilityInteraction(board, ChooseComponent, EditSelection, () => SelectionBusy, cardArmies.Carry,
+                flights.Region);
+            councilTravel = new CouncilTravelInteraction(board, EditSelection, () => SelectionBusy);
+            captainOrder = new CaptainOrderInteraction(board, EditSelection, () => SelectionBusy, flights.Region);
+            monsters = new MonstersHalfInteraction(board, EditSelection, () => SelectionBusy, branchCarry, ChooseRegion);
+            context.FigureSelector = id => councilTravel.Figure(id) || flights.Figure(id) || cardFigures.Figure(id) ||
+                cardArmies.Figure(id) || travel.Figure(id) || figureAbilities.Figure(id);
+            lift = new FigureLiftInteraction(board, draft, () => view, () => SelectionBusy, SelectToLift, ChooseRegion, Restore);
+            reserveCarry = new ReserveCarryInteraction(board, draft, () => view, () => SelectionBusy, reinforcements.Arm, ChooseRegion,
+                Restore, recruitFlights);
             // UI-142: no double-click; the scope lets the input suppress a fast second click after a committed step.
             input = new DraftInput(board.Root, Confirm, Back, Drop,
-                () => view == null ? "" : view.MatchId + "/" + view.Revision + "/" + view.Decision?.Id + "/" + connectionEpoch);
+                () => view == null ? "" : view.MatchId + "/" + view.Revision + "/" + view.Decision?.Id + "/" + connectionEpoch,
+                new FigureDragRoute(lift, reserveCarry));
             input.DragChanged += board.Nations.PreviewDrag;
             input.DragChanged += board.Battles.PreviewDrag;
             input.DragChanged += board.HandDrawer.PreviewDrag;
@@ -127,16 +163,23 @@ namespace Wotr.Client
             board.RulerTokenSelected += ChooseRulerToken;
             board.Map.RegionSelected += ChooseRegion;
             board.Map.ArmySelected += ChooseArmy;
+            board.Map.MiniatureSelected += ChooseMiniature;
             components = new ComponentContextInteraction(board, ChooseComponent);
-            consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption);
-            console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
-                ChooseComponent, ChooseRing, () => reinforcements.Planning);
+            consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption, UsePalantir);
+            console = new TurnConsoleInteraction(board, tray, Back, Cancel, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
+                ChooseDecline, ChooseConsoleOption, ChooseComponent, ChooseRing, () => reinforcements.Planning);
+            tray.Skip += console.Pass;
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
+            lore = new LoreInteraction(board, EditSelection, () => SelectionBusy);
+            homelandSkip = new CouncilHomelandSkip((action, pause) => board.Root.schedule.Execute(action).ExecuteLater(pause), SkipHomelands);
             board.Characters.Enterable = figure => !SelectionBusy && board.Characters.Actions.Entry(figure) != null;
             board.Characters.EntryRequested += RequestEntry;
             if (persistence != null)
                 persistence.Changed += Render;
         }
+
+        // UI-278: the Palantír of Barad-dûr's card converts the selected Muster die, or waits for one.
+        private void UsePalantir() => Edit(() => PalantirConversion.Use(view, draft));
 
         private void ChooseRegion(string region)
         {
@@ -147,7 +190,7 @@ namespace Wotr.Client
             if (view?.Decision == null)
             {
                 if (!battleInspected)
-                    board.Hover.Toggle(region);
+                    TogglePanel(region);
                 return;
             }
             if (muster.Active && draft.Kind == CommandKind.Recruit)
@@ -157,7 +200,7 @@ namespace Wotr.Client
                 var refusal = muster.Refusal(region);
                 if (refusal.Length > 0)
                     ShowChoiceProblem(refusal);
-                board.Hover.Toggle(region);
+                TogglePanel(region);
                 return;
             }
             if (context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy)
@@ -165,17 +208,26 @@ namespace Wotr.Client
                 if (view.Revision >= requiredRevision && context.Target(region))
                     SubmitPreparedStep();
                 else
-                    board.Hover.Toggle(region);
+                    TogglePanel(region);
                 return;
             }
             if (!draft.Kind.HasValue)
             {
                 if (!battleInspected)
-                    board.Hover.Toggle(region);
+                    TogglePanel(region);
                 return;
             }
+            // UI-431: a lit Nazgûl moves the Nazgûl for The Black Captain Commands; a lit region chooses Monsters Roused's half.
+            if (captainOrder.Region(region) || monsters.Region(region))
+                return;
             // UI-215: a region holding a card's offered figures opens its panel, where the figures are chosen.
             if (cardFigures.Region(region))
+                return;
+            // UI-374: so does A Balrog is Come!'s region, whose figures order him.
+            if (figureAbilities.Region(region))
+                return;
+            // UI-379: a Council token's travel chooses its figures and plans their destinations on the map.
+            if (councilTravel.Region(region))
                 return;
             // UI-216: a lit army of a card's army event starts its move and opens its panel.
             if (cardArmies.Region(region))
@@ -188,6 +240,7 @@ namespace Wotr.Client
             if (CharacterDraft.UsesCharacters(draft.Kind) && view?.Decision != null)
             {
                 EditChoice(() => CharacterDraft.Region(draft, DraftOptions.For(view, draft), region));
+                reinforcements.RegionChosen(region);
                 return;
             }
             if (draft.Kind == CommandKind.RetreatBattle && view.Options.Any(o => o.Kind == draft.Kind && o.Targets.Contains(region)))
@@ -199,7 +252,7 @@ namespace Wotr.Client
             {
                 // UI-212: a card's Nazgûl fly by map clicks; any other region opens its panel.
                 if (!flights.Region(region))
-                    board.Hover.Toggle(region);
+                    TogglePanel(region);
                 return;
             }
             if (view?.Decision != null && TravelDraft.TargetRoute(draft.Kind))
@@ -207,7 +260,7 @@ namespace Wotr.Client
                 // UI-105: a reachable destination moves the selected group at once; UI-294: in a card's journey a region
                 // with one lit companion chooses it; any other region opens its panel.
                 if (!travel.Reach(region) && !travel.Source(region))
-                    board.Hover.Toggle(region);
+                    TogglePanel(region);
                 return;
             }
             if (view?.Decision != null && FellowshipDraft.UsesRoute(draft.Kind))
@@ -238,7 +291,11 @@ namespace Wotr.Client
                 }
                 if (view.Decision?.Presentation == "Region")
                 {
+                    // UI-431: a region with two forces opens its panel, whose glowing sections choose the force.
+                    var forces = RegionForceChoices.HasAlternatives(view, draft, region);
                     EditChoice(() => EffectChoiceDraft.ChooseRegion(draft, option, region));
+                    if (forces)
+                        board.Hover.OpenDecision(region, view.Decision.Id);
                     return;
                 }
                 var choice = option.EligibleIds.Contains(region) ? region : "";
@@ -252,6 +309,15 @@ namespace Wotr.Client
 
         private void ChooseArmy(DraftToken army)
         {
+            // UI-274: a force holding a lit king is that king's figure on the map.
+            if (board.Map.LitSovereign(army) is { } king)
+            {
+                board.Sovereigns.Click(king);
+                return;
+            }
+            // UI-417: the Balrog's lit army moves with him on A Balrog is Come!.
+            if (figureAbilities.Army(army))
+                return;
             if (context.ArmyActive || view?.Decision?.Kind == DecisionKind.Action && !draft.Kind.HasValue)
             {
                 if (army.Side != view.You)
@@ -263,6 +329,77 @@ namespace Wotr.Client
                 return;
             }
             ChooseRegion(army.Id);
+        }
+
+        // UI-402 (TABLETOP_FIGURES_UX): a character's own miniature is chosen as its region panel's chip is
+        // (ActionContextInteraction.SelectFigure, UI-105): with a Character die the click starts its travel, with an Army
+        // die it joins the army (the commander-first rule), and an ability lit on the figure is used. A lit Awakened king's
+        // figure chooses the king. An enemy character counts as its region; so does the player's own one whose click
+        // chooses nothing, except that it opens no region panel.
+        private void ChooseMiniature(DraftToken figure)
+        {
+            if (board.Map.LitSovereign(figure) is { } king)
+            {
+                board.Sovereigns.Click(king);
+                return;
+            }
+            if (view == null)
+                return;
+            if (figure.Side != view.You)
+            {
+                ChooseRegion(figure.RegionId);
+                return;
+            }
+            if (context.SelectFigure(figure.Id))
+                return;
+            quietPanel = true;
+            try
+            {
+                ChooseRegion(figure.RegionId);
+            }
+            finally
+            {
+                quietPanel = false;
+            }
+        }
+
+        // UI-405: a press that lifts a figure to carry it makes that figure's click without opening a panel; a click that
+        // would send a step lifts nothing (false), and the caller puts the draft back.
+        private bool SelectToLift(DraftToken figure)
+        {
+            lifting = true;
+            liftWouldSend = false;
+            board.Hover.Quiet = true;
+            try
+            {
+                if (figure.Object == DraftObject.Miniature)
+                    ChooseMiniature(figure);
+                else
+                    ChooseArmy(figure);
+            }
+            finally
+            {
+                board.Hover.Quiet = false;
+                lifting = false;
+            }
+            return !liftWouldSend;
+        }
+
+        // UI-405: a carried figure's gesture ended without a step: the draft as it was before the press, saved and shown.
+        private void Restore(TurnDraft checkpoint)
+        {
+            notice = "";
+            draft.Rewind(checkpoint);
+            session.Edited(view);
+            PersistDraft();
+            Render();
+        }
+
+        // A region click opens or closes its panel, but a character's own click never does (UI-402).
+        private void TogglePanel(string region)
+        {
+            if (!quietPanel)
+                board.Hover.Toggle(region);
         }
 
         private void FinishSequence() => Choose(CommandKind.FinishActionSequence);
@@ -289,10 +426,15 @@ namespace Wotr.Client
             if (FellowshipActions.UsesPanel(view, next))
                 board.Fellowship.Open();
             EditSelection(() => draft.Adopt(next), ComponentActions.Immediate(view, next));
+            // UI-450 (owner): a ruler's recruiting ability opens the Reserve at once, where its figures are chosen.
+            if (CharacterRecruitDraft.Ruler(view, draft))
+                board.Reinforcements.Show();
         }
 
         private void SubmitPreparedStep()
         {
+            if (WouldSendWhileLifting())
+                return;
             notice = "";
             session.Edited(view);
             PersistDraft();
@@ -309,6 +451,16 @@ namespace Wotr.Client
                 _ = Submit();
         }
 
+        // UI-482: the empty homelands leave as a ✓ would; the server still validates them.
+        private void SkipHomelands()
+        {
+            notice = "";
+            _ = Submit(true);
+        }
+
+        // UI-452: the decision whose placement regions the view was brought to.
+        private string placementsRevealed = "";
+
         private void Back() => Edit(() =>
         {
             // UI-161: Esc or Back ends the Elven Ring gesture as a whole.
@@ -316,12 +468,21 @@ namespace Wotr.Client
                 draft.Clear();
             else if (draft.Kind is CommandKind.PlayEvent or CommandKind.DrawCard)
             {
-                var cost = draft.Fork().Payload;
+                var cost = draft.Fork();
                 draft.Clear();
-                draft.Change(p => { p.DieId = cost.DieId; p.Face = cost.Face; p.AbilityId = cost.AbilityId; p.RulerTokenId = cost.RulerTokenId; });
+                draft.Change(p => { p.DieId = cost.Payload.DieId; p.Face = cost.Payload.Face; p.AbilityId = cost.Payload.AbilityId; p.RulerTokenId = cost.Payload.RulerTokenId; });
+                KeepWillFace(cost);
             }
             else
                 draft.Back();
+            EnsureMandatoryDraft();
+        });
+
+        // UI-455 (owner, 2026-11-03): the console's fixed Cancel drops the whole unsent draft (DraftCancel); a forced step
+        // starts again.
+        private void Cancel() => Edit(() =>
+        {
+            DraftCancel.Apply(draft, view);
             EnsureMandatoryDraft();
         });
 
@@ -333,12 +494,20 @@ namespace Wotr.Client
                 return false;
             Edit(() =>
             {
-                var cost = draft.Fork().Payload;
+                var cost = draft.Fork();
                 draft.Clear();
-                draft.Change(p => { p.DieId = cost.DieId; p.AbilityId = cost.AbilityId; });
+                draft.Change(p => { p.DieId = cost.Payload.DieId; p.AbilityId = cost.Payload.AbilityId; });
+                KeepWillFace(cost);
                 EnsureMandatoryDraft();
             });
             return true;
+        }
+
+        // UI-461: a step undone back to the die keeps the result its Will of the West face menu chose.
+        private void KeepWillFace(TurnDraft before)
+        {
+            if (before.WillFace.HasValue)
+                draft.TurnWill(before.WillFace);
         }
 
         private bool TryBack()
@@ -351,16 +520,24 @@ namespace Wotr.Client
 
         private bool Drop(DraftToken source, DraftToken target)
         {
+            // UI-405: a carried army or character is dropped as its target's click (FigureLiftInteraction), busy or not;
+            // UI-454: so is a carried Reserve figure (ReserveCarryInteraction).
+            if (lift.Carrying)
+                return lift.Drop(target);
+            if (reserveCarry.Carrying)
+                return reserveCarry.Drop(target);
             if (CommandBusy || view == null)
                 return false;
             if (draft.Kind == CommandKind.DiscardCards)
                 return false;
+            // UI-402: a drop on a character's miniature is a drop on its region.
+            target = target?.AsRegion();
             if (huntContext.Drop(source, target))
                 return true;
             if (resources.Drop(source, target))
                 return true;
-            // UI-105: armies, figures, characters and Fellowship portraits move by clicks only; DraftInput never
-            // drags them.
+            // UI-105: region panels' figure chips, Characters rows and Fellowship portraits move by clicks only; DraftInput
+            // never drags them (UI-405 carries the map's armies and characters, above).
             if (source?.Object == DraftObject.Nation)
                 return politics.Drop(source, target);
             if (muster.Active && source?.Object == DraftObject.Reserve)
@@ -403,6 +580,13 @@ namespace Wotr.Client
             }
             if (resources.Ring(id))
                 return;
+            // UI-272: Three Rings for the Elven-Kings picks the Rings it recovers on their sockets.
+            if (RingRecovery.Active(view) && draft.Kind == CommandKind.ChooseEffect &&
+                DraftOptions.For(view, draft)?.EligibleIds.Contains(id) == true)
+            {
+                CompleteChoice(() => CardDraft.Choose(draft, DraftOptions.For(view, draft), id));
+                return;
+            }
             if (draft.Kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardLore && CanChoose(draft.Kind.Value))
             {
                 // UI-248: the chosen Ring clicked again is taken back; no payment is chosen in its place.
@@ -421,11 +605,24 @@ namespace Wotr.Client
 
         private void ChooseRulerToken(string id) => Edit(() =>
         {
+            // UI-389 (owner): a second click on the chosen token releases it with the Ruler die it took, as a die's second
+            // click does (UI-386), so the die's own uses never light in its place.
+            if (id.Length > 0 && draft.Payload.RulerTokenId == id)
+            {
+                draft.Clear();
+                return;
+            }
             var die = draft.Payload.DieId;
-            var token = draft.Payload.RulerTokenId == id ? "" : id;
-            DraftOptions.SelectToken(draft, view, token);
-            if (view.You == Side.FreePeoples && view.Dice.Any(d => d.Id == die && d.Owner == view.You && d.Location == DieLocation.Available))
+            DraftOptions.SelectToken(draft, view, id);
+            // UI-380 (owner): the token's actions pay with the Ruler die; when it is their only die, the click takes it,
+            // so the king's ability lights at once.
+            var dice = DraftOptions.TokenDice(view, id);
+            var kept = view.You == Side.FreePeoples && view.Dice.Any(d => d.Id == die && d.Owner == view.You && d.Location == DieLocation.Available) &&
+                (dice.Count == 0 || dice.Contains(die));
+            if (kept)
                 draft.Change(p => p.DieId = die);
+            else if (dice.Count == 1)
+                draft.Change(p => p.DieId = dice[0]);
         });
 
         public void Update(PlayerView latest)
@@ -435,6 +632,9 @@ namespace Wotr.Client
             version ??= new ViewVersion(latest.MatchId);
             if (!version.IsNewer(latest))
                 return;
+            // UI-405: a new revision ends a carried figure's gesture first, so its pre-press draft meets the new view.
+            if ((lift.Carrying || reserveCarry.Carrying) && latest.Revision != view?.Revision)
+                input.CancelGesture();
             view = latest;
             if (view.Revision != version.Revision)
             {
@@ -463,54 +663,7 @@ namespace Wotr.Client
                 return;
             if (!draft.Kind.HasValue)
                 session.Edited(view);
-            if (!draft.Kind.HasValue && view.Decision.Kind == DecisionKind.ActionSequence && view.ActionSequence is { } sequence)
-            {
-                draft.Choose(sequence.Kind, sequence.DieId);
-                draft.Change(p =>
-                {
-                    p.Stepwise = true;
-                    p.MovementCost = sequence.Face;
-                    p.AbilityId = sequence.AbilityId;
-                });
-            }
-            if (!draft.Kind.HasValue && view.Decision?.Kind == DecisionKind.AllocateHunt)
-                draft.Choose(CommandKind.AllocateHunt);
-            if (!draft.Kind.HasValue && view.Decision?.Kind == DecisionKind.DiscardCards)
-                draft.Choose(CommandKind.DiscardCards);
-            if (!draft.Kind.HasValue && view.Decision?.Kind == DecisionKind.RemoveExcess)
-                draft.Choose(CommandKind.RemoveExcess);
-            if (!draft.Kind.HasValue && view.Decision?.Kind == DecisionKind.EffectChoice)
-                draft.Choose(CommandKind.ChooseEffect);
-            if (draft.Kind.HasValue)
-                return;
-            var mandatory = view.Decision?.Kind switch
-            {
-                DecisionKind.FellowshipRoute => CommandKind.RevealFellowship,
-                DecisionKind.Guide => CommandKind.SelectGuide,
-                DecisionKind.CompanionSeparation => view.Options.FirstOrDefault(o => o.Kind is CommandKind.SeparateCompanions or CommandKind.MoveCompanions)?.Kind,
-                DecisionKind.HuntReroll => CommandKind.RerollHunt,
-                DecisionKind.HuntDamage => CommandKind.ResolveHuntDamage,
-                DecisionKind.CorruptionTile => view.Options.First(o => o.Enabled).Kind,
-                DecisionKind.CouncilVersions => CommandKind.ChooseCompanionVersions,
-                DecisionKind.CouncilHomelands => CommandKind.ChooseCouncilHomelands,
-                DecisionKind.CouncilToken => CommandKind.ChooseCouncilToken,
-                DecisionKind.SpecialDieChoice => CommandKind.ChooseSpecialDie,
-                DecisionKind.Dismay when view.Options.Any(o => o.Enabled && o.Kind == CommandKind.UseDismay) => CommandKind.UseDismay,
-                DecisionKind.KeepActionDie when view.Options.Any(o => o.Enabled && o.Kind == CommandKind.UseVilya) => CommandKind.UseVilya,
-                DecisionKind.Reaction when view.Options.Any(o => o.Enabled && o.Kind == CommandKind.RespondEffect) => CommandKind.RespondEffect,
-                DecisionKind.RulerDiscard => CommandKind.DiscardRulerDie,
-                DecisionKind.CombatCard => CommandKind.CommitCombatCard,
-                DecisionKind.Losses => view.EventLoss != null ? CommandKind.TakeEventLosses : CommandKind.TakeBattleLosses,
-                DecisionKind.BattleReroll => CommandKind.RerollBattle,
-                DecisionKind.BattleAdvance => CommandKind.AdvanceBattle,
-                DecisionKind.BattleRetreat when view.Options.Any(o => o.Kind == CommandKind.RetreatBattle) => CommandKind.RetreatBattle,
-                DecisionKind.SiegeContinuation => CommandKind.ExtendSiege,
-                DecisionKind.ArmyEvent => view.Options.FirstOrDefault(o => o.Enabled && o.ArmyEvent != null)?.Kind,
-                DecisionKind.CharacterEvent => CommandKind.MoveShadowCharacters,
-                _ => (CommandKind?)null
-            };
-            if (mandatory.HasValue)
-                DraftGesture.Choose(draft, view, mandatory.Value);
+            MandatoryDraft.Ensure(view, draft);
         }
 
         // UI-304: the playback gate. While held, the tray, console, rings, battle policy, keyboard, map, figure, die and card
@@ -531,6 +684,8 @@ namespace Wotr.Client
                 connectionEpoch++;
             if (online && !connected)
                 signal.Rebase();
+            if (!online && connected)
+                homelandSkip.Rearm();
             online = connected;
             if (view != null)
                 Render();
@@ -560,7 +715,8 @@ namespace Wotr.Client
             view != null && view.Revision >= requiredRevision && DraftOptions.All(view, draft).Any(o => o.Kind == kind && o.Enabled);
 
         // UI-214: an option of a card or a reaction chosen in the console (or a table card at its ×) completes the
-        // decision, so it is sent at once when the draft is ready.
+        // decision, so it is sent at once when the draft is ready. UI-430: so is a red table card's tile, the Hunt Box's
+        // Hunt roll and the ✓'s Finish, which take this path.
         private void ChooseConsoleOption(ConsoleOption choice)
         {
             if (SelectionBusy || view?.Decision == null)
@@ -582,7 +738,26 @@ namespace Wotr.Client
             }
             var option = DraftOptions.For(view, draft);
             if (option != null && !draft.Payload.Ids.Contains(choice.Id))
-                CompleteChoice(() => CardDraft.Choose(draft, option, choice.Id));
+                CompleteChoice(() => EffectChoiceDraft.Choose(draft, option, choice.Id, choice.Region.Length > 0 ? choice.Region : null));
+        }
+
+        // UI-347 (D7): the console's Pass sends an optional decline: Vilya's command, or the decline's effect choice alone
+        // (a partial selection of the same step is dropped, as passing answers the whole step).
+        private void ChooseDecline(ConsoleOption decline)
+        {
+            if (SelectionBusy || view?.Decision == null)
+                return;
+            if (decline.Command.HasValue)
+            {
+                Choose(decline.Command.Value);
+                return;
+            }
+            CompleteChoice(() =>
+            {
+                if (draft.Kind != CommandKind.ChooseEffect)
+                    DraftGesture.Choose(draft, view, CommandKind.ChooseEffect);
+                CardDraft.Choose(draft, decline.Id);
+            });
         }
 
         private void Choose(CommandKind kind)
@@ -622,6 +797,12 @@ namespace Wotr.Client
                 return;
             if (view.Decision.Kind == DecisionKind.ActionSequence)
                 return;
+            // UI-386 (owner): a second click on the chosen action die releases it, and with it the unsent step it began.
+            if (view.Decision.Kind == DecisionKind.Action && id.Length > 0 && draft.Payload.DieId == id)
+            {
+                Edit(() => draft.Clear());
+                return;
+            }
             if (huntContext.Die(id))
                 return;
             if (resources.Die(id))
@@ -639,6 +820,13 @@ namespace Wotr.Client
             }
             if (view.Decision.Kind == DecisionKind.Action && ActionDieContext.DirectIntent(draft) &&
                 draft.Payload.DieId.Length > 0 && draft.Payload.RulerTokenId.Length == 0 && draft.Payload.AbilityId.Length == 0 &&
+                view.Dice.Any(d => d.Id == id && d.Owner == view.You && d.Location == DieLocation.Available))
+            {
+                Edit(() => { draft.Clear(); draft.Change(p => p.DieId = id); });
+                return;
+            }
+            // UI-376: a die chosen while a Council token's use waits leaves the token for that die.
+            if (draft.Kind == CommandKind.UseCouncilToken &&
                 view.Dice.Any(d => d.Id == id && d.Owner == view.You && d.Location == DieLocation.Available))
             {
                 Edit(() => { draft.Clear(); draft.Change(p => p.DieId = id); });
@@ -741,6 +929,7 @@ namespace Wotr.Client
             previewLegal = false;
             var currentGeneration = ++generation;
             RenderLayout();
+            homelandSkip.Refresh(view, draft, online && !SelectionBusy);
             if (!online)
             {
                 tray.Notice("Offline · Your draft is saved locally.");
@@ -758,6 +947,11 @@ namespace Wotr.Client
                 tray.Preview(false, "Choose a highlighted object · Its gesture determines how this die is used.");
                 return;
             }
+            if (WillFaceChoices.Shown(view, draft, board.ActionDie) && !board.ActionDie.WillFace.HasValue)
+            {
+                tray.Preview(false, WillFaceChoices.Hint);
+                return;
+            }
             if (directArmy)
             {
                 tray.Preview(false, notice.Length > 0 ? notice : ArmyActionTargets.Hint(draft, view, board.ActionDie));
@@ -769,9 +963,9 @@ namespace Wotr.Client
                     ? "Choose a highlighted nation." : "Choose a deck.");
                 return;
             }
-            if (muster.CanRecruit && draft.Kind is null or CommandKind.Recruit or CommandKind.AdvancePolitics)
+            if (muster.BacksReserve && draft.Kind is null or CommandKind.Recruit or CommandKind.AdvancePolitics)
                 tray.Preview(false, notice.Length > 0 ? notice : draft.Kind == CommandKind.AdvancePolitics
-                    ? "Choose the highlighted space on this nation’s track."
+                    ? "Click this nation’s token or its → arrow to move it one step toward war."
                     : draft.ReserveId.Length > 0 ? "Choose a highlighted settlement."
                     : view.Decision?.Kind == DecisionKind.ActionSequence ? "Choose a reserve figure, then a highlighted settlement · ✓ ends early."
                     : "Choose a reserve figure in Reinforcements, or a nation’s arrow in Politics.");
@@ -791,8 +985,20 @@ namespace Wotr.Client
             }
         }
 
+        // UI-431: the forces whose click makes a card's choice (the Black Captain's Nazgûl, Monsters Roused's regions) lead
+        // their tooltips with it; UI-432: so do the forces in Scouts' battle region, whose click withdraws into siege.
+        private IReadOnlyDictionary<string, string> ForceOffers()
+        {
+            if (captainOrder.Offers.Count > 0)
+                return captainOrder.Offers;
+            if (monsters.Offers.Count > 0)
+                return monsters.Offers;
+            return SelectionBusy ? null : ScoutsShelter.Offers(view, draft);
+        }
+
         private bool RefreshContexts()
         {
+            branchCarry.Expire(view);
             context.Refresh(view, draft);
             cards.Refresh(view, draft);
             battles.Refresh(view, draft);
@@ -805,10 +1011,19 @@ namespace Wotr.Client
             cardArmies.Refresh(view, draft);
             fellowshipContext.Refresh(view, draft);
             huntContext.Refresh(view, draft);
+            sovereigns.Refresh(view, draft);
             resources.Refresh(view, draft);
             components.Refresh(view, draft, !SelectionBusy);
+            // UI-271: after the components, whose map owners a figure's reaction extends.
+            figureAbilities.Refresh(view, draft, components.Current);
+            // UI-431: after the components and the figures' abilities, whose map owners the Black Captain's order replaces.
+            captainOrder.Refresh(view, draft);
+            monsters.Refresh(view, draft);
+            board.Map.OfferForces(ForceOffers());
+            board.Map.OfferFigures(travel.Offers);
+            lore.Refresh(view, draft);
             consoleOptions.Refresh(view, draft, !SelectionBusy);
-            board.CompanionSetup.Context(view);
+            willFaces.Refresh(view, draft, !SelectionBusy);
             var directArmy = context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy ||
                 view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Kind == CommandKind.MoveArmies;
             board.Root.EnableInClassList("direct-army", directArmy || travel.Active);
@@ -819,13 +1034,15 @@ namespace Wotr.Client
             board.Root.EnableInClassList("fellowship-context", FellowshipActions.UsesPanel(view, draft) || HuntActions.UsesPanel(view, draft));
             tray.DirectArmy = directArmy;
             tray.DirectCard = draft.Kind is CommandKind.PlayEvent or CommandKind.DrawCard;
-            // UI-317: a Muster die that cannot recruit routes nothing to Reinforcements; Politics takes the tray.
-            tray.DirectMuster = muster.CanRecruit && draft.Kind is null or CommandKind.Recruit;
+            // UI-317: a Muster die that can neither recruit nor pay Gothmog (UI-271) routes nothing to Reinforcements.
+            tray.DirectMuster = muster.BacksReserve && draft.Kind is null or CommandKind.Recruit;
             tray.DirectPolitics = politics.Active && draft.Kind is null or CommandKind.AdvancePolitics or CommandKind.UseCouncilToken;
             tray.DirectTravel = travel.Active;
             tray.ContextualFellowship = FellowshipActions.UsesPanel(view, draft) || HuntActions.UsesPanel(view, draft);
             tray.ContextualHunt = HuntActions.UsesPanel(view, draft);
             tray.ContextualCharacter = CharacterRosterActions.OwnsDecision(view, draft);
+            // UI-381: a choice planned on the board's objects is confirmed with the console's ✓.
+            tray.ConfirmInConsole = ConsoleConfirm.Owns(view, draft, reinforcements.Planning);
             return directArmy;
         }
 
@@ -846,7 +1063,8 @@ namespace Wotr.Client
                 {
                     var die = view.Dice.FirstOrDefault(d => d.Id == token.Id);
                     if (die != null)
-                        button.tooltip = DieHints.Describe(view, die) + AllocationHint(allocation, token.Id);
+                        button.tooltip = DieHints.Describe(view, die) + AllocationHint(allocation, token.Id) +
+                            PalantirConversion.DieHint(view, draft, token.Id);
                 }
                 if (token.Object == DraftObject.Die && view.Decision?.Presentation is "ActionDie" or "DieAndResult")
                     button.SetEnabled(view.Options.Any(o => o.Kind == CommandKind.ChooseEffect && o.EligibleIds.Contains(token.Id)));
@@ -857,7 +1075,6 @@ namespace Wotr.Client
                 ExpansionDraft.Handles(draft.Kind) || fellowship || battle);
             board.Root.EnableInClassList("expansion-planning", ExpansionDraft.Handles(draft.Kind));
             board.Root.EnableInClassList("council-planning", view.Decision?.Kind is DecisionKind.CouncilVersions or DecisionKind.CouncilHomelands);
-            board.Root.EnableInClassList("companion-setup-context", CompanionSetupPresentation.Owns(view));
             board.Root.EnableInClassList("battle-planning", battle);
             board.Root.EnableInClassList("event-loss-planning", view.EventLoss != null);
             board.Root.EnableInClassList("loss-planning", draft.Kind is CommandKind.TakeBattleLosses or CommandKind.TakeEventLosses);
@@ -871,9 +1088,29 @@ namespace Wotr.Client
             tray.Render(view, draft, sending || policy.Busy || held, sender.Pending != null && !sending, pendingProblem);
             console.Refresh(view, draft, online, sending || policy.Busy || held, sender.Pending != null);
             rings.Refresh(view, draft, online && !CommandBusy);
+            councilTravel.Refresh(view, draft, online && !CommandBusy);
             RevealRecovery();
             board.Map.DraftOverlay.Apply(view, draft, context.ArmyActive || muster.Active ? board.ActionDie : null);
+            RevealPlacements();
         }
+
+        // UI-452 (owner): a decision that places figures or companions (a card's or a ruler's recruitment, Monsters Roused,
+        // the Council's homelands) brings the view once to every region it may take, so none stands under a panel or off the
+        // view; a die's own Muster in the player's action moves nothing.
+        private void RevealPlacements()
+        {
+            var decision = view?.Decision;
+            var targets = board.Map.DraftOverlay.PlacementTargets;
+            if (decision == null || DieAction(decision) || targets.Count == 0 || decision.Id == placementsRevealed ||
+                view.DecisionOwner != view.You || board.Map.contentRect.width <= 0)
+                return;
+            placementsRevealed = decision.Id;
+            board.Map.Reveal(targets.ToList());
+        }
+
+        // The player's action, or its next step (a Muster die's second recruitment point): the die's own placements.
+        private static bool DieAction(DecisionView decision) =>
+            decision.Kind is DecisionKind.Action or DecisionKind.ActionSequence;
 
         private string AllocationHint(ActionOption allocation, string id)
         {
@@ -891,16 +1128,10 @@ namespace Wotr.Client
                 return;
             if (board.Tray.parent == board.Hunt.DecisionHost)
                 board.Hunt.Open();
-            else if (board.Tray.parent == board.ResourceDecision.DecisionHost)
-                board.ResourceDecision.Open();
-            else if (board.Tray.parent == board.Sovereigns.DecisionHost)
-                board.Sovereigns.OpenDecision();
             else if (board.Tray.parent == board.TableEffects.DecisionHost)
                 board.TableEffects.Open();
             else if (board.Tray.parent == board.Characters.DecisionHost)
                 board.Characters.OpenDecision();
-            else if (board.Tray.parent == board.CompanionSetup.DecisionHost)
-                board.CompanionSetup.Open();
             else if (board.Tray.parent == board.Fellowship.Root)
                 board.Fellowship.Open();
         }
@@ -953,8 +1184,17 @@ namespace Wotr.Client
             }
         }
 
+        // UI-405: the click a press makes to lift a figure never sends; it only learns that it would have.
+        private bool WouldSendWhileLifting()
+        {
+            liftWouldSend |= lifting;
+            return lifting;
+        }
+
         private async Task Submit(bool immediate = false)
         {
+            if (WouldSendWhileLifting())
+                return;
             if (sending || policy.Busy || !online || view == null || view.Revision < requiredRevision ||
                 sender.Pending == null && (held || view.Decision == null || !draft.Kind.HasValue || !immediate && !previewLegal))
                 return;
@@ -963,7 +1203,17 @@ namespace Wotr.Client
             pendingProblem = "";
             var recovering = sender.Pending != null;
             var command = recovering ? sender.Pending : draft.Command(view);
+            // UI-404: the figures this step sends that the player holds off the table fly on from where they are held.
+            if (!recovering)
+                board.Map.ExpectFlights(LiftedFigures.OnTheirWay(view, draft));
+            // UI-463: the hand card this step plays flies into the Effects tab once the view shows it on the table.
+            if (!recovering)
+                board.MarkPlayedCard(command.Payload.CardId);
             Render();
+            // UI-454: the recruits this step sends that still fly from the Reserve to their planned figure (a ruler's last
+            // figure, a plan confirmed with ✓) fly on to the place the view gives them.
+            if (!recovering)
+                board.Map.ReserveFlights.Send(command.Payload.Placements.Select(placement => placement.UnitId));
             try
             {
                 var receipt = recovering ? await sender.Recover(lifetime.Token) : await sender.Send(command, lifetime.Token);
@@ -980,10 +1230,14 @@ namespace Wotr.Client
                     notice = "";
                 }
                 else
-                    notice = "The state changed or this choice is not legal. Review your selection.";
+                {
+                    notice = RefusalNotice();
+                    // UI-404: nothing flies; the raised figures come back down onto their base.
+                    board.Map.Figures.Lapse();
+                }
                 await connection.Refresh();
                 if (!receipt.Accepted)
-                    tray.Notice("The state changed or this choice is not legal. Review your selection.");
+                    tray.Notice(RefusalNotice());
             }
             catch (OperationCanceledException) when (lifetime.IsCancellationRequested) { }
             catch (LocalSaveException error) { pendingProblem = error.Message; }
@@ -996,6 +1250,10 @@ namespace Wotr.Client
             }
         }
 
+        // UI-482: empty homelands have no selection to review; the console's ✓ is the player's now.
+        private string RefusalNotice() => CouncilHomelandSkip.Applies(view, draft) ? CouncilHomelandPresentation.AllStayByHand
+            : "The state changed or this choice is not legal. Review your selection.";
+
         // UI-91: an armed hand card's second click is the same final gesture as a double-click.
         private void FinalizeCard(DraftToken token) => cards.Play(token);
 
@@ -1007,6 +1265,9 @@ namespace Wotr.Client
         {
             if (persistence != null)
                 persistence.Changed -= Render;
+            homelandSkip.Dispose();
+            lift.Dispose();
+            reserveCarry.Dispose();
             if (saveDraft && view != null)
                 PersistDraft();
             board.Escape.CancelGesture = null;
@@ -1021,6 +1282,7 @@ namespace Wotr.Client
             input.DragChanged -= SuspendPreviews;
             board.CardFinalized -= FinalizeCard;
             tray.CardFinalized -= FinalizeCard;
+            board.Fellowship.DeclareConfirmed -= Confirm;
             policy.Changed -= PolicyChanged;
             policy.Dispose();
             board.DieSelected -= ChooseDie;
@@ -1030,13 +1292,20 @@ namespace Wotr.Client
             politics.Dispose();
             fellowshipContext.Dispose();
             huntContext.Dispose();
+            sovereigns.Dispose();
             resources.Dispose();
             context.Dispose();
             board.Map.RegionSelected -= ChooseRegion;
             board.Map.ArmySelected -= ChooseArmy;
+            board.Map.MiniatureSelected -= ChooseMiniature;
             components.Dispose();
             consoleOptions.Dispose();
+            willFaces.Dispose();
             rings.Dispose();
+            lore.Dispose();
+            councilTravel.Dispose();
+            board.Map.OfferForces(null);
+            board.Map.OfferFigures(null);
             console.Dispose();
             board.Characters.EntryRequested -= RequestEntry;
             board.Characters.Enterable = _ => false;

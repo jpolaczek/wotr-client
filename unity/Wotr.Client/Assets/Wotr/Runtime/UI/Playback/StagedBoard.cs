@@ -75,7 +75,16 @@ namespace Wotr.Client
                 return;
             var unit = View.Units.FirstOrDefault(u => u.Id == figure.Id);
             var character = View.Characters.FirstOrDefault(c => c.Id == figure.Id);
-            if (unit != null)
+            // UI-344: an awakening sovereign's Leader gives way to his character, with the same id.
+            if (unit != null && FigureCues.Awakened(change))
+            {
+                View.Units.Remove(unit);
+                if (character == null)
+                    Add(change.After, change.To);
+                else
+                    Place(character, change);
+            }
+            else if (unit != null)
                 Place(unit, change);
             else if (character != null)
                 Place(character, change);
@@ -100,11 +109,39 @@ namespace Wotr.Client
         // UI-310: a new Guide recorded by the Hunt; the tracks wait for the Fellowship's own change.
         public void Guide(string id) => View.Fellowship.Guide = id;
 
-        // UI-310: a Companion leaving the Fellowship through the Hunt (a casualty, a Hobbit separating as its guide).
-        public void Leave(string characterId)
+        // UI-462: the roster as the Fellowship panel draws it — the Free Peoples' own Companions, the Shadow's identities.
+        public bool InRoster(string id) => View.You == Side.FreePeoples
+            ? View.OwnCompanions.Any(c => c.Id == id)
+            : View.Fellowship.CompanionIdentities.Contains(CharacterLibrary.Identity(id));
+
+        // UI-462 (owner, 2026-11-03): a Companion the Hunt brings into the Fellowship (Sméagol's tile, LORDS pp. 21-22)
+        // stands in the staged roster before he takes the Guide's badge; the Free Peoples hold him as their own figure.
+        public void Join(string id)
+        {
+            if (InRoster(id))
+                return;
+            var fellowship = View.Fellowship;
+            var identity = CharacterLibrary.Identity(id);
+            if (!fellowship.CompanionIdentities.Contains(identity))
+            {
+                fellowship.CompanionIdentities.Add(identity);
+                fellowship.CompanionCount++;
+            }
+            if (View.You == Side.FreePeoples)
+                View.OwnCompanions.Add(new CharacterView
+                {
+                    Id = id, DefinitionId = id, Side = Side.FreePeoples, Location = "fellowship",
+                    Level = CharacterLibrary.Find(id)?.Level ?? 0
+                });
+        }
+
+        // UI-310: a Companion leaving the Fellowship through the Hunt (a casualty, a Hobbit separating as its guide). UI-344:
+        // or out of play (Sméagol), named by the version his record gives.
+        public void Leave(string characterId, string definitionId = "")
         {
             var own = View.OwnCompanions.FirstOrDefault(c => c.Id == characterId);
-            View.Fellowship.CompanionIdentities.Remove(CharacterLibrary.Identity(own?.DefinitionId ?? characterId));
+            var version = own?.DefinitionId ?? (definitionId.Length > 0 ? definitionId : characterId);
+            View.Fellowship.CompanionIdentities.Remove(CharacterLibrary.Identity(version));
             View.Fellowship.CompanionCount = System.Math.Max(0, View.Fellowship.CompanionCount - 1);
             View.OwnCompanions.RemoveAll(c => c.Id == characterId);
         }
@@ -131,7 +168,8 @@ namespace Wotr.Client
             var die = View.Dice.FirstOrDefault(d => d.Id == change.Id);
             if (die == null)
                 return;
-            if (change.After.HasValue)
+            // UI-488 (owner, 2026-11-04): a recovered die is blank again, as the released view shows it.
+            if (change.After.HasValue || change.To == DieLocation.Unrolled)
                 die.Face = change.After;
             die.Location = change.To;
         }
@@ -160,6 +198,43 @@ namespace Wotr.Client
             nation.StepsToWar = stepsToWar;
         }
 
+        // UI-344: a sovereign as a recorded step left him; a Corrupted or Removed king is no figure any more.
+        public void Sovereign(SovereignView sovereign)
+        {
+            var index = View.Sovereigns.FindIndex(s => s.Id == sovereign.Id);
+            if (index < 0)
+                return;
+            View.Sovereigns[index] = sovereign;
+            if (sovereign.Status is SovereignStatus.Corrupted or SovereignStatus.Removed)
+                View.Units.RemoveAll(u => u.Id == sovereign.Id);
+            Changed = true;
+        }
+
+        // UI-344: a Ruler, Dismay or Council token, or an Elven Ring, as a recorded change left it.
+        public void Token(ActionResourceChange change)
+        {
+            switch (change.Kind)
+            {
+                case ActionCostKind.RulerToken:
+                    var token = View.RulerTokens.FirstOrDefault(t => t.Id == change.Id);
+                    if (token != null)
+                        token.Location = change.To;
+                    break;
+                case ActionCostKind.CouncilToken:
+                    var council = View.CouncilTokens.FirstOrDefault(t => t.Id == change.Id);
+                    if (council == null && change.To == "Shadow")
+                        View.CouncilTokens.Add(new CouncilTokenView { Id = change.Id });
+                    else if (council != null)
+                        council.Spent = change.To == "spent";
+                    break;
+                case ActionCostKind.Ring:
+                    var ring = View.Rings.FirstOrDefault(r => r.Id == change.Id);
+                    if (ring != null)
+                        ring.Owner = System.Enum.TryParse<Side>(change.To, out var holder) ? holder : (Side?)null;
+                    break;
+            }
+        }
+
         // Draw the staged nations on the Politics panel.
         public void ShowNations() => board.Nations.Apply(View);
 
@@ -181,6 +256,8 @@ namespace Wotr.Client
             character.Garrison = change.After.Garrison;
             if (change.After.DefinitionId.Length > 0)
                 character.DefinitionId = change.After.DefinitionId;
+            if (change.After.Level.HasValue)
+                character.Level = change.After.Level.Value;
         }
 
         private void Add(ActionParticipant figure, string region)

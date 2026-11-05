@@ -38,7 +38,16 @@ namespace Wotr.Client
                 edit(() => { }, true);
                 return true;
             }
-            return false;
+            return Shelter(region, option);
+        }
+
+        // UI-432 (owner's rule, UI-430): the battle region's click withdraws into siege for Scouts, as its old button did.
+        private bool Shelter(string region, ActionOption option)
+        {
+            if (option == null || region != ScoutsShelter.Region(view, draft))
+                return false;
+            edit(() => CardDraft.Choose(draft, option, ScoutsShelter.Shelter), true);
+            return true;
         }
     }
 }

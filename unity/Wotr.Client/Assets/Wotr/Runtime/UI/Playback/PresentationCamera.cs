@@ -34,9 +34,12 @@ namespace Wotr.Client
         {
             PresentationCueKind.March or PresentationCueKind.Travel or PresentationCueKind.Attack or PresentationCueKind.Retreat or
                 PresentationCueKind.Advance or PresentationCueKind.Control => true,
+            // UI-344: a Kings sovereign's change plays at his region on the map.
+            PresentationCueKind.Sovereign => cue.BattleId.Length == 0,
+            // UI-492: a card's roll stands at its region.
+            PresentationCueKind.Roll => cue.BattleId.Length == 0,
             PresentationCueKind.Recruit or PresentationCueKind.Upgrade or PresentationCueKind.Removal or PresentationCueKind.Entry or
-                PresentationCueKind.Transformation or PresentationCueKind.Relocation or PresentationCueKind.Fellowship or
-                PresentationCueKind.Losses => cue.BattleId.Length == 0,
+                PresentationCueKind.Transformation or PresentationCueKind.Relocation or PresentationCueKind.Fellowship => cue.BattleId.Length == 0,
             _ => false
         };
 

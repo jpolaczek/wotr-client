@@ -7,7 +7,8 @@ using Wotr.Contracts;
 
 namespace Wotr.PlayTests
 {
-    // Delays or drops responses from the real server; never creates game data.
+    // Delays or drops responses from the real server; never creates game data. RefuseNextCommand answers one command with
+    // a refusal instead of sending it on (UI-482), as the server does for a state that changed.
     internal sealed class UI10HttpBoundary : DelegatingHandler
     {
         public string MatchPath;
@@ -17,6 +18,7 @@ namespace Wotr.PlayTests
         public bool HoldNextCommand;
         public bool HoldNextPreview;
         public bool HoldNextView;
+        public bool RefuseNextCommand;
         public bool CommandHeld { get; private set; }
         public bool PreviewHeld { get; private set; }
         public bool ViewHeld { get; private set; }
@@ -52,6 +54,8 @@ namespace Wotr.PlayTests
             {
                 Commands++;
                 LastCommand = JsonConvert.DeserializeObject<GameCommand>(await request.Content.ReadAsStringAsync());
+                if (Take(ref RefuseNextCommand))
+                    return Refusal(LastCommand);
             }
             var response = await base.SendAsync(request, token);
             if (holdCommand)
@@ -72,6 +76,15 @@ namespace Wotr.PlayTests
                 await viewGate.Task;
             }
             return response;
+        }
+
+        private static HttpResponseMessage Refusal(GameCommand command)
+        {
+            var receipt = new CommandReceipt { CommandId = command.CommandId, Accepted = false, Revision = command.ExpectedRevision, Error = "StaleDecision" };
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(receipt), System.Text.Encoding.UTF8, "application/json")
+            };
         }
 
         private static bool Take(ref bool value)

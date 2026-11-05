@@ -22,19 +22,15 @@ namespace Wotr.Client
         public event Action Opening;
         public event Action<string> FigureChosen;
         public event Action<string> PlacementRemoved;
-        public event Action Finish;
-        public event Action Confirm;
         private readonly Label title;
         private readonly Label optional = new Label("Optional") { name = "reinforcements-optional" };
         private readonly VisualElement budget = new VisualElement { name = "reinforcement-budget" };
-        private readonly Button finish;
-        private readonly Button confirm;
         private readonly VisualElement rows = new VisualElement { name = "reinforcement-rows" };
         private readonly PlannedReinforcementsView planned;
         private readonly Dictionary<string, ReinforcementRowView> views = new Dictionary<string, ReinforcementRowView>();
         private string focused = "";
         private bool confirmable;
-        // The tray's server preview found the plan legal; ✓ commits only then, like the tray's confirmation.
+        // The tray's server preview found the plan legal; the console's ✓ commits only then (UI-381).
         private bool legal;
         private bool active;
         private bool engaged;
@@ -54,10 +50,7 @@ namespace Wotr.Client
             budget.AddToClassList("reinforcement-budget");
             budget.tooltip = "Recruitment points · An Elite takes both";
             header.Add(budget);
-            finish = HeaderButton("confirm", "reinforcements-finish", "Finish this action · Saved reinforcements stay", () => Finish?.Invoke());
-            header.Add(finish);
-            confirm = HeaderButton("confirm", "reinforcements-confirm", "Recruit every planned figure", () => Confirm?.Invoke());
-            header.Add(confirm);
+            // UI-381 (owner): the console's ✓ recruits the plan and finishes a sequence; the panel has no ✓ of its own.
             header.Add(HeaderButton("close", "reinforcements-close", "Close · Keep the chosen die; reopen from the tab or the turn console", Close));
             Root.Add(header);
             rows.AddToClassList("reinforcement-rows");
@@ -71,21 +64,18 @@ namespace Wotr.Client
         // UI-181: a use lights the tab; a use that ends rolls the panel back. Outside a use the rows show the reserves.
         public void Apply(ReinforcementsState state)
         {
-            // A card or ability plan, and the next figure of a Muster the player has begun, keep the tab open.
-            Follow(state.Open, state.Planning || state.Finishable);
+            // A card or ability plan, and the next figure of a Muster the player has begun, keep the tab open. UI-392: a plan
+            // that starts on the map (an ability's recruitment) lights the tab and opens with its settlement's click.
+            Follow(state.Open, state.Planning && !state.RegionFirst || state.Finishable);
             Tab.EnableInClassList("legal-target", state.Open && state.Interactive);
             title.text = state.Title;
             optional.style.display = state.Optional ? DisplayStyle.Flex : DisplayStyle.None;
             budget.style.display = state.Open ? DisplayStyle.Flex : DisplayStyle.None;
             ShowBudget(state.Points, state.Planning);
-            finish.style.display = state.Finishable ? DisplayStyle.Flex : DisplayStyle.None;
-            finish.SetEnabled(state.Interactive);
-            confirm.style.display = state.Planning ? DisplayStyle.Flex : DisplayStyle.None;
-            confirmable = state.Interactive && state.Confirmable;
-            confirm.SetEnabled(confirmable && legal);
+            confirmable = state.Planning && state.Interactive && state.Confirmable;
             Sync(state.Rows);
             foreach (var row in state.Rows)
-                views[row.Nation].Apply(row, state);
+                views[row.Id].Apply(row, state);
             planned.Apply(state);
             ShowFocus();
         }
@@ -98,6 +88,14 @@ namespace Wotr.Client
                 engaged = hold;
                 dismissed = false;
                 if (hold)
+                    Open();
+            }
+            else if (use && hold && !engaged)
+            {
+                // UI-271: a plan begun while the panel already followed a Muster die (the Balrog's entry with its
+                // optional reserve figure) unrolls it, unless the player closed it for this use.
+                engaged = true;
+                if (!dismissed)
                     Open();
             }
             else if (!use && active)
@@ -152,11 +150,34 @@ namespace Wotr.Client
             Tab.EnableInClassList("selected", false);
         }
 
-        public void ConfirmLegal(bool value)
+        public void ConfirmLegal(bool value) => legal = value;
+
+        // UI-454 (owner, 2026-11-03): the picture of a reserve figure's token while the open panel shows it — by the figure's
+        // id (a carried figure) or by its nation and kind (a recruit's flight); null otherwise.
+        public Image Art(string reserveId)
         {
-            legal = value;
-            confirm.SetEnabled(confirmable && legal);
+            if (!Showing)
+                return null;
+            foreach (var view in views.Values)
+                if (view.Art(reserveId) is { } art)
+                    return art;
+            return null;
         }
+
+        public Image Art(string nation, Wotr.Contracts.UnitKind kind)
+        {
+            if (!Showing)
+                return null;
+            foreach (var view in views.Values)
+                if (view.Nation == nation && view.Art(kind) is { } art)
+                    return art;
+            return null;
+        }
+
+        private bool Showing => IsOpen && !Appearance.Closed(Root);
+
+        // UI-381: the plan may be recruited with the console's ✓.
+        public bool ConfirmReady => confirmable && legal;
 
         // A settlement inspected on the map marks the row of its nation; any other region clears the mark.
         public void Focus(string nation)
@@ -200,15 +221,15 @@ namespace Wotr.Client
         {
             var same = latest.Count == views.Count;
             foreach (var row in latest)
-                same &= views.ContainsKey(row.Nation);
+                same &= views.ContainsKey(row.Id);
             if (same)
                 return;
             rows.Clear();
             views.Clear();
             foreach (var row in latest)
             {
-                var view = new ReinforcementRowView(row.Nation, id => FigureChosen?.Invoke(id));
-                views.Add(row.Nation, view);
+                var view = new ReinforcementRowView(row.Id, row.Nation, id => FigureChosen?.Invoke(id));
+                views.Add(row.Id, view);
                 rows.Add(view.Root);
             }
         }

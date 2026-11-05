@@ -11,19 +11,28 @@ namespace Wotr.Client.Diagnostics
     internal sealed class MapProfileScene : IDisposable
     {
         public static readonly string[] Kinds = { "idle", "pan-zoom", "highlight", "pointer", "projection",
-            "override-fate", "override-whitehand", "stress-pan", "stress-hover" };
+            "override-fate", "override-whitehand", "stress-pan", "stress-hover", "drag-edge-fp", "drag-edge-sh" };
+        // UI-407: the recorded projections the drag-with-edge-pan workloads carry an army on, one per side.
+        public static readonly string[] DragViews = { "drag-fp", "drag-sh" };
         private readonly BoardScreen board;
         private readonly Dictionary<string, PlayerView> views;
         private readonly GameApi api = new GameApi("http://localhost");
         private readonly MatchConnection connection;
-        private readonly TurnInteraction interaction;
+        private TurnInteraction interaction;
+        private Side seat = Side.FreePeoples;
         private readonly Event pointer = new Event();
         private string kind;
         private int frame;
         private long revision;
         private bool inspectionPending;
+        private bool exposePending;
+        private MapDragProfile drag;
         public Action TickAction { get; }
+        public Action EndAction { get; }
         public long ExpectedBorderBuilds { get; private set; }
+        // The workload's gesture is under way and the measured frames may begin (a carried figure and a running pan).
+        public bool Ready => drag?.Ready ?? true;
+        public object DragEvidence => drag?.Evidence(FrameProfile.SampleFrames);
 
         public MapProfileScene(BoardScreen board, Dictionary<string, PlayerView> views)
         {
@@ -37,6 +46,7 @@ namespace Wotr.Client.Diagnostics
             connection = new MatchConnection(api, "map-render-profile");
             interaction = new TurnInteraction(api, connection, board);
             TickAction = Tick;
+            EndAction = End;
         }
 
         public void Prepare(string next)
@@ -46,13 +56,19 @@ namespace Wotr.Client.Diagnostics
             board.Cards.Close();
             board.Map.DraftOverlay.AttackTargets.Clear();
             board.Map.SetAttention("");
-            Apply(kind.StartsWith("stress-", StringComparison.Ordinal) || kind == "projection" ? "dense" :
-                kind == "override-whitehand" ? "captured" : "base");
+            drag = null;
+            Apply(ViewOf(kind));
             board.Map.Fit();
-            inspectionPending = kind.StartsWith("stress-", StringComparison.Ordinal);
+            if (IsDrag(kind))
+            {
+                drag = new MapDragProfile(board, views[ViewOf(kind)]);
+                drag.Frame();
+            }
+            exposePending = inspectionPending = kind.StartsWith("stress-", StringComparison.Ordinal);
             if (kind.StartsWith("stress-", StringComparison.Ordinal))
             {
-                // The pinned card window covers the middle of the map, so the clicked region sits in the left third.
+                // The pinned card window covers the middle of the map, so the clicked region sits in the left third (and
+                // moves to the side the laid-out card leaves clear, ExposeSiege).
                 var clear = new Vector2(board.Map.contentRect.width * .3f, board.Map.contentRect.center.y);
                 Center(board.Map, "helms-deep", 1.2f, clear);
                 board.Cards.Show(board.View.Hand.First(), true);
@@ -60,10 +76,35 @@ namespace Wotr.Client.Diagnostics
             ExpectedBorderBuilds = 0;
         }
 
-        public void SetFrame(int value) => frame = value;
+        // The frame of the measured run (negative while the gesture is set up); counting starts at the first sample.
+        public void SetFrame(int value)
+        {
+            frame = value;
+            if (value == FrameProfile.WarmupFrames)
+                drag?.StartSamples();
+        }
+
+        private static bool IsDrag(string name) => name.StartsWith("drag-", StringComparison.Ordinal);
+
+        private static string ViewOf(string name)
+        {
+            if (name == "drag-edge-fp")
+                return "drag-fp";
+            if (name == "drag-edge-sh")
+                return "drag-sh";
+            if (name.StartsWith("stress-", StringComparison.Ordinal) || name == "projection")
+                return "dense";
+            return name == "override-whitehand" ? "captured" : "base";
+        }
 
         private void Tick()
         {
+            if (exposePending)
+            {
+                ExposeSiege();
+                exposePending = false;
+                return;
+            }
             if (inspectionPending)
             {
                 BoardTerrainInput.Click(board.Map, "helms-deep");
@@ -102,8 +143,27 @@ namespace Wotr.Client.Diagnostics
                     Apply(frame % 2 == 0 ? "whitehand" : "captured");
                     ExpectedBorderBuilds += 2;
                     break;
+                case "drag-edge-fp":
+                case "drag-edge-sh":
+                    drag.Tick(frame >= FrameProfile.WarmupFrames);
+                    break;
             }
         }
+
+        // UI-407: the pinned card has grown since MAP-17 and at 125 % covers the left third of the map, so once it is laid
+        // out Helm's Deep is centred in the wider part of the map it leaves clear, a frame before the click inspecting it.
+        private void ExposeSiege()
+        {
+            var card = board.Cards.Root.worldBound;
+            var area = board.Map.worldBound;
+            var left = Mathf.Max(0, card.xMin - area.xMin);
+            var right = Mathf.Max(0, area.xMax - card.xMax);
+            var x = left >= right ? area.xMin + left / 2 : area.xMax - right / 2;
+            Center(board.Map, "helms-deep", 1.2f, board.Map.WorldToLocal(new Vector2(x, area.center.y)));
+        }
+
+        // After a workload's measured frames: a carried figure is put back and the pointer released.
+        private void End() => drag?.End();
 
         private void MovePointer()
         {
@@ -131,8 +191,19 @@ namespace Wotr.Client.Diagnostics
         {
             var view = views[name];
             view.Revision = ++revision;
+            if (view.You != seat)
+                Seat(view.You);
             board.Apply(view);
             interaction.Update(view);
+        }
+
+        // UI-407: each seat plays through its own interaction, as each match session has its own; the drag workloads
+        // switch from the Free Peoples' projections to the Shadow's and back.
+        private void Seat(Side side)
+        {
+            interaction.Dispose();
+            interaction = new TurnInteraction(api, connection, board);
+            seat = side;
         }
 
         public void Dispose()

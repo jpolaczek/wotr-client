@@ -42,12 +42,38 @@ namespace Wotr.PlayTests
             using (var room = await Connect("kings-valinor-losses", ScenarioKind.CardPack))
             {
                 var unit = room.Fp.Board.View.Units.Single(u => u.Location == "lorien" && u.Kind == UnitKind.Regular);
+                await LossWindowFits(room, room.Fp);
                 Click(room.Fp, "loss-" + unit.Id);
                 await Layout(room, room.Fp, "valinor-loss");
                 await KingsCardNetworkChecks.Reconnect(room, room.Fp);
                 await room.Confirm(room.Fp);
                 Assert.AreEqual("casualties", room.Sh.Board.View.Units.Single(u => u.Id == unit.Id).Location);
             }
+        }
+
+        // UI-464 (owner, 2026-11-03): an event's losses window fits its content — no battle window's width of empty space.
+        private static async Task LossWindowFits(MatchTestRoom room, MountedMatchClient client)
+        {
+            if (!client.Board.Battles.IsOpen)
+                CardNetworkTests.Click(client.Board.Console.Status.Plaque);
+            foreach (var width in new[] { 1366, 1920 })
+                using (var viewport = new BoardCompletionLayoutTests.LayoutViewport(client, width, 1f))
+                {
+                    await room.Settle();
+                    var window = client.Board.Tray.parent;
+                    Assert.IsTrue(window.ClassListContains("event-loss-panel"), "The event's losses window.");
+                    Assert.Less(window.layout.width, 700f, "Narrower than the battle window's 820 · " + width);
+                    var figures = client.Board.Tray.Q(className: "loss-figures");
+                    Assert.LessOrEqual(figures.worldBound.yMax, window.worldBound.yMax, "The figures stay inside · " + width);
+                    var budget = client.Board.Tray.Q<Label>("battle-loss-budget");
+                    if (budget != null)
+                        Assert.LessOrEqual(budget.worldBound.xMax, window.worldBound.xMax + 0.5f, "The hits budget stays inside · " + width);
+                    var apply = client.Board.Tray.Q<Button>("confirm-decision");
+                    Assert.IsNotNull(apply, "Apply losses.");
+                    Assert.LessOrEqual(apply.worldBound.yMax, window.worldBound.yMax + 0.5f, "Apply losses stays inside the frame · " + width);
+                    LayoutTests.AssertNoDecisionScroll(client.Board);
+                    LayoutTests.Save(viewport.Texture, $"ui464-after-valinor-{width}-1.00.png");
+                }
         }
 
         private static async Task Stormcrow()
@@ -108,9 +134,13 @@ namespace Wotr.PlayTests
                 var die = option.DrawCosts.First(c => c.AbilityId.Length > 0).DieId;
                 CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>(die));
                 await room.Settle();
-                CardNetworkTests.Click(room.Sh.Board.CardCosts.Root.Q<Button>("card-cost-Event"));
+                // UI-278 (owner's decision 17): the conversion starts at the Palantír's card on the table, not the picker.
+                Assert.IsNull(room.Sh.Board.CardCosts.Root.Q<Button>("card-cost-Event"));
+                var card = await PalantirCard(room);
+                StringAssert.StartsWith("Click to spend this Muster die as an Event die", card.tooltip);
+                CardNetworkTests.Click(card);
+                await room.Settle();
                 await Layout(room, room.Sh, "palantir-draw");
-                Assert.That(room.Sh.Board.CardCosts.Root.Q<Button>("card-cost-Event").tooltip, Does.Contain("Palantír"));
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
                 await CardGestures.Draw(room, room.Sh, "strategy");
                 Assert.AreEqual(DieLocation.Spent, room.Fp.Board.View.Dice.Single(d => d.Id == die).Location);
@@ -141,9 +171,15 @@ namespace Wotr.PlayTests
             using (var room = await Connect("kings-palantir-event", ScenarioKind.CardPack))
             {
                 var die = room.Sh.Board.View.Dice.First(d => d.Owner == Side.Shadow && d.Location == DieLocation.Available).Id;
-                CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>(die));
+                // UI-278: the card first; the Muster die it may convert glows and says what its click does.
+                var card = await PalantirCard(room);
+                StringAssert.StartsWith("Click, then a glowing Muster die", card.tooltip);
+                CardNetworkTests.Click(card);
                 await room.Settle();
-                CardNetworkTests.Click(room.Sh.Board.CardCosts.Root.Q<Button>("card-cost-Event"));
+                var button = room.Sh.Board.OwnDice.Q<Button>(die);
+                StringAssert.Contains("Click to spend this Muster die as an Event die", button.tooltip);
+                CardNetworkTests.Click(button);
+                await room.Settle();
                 await Layout(room, room.Sh, "palantir-event");
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
                 await CardGestures.Play(room, room.Sh, "kings.sh.strategy.05");
@@ -154,14 +190,24 @@ namespace Wotr.PlayTests
             }
         }
 
+        // The Palantír of Barad-dûr's card in the Effects panel, glowing for its conversion.
+        private static async Task<Button> PalantirCard(MatchTestRoom room)
+        {
+            room.Sh.Board.TableEffects.Open();
+            await room.Settle();
+            var card = room.Sh.Board.TableEffects.Root.Q<Button>("effect-source-kings.sh.strategy.25");
+            Assert.IsNotNull(card);
+            Assert.IsTrue(card.ClassListContains("legal-target"), "The Palantír's card glows while it converts a die.");
+            return card;
+        }
+
         private static async Task Power()
         {
             using (var room = await Connect("kings-power", ScenarioKind.CardPack))
             {
-                Click(room.Sh, "effect-choice-kings.sovereign.denethor");
                 await Layout(room, room.Sh, "power");
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
-                await room.Confirm(room.Sh);
+                await KingsCardNetworkChecks.ChooseKing(room, room.Sh, "kings.sovereign.denethor");
                 Assert.AreNotEqual("Sovereign", room.Sh.Board.View.Decision?.Presentation);
             }
         }

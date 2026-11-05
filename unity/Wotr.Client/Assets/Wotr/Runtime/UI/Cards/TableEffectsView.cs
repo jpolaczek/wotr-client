@@ -9,27 +9,39 @@ namespace Wotr.Client
 {
     public sealed class TableEffectsView
     {
+        // UI-430 (owner): a table card an effect lets the player discard wears the hand's red discard parchment (UI-222).
+        public const string DiscardClass = "discard-target";
         public VisualElement Root { get; } = new VisualElement { name = "effects-panel" };
         public Button Tab { get; }
         public VisualElement DecisionHost { get; } = new VisualElement { name = "effects-decision-host" };
         public FloatingWindow Window { get; set; }
         public bool Docked { get; set; }
+        // UI-424: the left rail, whose top is the highest place a docked panel may take (BoardEdgeLayout.PlaceBesideTab).
+        public VisualElement Rail { get; set; }
+        // A source's details: since UI-446 only while its removal is paid, inside the panel above the payment.
+        public VisualElement Details => details.Root;
+        public EffectsGridArrangement Arrangement { get; private set; } = EffectsGridArrangement.Regular;
         public bool Pinned => hover.Pinned;
         public bool IsOpen => hover.Visible;
+        // The source whose removal is being prepared (UI-446: a click selects nothing else).
         public string SelectedSource => selected?.SourceId ?? "";
+        // UI-221: the source whose text is unrolled now, or "".
+        public string UnrolledSource => unroll.Entry?.Source.SourceId ?? "";
         public event Action Opening;
         public event Action<ComponentAction> RemovalSelected;
-        // UI-214: the source a card's effect offers was chosen with its ×.
+        // UI-214: the source a card's effect offers was chosen with its × (UI-430: or with its red tile).
         public event Action<string> OfferChosen;
+        // UI-272: a card the decision uses itself was clicked (The Lore of the Elven Rings before Dismay).
+        public event Action<string> UseChosen;
         private readonly DrawerHover hover;
         private readonly EffectSourceDetails details;
-        private readonly EffectsReadingWidth reading;
         private readonly VisualElement list = new VisualElement { name = "effects-sources" };
         private readonly Label empty = new Label("No active effects") { name = "effects-empty" };
         private readonly Label cost = new Label { name = "effect-removal-cost" };
         private readonly Dictionary<string, EffectEntry> entries = new Dictionary<string, EffectEntry>();
         private Dictionary<string, ComponentAction> choices = new Dictionary<string, ComponentAction>();
         private IReadOnlyDictionary<string, string> offers = new Dictionary<string, string>();
+        private IReadOnlyDictionary<string, string> uses = new Dictionary<string, string>();
         private bool choicesEnabled, offersEnabled;
         private IReadOnlyList<EffectSource> sources = Array.Empty<EffectSource>();
         // UI-221: the hovered source's text, over the other sources.
@@ -37,7 +49,17 @@ namespace Wotr.Client
         private PlayerView view;
         private EffectSource selected;
         private VisualElement tray, dock, obstruction, viewport;
-        private bool shown, ended, sourcePinned, preparing;
+        private bool shown, ended, preparing;
+        // UI-424: a new stage size rearranges the grid after layout.
+        private readonly IVisualElementScheduledItem rearrange;
+        // UI-446: the source Inspect unrolls once the panel is laid out, and how often it looks before giving up.
+        private readonly IVisualElementScheduledItem unrollInspected;
+        private EffectEntry inspecting;
+        private int inspectTries;
+        private const int InspectTries = 30;
+        private const long InspectRetryMilliseconds = 16;
+        // The rail's top below the stage's top (LeftRail.uss .board-left-tabs) until the rail is laid out.
+        private const float DefaultCeiling = 58;
 
         public TableEffectsView(VisualElement surface, MapCanvas map)
         {
@@ -57,26 +79,29 @@ namespace Wotr.Client
             Root.Add(empty);
             Root.Add(list);
             details = new EffectSourceDetails(map.Focus);
-            reading = new EffectsReadingWidth(Root);
-            details.Rebuilt += ReadingChanged;
             Root.Add(details.Root);
             Root.Add(cost);
             Root.Add(DecisionHost);
             Root.Add(unroll.Root);
             hover = new DrawerHover(surface, Tab, Root, _ => false, RefreshVisibility);
+            rearrange = Root.schedule.Execute(Arrange);
+            rearrange.Pause();
+            unrollInspected = Root.schedule.Execute(UnrollInspected);
+            unrollInspected.Pause();
             Root.RegisterCallback<AttachToPanelEvent>(e =>
             {
                 if (e.target == Root)
-                    Root.parent.RegisterCallback<GeometryChangedEvent>(UpdateCompactLayout);
+                    Root.parent.RegisterCallback<GeometryChangedEvent>(StageChanged);
             });
             Root.RegisterCallback<DetachFromPanelEvent>(e =>
             {
                 if (e.target == Root)
-                    Root.parent?.UnregisterCallback<GeometryChangedEvent>(UpdateCompactLayout);
+                    Root.parent?.UnregisterCallback<GeometryChangedEvent>(StageChanged);
             });
             Root.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
             Root.RegisterCallback<PointerUpEvent>(e => e.StopPropagation());
             Root.RegisterCallback<GeometryChangedEvent>(OwnGeometryChanged);
+            ApplyArrangement();
         }
 
         public void Attach(VisualElement decisionTray, VisualElement decisionDock)
@@ -131,7 +156,6 @@ namespace Wotr.Client
             if (view != null && (view.MatchId != latest.MatchId || view.You != latest.You))
             {
                 selected = null;
-                sourcePinned = false;
                 Close();
             }
             view = latest;
@@ -148,26 +172,24 @@ namespace Wotr.Client
             {
                 if (!entries.TryGetValue(source.Key, out var entry))
                 {
-                    entry = new EffectEntry(source, Select, Remove, Hover);
+                    entry = new EffectEntry(source, Remove, Hover, Use);
+                    entry.Arrange(Arrangement);
                     entries.Add(source.Key, entry);
                     list.Add(entry.Root);
                 }
                 entry.Apply(source);
             }
+            Arrange();
             if (selected != null && current.TryGetValue(selected.Key, out var updated))
             {
                 selected = updated;
                 ended = false;
             }
             else if (selected != null)
-            {
                 ended = true;
-                if (!sourcePinned)
-                    selected = null;
-            }
             ValuePulse.Set(Tab, "Effects · " + sources.Count);
             empty.style.display = sources.Count == 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            details.Show(selected, ended, view.Configuration);
+            details.Show(preparing ? selected : null, ended, view.Configuration);
             RefreshChoices();
         }
 
@@ -191,17 +213,34 @@ namespace Wotr.Client
             RefreshChoices();
         }
 
+        // UI-272: the cards the decision uses with a click on the card itself (source id → what the click does).
+        public void Uses(IReadOnlyDictionary<string, string> latest)
+        {
+            if (uses.Count == 0 && latest.Count == 0)
+                return;
+            uses = latest;
+            ApplyContext();
+            RefreshChoices();
+        }
+
+        private void Use(string id)
+        {
+            if (uses.ContainsKey(id))
+                UseChosen?.Invoke(id);
+        }
+
         private void ApplyContext()
         {
             foreach (var entry in entries.Values)
             {
                 if (offers.TryGetValue(entry.Source.SourceId, out var offer))
-                {
                     entry.Offer(offer, offersEnabled);
-                    continue;
+                else
+                {
+                    choices.TryGetValue(entry.Source.SourceId, out var choice);
+                    entry.Context(choice, choicesEnabled, view);
                 }
-                choices.TryGetValue(entry.Source.SourceId, out var choice);
-                entry.Context(choice, choicesEnabled, view);
+                entry.Use(uses.TryGetValue(entry.Source.SourceId, out var use) ? use : "");
             }
         }
 
@@ -213,39 +252,63 @@ namespace Wotr.Client
             var wasPreparing = preparing;
             preparing = source != null;
             Root.EnableInClassList("preparing-effect-removal", preparing);
-            if (wasPreparing != preparing)
-                ReadingChanged();
             if (preparing)
             {
                 if (tray.parent != DecisionHost)
                     DecisionHost.Add(tray);
                 if (!wasPreparing || selected?.Key != source.Key)
-                    Select(source, true);
+                    Select(source);
             }
             else if (tray?.parent == DecisionHost)
                 dock.Add(tray);
+            if (!preparing && wasPreparing)
+                selected = null;
+            details.Show(preparing ? selected : null, false, view?.Configuration);
             list.style.display = preparing ? DisplayStyle.None : DisplayStyle.Flex;
             if (preparing)
                 unroll.Hide();
+            RefreshChoices();
         }
 
+        // Opens the panel with the source's text unrolled under its tile, as a hover shows it (UI-446: no details card). A
+        // panel that opens now unrolls it once it and the tile are laid out, so the text never stands where the closed
+        // panel's stale geometry would put it.
         public void Inspect(string sourceId)
         {
-            var source = sources.FirstOrDefault(s => s.SourceId == sourceId);
-            if (source != null)
-                Select(source, true);
+            Open();
+            inspecting = entries.Values.FirstOrDefault(item => item.Source.SourceId == sourceId);
+            inspectTries = 0;
+            if (inspecting != null)
+                unrollInspected.ExecuteLater(0);
         }
 
-        private void Select(EffectSource source, bool pin)
+        private void UnrollInspected()
         {
-            if (!pin && sourcePinned)
+            if (inspecting == null || !IsOpen)
+            {
+                inspecting = null;
                 return;
+            }
+            if (!LaidOut(inspecting) && ++inspectTries < InspectTries)
+            {
+                // An item rescheduled from its own callback is dropped once the callback returns, so each retry is new.
+                Root.schedule.Execute(UnrollInspected).ExecuteLater(InspectRetryMilliseconds);
+                return;
+            }
+            var entry = inspecting;
+            inspecting = null;
+            Hover(entry, true);
+        }
+
+        private bool LaidOut(EffectEntry entry) => entry.Root.panel != null && Root.resolvedStyle.display != DisplayStyle.None &&
+            entry.Root.layout.height > 0 && !float.IsNaN(entry.Root.layout.height) && list.layout.width > 0;
+
+        // The source whose removal is being prepared; the panel opens for its payment.
+        private void Select(EffectSource source)
+        {
             selected = source;
             ended = false;
-            sourcePinned = pin;
-            if (pin)
-                Open();
-            details.Show(source, false, view?.Configuration);
+            Open();
             RefreshChoices();
         }
 
@@ -260,7 +323,7 @@ namespace Wotr.Client
             var source = sources.FirstOrDefault(s => s.SourceId == id);
             if (source == null || !choices.TryGetValue(id, out var choice) || !choice.Enabled)
                 return;
-            Select(source, true);
+            Select(source);
             RemovalSelected?.Invoke(choice);
         }
 
@@ -272,7 +335,7 @@ namespace Wotr.Client
             cost.text = choice == null ? "" : EffectsPresentation.RemovalCost(view, choice);
             cost.style.display = cost.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             Tab.EnableInClassList("legal-target", choices.Values.Any(c => c.Enabled && sources.Any(s => s.SourceId == c.CardId)) ||
-                offersEnabled && sources.Any(s => offers.ContainsKey(s.SourceId)));
+                offersEnabled && sources.Any(s => offers.ContainsKey(s.SourceId)) || sources.Any(s => uses.ContainsKey(s.SourceId)));
         }
 
         // UI-221: hovering a tile unrolls its text like a hand card; leaving it rolls it back. Nothing is sent.
@@ -284,31 +347,50 @@ namespace Wotr.Client
                 unroll.Hide();
         }
 
-        private const float CompactBelow = 400;
-
-        private void UpdateCompactLayout(GeometryChangedEvent e)
+        // UI-424: a new stage size (another window size or interface scale) rearranges the grid once layout is done; the
+        // panel's own geometry never does.
+        private void StageChanged(GeometryChangedEvent e)
         {
-            RefreshCompact();
             if (e.oldRect.size != e.newRect.size)
-                ReadingChanged();
+                rearrange.ExecuteLater(0);
         }
 
-        // QUAL-19: the docked panel's own place is known only after its layout, so its geometry also decides.
-        private void OwnGeometryChanged(GeometryChangedEvent e)
+        private void OwnGeometryChanged(GeometryChangedEvent e) => Position();
+
+        // UI-424: the grid for this many sources in the height a docked panel has between the rail's top and the bottom
+        // row, read outside layout callbacks; nothing is written while the arrangement stays.
+        private void Arrange()
         {
-            Position();
-            RefreshCompact();
+            var next = EffectsGridArrangement.Choose(sources.Count, AvailableHeight());
+            if (next == Arrangement)
+                return;
+            Arrangement = next;
+            ApplyArrangement();
         }
 
-        private void RefreshCompact() =>
-            Root.EnableInClassList("compact-effects", Root.parent != null && AvailableHeight() < CompactBelow);
+        private void ApplyArrangement()
+        {
+            foreach (var arrangement in EffectsGridArrangement.All)
+                Root.EnableInClassList(arrangement.ClassName, arrangement == Arrangement);
+            Root.style.width = Arrangement.PanelWidth;
+            Root.style.maxWidth = StyleKeyword.None;
+            foreach (var entry in entries.Values)
+                entry.Arrange(Arrangement);
+        }
 
-        // QUAL-19: a panel docked at the left rail starts below the rail's top, so its space is shorter than the stage;
-        // a floating panel moves up when compact, so it is measured against the whole stage.
-        private float AvailableHeight() => Root.parent.contentRect.height - (Docked ? Root.layout.y : 0);
+        // A docked panel stands between the rail's top and the bottom margin; a floating one between both margins.
+        private float AvailableHeight()
+        {
+            var stage = Root.parent;
+            if (stage == null || float.IsNaN(stage.contentRect.height) || stage.contentRect.height <= 0)
+                return float.NaN;
+            var top = Docked ? Ceiling(stage) : EffectsGridArrangement.BottomMargin;
+            return stage.contentRect.height - EffectsGridArrangement.BottomMargin - top;
+        }
 
-        // A card's text is hidden while a removal is being paid, so only reading may widen the panel.
-        private void ReadingChanged() => reading.Read(details.ShowsCard && !preparing);
+        private float Ceiling(VisualElement stage) => Rail?.panel != null && Rail.worldBound.height > 0
+            ? stage.WorldToLocal(Rail.worldBound.position).y
+            : DefaultCeiling;
 
         public void Open() => hover.Open();
         public void Close() => hover.Close();
@@ -323,14 +405,18 @@ namespace Wotr.Client
                 {
                     Opening?.Invoke();
                     Root.BringToFront();
+                    Arrange();
                 }
                 Appearance.Display(Root, shown);
                 Tab.EnableInClassList("selected", shown);
                 if (!shown)
-                    unroll.Hide();
+                    Rollback();
             }
             Position();
             Window?.Refresh();
         }
+
+        // UI-424: a closing panel's hovered text goes at once, so while the panel fades out (UI-322) it covers nothing.
+        private void Rollback() => unroll.Hide();
     }
 }

@@ -1,5 +1,5 @@
-/* UI-90: Fellowship and Hunt share the left rail's art (Styles/LeftRail.uss): gold panel frame,
-   red lacquer header with the panel icon, square buttons; a 28-point header (26 when compact),
+/* UI-90: Fellowship and Hunt share the left rail's art (Styles/LeftRail.uss): since UI-472 the thin card and a quiet
+   title with the panel icon over a hairline (GameChrome.uss), square buttons; a 28-point header (26 when compact),
    thin padding and no rows that only repeat what is already shown.
    UI-98: they no longer stand in the right column. A small corner tab at the top right of the map
    shows the Fellowship and the Hunt Box; hovering it unrolls both full panels over it, above the
@@ -30,12 +30,6 @@
     border-width: 0;
     border-radius: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 
 #board-screen .board-dropdowns .panel-header {
@@ -49,12 +43,6 @@
     padding: 0 5px 0 6px;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
 }
 #board-screen .board-dropdowns .panel-header .panel-header-icon { width: 20px; height: 20px; margin: 0 5px 0 2px; }
 .panel-header-icon-fellowship { background-image: resource("Wotr/Art/UI/icons/fellowship"); }
@@ -65,30 +53,16 @@
     margin: 0 6px 0 0;
     padding: 0;
     font-size: 14px;
-    letter-spacing: 1px;
-    -unity-font-style: bold;
-    color: rgb(241, 223, 166);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+    letter-spacing: 1.8px;
+    -unity-font-style: normal;
+    color: var(--game-title-text);
 }
 
 /* Square header buttons as in the left rail. */
 #board-screen .board-dropdowns .panel-header Button {
     min-height: 0;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
-}
-#board-screen .board-dropdowns .panel-header Button:hover,
-#board-screen .board-dropdowns .panel-header Button:focus {
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square-hover");
 }
 /* 24 points is the board's minimum click target (HuntLayoutTests, MordorLayoutTests). */
 
@@ -178,12 +152,6 @@
     margin: 0;
     padding: 4px 8px 5px 8px;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
 }

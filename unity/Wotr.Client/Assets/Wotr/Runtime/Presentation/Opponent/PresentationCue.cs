@@ -10,7 +10,15 @@ namespace Wotr.Client
     public enum PresentationCueKind
     {
         Cost, Card, March, Travel, Attack, Retreat, Advance, Recruit, Upgrade, Removal, Entry, Transformation, Relocation,
-        Politics, Control, Fellowship, Hunt, Battle, Losses, Die, Resource, Draw, Outcome
+        Politics, Control, Fellowship, Hunt, Battle, Losses, Die, Resource, Draw, Outcome,
+        // UI-344: a Kings sovereign's change — a tile attached or returned, corrupted, removed, awakened.
+        Sovereign,
+        // UI-487 (owner, 2026-11-04): the die that paid for the action leaving the pool for good, its last beat.
+        SpentDie,
+        // UI-491 (owner, 2026-11-04): a quiet battle decision's caption, before what it causes.
+        BattleChoice,
+        // UI-492 (owner, 2026-11-04): a card's dice rolled outside a battle, before the losses they cause.
+        Roll
     }
 
     // UI-303: the immutable cue contract. One visible result of a recorded step, its place in the action and the authorized
@@ -24,7 +32,10 @@ namespace Wotr.Client
         public string StepId { get; }
         public long Revision { get; }
         public int Order { get; }
-        public Side? Actor { get; }
+        // UI-488 (owner, 2026-11-04): who decided this; nobody for a consequence shown from the player's own step.
+        public Side? Actor { get; internal set; }
+        // UI-491: the command the step records, for a quiet decision's caption.
+        public CommandKind? Command { get; }
         public string BattleId { get; }
         public string HuntChainId { get; }
         public IReadOnlyList<string> Regions { get; }
@@ -42,6 +53,12 @@ namespace Wotr.Client
         public ActionDieChange Die { get; }
         public ActionResourceChange Resource { get; }
         public ActionOutcome Outcome { get; }
+        // UI-344: the sovereign as the step left him (public: hidden tiles have no value) and the tiles the action revealed.
+        public SovereignView Sovereign { get; }
+        public IReadOnlyList<string> Tiles { get; }
+        // UI-492: a card's public roll and the number that hits, when it has one.
+        public IReadOnlyList<int> Rolls { get; }
+        public int? HitTarget { get; }
         // UI-305: the revision holds the player's own decision, so this cue is a shared result of their own click (a
         // roll, their retreat or advance). It still plays in its window, but the camera never moves for it.
         public bool OwnCommand { get; internal set; }
@@ -55,6 +72,7 @@ namespace Wotr.Client
             Revision = step.Revision;
             Order = step.Order;
             Actor = step.Actor;
+            Command = step.Command;
             BattleId = step.Context.BattleId;
             HuntChainId = step.Context.HuntChainId;
             Regions = payload.Regions.Where(region => region.Length > 0).Distinct().ToArray();
@@ -72,6 +90,10 @@ namespace Wotr.Client
             Die = CueCopy.Of(payload.Die);
             Resource = CueCopy.Of(payload.Resource);
             Outcome = CueCopy.Of(payload.Outcome);
+            Sovereign = CueCopy.Of(payload.Sovereign);
+            Tiles = payload.Tiles.ToArray();
+            Rolls = payload.Rolls.ToArray();
+            HitTarget = payload.HitTarget;
         }
 
         public override string ToString() => Id;
@@ -95,6 +117,10 @@ namespace Wotr.Client
         public ActionDieChange Die { get; set; }
         public ActionResourceChange Resource { get; set; }
         public ActionOutcome Outcome { get; set; }
+        public SovereignView Sovereign { get; set; }
+        public List<string> Tiles { get; } = new List<string>();
+        public List<int> Rolls { get; } = new List<int>();
+        public int? HitTarget { get; set; }
     }
 
     // A cue copies its contract objects once, when it is made; a handful of small objects per revision (a battle snapshot is

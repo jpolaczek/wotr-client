@@ -80,6 +80,7 @@ namespace Wotr.PlayTests
         public static async Task Enter(MatchTestRoom room, MountedMatchClient client, CharacterActionOption choice)
         {
             var board = client.Board;
+            // UI-438 (owner): every version enters from its character's one row.
             var figure = CharacterRosterActions.Figure(board.View, choice.CharacterId);
             board.Characters.Open();
             await room.Settle();
@@ -91,9 +92,12 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.resolvedStyle.display, "The entering row opens no window.");
         }
 
+        // The die becomes the cost: a click chooses it unless it is chosen already (UI-386: a second click releases it; a
+        // Ruler token takes its die itself, UI-380).
         public static async Task Cost(MatchTestRoom room, MountedMatchClient client, string id)
         {
-            T22NetworkActions.Die(client, id);
+            if (client.Board.ActionDie.DieId != id)
+                T22NetworkActions.Die(client, id);
             await room.Settle();
         }
     }

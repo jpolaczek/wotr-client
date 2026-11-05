@@ -49,8 +49,8 @@ namespace Wotr.Client.Diagnostics
                 board.View.OwnCompanionVersions.Count == 0 && board.View.OwnCompanions.Count == 0,
                 "The waiting projection contains private Free Peoples setup data.");
             BoardProfileCheck.Require(board.View.OwnCharacterRoster.All(row => row.Side == Side.Shadow), "The roster exposes another side.");
-            BoardProfileCheck.Require(!board.CompanionSetup.Active && !board.CompanionSetup.IsOpen &&
-                board.Root.Q("companion-setup-choices") == null && board.Root.Q("council-homeland-choices") == null,
+            BoardProfileCheck.Require(!CompanionSetupPresentation.Setup(board.View) &&
+                board.Root.Q("companion-setup-choices") == null,
                 "The waiting player received the private setup controls.");
             BoardProfileCheck.Require(BoardProfileCheck.Visible(board.Characters.Root) == roster && board.Menu.IsOpen == menu,
                 "Waiting-player inspection did not render its requested state.");

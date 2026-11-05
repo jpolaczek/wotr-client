@@ -27,6 +27,9 @@ namespace Wotr.Client
         public event Action ContextChanged;
         // UI-172: the plaque clicked during the Shadow's own allocation submits it, once it is ready.
         public event Action AllocationConfirmed;
+        // UI-430: the plaque clicked while an effect offers a Hunt roll (The Nazgûl Strike!) chooses that roll.
+        public event Action OfferChosen;
+        public const string PlaqueTooltip = "Hunt Box · Eyes and Free Peoples movement dice · Click to open the Hunt";
         public Func<bool> HasInspection { get; set; }
         // Whether the Hunt owns the current decision, so the tray stands in this window.
         public bool Held { get; private set; }
@@ -74,6 +77,11 @@ namespace Wotr.Client
         private string shownCount = "";
         private int allocated;
         private bool wasVisible;
+        // UI-430 (owner): an effect's Hunt roll offered on the plaque — it glows and pulses (its own ticker; no filter, no
+        // size change) and its tooltip says why; "" when none.
+        private string offer = "";
+        private readonly ChoicePulse offerPulse;
+        public bool Offered => offer.Length > 0;
 
         public HuntPanel(MapCanvas map, BoardPresentation data)
         {
@@ -94,6 +102,7 @@ namespace Wotr.Client
             Tab.Add(emblem);
             Tab.Add(Box.Counts);
             Tab.Add(AllocationLine());
+            offerPulse = new ChoicePulse(Tab);
             var header = FloatingWindow.Header("Hunt");
             title = header.Q<Label>();
             idleCount.AddToClassList("hunt-idle-count");
@@ -171,7 +180,8 @@ namespace Wotr.Client
                 : HuntReportText.Source(hunt.SourceId, data) + " · Pool " + hunt.PoolCount + " · Corruption " + view.Fellowship.Corruption + "/12";
             if (hunt?.Mordor == true)
                 source.text += "\nMordor · No Hunt roll · Eye " + hunt.EyeDamage;
-            source.tooltip = hunt?.PoolCount == 0 ? "Eligible standard discards refill an empty pool on the next draw." : source.text;
+            // UI-420 (owner): the line is its own text; a tooltip only adds what it cannot say (an empty pool's refill).
+            source.tooltip = hunt?.PoolCount == 0 ? "Eligible standard discards refill an empty pool on the next draw." : "";
             Dice.Apply(hunt);
             Tile.Apply(hunt);
             Guides.Apply(view);
@@ -273,7 +283,7 @@ namespace Wotr.Client
             ShowCount(allocating ? HuntAllocationText.Count(draft, option) : "");
             if (!allocating)
             {
-                Tab.tooltip = "Hunt Box · Eyes and Free Peoples movement dice · Click to open the Hunt";
+                Tab.tooltip = RestingTooltip();
                 SetAllocationReady(false, "");
             }
             Tab.EnableInClassList(EmptyClass, allocating && allocated == 0);
@@ -319,8 +329,29 @@ namespace Wotr.Client
                 Tab.tooltip = tooltip;
         }
 
+        // UI-430: the plaque offers an effect's Hunt roll: it glows and pulses and its tooltip explains the click; "" withdraws
+        // the offer. The allocation keeps its own plaque.
+        public void Offer(string tooltip)
+        {
+            var next = tooltip ?? "";
+            if (next == offer)
+                return;
+            offer = next;
+            ChoiceGlow.Apply(Tab, Offered);
+            offerPulse.Run(Offered);
+            if (!allocating)
+                Tab.tooltip = RestingTooltip();
+        }
+
+        private string RestingTooltip() => Offered ? offer : PlaqueTooltip;
+
         private void PlaqueClicked()
         {
+            if (Offered && !allocating)
+            {
+                OfferChosen?.Invoke();
+                return;
+            }
             if (!allocating)
             {
                 Open();

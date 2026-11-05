@@ -346,6 +346,12 @@ namespace Wotr.PlayTests
                 && d.Face is DieFace.Character or DieFace.WillOfTheWest).Id;
             PointerGestureEvents.ClickAt(room.Fp.Board.OwnDice.Q<Button>(die));
             await room.Settle();
+            // UI-461: a Will die moves the Fellowship as a Character result.
+            if (room.Fp.Board.View.Dice.Single(d => d.Id == die).Face == DieFace.WillOfTheWest)
+            {
+                WillFaceGestures.Turn(room.Fp, DieFace.Character);
+                await room.Settle();
+            }
             return die;
         }
 

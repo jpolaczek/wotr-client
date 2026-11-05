@@ -14,10 +14,20 @@ namespace Wotr.Client
         public VisualElement DragSource => dragging ? sourceElement : null;
         private readonly VisualElement root;
         private readonly Label ghost = new Label { pickingMode = PickingMode.Ignore };
+        // UI-393 (owner): a dragged reserve figure travels as its own icon, centred under the pointer, and its slot shows
+        // that it was lifted; other sources keep the label.
+        private readonly Image lifted = new Image { name = "drag-figure", pickingMode = PickingMode.Ignore, scaleMode = ScaleMode.ScaleToFit };
+        public const string LiftedClass = "drag-lifted";
+        private Vector2 liftedSize;
         private readonly Action confirm;
         private readonly Action back;
         private readonly Func<DraftToken, DraftToken, bool> drop;
         private readonly Func<string> scope;
+        // UI-405: carries the map's armies and characters; without it they are never dragged.
+        private readonly IFigureDrag figures;
+        private bool carrying;
+        // This press's figure would not lift: it stays a click however far the pointer goes.
+        private bool refused;
         private string pressedScope;
         private readonly DraftClickSequence clicks = new DraftClickSequence();
         private DraftClickKind clickKind;
@@ -31,17 +41,21 @@ namespace Wotr.Client
         private int pointer = -1;
 
         public DraftInput(VisualElement root, Action confirm, Action back, Func<DraftToken, DraftToken, bool> drop,
-            Func<string> scope = null)
+            Func<string> scope = null, IFigureDrag figures = null)
         {
             this.root = root;
             this.confirm = confirm;
             this.back = back;
             this.drop = drop;
             this.scope = scope ?? (() => "");
+            this.figures = figures;
             root.focusable = true;
             ghost.AddToClassList("drag-ghost");
             ghost.style.display = DisplayStyle.None;
             root.Add(ghost);
+            lifted.AddToClassList("drag-figure");
+            lifted.style.display = DisplayStyle.None;
+            root.Add(lifted);
             root.RegisterCallback<PointerDownEvent>(Down, TrickleDown.TrickleDown);
             root.RegisterCallback<PointerMoveEvent>(Move, TrickleDown.TrickleDown);
             root.RegisterCallback<PointerUpEvent>(Up, TrickleDown.TrickleDown);
@@ -94,25 +108,94 @@ namespace Wotr.Client
             if (pointer != evt.pointerId || clickKind == DraftClickKind.Suppressed ||
                 Vector2.Distance(origin, evt.position) < DraftClickSequence.MovementTolerance)
                 return;
-            // UI-105: armies, figures and characters move by clicks on the map only, so they are never dragged.
-            // UI-237: action dice are chosen by clicks only, too.
-            if (source == null ||
-                source.Object is DraftObject.Action or DraftObject.Deck or DraftObject.Tray or DraftObject.Region or DraftObject.Fellowship
-                    or DraftObject.Army or DraftObject.Figure or DraftObject.FellowshipPortrait or DraftObject.Character or DraftObject.Die)
+            if (source == null || Fixed(source.Object))
                 return;
-            if (!dragging)
-            {
-                dragging = true;
-                clicks.Cancel();
-                DragChanged?.Invoke(source);
-            }
+            if (!dragging && !StartDrag())
+                return;
             root.CapturePointer(pointer);
-            ghost.style.display = DisplayStyle.Flex;
-            ghost.text = source.Object == DraftObject.FellowshipPortrait ? "Companion" : source.Object.ToString();
-            var local = root.WorldToLocal(evt.position);
+            if (carrying)
+                figures.Carry(evt.position, At(root.panel, evt.position));
+            else
+                ShowDragged(root.WorldToLocal(evt.position));
+            evt.StopImmediatePropagation();
+        }
+
+        // UI-105, UI-237: region panels' figure chips, Characters rows, Fellowship portraits, dice, action buttons and the
+        // terrain are chosen by clicks only. UI-405: the map's armies and characters are carried as themselves (IFigureDrag).
+        private static bool Fixed(DraftObject item) => item is DraftObject.Action or DraftObject.Deck or DraftObject.Tray
+            or DraftObject.Region or DraftObject.Fellowship or DraftObject.Figure or DraftObject.FellowshipPortrait
+            or DraftObject.Character or DraftObject.Die;
+
+        // The map's armies and characters, which IFigureDrag carries.
+        private static bool MapFigure(DraftObject item) => item is DraftObject.Army or DraftObject.Miniature;
+
+        // The press becomes a drag; a figure only when it lifts (UI-405), otherwise its press stays a click. UI-454: a Reserve
+        // figure is carried as itself when it lifts (its slot shows that it was lifted); otherwise it stays UI-393's drag.
+        private bool StartDrag()
+        {
+            if (MapFigure(source.Object) && !Lifts())
+                return false;
+            if (source.Object == DraftObject.Reserve && Lifts())
+                sourceElement?.AddToClassList(LiftedClass);
+            dragging = true;
+            clicks.Cancel();
+            DragChanged?.Invoke(source);
+            return true;
+        }
+
+        // UI-405: asked once per press; a refusal holds until the release.
+        private bool Lifts()
+        {
+            if (refused)
+                return false;
+            carrying = figures != null && figures.Begin(source, origin);
+            refused = !carrying;
+            return carrying;
+        }
+
+        // UI-393, UI-423: a reserve figure travels as its own icon; any other object under its own name, or nothing.
+        private void ShowDragged(Vector2 local)
+        {
+            if (!Lift(local))
+                ShowGhost(local);
+        }
+
+        // UI-405: what a drop at a panel point would land on (DraftToken), as the release reads it.
+        public static DraftToken At(IPanel panel, Vector2 position) => panel == null ? null : Token(panel.Pick(position), position);
+
+        // UI-423 (owner's playtest pattern, like UI-393): a dragged object without its own art travels under its own name,
+        // never its kind's code ("Nation", "RulerToken"); an object with no name shows no label.
+        private void ShowGhost(Vector2 local)
+        {
+            var name = DragName(source);
+            ghost.text = name;
+            ghost.style.display = name.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             ghost.style.left = local.x + 12;
             ghost.style.top = local.y + 12;
-            evt.StopImmediatePropagation();
+        }
+
+        // What a dragged object is called: "Rohan", "Gwaihir the Windlord", "Dáin Ironfoot's Ruler token", "Hunt tile".
+        public static string DragName(DraftToken token) => token?.Object switch
+        {
+            DraftObject.Nation or DraftObject.PoliticalSlot => TooltipText.Nation(token.Id),
+            DraftObject.Card => CardLibrary.Title(token.Id),
+            DraftObject.RulerToken => ExpansionLabels.RulerToken(token.Id),
+            DraftObject.Sovereign => ActionCardText.Source(token.Id),
+            DraftObject.CouncilPortrait or DraftObject.FellowshipPortrait => CharacterLibrary.Name(token.Id),
+            DraftObject.Ring => ExpansionLabels.Ring(token.Id),
+            DraftObject.HuntResponse => HuntResponseName(token),
+            DraftObject.HuntTile => "Hunt tile",
+            DraftObject.HuntEye => "Hunt Box",
+            DraftObject.Reserve => "Reserve figure",
+            _ => ""
+        };
+
+        // The Hunt row's own names (HuntResponsesView): "Ring", "Guide", "Random companion".
+        private static string HuntResponseName(DraftToken token)
+        {
+            if (!HuntResponseActions.Read(token, out var response))
+                return "";
+            return response == Wotr.Contracts.HuntResponse.RandomCompanion ? "Random companion" : response.ToString();
         }
 
         private void Up(PointerUpEvent evt)
@@ -147,6 +230,8 @@ namespace Wotr.Client
             {
                 var target = Token(root.panel.Pick(evt.position), evt.position);
                 var picked = source;
+                // UI-405: a carried figure's release is its drop, never its cancellation.
+                carrying = false;
                 ResetDrag();
                 if (pressedScope == scope())
                     drop(picked, target);
@@ -157,6 +242,29 @@ namespace Wotr.Client
                 clicks.Complete();
                 ResetDrag();
             }
+        }
+
+        // UI-393: the figure's own art follows the pointer, a little larger, and its slot dims while it is away. UI-454: it
+        // moves by translate only; its size is set once, as it is taken up.
+        private bool Lift(Vector2 local)
+        {
+            var art = source.Object == DraftObject.Reserve ? sourceElement?.Q<Image>(className: "reserve-token-figure") : null;
+            if (art?.sprite == null)
+                return false;
+            if (lifted.style.display.value != DisplayStyle.Flex)
+            {
+                lifted.sprite = art.sprite;
+                liftedSize = art.worldBound.size * 1.15f;
+                lifted.style.left = 0;
+                lifted.style.top = 0;
+                lifted.style.width = liftedSize.x;
+                lifted.style.height = liftedSize.y;
+                lifted.style.display = DisplayStyle.Flex;
+                lifted.BringToFront();
+                sourceElement.AddToClassList(LiftedClass);
+            }
+            lifted.style.translate = new Translate(local.x - liftedSize.x / 2, local.y - liftedSize.y / 2);
+            return true;
         }
 
         private static DraftToken Token(VisualElement element, Vector2? position = null)
@@ -179,7 +287,7 @@ namespace Wotr.Client
         {
             if (FloatingWindow.IsDragging(evt.target as VisualElement) || ActionCard.ContainsInput(evt.target as VisualElement) ||
                 CharacterRosterPanel.ContainsInput(evt.target as VisualElement) ||
-                CompanionSetupPanel.ContainsInput(evt.target as VisualElement) || BoardMenu.ContainsInput(evt.target as VisualElement) ||
+                CompanionSetupChoices.ContainsInput(evt.target as VisualElement) || BoardMenu.ContainsInput(evt.target as VisualElement) ||
                 GameChatPanel.ContainsInput(evt.target as VisualElement))
                 return;
             if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
@@ -252,6 +360,7 @@ namespace Wotr.Client
         private void ResetDrag(bool cancelPress = false)
         {
             var wasDragging = dragging;
+            var wasCarrying = carrying;
             var pressed = sourceElement;
             var cancellation = pressedCancellation;
             var captured = pointer;
@@ -262,7 +371,12 @@ namespace Wotr.Client
             source = null;
             pointer = -1;
             dragging = false;
+            carrying = false;
+            refused = false;
             ghost.style.display = DisplayStyle.None;
+            lifted.style.display = DisplayStyle.None;
+            lifted.sprite = null;
+            pressed?.RemoveFromClassList(LiftedClass);
             // Releasing capture alone can defer Clickable's active-state reset until a
             // later event. Cancel the original press before another controller mounts.
             if (cancelPress && pressed?.panel != null && cancellation != null)
@@ -272,6 +386,9 @@ namespace Wotr.Client
                 pressed.ReleasePointer(captured);
             if (captured >= 0 && root.HasPointerCapture(captured))
                 root.ReleasePointer(captured);
+            // UI-405: a carried figure the gesture leaves without a drop goes back as if nothing happened.
+            if (wasCarrying)
+                figures.Cancel();
             if (wasDragging)
                 DragChanged?.Invoke(null);
         }

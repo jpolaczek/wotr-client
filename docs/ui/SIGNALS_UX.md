@@ -202,7 +202,7 @@ Decisions inside battle, Hunt and the card effect do not give ribbons because th
   only light the console.
 - Text: „YOUR ACTION · Turn N”, „FELLOWSHIP PHASE”, „ALLOCATE HUNT DICE”.
 - `TurnRibbon` (`Runtime/UI/Console`): a 440×52 web under the notification bar, in the middle of the
-  map, with graphics `console/ribbon-free` and `console/ribbon-shadow`. Inserts into 200 ms, takes 1
+  map, with graphics `console/ribbon-free` and `console/ribbon-shadow` (since UI-476 the side rows `frontend/row-free` and `row-shadow`). Inserts into 200 ms, takes 1
   s and extinguishs in 300 ms. All its elements have `PickingMode.Ignore`; does not move the camera.
 - `BoardScreen.SignalTurn`: with `reduced-motion` class instead of `ConsoleStatus.Flash()` ribbon,
   one flash of light on 700 ms.
@@ -311,7 +311,7 @@ Victory panel with a break of points stays in the Menu.
     Fellowship (Specs of Doom, Mordor step or progress, Corruption n/12); number of Companion in
     Fellowship.
 - `GameEndScreen` (`Runtime/UI/Victory`): cover for the whole board (Denmark 72%) with window in the
-  `frames/panel` frame like window battle:
+  thin card like window battle (`frontend/card-board` since UI-473, formerly `frames/panel`):
   - scene `Art/end-scenes/*` (480×240), the winner's emblem next to the title sign `end/title-victory` or
     `end/title-defeat`, subtitle and summary;
   - fixed buttons `game-end-view-board`, `game-end-log`, `game-end-save-replay`, `game-end-menu`.
@@ -453,7 +453,7 @@ The opponent's character moment and a moving group's identities are observed mar
 - they ignore the pointer, so the figure under them keeps its own tooltip and click;
 - they fade in over 200 ms and out over 400 ms, and appear without fades under Reduced motion.
 
-A dimmed portrait marks a removal. A reaction's source is ringed with the same 2 pt pale-blue trace.
+A dimmed portrait marks a removal. A reaction's source is ringed with the same 2 pt gold trace (UI-378).
 
 <a id="ui-312"></a>
 ## Pennants and the opponent's resources — UI-312 (2026-10-24)

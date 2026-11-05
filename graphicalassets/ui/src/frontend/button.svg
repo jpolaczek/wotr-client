@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="32" viewBox="0 0 64 32">
+  <!-- UI-470 (owner, 2026-11-03): a menu button, tab or segment. 9-slice, 6 points on every side: a dark field edged
+       with one muted-gold line and a faint sheen under its top edge. hover lightens the line and the field, pressed
+       darkens the field, selected (an open page, a chosen segment) is a warm field with a bright line; primary,
+       primary-hover and primary-pressed are the one main action's warm-gold gradient. Text and icons are drawn by
+       the code. -->
+  <defs>
+    <linearGradient id="fe-button-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--fe-field-top)"/>
+      <stop offset="1" style="stop-color: var(--fe-field-bottom)"/>
+    </linearGradient>
+  </defs>
+  <rect x="0.5" y="0.5" width="63" height="31" rx="2" fill="url(#fe-button-fill)"
+    style="fill-opacity: var(--fe-field-opacity); stroke: var(--fe-line)" stroke-width="1"/>
+  <rect x="2.5" y="1.5" width="59" height="0.6" style="fill: #fff8e6; opacity: var(--fe-sheen-opacity)"/>
+</svg>

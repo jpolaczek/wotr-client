@@ -11,7 +11,8 @@ namespace Wotr.Client
     //   decision;
     // - one resolution plays its most important cue only;
     // - one clip at a time: a more important cue fades out a less important one, anything else is dropped, never
-    //   queued; clicks repeat at most every 100 ms and card looks every 250 ms;
+    //   queued (AUDIO-12: the Politics bell only through its slide); clicks repeat at most every 100 ms and card looks
+    //   every 250 ms;
     // - a sequence (AUDIO-06's two tracks) plays every stage at its time regardless of those limits, then at most
     //   one important cue; a newer sequence, a new game or Cancel drop what is left of it.
     public sealed class SoundPolicy
@@ -148,7 +149,7 @@ namespace Wotr.Client
             var variant = NextVariant(cue);
             output.Play(cue, variant, Volume(cue));
             current = cue;
-            currentEnds = now + library.Length(cue, variant);
+            currentEnds = now + SoundCues.Holds(cue, library.Length(cue, variant));
             lastStarted[cue] = now;
             Played?.Invoke(cue);
         }

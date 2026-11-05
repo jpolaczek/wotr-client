@@ -120,16 +120,26 @@ namespace Wotr.Client
             return ActionCardText.Region(region, data);
         }
 
+        private const string Withdraws = " · Defender withdraws into the stronghold";
+
         private static string BattleResult(List<ActionLogStep> battle)
         {
             var retreat = battle.SelectMany(step => step.Movements).FirstOrDefault(move => move.Kind == ActionMovementKind.Retreat);
+            // UI-489 (owner, 2026-11-04): a retreat that stays in its region is a withdrawal, whichever decision offered it
+            // (Scouts too). Saved histories record no Movement for it and keep the command's line.
             if (retreat?.Participants.Count > 0)
-                return " · " + ActionCardText.Actor(retreat.Participants[0].Side) + " retreats";
+                return retreat.From == retreat.To ? Withdraws : " · " + ActionCardText.Actor(retreat.Participants[0].Side) + " retreats";
+            // TEST-20 (owner, 2026-11-04): a pennant holds only the opponent's own steps and the Movement sits on the automatic
+            // step after them, so the decision's command tells it too (a stay moves nothing and has no figures).
+            var retreating = battle.FirstOrDefault(step => step.Command == CommandKind.RetreatBattle);
+            if (retreating != null)
+                return " · " + ActionCardText.Actor(retreating.Actor) + " retreats";
             if (battle.Any(step => step.Command == CommandKind.StopBattle))
                 return " · Attack stopped";
             if (battle.Any(step => step.Command == CommandKind.RetreatIntoSiege))
-                return " · Defender withdraws into the stronghold";
-            if (battle.SelectMany(step => step.Movements).Any(move => move.Kind == ActionMovementKind.Advance))
+                return Withdraws;
+            if (battle.SelectMany(step => step.Movements).Any(move => move.Kind == ActionMovementKind.Advance && move.Participants.Count > 0) ||
+                battle.Any(step => step.Command == CommandKind.AdvanceBattle && step.Facts.Figures.Count > 0))
                 return " · Attacker advances";
             var round = battle.Select(step => step.Facts.Battle?.Round ?? 0).DefaultIfEmpty(0).Max();
             return round > 0 ? " · Round " + round : "";
@@ -151,7 +161,7 @@ namespace Wotr.Client
         public static string Figures(IEnumerable<ActionParticipant> participants)
         {
             var list = participants.ToList();
-            var units = list.Where(p => p.UnitKind.HasValue).GroupBy(p => p.UnitKind.Value).Select(g => g.Count() + " " + g.Key);
+            var units = list.Where(p => p.UnitKind.HasValue).GroupBy(p => p.UnitKind.Value).Select(g => g.Count() + " " + TooltipText.Kind(g.Key));
             var characters = list.Where(p => !p.UnitKind.HasValue && p.DefinitionId.Length > 0)
                 .Select(p => CharacterLibrary.Name(p.DefinitionId)).Distinct();
             return string.Join(" + ", units.Concat(characters));
@@ -167,7 +177,8 @@ namespace Wotr.Client
         // New units on the board, by region: a unit that came from the reserve (ActionBoardChanges records its places).
         private static IEnumerable<string> Recruits(List<ActionLogStep> steps, BoardPresentation data)
         {
-            var placed = steps.SelectMany(step => step.Facts.Figures)
+            // UI-485 (owner, 2026-11-04): each figure once, however many records its arrival has.
+            var placed = FigureCues.Once(steps.SelectMany(step => step.Facts.Figures))
                 .Where(change => change.After?.UnitKind != null && OnBoard(change.To, data) && !OnBoard(change.From, data));
             foreach (var region in placed.GroupBy(change => change.To))
                 yield return "+" + Figures(region.Select(change => change.After)) + " · " + ActionCardText.Region(region.Key, data);
@@ -176,7 +187,7 @@ namespace Wotr.Client
         // Figures that left the board outside a battle (events, the Hunt); a battle's losses belong to its line.
         private static IEnumerable<string> Losses(List<ActionLogStep> steps, BoardPresentation data)
         {
-            var removed = steps.Where(step => !InBattle(step)).SelectMany(step => step.Facts.Figures)
+            var removed = FigureCues.Once(steps.Where(step => !InBattle(step)).SelectMany(step => step.Facts.Figures))
                 .Where(change => change.Before != null && OnBoard(change.From, data) && !OnBoard(change.To, data) && change.To != "fellowship");
             foreach (var region in removed.GroupBy(change => change.From))
             {

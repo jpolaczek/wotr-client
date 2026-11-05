@@ -9,6 +9,8 @@ namespace Wotr.Client
         public string UnitId = "";
         public string Nation = "";
         public UnitKind Kind;
+        // UI-271: a moved character's definition, so its ghost shows its own figure; "" for a unit.
+        public string CharacterId = "";
         public string RegionId = "";
         public string RegionName = "";
     }
@@ -25,6 +27,8 @@ namespace Wotr.Client
         public int Slots;
         public bool Optional;
         public bool Ready;
+        // UI-392 (owner): an ability's recruitment starts on the map: the panel opens when a lit settlement is clicked.
+        public bool RegionFirst;
         public List<ReinforcementRow> Rows = new List<ReinforcementRow>();
         public List<PlannedReinforcement> Placements = new List<PlannedReinforcement>();
     }
@@ -37,5 +41,8 @@ namespace Wotr.Client
         ReinforcementPlan Build(PlayerView view, TurnDraft draft, BoardPresentation data);
         bool Choose(TurnDraft draft, PlayerView view, string id);
         bool Remove(TurnDraft draft, PlayerView view, string id);
+        // UI-454 (owner, 2026-11-03): a figure taken up to be carried is armed as its click would arm it, never placed; false
+        // when nothing arms it (a figure that already has its region).
+        bool Arm(TurnDraft draft, PlayerView view, string id);
     }
 }

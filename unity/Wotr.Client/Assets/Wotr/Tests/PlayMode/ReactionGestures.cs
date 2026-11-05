@@ -7,8 +7,8 @@ using Wotr.Client;
 namespace Wotr.PlayTests
 {
     // UI-247: a reaction is used at its source — a battle portrait, the Guide's portrait in the Fellowship panel, a table
-    // card's × in the Effects panel, a Guide's Hunt response in the Hunt window's response row (UI-360) — or, without one,
-    // at its console or tray button.
+    // card in the Effects panel (UI-430: red, its tile's click uses it), a Guide's Hunt response in the Hunt window's
+    // response row (UI-360) — or, without one, at its console or tray button.
     internal static class ReactionGestures
     {
         private const string PortraitPrefix = "fellowship-portrait-";
@@ -54,17 +54,25 @@ namespace Wotr.PlayTests
             Assert.IsNotNull(response, "The Guide's response stands in the Hunt window's response row.");
             Assert.IsTrue(response.ClassListContains(ChoiceGlow.ClassName), "The Guide's response glows.");
             Assert.IsNull(board.Tray.Q<Button>("effect-choice-" + reactionId), "The tray lists no Guide response.");
-            StringAssert.EndsWith("Or Pass to skip it.", response.tooltip);
+            // UI-423: the Hunt window's Skip effect, beside the console's Pass.
+            StringAssert.EndsWith("Or click Skip effect (or Pass) to skip it.", response.tooltip);
             PointerGestureEvents.ClickAt(response);
         }
 
+        // UI-430 (owner): no "Use a table card" button; the lit Effects tab opens the panel, where the card is red and says
+        // why, and its tile's click uses it (RespondEffect).
         public static async Task TableCard(MatchTestRoom room, MountedMatchClient client, string card)
         {
-            CardNetworkTests.Click(client.Board.Console.Status.Options.Q<Button>("console-option-table-cards"));
-            var use = client.Board.TableEffects.Root.Q<Button>("remove-table-" + card);
-            await room.Until(() => use.enabledInHierarchy && use.worldBound.width > 0);
+            var board = client.Board;
+            Assert.IsNull(board.Console.Status.Options.Q<Button>("console-option-table-cards"), "No console button for the table card.");
+            Assert.IsTrue(board.TableEffects.Tab.ClassListContains("legal-target"), "The Effects tab lights.");
+            PointerGestureEvents.ClickAt(board.TableEffects.Tab);
+            var tile = board.TableEffects.Root.Q<Button>("effect-source-" + card);
+            await room.Until(() => tile.enabledInHierarchy && tile.worldBound.width > 0);
             await room.Settle();
-            CardNetworkTests.Click(use);
+            Assert.IsTrue(tile.ClassListContains(TableEffectsView.DiscardClass), "The card is red.");
+            StringAssert.StartsWith("Discard " + CardLibrary.Title(card) + " · Click to discard it and use its reaction", tile.tooltip);
+            PointerGestureEvents.ClickAt(tile);
         }
     }
 }

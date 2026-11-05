@@ -23,6 +23,7 @@ namespace Wotr.Client
                 {
                     var keep = BoardScreen.Button("Keep all", () => edit(() => draft.Change(p => p.Losses.Clear())));
                     keep.name = "battle-keep-all";
+                    keep.tooltip = KeepAllTooltip;
                     footer.Add(keep);
                 }
             }
@@ -55,6 +56,8 @@ namespace Wotr.Client
                         figure.userData = new DraftToken(DraftObject.Figure, id, action: draft.Kind);
                 }
                 refresh.Add(grid.Refresh);
+                if (draft.Kind == CommandKind.ExtendSiege)
+                    OfferSiegeFigures(grid);
             }
             if (draft.Kind == CommandKind.RetreatBattle)
             {
@@ -67,10 +70,16 @@ namespace Wotr.Client
             if (draft.Kind == CommandKind.AdvanceBattle)
             {
                 AddSelectAll(footer, option, draft, edit);
-                AddDirect(footer, "Stay", "battle-stay", draft.Kind.Value, direct);
+                var stay = AddDirect(footer, "Stay", "battle-stay", draft.Kind.Value, direct);
+                stay.tooltip = DirectTooltip(view, CommandKind.AdvanceBattle, data);
             }
-            foreach (var choice in view.Options.Where(o => o.Kind != draft.Kind && BattleDraft.IsImmediate(o.Kind)))
-                AddDirect(footer, DecisionTray.Label(choice.Kind), "action-" + choice.Kind, choice.Kind, direct);
+            // UI-347 (D12): Evil Knowledge is the Mouth of Sauron's portrait, not a button beside Extend / Stop.
+            foreach (var choice in view.Options.Where(o => o.Kind != draft.Kind && BattleDraft.IsImmediate(o.Kind) &&
+                         !(o.Kind == CommandKind.UseEvilKnowledge && EvilKnowledgeChoice.OnPortrait(view))))
+            {
+                var button = AddDirect(footer, DecisionTray.Label(choice.Kind), "action-" + choice.Kind, choice.Kind, direct, choice.Enabled);
+                button.tooltip = DirectTooltip(view, choice.Kind, data);
+            }
         }
 
         // UI-146: as in the region panel (UI-140), one toggle selects every figure that can advance, or, once all of
@@ -97,6 +106,24 @@ namespace Wotr.Client
             });
         }
 
+        // UI-434 (owner, after UI-433): "Click a highlighted figure to extend the siege with it" — one click extends, so no
+        // figure is chosen before it, and the grid drew every figure dimmed as one left behind. Each figure the extension may
+        // take wears the shared gold ChoiceGlow instead and breathes with the grid's pulse.
+        private void OfferSiegeFigures(FigureGrid grid)
+        {
+            var pulse = new ChoicePulse(grid.Root);
+            refresh.Add(() =>
+            {
+                var figures = grid.Root.Query<Button>(className: "figure").ToList();
+                foreach (var figure in figures)
+                {
+                    figure.RemoveFromClassList("left-behind");
+                    ChoiceGlow.Apply(figure, figure.enabledSelf);
+                }
+                pulse.Run(figures.Count > 0);
+            });
+        }
+
         // UI-208: a battle's figure choice (losses, advance, siege extension) stands in the column of the side it concerns,
         // in place of that side's composition: the same units, now as figures to choose. Event losses keep the tray.
         private static VisualElement ChoiceHost(VisualElement root, PlayerView view, Side? side)
@@ -108,6 +135,8 @@ namespace Wotr.Client
             if (column == null)
                 return root;
             column.AddToClassList("battle-force-choosing");
+            // UI-437: while a column chooses, both keep their rows at the top instead of levelling them (Battle.uss).
+            column.parent?.AddToClassList("battle-forces-choosing");
             return column;
         }
 
@@ -121,19 +150,49 @@ namespace Wotr.Client
                 : "Click to fight this round without a Combat card";
         }
 
-        internal static Button AddDirect(VisualElement root, string title, string name, CommandKind kind, Action<CommandKind> direct)
+        internal static Button AddDirect(VisualElement root, string title, string name, CommandKind kind, Action<CommandKind> direct,
+            bool usable = true)
+        {
+            var ability = AbilityArt.For(kind);
+            var button = ability.Length > 0 ? SkillChoice(ability, kind, direct, usable) : FramedChoice(title, name, kind, direct);
+            button.name = name;
+            root.Add(button);
+            return button;
+        }
+
+        // UI-116/UI-119: a framed direct choice carries its icon; the width lives in Battle.uss per button.
+        private static Button FramedChoice(string title, string name, CommandKind kind, Action<CommandKind> direct)
         {
             var button = BoardScreen.Button(title, () => direct(kind));
-            button.name = name;
-            // UI-116/UI-119: a framed direct choice carries its icon; the width lives in Battle.uss per button.
             var icon = name == "battle-no-card" ? "no-card" : name == "battle-stay" ? "hold" : IconFor(kind);
             if (icon.Length > 0)
             {
                 button.AddToClassList("battle-direct");
                 button.Add(DirectIcon(icon));
             }
-            root.Add(button);
+            button.tooltip = DirectTooltip(kind);
             return button;
+        }
+
+        // UI-440 (owner): a choice that uses an ability (Evil Knowledge, UI-439's icon) is the ability's bare icon, without
+        // the frame and the words; its tooltip names it. While usable it glows and pulses on its own (the footer hosts no
+        // pulse); otherwise it is read only and its click sends nothing.
+        public const string SkillChoiceClass = "battle-skill-choice";
+
+        private static Button SkillChoice(string ability, CommandKind kind, Action<CommandKind> direct, bool usable)
+        {
+            var button = SkillIcon.Create(ability, DirectTooltip(kind), () => SendSkill(kind, direct, usable));
+            button.AddToClassList(SkillChoiceClass);
+            ReadOnlyControl.Apply(button, usable);
+            ChoiceGlow.Apply(button, usable);
+            new ChoicePulse(button).Run(usable);
+            return button;
+        }
+
+        private static void SendSkill(CommandKind kind, Action<CommandKind> direct, bool usable)
+        {
+            if (usable)
+                direct(kind);
         }
 
         // UI-116: a framed direct choice may carry an icon; the text stays the control.
@@ -144,6 +203,44 @@ namespace Wotr.Client
             if (kind.Length > 0)
                 icon.AddToClassList("battle-direct-icon-" + kind);
             return icon;
+        }
+
+        // UI-271: the Mouth of Sauron's Evil Knowledge says what its click does. UI-440: its name leads, as a direct
+        // choice's label leads its tooltip, now that its button is the bare icon.
+        public static string DirectTooltip(CommandKind kind) => kind switch
+        {
+            CommandKind.UseEvilKnowledge => "Evil Knowledge · Click to extend the siege by one round without downgrading an Elite · Once per action",
+            _ => ""
+        };
+
+        public const string KeepAllTooltip = "Keep all · Take no voluntary losses";
+
+        // UI-420 (owner): a battle's direct choice says what its click does and names the battle's region. Stay is the
+        // empty advance (AdvanceBattle sent without figures).
+        public static string DirectTooltip(PlayerView view, CommandKind kind, BoardPresentation data)
+        {
+            var battle = view?.Battle;
+            if (battle == null)
+                return DirectTooltip(kind);
+            var region = ActionCardText.Region(battle.RegionId, data);
+            return kind switch
+            {
+                CommandKind.ContinueBattle => "Continue battle · Fight another Combat round in " + region,
+                CommandKind.StopBattle => StopTooltip(battle, region, data),
+                CommandKind.HoldBattle => "Hold position · Do not retreat; fight on in " + region,
+                CommandKind.FightFieldBattle => "Fight in field · Defend " + region + " outside the stronghold",
+                CommandKind.RetreatIntoSiege => "Retreat inside · Withdraw into the " + region + " stronghold",
+                CommandKind.AdvanceBattle => "Stay · No figure advances into " + region,
+                _ => DirectTooltip(kind)
+            };
+        }
+
+        private static string StopTooltip(BattleView battle, string region, BoardPresentation data)
+        {
+            var home = battle.Attacker.RegionId;
+            if (home.Length == 0 || home == battle.RegionId)
+                return "Stop battle · End the attack; your army stays in " + region;
+            return "Stop battle · End the attack on " + region + "; your army stays in " + ActionCardText.Region(home, data);
         }
 
         public static string IconFor(CommandKind kind) => kind switch

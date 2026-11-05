@@ -8,14 +8,18 @@ namespace Wotr.Client
     // UI-160: feeds the turn console from the projection and the draft, and routes its permanent actions through the
     // tray's own paths: Back, Confirm (Check result), finishing a multi-step action, the Pass and discard
     // components and the Elven Ring choice. The decision window opens only while the docked tray offers choices.
+    // UI-430 (owner): the ✓ also sends a card's Finish (FinishingOption), the way its old console button did.
     public sealed class TurnConsoleInteraction : IDisposable
     {
         private readonly BoardScreen board;
         private readonly DecisionTray tray;
         private readonly Action back;
+        private readonly Action cancel;
         private readonly Action confirm;
         private readonly Action finish;
         private readonly Action decline;
+        private readonly Action<ConsoleOption> declineOption;
+        private readonly Action<ConsoleOption> finishOption;
         private readonly Action<ComponentAction> component;
         private readonly Action<string> ring;
         private readonly Func<bool> reinforcing;
@@ -24,26 +28,33 @@ namespace Wotr.Client
         private bool idle;
         private bool uncertain;
         private string fallback = "";
+        private string fallbackDetail = "";
         private string trayHint = "";
         private string trayDetail = "";
 
         // reinforcing: a card or ability recruitment plan is under way; the Reinforcements panel holds its choices
-        // and its own ✓, so the decision window stays closed and the status opens that panel.
-        public TurnConsoleInteraction(BoardScreen board, DecisionTray tray, Action back, Action confirm, Action finish,
-            Action decline, Action<ComponentAction> component, Action<string> ring, Func<bool> reinforcing)
+        // and its own ✓, so the decision window stays closed and the status opens that panel. finishOption: the path a
+        // card's console option took (UI-214), which the ✓ takes for the card's Finish.
+        public TurnConsoleInteraction(BoardScreen board, DecisionTray tray, Action back, Action cancel, Action confirm, Action finish,
+            Action decline, Action<ConsoleOption> declineOption, Action<ConsoleOption> finishOption, Action<ComponentAction> component,
+            Action<string> ring, Func<bool> reinforcing)
         {
             this.board = board;
             this.tray = tray;
             this.back = back;
+            this.cancel = cancel;
             this.confirm = confirm;
             this.finish = finish;
             this.decline = decline;
+            this.declineOption = declineOption;
+            this.finishOption = finishOption;
             this.component = component;
             this.ring = ring;
             this.reinforcing = reinforcing;
             var console = board.Console;
             console.Status.Clicked += OpenDecisionHost;
             console.Actions.BackClicked += Back;
+            console.Actions.CancelClicked += Cancel;
             console.Actions.ConfirmClicked += Confirm;
             console.Actions.PassClicked += Pass;
             console.Actions.DiscardClicked += Discard;
@@ -65,6 +76,7 @@ namespace Wotr.Client
             board.DecisionWindow.Apply(choices, Heading(), view.MatchId + "/" + view.Decision?.Id + "/" + draft.Kind + (uncertain ? "/check" : ""));
             var state = TurnConsoleState.For(view, draft, board.ActionDie, RegionName);
             fallback = state.Guidance;
+            fallbackDetail = state.GuidanceDetail.Length > 0 ? state.GuidanceDetail : state.Guidance;
             // UI-292: the plaque glows and presses only when its click opens something.
             var clickable = Clickable(choices);
             board.Console.Status.Apply(state, clickable ? Opens(choices) : "");
@@ -75,7 +87,7 @@ namespace Wotr.Client
             // UI-171: the tray reports its hint before this refresh; a hint-less step shows the new guidance, not the last.
             ShowHint();
             var rings = ExpansionActions.RingKind(view, draft);
-            board.Console.Rings.Apply(view, draft.Payload.RingId, idle, DraftOptions.For(view, draft, rings), rings);
+            board.Console.Rings.Apply(view, draft.Payload.RingId, idle, DraftOptions.For(view, draft, rings), rings, draft.Payload.Ids);
             board.Console.Hunt.SetAllocating(view.Decision?.Kind == DecisionKind.AllocateHunt && view.DecisionOwner == view.You);
             RefreshActions(docked && !board.DecisionWindow.IsOpen);
         }
@@ -90,24 +102,33 @@ namespace Wotr.Client
             var components = ComponentActions.For(view, draft).ToList();
             var pass = components.FirstOrDefault(c => c.Kind == CommandKind.Pass);
             var discard = components.FirstOrDefault(c => c.Kind == CommandKind.DiscardDie);
-            // UI-291: in the player's own reaction window Pass declines it and names what it skips.
+            // UI-291: in the player's own reaction window Pass declines it and names what it skips; UI-347 (D7): so it does
+            // for the Lords' optional declines.
             var skip = ReactionSkip.Option(view) != null;
-            var passable = idle && (skip || pass?.Enabled == true);
-            ConsoleActions.Set(actions.Pass, passable, skip ? ReactionSkip.Tooltip(view) : Tooltip("Pass", CommandKind.Pass, pass));
+            var optional = skip ? null : OptionalDecline.Option(view, draft);
+            var passable = idle && (skip || optional?.Enabled == true || pass?.Enabled == true);
+            ConsoleActions.Set(actions.Pass, passable, skip ? ReactionSkip.Tooltip(view)
+                : optional != null ? optional.Tooltip : Tooltip("Pass", ConsoleActions.PassDetail, CommandKind.Pass, pass));
             actions.Invite(actions.Pass, passable);
             ConsoleActions.Set(actions.Discard, idle && discard?.Enabled == true,
-                Tooltip("Discard the selected die without effect", CommandKind.DiscardDie, discard));
+                Tooltip("Discard", DiscardDetail(), CommandKind.DiscardDie, discard));
             ConsoleActions.Set(actions.Back, idle && (onBoard || FellowshipBack()) && (draft.Kind.HasValue || draft.Payload.DieId.Length > 0),
                 "Back · Undo the last unsent step");
+            // UI-455 (owner): the fixed Cancel drops the whole unsent draft; greyed while there is nothing to drop.
+            ConsoleActions.Set(actions.Cancel, idle && DraftCancel.Offered(view, draft), DraftCancel.Tooltip(view, draft));
             var finishing = Finishing();
-            var card = CardChoice(onBoard);
-            ConsoleActions.Set(actions.Confirm, uncertain || idle && (finishing || card && tray.Legal),
+            var card = CardChoice(onBoard) || PlacedChoice();
+            var ending = CardFinish(onBoard);
+            var confirmable = uncertain || idle && (finishing || ending?.Enabled == true || card && ChoiceReady());
+            ConsoleActions.Set(actions.Confirm, confirmable,
                 uncertain ? "Check result · Recover the interrupted response"
-                : finishing ? "Finish · End this action; saved steps stay"
+                : finishing ? FinishTooltip()
+                : ending != null ? ending.Tooltip
                 : card ? ConfirmChoiceTooltip()
                 : "Finish · Available during an action of several steps");
-            // UI-298: where the tray offers no Check result (the Fellowship panel), the console's ✓ glows for it.
-            actions.Invite(actions.Confirm, uncertain && tray.RecoversInConsole);
+            // UI-298: where the tray offers no Check result (the Fellowship panel), the console's ✓ glows for it. UI-483 (owner,
+            // 2026-11-04): every ✓ that can be clicked now stands out.
+            actions.Invite(actions.Confirm, confirmable && (!uncertain || tray.RecoversInConsole));
             RefreshAllocation();
         }
 
@@ -136,14 +157,26 @@ namespace Wotr.Client
                 RefreshActions(OnBoard());
         }
 
-        // An unavailable action keeps its place and says why (the server's reason when it gave one).
-        private string Tooltip(string label, CommandKind kind, ComponentAction item)
+        // An available action says what it does; an unavailable one keeps its place and says why (the server's reason
+        // when it gave one).
+        private string Tooltip(string label, string detail, CommandKind kind, ComponentAction item)
         {
             if (item?.Enabled == true)
-                return label;
+                return TooltipText.Parts(label, detail);
             var reason = view.Options.FirstOrDefault(o => o.Kind == kind)?.Reason ?? "";
             return label + " · " + (reason.Length > 0 ? reason : kind == CommandKind.DiscardDie ? "Select one of your dice first" : "Not available now");
         }
+
+        // UI-420 (owner): Discard names the die it discards.
+        private string DiscardDetail()
+        {
+            var die = DieUse.Name(view, draft?.Payload.DieId);
+            return "Discard " + (die.Length > 0 ? "your " + die : "the selected die") + " without effect";
+        }
+
+        // UI-420 (owner): Finish names the action it ends.
+        private string FinishTooltip() =>
+            "Finish · End the action now (" + DecisionTray.Label(view.ActionSequence.Kind) + "); the steps already made stay";
 
         private void Hint(string text, string detail)
         {
@@ -159,19 +192,44 @@ namespace Wotr.Client
             var own = trayHint.Length > 0;
             var text = own ? trayHint : fallback;
             var progress = view != null && draft != null && CardDecisions.Owns(view, draft) ? CardDecisions.Progress(view, draft) : "";
-            board.Console.Status.SetHint(progress.Length > 0 ? progress + " · " + text : text, own ? trayDetail : fallback);
+            board.Console.Status.SetHint(WithDecline(progress.Length > 0 ? progress + " · " + text : text), own ? trayDetail : fallbackDetail);
         }
+
+        // UI-347 (D7): a step whose decline is the console's Pass says so, unless its hint already names Pass; UI-430: a
+        // step whose Finish is the console's ✓ likewise, and (UI-431, as on ability-chips) only while the ✓ can send it.
+        private string WithDecline(string text)
+        {
+            var decline = view != null && draft != null ? OptionalDecline.Hint(view, draft) : "";
+            var finish = idle && view != null && draft != null ? FinishingOption.Hint(view, draft) : "";
+            return Append(Append(text, decline, "Pass"), finish, "✓");
+        }
+
+        // The sentence joins the hint unless the hint already names its control.
+        private static string Append(string text, string sentence, string control) =>
+            sentence.Length == 0 || text.Contains(control) ? text : (text.Length > 0 ? text + " " : "") + sentence;
 
         private bool Finishing() => view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Owner == view.You;
 
         // UI-211: a card's decision whose choices are on the board or in the console is confirmed with the console's ✓.
         private bool CardChoice(bool onBoard) => onBoard && CardDecisions.Owns(view, draft);
 
+        // UI-430: the card's Finish the ✓ sends while nothing else is chosen, or null.
+        private ConsoleOption CardFinish(bool onBoard) => CardChoice(onBoard) ? FinishingOption.Option(view, draft) : null;
+
+        // UI-381: so is a choice planned on the board's objects (ConsoleConfirm).
+        private bool PlacedChoice() => ConsoleConfirm.Owns(view, draft, reinforcing());
+
+        // A recruitment plan is ready once Reinforcements finds it complete and the server's preview legal; any other
+        // choice once the preview is legal.
+        private bool ChoiceReady() => reinforcing() ? board.Reinforcements.ConfirmReady : tray.Legal;
+
         private string ConfirmChoiceTooltip()
         {
-            if (tray.Legal)
-                return "Confirm choice" + (tray.ConfirmTitle.Length > 0 ? " · " + tray.ConfirmTitle : "");
-            return "Confirm choice · " + (tray.Problem.Length > 0 ? tray.Problem : "Complete the choice first");
+            if (CouncilTravel.Active(view, draft))
+                return CouncilTravel.ConfirmTooltip(view, draft);
+            if (ChoiceReady())
+                return ConfirmSummary.Tooltip(view, draft, tray.ConfirmTitle);
+            return "Confirm · " + (tray.Problem.Length > 0 ? tray.Problem : "Complete the choice first");
         }
 
         private void Back()
@@ -180,13 +238,21 @@ namespace Wotr.Client
                 back();
         }
 
+        private void Cancel()
+        {
+            if (board.Console.Actions.Cancel.enabledSelf)
+                cancel();
+        }
+
         private void Confirm()
         {
             if (uncertain)
                 confirm();
             else if (idle && Finishing())
                 finish();
-            else if (idle && tray.Legal && CardChoice(OnBoard()))
+            else if (idle && CardFinish(OnBoard()) is { Enabled: true } ending)
+                finishOption(ending);
+            else if (idle && (CardChoice(OnBoard()) || PlacedChoice()) && ChoiceReady())
                 confirm();
         }
 
@@ -194,15 +260,23 @@ namespace Wotr.Client
 
         // UI-298: the Fellowship panel shows no arrow for a move, hide or entry left after a failed send; the console's
         // Back drops it.
-        private bool FellowshipBack() => FellowshipActions.UsesPanel(view, draft) && FellowshipActions.SentOnClick(draft.Kind);
+        // UI-448 (owner): the console's ↶ also undoes a step of a drawn Fellowship route (a declared or revealed position, a
+        // separation), wherever it is drawn (the Fellowship or the Hunt panel), which no longer has its own Undo step.
+        private bool FellowshipBack() => FellowshipDraft.SingleRoute(draft.Kind) ||
+            FellowshipActions.UsesPanel(view, draft) && FellowshipActions.SentOnClick(draft.Kind);
 
         private bool Allocating() => HuntActions.Allocation(view) is { } option && draft.Kind == CommandKind.AllocateHunt &&
             draft.Ready(option);
 
-        private void Pass()
+        // The console's Pass; UI-419: also the battle window's Skip effect.
+        public void Pass()
         {
-            if (view != null && idle && ReactionSkip.Option(view) != null)
+            if (view == null || !idle)
+                return;
+            if (ReactionSkip.Option(view) != null)
                 decline();
+            else if (OptionalDecline.Option(view, draft) is { Enabled: true } optional)
+                declineOption(optional);
             else
                 Choose(CommandKind.Pass);
         }
@@ -379,6 +453,7 @@ namespace Wotr.Client
             var console = board.Console;
             console.Status.Clicked -= OpenDecisionHost;
             console.Actions.BackClicked -= Back;
+            console.Actions.CancelClicked -= Cancel;
             console.Actions.ConfirmClicked -= Confirm;
             console.Actions.PassClicked -= Pass;
             console.Actions.DiscardClicked -= Discard;

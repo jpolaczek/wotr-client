@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="34" viewBox="0 0 44 34">
+  <!-- UI-400: the state of a character's round base, as rim-field does for an army's. -->
+  <path d="M2.5 13 A19.5 10 0 0 1 41.5 13 L41.5 19 A19.5 10 0 0 1 2.5 19 Z" style="fill: var(--ink); opacity: var(--rim-veil-opacity)"/>
+  <path d="M2.5 13 A19.5 10 0 0 1 41.5 13 L41.5 19 A19.5 10 0 0 1 2.5 19 Z" fill="none" style="stroke: var(--rim-color); opacity: var(--rim-opacity)" stroke-width="2.6" filter="url(#glow)"/>
+  <path d="M2.5 13 A19.5 10 0 0 1 41.5 13 L41.5 19 A19.5 10 0 0 1 2.5 19 Z" fill="none" style="stroke: var(--rim-color); opacity: var(--rim-opacity)" stroke-width="1.1"/>
+</svg>

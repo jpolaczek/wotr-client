@@ -59,7 +59,7 @@ The options specify the required choices and the base values of the optional ver
 
 Shadow sees the expectation and only allowed public context, without version, selections, private terms, number of candidates or progress. Guide reveals itself according to existing rules. Comparison of cards does not execute commands or log in private draft on the other side.
 
-ChooseCouncilHomelands occurs separately in the first Fellowship Phase, after corresponding earlier steps of the server. Portrait → legal region or drop changes local location; Fellowship withdraws allocation figure The set can be improved, one ✓ saves the whole, also an empty list. The panel also opens without authorized figures, according to the protection of the version.
+ChooseCouncilHomelands occurs separately in the first Fellowship Phase, after corresponding earlier steps of the server. Portrait → legal region or drop changes local location; Fellowship withdraws allocation figure The set can be improved, one ✓ saves the whole, also an empty list. The panel also opens without authorized figures, according to the protection of the version; since UI-482 the client then answers the step itself after a short random pause ([UX_SPEC](UX_SPEC.md#the-homelands-answer-themselves-with-no-companion-to-place--ui-482)).
 
 Preview shows effect: zero figures → no token; one → separate choice SH; two or more → both tokens. The SH selection goes to the UI-58 resource panel. We do not move the homelands before the first Recover or connect these decisions into one command. Once approved, the disclosure, policy and further phase according to the server, without the Unity's self-predictation.
 
@@ -151,7 +151,7 @@ CM12 – CM14 have the final 20/20 Play, 15/15 appropriate Editor in full 516/51
 <a id="ui-69--interakcje-cm10cm11"></a>
 ## UI-69 — interactions CM10/CM11
 
-The Homelands tab opens a separate private panel mode in the first Fellowship Phase, also in the absence of candidates. The portrait selects figure; click the legal region or drop edits only its allocation. Fellowship undos the allocation of the selected figure. The panel shows the current version, the nation icon and the token announcement: no / selection of one by SH / both.
+The Homelands tab opens a separate private panel mode in the first Fellowship Phase, also in the absence of candidates. The portrait selects figure; click the legal region or drop edits only its allocation. Fellowship undos the allocation of the selected figure. The panel shows the current version and the nation icon; since UI-482 the console's hint gives the token announcement: no / selection of one by SH / both.
 
 One ✓ approves the entire set, also empty. Shadow until then, he doesn't see any candidates, draft or a special empty form. Gimlie Fate's homeland comes from the server also without New Cities; the lack of an icon does not activate. After one departure, the token selection belongs to a separate resource panel Shadow; after two/five, both are automatically obtained. Close/Esc keep draft and camera; new ID opens the next context. Actual tests and limits acceptance save UI-69.
 
@@ -184,7 +184,8 @@ User decision with 2026-10-14: card characters are to fit the rest of the interf
   Fellowship, hourglass out of the game, broken sword removed, rising sun for a possible return)
   with region or short state. Tooltip line gives full state, statistics in words and entry
   conditions.
-- card (inspector) is a window in the frame `frames/panel` with a header plate: version name and tag
+- card (inspector) is a window in the thin card (`frontend/card-board` since UI-473, formerly `frames/panel` and a header plate)
+  with a quiet title over a hairline: version name and tag
   (Base, Lords, Fate...), state line with symbol and Location, pass symbol of statistics: level ★,
   movement (but) or flight (wing), ∞), level of combat (crossed swords), Leadership (the banner),
   the emblem of the nation (to Gandalf: the emblem of all Free Peoples Each symbol has tooltip;
@@ -216,7 +217,7 @@ User application from 2026-10-15: "Let's add descriptions in the tooltip of what
   ```
   Gimli · Level 2 · Leadership 1
   Captain of the West · +1 Combat Strength in battle (max 5 dice)
-  Dwarf of Erebor · Any die in Erebor moves the Dwarves a step toward war
+  Dwarf of Erebor · With Gimli in Erebor, any die advances the Dwarves a step toward war
   ```
 
 The abbreviation does not repeat the title (e.g. Gollum: ‘Guide · Joins the Fellowship when no Companions remain’).
@@ -256,3 +257,43 @@ The watching board names the opponent's characters while it presents their actio
 
 None of these is a control. The opponent's public figures stay inspectable by a click on the map, and a presentation
 never opens the Characters panel.
+
+<a id="usable-ability-chips--ui-369-2026-10-27"></a>
+## A usable ability's chip glows and offers Click to use — UI-369 (2026-10-27)
+
+Owner request: in a character's window the chip of an ability that can be used now glows; only when it is selected
+(clicked) does "Click to use" appear, and its click uses the ability; the same rule applies to the whole UI.
+
+- A chip glows (the shared choice glow and pulse) while the server offers its ability to this figure now, payable by
+  the selected die when one is chosen; the chip's tooltip adds "Usable now: click it, then Click to use."
+- A click selects the chip and unrolls its text as before; a second click on the selected chip changes nothing (the
+  window never shrinks under the pointer; another chip or page changes the selection). A usable ability's text carries
+  Click to use (a ✓ and the words) in the parchment's lower right corner, inside the text, so nothing else moves.
+- The ability lines name who must stand where (UI-365): "With Gimli in Erebor, any die advances the Dwarves a step
+  toward war", "With Legolas in an Elven Stronghold, …", "With Boromir in a Gondor City or Stronghold, …". Saruman's Voice has two uses
+  (recruit, upgrade): each has its own Click to use with its name. An action the selected die cannot pay keeps its
+  Click to use in place, disabled ("Select an eligible die to use it.").
+- The inspector no longer repeats an ability with a chip as a separate button; actions without a chip (entries,
+  movement costs such as the Balrog's) keep their buttons. A server command whose id differs from the printed ability
+  (Saruman's `voice-recruit`, `voice-upgrade`) is mapped to its chip in `CharacterAbilityChips.ChipOf`.
+- Tests: `CharacterRosterPanelTests.AUsableAbilityGlowsAndOffersClickToUseOnlyOnceSelected`,
+  `CharacterRosterActionNetworkTests` (Gimli's Messenger of Elrond through its chip, `ui369-click-to-use.png`).
+
+<a id="political-abilities-on-their-track--ui-366-2026-10-27"></a>
+## A character's political ability acts on its nation's track — UI-366 (2026-10-27)
+
+Owner request: a political ability (base game: Gimli in Erebor, Legolas in an Elven Stronghold, Boromir in a Gondor
+City or Stronghold; on the expansions line also Gimli's Dwarf of Renown, the Council's Messengers and Prince of
+Mirkwood) is used on its nation's track, not through Characters.
+
+- A die that pays for it lights the Politics tab (not Characters, `DieOptions`); open, the panel lights only that
+  nation's token, arrow and next station, whose tooltip names who, where and what: "Gimli in Erebor · Dwarf of Erebor:
+  click to spend this die to move the Dwarves one step toward war." (`CharacterPolitics`). A click on any of them sends
+  the ability with the die and the character's region. The console's hint is not taken over.
+- When the same die could also make the Muster step on that nation, the click makes the Muster step (the ability's
+  explanation then stands aside); an ability that also activates a passive nation is preferred.
+- Using it, from the track or from the chip's Click to use (UI-369), opens Politics if it is closed and the token
+  travels to its new station as in the opponent's political beat (`PoliticalPanel.PresentOwnStep`); every own step from
+  the track travels the same way.
+- Test: `CharacterRosterPanelTests.APoliticalAbilityIsOfferedOnItsNationsTrack`.
+

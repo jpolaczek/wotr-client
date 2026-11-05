@@ -21,7 +21,7 @@ namespace Wotr.PlayTests
             this.board = board;
             context = $"{kind}-{width}-{scale:0.00}";
             observed = new[] { board.Root, board.Map.parent, board.Characters.Root,
-                board.Characters.Inspector.Root, board.Victory.Tab, board.CompanionSetup.Root };
+                board.Characters.Inspector.Root, board.Victory.Tab };
             foreach (var element in observed)
                 element.RegisterCallback<GeometryChangedEvent>(Changed);
             Application.logMessageReceived += Logged;

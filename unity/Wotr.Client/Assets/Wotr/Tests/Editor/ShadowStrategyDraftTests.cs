@@ -72,7 +72,7 @@ namespace Wotr.EditorTests
             Assert.AreEqual("Army eliminated · No Combat roll.", BattleSummary.Describe(draft, view, preview));
             BattleDraft.Loss(draft, "elite", BattleLossKind.Downgrade);
             preview.Placements.Add(new UnitPlacementChoice { UnitId = "replacement", RegionId = "osgiliath" });
-            Assert.AreEqual("Elite → Regular · Combat +1 · Re-roll unchanged.", BattleSummary.Describe(draft, view, preview));
+            Assert.AreEqual("Elite → Regular · Combat +1 · Reroll unchanged.", BattleSummary.Describe(draft, view, preview));
         }
     }
 }

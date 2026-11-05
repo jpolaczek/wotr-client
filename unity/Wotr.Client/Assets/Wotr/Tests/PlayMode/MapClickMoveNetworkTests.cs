@@ -36,7 +36,16 @@ namespace Wotr.PlayTests
             Assert.IsTrue(Selected(board, soldier));
             Assert.AreEqual(2, board.Hover.Panel.Root.Query<Button>(className: "selected").ToList().Count);
             var revision = board.View.Revision;
+            // UI-404: the sent step's raised figures fly on from the hand, so the flight's first frame is already raised.
+            FlightSnapshot? first = null;
+            var watch = board.Map.Figures.Root.schedule
+                .Execute(() => first ??= board.Map.Figures.Flight("unit:" + nazgul))
+                .Every(1);
             await ArmyGestures.Target(room, room.Sh, "pelargir");
+            watch.Pause();
+            Assert.IsTrue(first.HasValue, "The Shadow's own march flies.");
+            Assert.AreEqual(1, first.Value.Frame.Lift, 1e-4f, "It goes on from the hand's raised pose, never rising from the table.");
+            Assert.IsEmpty(board.Map.Query(className: "figure-hand-piece").ToList(), "The hand gave the figures to the flight.");
             Assert.AreEqual(revision + 1, room.Fp.Board.View.Revision);
             var units = room.Fp.Board.View.Units;
             Assert.AreEqual("pelargir", units.Single(u => u.Id == nazgul).Location);

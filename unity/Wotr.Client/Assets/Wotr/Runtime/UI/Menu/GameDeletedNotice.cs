@@ -20,6 +20,8 @@ namespace Wotr.Client
         {
             Root.AddToClassList("settings-scrim");
             Root.AddToClassList("confirmation");
+            // UI-470 (owner, 2026-11-03): the notice wears the menus' thin-line chrome.
+            FrontendTheme.ApplyChrome(Root);
             Root.style.display = DisplayStyle.None;
             var window = new VisualElement { name = "game-deleted-window" };
             window.AddToClassList("confirm-window");

@@ -1,7 +1,7 @@
 [
   {
     "id": "fate.fp.character.17",
-    "event": "Separate one Companion or one group from the Fellowship, adding one region to their movement range. Afterwards, if Gimli or Legolas is in Carrock, Iron Hills or Woodland Realm, activate the North and advance Dwarves, Elves and North by one political step each.",
+    "event": "Separate one Companion or one group from the Fellowship, adding one region to their movement range. Afterwards, if Gimli or Legolas is in Carrock, the Iron Hills or the Woodland Realm, activate the North and advance the Dwarves, Elves and North by one political step each.",
     "combatTitle": "Brave Stand",
     "combat": "Requires a Companion in the battle. Reduce the Shadow Combat roll by one die per participating Companion; at least one die remains.",
     "initiative": [
@@ -10,7 +10,7 @@
   },
   {
     "id": "fate.fp.strategy.04",
-    "event": "Move any number of Companions who are outside the Fellowship. Afterwards, if a Companion is in Iron Hills or Ered Luin, bring the Dwarves directly to At War and recruit one Dwarven Regular or Elite in that region.",
+    "event": "Move any number of Companions who are outside the Fellowship. Afterwards, if a Companion is in the Iron Hills or Ered Luin, bring the Dwarves directly to At War and recruit one Dwarven Regular or Elite in that region (your choice if both).",
     "combatTitle": "Advantageous Position",
     "combat": "Requires the defending Army to be within a Free Peoples nation. Apply -1 to every Shadow Combat die. Natural sixes still hit.",
     "initiative": [
@@ -37,7 +37,7 @@
   },
   {
     "id": "fate.sh.strategy.20",
-    "event": "Recruit three Sauron Regulars in Dol Guldur, plus three in either Mount Gundabad or Erebor. Choose one of those two destinations; distribute a limited reserve between the legal regions.",
+    "event": "Recruit three Sauron Regulars in Dol Guldur and three in either Mount Gundabad or Erebor. If fewer than six remain in the Reserve, you choose how to split them.",
     "combatTitle": "Onslaught",
     "combat": "After ordinary Combat and Leader re-roll casualties, you may take up to four additional hits on your own units. For each hit taken, roll one separate die: each result of 4 or higher inflicts one hit on the enemy.",
     "initiative": [

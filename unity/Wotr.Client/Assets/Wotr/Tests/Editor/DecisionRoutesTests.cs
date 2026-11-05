@@ -15,6 +15,9 @@ namespace Wotr.EditorTests
         [TestCase(DecisionKind.EffectChoice, "ArmyFigures", DecisionHost.RegionPanel)]
         [TestCase(DecisionKind.EffectChoice, "TableCards", DecisionHost.Effects)]
         [TestCase(DecisionKind.EffectChoice, "ActionDie", DecisionHost.Dice)]
+        [TestCase(DecisionKind.EffectChoice, "DieAndResult", DecisionHost.Dice)]
+        [TestCase(DecisionKind.EffectChoice, "InspectedHand", DecisionHost.Hand)]
+        [TestCase(DecisionKind.EffectChoice, "ElvenRings", DecisionHost.Rings)]
         [TestCase(DecisionKind.EffectChoice, "CaptainOrder", DecisionHost.Console)]
         [TestCase(DecisionKind.EffectChoice, "FellowshipCompanions", DecisionHost.Fellowship)]
         [TestCase(DecisionKind.EffectChoice, "Unmigrated", DecisionHost.Window)]
@@ -27,6 +30,66 @@ namespace Wotr.EditorTests
             };
             Assert.AreEqual(host, DecisionRoutes.Of(view));
         }
+
+        // UI-264: every decision kind has a host; only a card's step (by presentation) may still fall back to the window.
+        [Test]
+        public void EveryDecisionKindHasAnObjectHost()
+        {
+            foreach (DecisionKind kind in System.Enum.GetValues(typeof(DecisionKind)))
+            {
+                if (kind is DecisionKind.EffectChoice or DecisionKind.CharacterEvent or DecisionKind.Reaction)
+                    continue;
+                Assert.AreNotEqual(DecisionHost.Window, DecisionRoutes.Of(Own(kind, "")), kind.ToString());
+            }
+        }
+
+        // UI-264: the special-die pick and the Ruler discard live in the dice pool. The rest are routed to the expansion
+        // panels that host them until their tasks move them onto objects.
+        [TestCase(DecisionKind.SpecialDieChoice, DecisionHost.Dice)]
+        [TestCase(DecisionKind.RulerDiscard, DecisionHost.Dice)]
+        [TestCase(DecisionKind.KeepActionDie, DecisionHost.Rings)]      // UI-268: Vilya socket and the paid die
+        [TestCase(DecisionKind.Dismay, DecisionHost.Dice)]              // UI-276: glowing Ruler dice
+        [TestCase(DecisionKind.CouncilToken, DecisionHost.Dice)]         // UI-270: the tokens in the Shadow pool
+        [TestCase(DecisionKind.CouncilVersions, DecisionHost.Fellowship)] // UI-269: Fellowship portraits
+        [TestCase(DecisionKind.CouncilHomelands, DecisionHost.Fellowship)] // UI-270: Fellowship portraits and regions
+        [TestCase(DecisionKind.CorruptionTile, DecisionHost.Characters)] // UI-274: beside the sovereign's portrait
+        public void ExpansionDecisionsHaveTheirHosts(DecisionKind kind, DecisionHost host) =>
+            Assert.AreEqual(host, DecisionRoutes.Of(Own(kind, "")));
+
+        // UI-264: the expansions' card steps: a sovereign is chosen at the sovereigns, a two-way mode is a console
+        // button; a Sequential corruption draw is a CorruptionTile decision and goes by its kind.
+        [TestCase(DecisionKind.EffectChoice, "Sovereign", DecisionHost.Characters)]
+        [TestCase(DecisionKind.EffectChoice, "SovereignCardBranch", DecisionHost.Console)]
+        [TestCase(DecisionKind.EffectChoice, "EffectTargets", DecisionHost.Console)]
+        [TestCase(DecisionKind.CorruptionTile, "CorruptionSequential", DecisionHost.Characters)]
+        public void ExpansionCardStepsHaveObjectHosts(DecisionKind kind, string presentation, DecisionHost host) =>
+            Assert.AreEqual(host, DecisionRoutes.Of(Own(kind, presentation)));
+
+        // UI-266: the Fate cards' steps: separations and the Guide on the Fellowship portraits, regions on the map,
+        // the recruits and recruitment plans in the reserve, the Monsters Roused branches as console buttons.
+        [TestCase(DecisionKind.CompanionSeparation, "", DecisionHost.Fellowship)]   // There and Back Again, Book of Mazarbul
+        [TestCase(DecisionKind.Guide, "", DecisionHost.Fellowship)]                 // There and Back Again
+        [TestCase(DecisionKind.EffectChoice, "Region", DecisionHost.Map)]           // Book, Orcs Multiplying Again, Monsters
+        [TestCase(DecisionKind.EffectChoice, "ReserveFigures", DecisionHost.Reserve)] // Book of Mazarbul
+        [TestCase(DecisionKind.EffectChoice, "RecruitmentPlan", DecisionHost.Reserve)] // Bardings, Dwarves, Orcs, Monsters
+        [TestCase(DecisionKind.EffectChoice, "EffectTargets", DecisionHost.Console)] // Monsters Roused
+        public void FateCardStepsHaveObjectHosts(DecisionKind kind, string presentation, DecisionHost host) =>
+            Assert.AreEqual(host, DecisionRoutes.Of(Own(kind, presentation)));
+
+        // UI-266: Gimli, Dwarven Lord leaves as the Guide from the Hunt's response row.
+        [Test]
+        public void GimlisGuideResponseStaysInTheHunt()
+        {
+            var view = Own(DecisionKind.Reaction, "");
+            view.Hunt = new HuntView();
+            Assert.AreEqual(DecisionHost.Hunt, DecisionRoutes.Of(view));
+        }
+
+        private static PlayerView Own(DecisionKind kind, string presentation) => new PlayerView
+        {
+            You = Side.Shadow, DecisionOwner = Side.Shadow,
+            Decision = new DecisionView { Id = "d", Kind = kind, Presentation = presentation }
+        };
 
         // UI-294: a card's journey of companions outside the Fellowship is made on the map; Gwaihir's separation of the
         // Fellowship's companions stays with the panel.

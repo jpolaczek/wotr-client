@@ -11,9 +11,18 @@ namespace Wotr.Client
             !CompanionJourneyDraft.Active(view, draft) &&
             (view.Decision?.Kind is DecisionKind.FellowshipPhase or DecisionKind.Guide or
                 DecisionKind.FellowshipRoute or DecisionKind.CompanionSeparation || GuideResponse(view) ||
+                // UI-269/UI-270: the private companion versions, the starting Guide and the homelands are chosen on its
+                // portraits.
+                CompanionSetupPresentation.Versions(view) || CompanionSetupPresentation.Homelands(view) ||
                 draft?.Kind is CommandKind.MoveFellowship or CommandKind.HideFellowship or CommandKind.DeclareFellowship or
                     CommandKind.RevealFellowship or CommandKind.SeparateCompanions or CommandKind.SelectGuide or CommandKind.EnterMordor);
 
+        // UI-482 (owner, 2026-11-04): the first turn's Fellowship phase without a declaration: the server offers none that
+        // could change nothing (EXP-19), and the Fellowship has not moved.
+        public static bool NothingToDeclare(PlayerView view) => view.Turn == 1 && view.Fellowship.Progress == 0 &&
+            view.Decision?.Kind == DecisionKind.FellowshipPhase && view.Options.All(o => o.Kind != CommandKind.DeclareFellowship);
+
+        // Hiding takes the die the server lists (any die with Strider as Guide); UI-461: a Will die hides as a Character.
         public static ActionOption Option(PlayerView view, ActionDieContext context, CommandKind kind, TurnDraft draft = null)
         {
             if (view?.Decision == null || view.DecisionOwner != view.You)
@@ -21,7 +30,7 @@ namespace Wotr.Client
             var options = draft == null ? view.Options : new[] { DraftOptions.For(view, draft, kind) }.Where(o => o != null);
             return options.FirstOrDefault(o => o.Kind == kind && o.Enabled &&
                 (o.EligibleDice.Count == 0 || o.EligibleDice.Contains(context.DieId) &&
-                    (kind == CommandKind.HideFellowship || context.Supports(DieFace.Character))));
+                    (kind == CommandKind.HideFellowship && !context.Will || context.Supports(DieFace.Character))));
         }
 
         public static bool Choose(PlayerView view, TurnDraft draft, ActionDieContext context, CommandKind kind)
@@ -30,7 +39,9 @@ namespace Wotr.Client
             if (option == null)
                 return false;
             var token = draft.Payload.RulerTokenId;
-            var ability = option.RulerTravel?.AbilityId == draft.Payload.AbilityId ? draft.Payload.AbilityId : "";
+            // UI-389: Thranduil's token lights the Fellowship's move, which carries his Far-sighted.
+            var ability = token.Length > 0 ? ExpansionDraft.TokenAbility(view, token, kind)
+                : option.RulerTravel?.AbilityId == draft.Payload.AbilityId ? draft.Payload.AbilityId : "";
             // UI-298: choosing the action is one undo step, so the first Back drops it.
             draft.Gesture(() =>
             {
@@ -110,7 +121,15 @@ namespace Wotr.Client
 
         public static bool Immediate(CommandKind? kind) => kind == CommandKind.SelectGuide;
 
-        public const string HideHint = "Hide: click the glowing Fellowship figure on the map or its glowing marker on the Fellowship track · No progress or extra Hunt die.";
+        // UI-420 (owner): one wording of the hide and the move wherever they are offered — the figure on the map, the
+        // marker and the symbol on the track, and the console's hint.
+        public const string HideEffect = "No progress; this die does not enter the Hunt";
+        public const string MoveEffect = "Progress +1, then the Hunt; its last known position stays";
+        public const string HideTooltip = "Click to hide the Fellowship · " + HideEffect;
+        public const string MoveTooltip = "Click to move the Fellowship · " + MoveEffect;
+
+        public const string HideHint = "Hide: click the glowing Fellowship figure on the map or its glowing marker on the Fellowship track · " +
+            HideEffect + ".";
 
         public static string ActionHint(PlayerView view, TurnDraft draft, ActionDieContext context)
         {
@@ -132,6 +151,6 @@ namespace Wotr.Client
         }
 
         public const string MoveHint = "Move: click the glowing Fellowship figure on the map or the glowing track symbol · " +
-            "Progress +1 and resolve the Hunt; the map position stays unchanged.";
+            MoveEffect + ".";
     }
 }

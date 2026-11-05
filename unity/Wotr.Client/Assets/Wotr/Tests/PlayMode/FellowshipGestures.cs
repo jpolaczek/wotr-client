@@ -128,8 +128,10 @@ namespace Wotr.PlayTests
             var clicked = false;
             tray.schedule.Execute(() =>
             {
-                var confirm = tray.Q<Button>("confirm-decision");
-                if (clicked || confirm == null || !confirm.enabledInHierarchy)
+                // UI-481: a decision the Fellowship panel hosts confirms with the console's ✓.
+                var confirm = tray.Q<Button>("confirm-decision") is { } own && own.resolvedStyle.display != DisplayStyle.None
+                    ? own : client.Board.Console.Actions.Confirm;
+                if (clicked || !confirm.enabledInHierarchy)
                     return;
                 clicked = true;
                 CardNetworkTests.Click(confirm);

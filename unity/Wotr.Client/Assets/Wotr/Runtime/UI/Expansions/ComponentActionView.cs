@@ -6,7 +6,8 @@ using UnityEngine.UIElements;
 namespace Wotr.Client
 {
     // Stable controls preserve focus while the chosen die changes their availability. UI-286: a character's ability is
-    // a small picture that glows and pulses only while a click can use it.
+    // a small picture that glows and pulses only while a click can use it; UI-439: the ability's own icon, with a badge
+    // when the ability has several commands; UI-440: the bare skill icon (SkillIcon), no frame.
     public sealed class ComponentActionView
     {
         public VisualElement Root { get; } = BoardScreen.Row("component-actions");
@@ -63,18 +64,46 @@ namespace Wotr.Client
                 return IconButton.Create(item.Icon, item.Detail, select);
             if (item.Picture.Length == 0)
                 return BoardScreen.Button("", select);
-            var button = IconButton.Picture(item.Picture, Tooltip(item), select);
-            button.AddToClassList("ability-icon");
+            var skill = SkillParts(item) != null;
+            var button = skill ? SkillIcon.Create(item.Picture, Tooltip(item), select) : IconButton.Picture(item.Picture, Tooltip(item), select);
+            button.AddToClassList(AbilityClass);
+            button.EnableInClassList(RuntimeTooltip.FormattedClass, skill);
+            if (item.Badge.Length > 0)
+                IconButton.AddBadge(button, item.Badge);
             return button;
         }
 
-        // A picture names its owner and what it does; a text button already shows its owner.
+        public const string AbilityClass = "ability-icon";
+        public const string ChooseDie = "Select an eligible die to use it";
+
+        // A picture names its owner and what it does; a text button already shows its owner. UI-440: a skill's button
+        // reads the skill's formatted description, as its icon in the character's window does.
         private static string Tooltip(ComponentAction item)
         {
             if (item.Picture.Length == 0)
                 return item.Detail + (item.Enabled ? "" : " · Select an eligible die");
-            var detail = (item.Owner.Length > 0 ? item.Owner + " · " : "") + item.Detail;
-            return detail + (item.Enabled ? "\nClick to use" : "\nSelect an eligible die to use it");
+            var skill = SkillParts(item);
+            if (skill != null)
+                return SkillTooltip.Format(skill);
+            var ability = ComponentActions.AbilityTitle(item.Character);
+            var detail = (item.Owner.Length > 0 ? item.Owner + " · " : "") + (ability.Length > 0 ? ability + " · " : "") + item.Detail;
+            return detail + (item.Enabled ? "\nClick to use" : "\n" + (item.Reason.Length > 0 ? item.Reason : ChooseDie));
+        }
+
+        // UI-440: a button that uses a printed ability is its bare skill icon with the skill's description; an entry (the
+        // board pin on its frame) uses none.
+        private static SkillTooltip.Parts SkillParts(ComponentAction item)
+        {
+            var ability = item.Picture == ComponentActions.EntryPicture ? "" : CharacterAbilitySlots.Printed(item);
+            var parts = ability.Length > 0 ? SkillTooltip.Of(item.Definition, ability) : null;
+            if (parts == null || parts.Name.Length == 0)
+                return null;
+            var variant = AbilityVariants.KeyOf(item, ability);
+            parts.Variant = AbilityVariants.For(ability).FirstOrDefault(candidate => candidate.Key == variant)?.Name ?? "";
+            parts.Owner = item.Owner == parts.Name ? "" : item.Owner;
+            parts.State = item.Enabled ? SkillUse.ClickToUse(item.Detail) : item.Reason.Length > 0 ? item.Reason : ChooseDie;
+            parts.Ready = item.Enabled;
+            return parts;
         }
     }
 }

@@ -35,7 +35,13 @@ window. MVP scope: base-game cards. Expansion decisions stay on their own panels
 4. **Choices without an object sit in the console.** A card's modes and yes/no options
    (e.g. "Recruit 2 Nazgûl" / "Move Nazgûl", "Discard a card" / "Hunt roll" / "Finish",
    "Decline") replace the hint lines of the status zone as up to three compact buttons in one
-   row. A click that completes the decision sends it at once (UI-142).
+   row. A click that completes the decision sends it at once (UI-142). UI-430 (owner, 2026-10-30): a button stands only
+   for an option with no other picture on the board — The Nazgûl Strike!'s table cards are red in the Effects panel, its
+   Hunt roll is the glowing Hunt Box, a Finish is the console's ✓, and a decline stays Pass / Skip effect
+   ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)). UI-431 (2026-10-31): so are the examples
+   above — "Recruit 2 Nazgûl" is the Reserve's Nazgûl and "Move Nazgûl" the map's, a region's two forces are its panel's
+   sections, a card army event's Move/Attack are its lit targets and its Skip maneuver the ✓, Lure of the Ring's choice is
+   the companion's red portrait and the corruption marker, Monsters Roused's halves are their regions ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 5. **No floating decision window for base-game card decisions.** Battles, the Hunt, the
    Fellowship panel and Politics keep hosting the decisions that belong to them (they are part
    of the fixed UI). A list that cannot fit in the console is the only exception and has to be
@@ -54,17 +60,17 @@ floating decision window (UI-160).
 | Group | Cards | Today | Target | Task |
 | --- | --- | --- | --- | --- |
 | Map click only (`Region`) | Return to Valinor, Spirit of Mordor, Faramir's Rangers, Círdan's Ships, Riders of Théoden, Éomer, Half-orcs, Olog-hai, Rage of the Dunlendings (region), Eagles are Coming!, Cruel Weather | Map; hint in the console | Unchanged; card title and progress in the console | UI-211 |
-| Same-region alternatives | Dreadful Spells (field army or garrison in one region) | Two buttons in the window | Two buttons in the console | UI-214 |
+| Same-region alternatives | Dreadful Spells (field army or garrison in one region) | Two buttons in the window | Two buttons in the console. UI-431: none — the lit region opens its panel, whose glowing force sections choose | UI-214, UI-431 |
 | Board components | Mirror of Galadriel (die), Palantír of Orthanc (deck) | Die in the pool, deck by the hand | Unchanged | — |
 | Several dice and Confirm | The Lidless Eye (0–3 dice) | Dice in the pool; a window holding only Confirm | Dice in the pool; ✓ in the console | UI-214 |
 | Nazgûl flights (`CharacterEvent`) | Nazgûl Search, The Nazgûl Strike!, The Ringwraiths Are Abroad, The Black Captain Commands (fly) | Portrait buttons, groups and "Finish movement" in the window; destinations on the map | Movable Nazgûl highlighted on the map; arm a stack once and distribute by destination clicks; ✓ in the console | UI-212 |
 | Card recruitment (`RecruitmentPlan`, `ReserveFigures`) | A New Power is Rising, Shadows on the Misty Mountains, Horde from the East, Many Kings, Pits of Mordor, Círdan's Ships, Swords in Eriador, Dead Men (recruits), national recruit cards when both Regular and Elite are available | Reserve panel; the armed token is released after each placement | Reserve tab and eligible tokens highlighted; the armed token stays armed while it can still be placed; ✓ in the console | UI-213 |
-| Card modes and options | The Black Captain Commands (order), The Nazgûl Strike! (discard, roll or finish), Lure of the Ring (Free Peoples' choice), There is Another Way | Option buttons in the window | Option buttons in the console; The Nazgûl Strike!'s table cards are discarded with their × in the lit Effects panel ("Discard a table card" opens it) | UI-214 |
+| Card modes and options | The Black Captain Commands (order), The Nazgûl Strike! (discard, roll or finish), Lure of the Ring (Free Peoples' choice), There is Another Way | Option buttons in the window | Option buttons in the console; The Nazgûl Strike!'s table cards are discarded with their × in the lit Effects panel ("Discard a table card" opens it). UI-430: the Strike's table cards red (tile or ×), its Hunt roll the Hunt Box, its Finish and Another Way's Stay the ✓ — no buttons. UI-431: the Black Captain's recruit the Reserve's Nazgûl (a button only with none in the reserve), its move the map's Nazgûl; Lure of the Ring's the companion's red portrait and the corruption marker | UI-214, UI-430, UI-431 |
 | Reactions outside the Hunt and battles | The Ents Awake follow-up (Decline), Gandalf the Grey's draw, Balrog of Moria at a declaration, a reveal outside the Hunt | Response list and Decline in the window | Use in the card preview (UI-164) of the lit hand card; Decline and object-less responses in the console. Exception: more than three console buttons keep the window | UI-214 |
 | Figures of one army (`ArmyFigure`, `ArmyFigures`) | Denethor's Folly, Stormcrow (Free Peoples' loss), The Grey Company, Hill-Trolls, Rage of the Dunlendings (units to move) | Region click, then figure buttons and Confirm in the window | Eligible regions highlighted; the region panel lists the army with eligible figures highlighted; figure clicks; ✓ in the console | UI-215 |
 | Companions with a destination | Dead Men of Dunharrow | Companion buttons and Confirm in the window; destination on the map | Companions highlighted on the map and in the region panel; destination on the map; ✓ in the console | UI-215 |
 | Excess figures after a card | Stack limit after card recruitment (`RemoveExcess`) | Figure list and Confirm in the window | Region panel with the excess figures highlighted; ✓ in the console | UI-215 |
-| Card army events (`ArmyEvent`) | Help Unlooked For, Paths of the Woses, Through a Day and a Night, Shadows Gather, The Shadow Lengthens, The Shadow is Moving, Corsairs of Umbar, The Ringwraiths Are Abroad and The Black Captain Commands (manoeuvre), Grond, The Fighting Uruk-hai | Plan list, routes and Confirm in the window | Armies highlighted on the map; army moves and attacks with the map and region panel as with an Army die (UI-105); "Skip manoeuvre" and progress in the console; ✓ in the console | UI-216 |
+| Card army events (`ArmyEvent`) | Help Unlooked For, Paths of the Woses, Through a Day and a Night, Shadows Gather, The Shadow Lengthens, The Shadow is Moving, Corsairs of Umbar, The Ringwraiths Are Abroad and The Black Captain Commands (manoeuvre), Grond, The Fighting Uruk-hai | Plan list, routes and Confirm in the window | Armies highlighted on the map; army moves and attacks with the map and region panel as with an Army die (UI-105); "Skip manoeuvre" and progress in the console; ✓ in the console. UI-431: no mode buttons — moves and red attack targets lit together, Skip manoeuvre the ✓ | UI-216, UI-431 |
 | Fellowship, Hunt, battle and Politics hosts | Gwaihir, We Prove the Swifter, Book of Mazarbul, Fear! Fire! Foes!, I Will Go Alone, There and Back Again; Breaking of the Fellowship, Worn with Sorrow and Toil, Hunt tile cards and table-card reactions; event losses and combat cards; Wisdom of Elrond, Stormcrow (nation) | Their panels and windows | Unchanged (UI-294, 2026-10-20: a journey of companions outside the Fellowship moved to the map with the console's ✓, FELLOWSHIP_UX) | — |
 
 ## Interaction details
@@ -135,7 +141,8 @@ floating decision window (UI-160).
   not a card in the hand, plus Decline, outside the Hunt, battles and event losses. Buttons keep the tray's names
   (`effect-choice-<id>`, `action-DeclineReaction`). The Nazgûl Strike!'s table cards are offered in the Effects
   panel (`TableEffectsView.Offer`): the tab and the cards are lit, their × discards and sends; the console's
-  "Discard a table card" opens the panel at the first offered card. A reaction card in the hand is lit
+  "Discard a table card" opens the panel at the first offered card (UI-430, 2026-10-30: gone — the cards are red and
+  their tiles' click discards them; the Strike's Hunt roll is the Hunt Box and its Finish the ✓). A reaction card in the hand is lit
   ("Click, then Use its reaction") and answers with its preview's Use. `ConsoleStatus.SetOptions` replaces the hint
   with up to three buttons in its place and rebuilds them only when the set changes; `ConsoleOptionsInteraction`
   sends a completing click through `TurnInteraction` (CompleteChoice, or DeclineReaction). The tray builds none of
@@ -165,6 +172,9 @@ floating decision window (UI-160).
   Figure clicks toggle through `EventArmyDraft.Toggle` (route events) or `ArmyDraft.Toggle`. The event's other
   options are console buttons (`ConsoleOptionKind.Action`, named `action-<Kind>`, e.g. Skip maneuver); the console
   shows "Armies moved n of m" and its ✓ sends. The tray builds no plan list, route label, figure grid or alternatives.
+  UI-431 (2026-10-31): the other step's targets light with the chosen army's (attacks red, `CardArmyEvent.OtherTargets`)
+  and their click switches the step (`Switch`); Skip maneuver is the ✓ while no army is chosen (`FinishingOption`), so
+  the console has no buttons ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 - **UI-164 (aggregate).** CC09 for both sides: while the other side decides outside a battle and the Hunt, the
   committed steps of the effect trail do not count as window choices either, so the waiting side gets no window that
   only recalls a card (a Nazgûl Search's player after the flights). The recorded Shadow04 layout failure was the Combat
@@ -178,10 +188,10 @@ floating decision window (UI-160).
 | CC02 | Nazgûl Search confirmed with no move | UI-212 |
 | CC03 | Shadows on the Misty Mountains: Nazgûl token armed once, 2 units and the Nazgûl placed by region clicks; Reserve tab and tokens lit; ✓ in the console | UI-213 |
 | CC04 | Many Kings: three settlements filled with one armed token; ↶ removes the last placement | UI-213 |
-| CC05 | The Black Captain Commands: Recruit/Move in the console; Move continues as CC01 | UI-214 |
-| CC06 | The Nazgûl Strike! options in the console after the flights; a table card discarded with its × in the Effects panel | UI-214 |
+| CC05 | The Black Captain Commands: Recruit/Move in the console; Move continues as CC01 (UI-431: Recruit the Reserve's lit Nazgûl, Move the map's, whose click arms that stack in the flight) | UI-214, UI-431 |
+| CC06 | The Nazgûl Strike! options in the console after the flights; a table card discarded with its × in the Effects panel (UI-430: no console options; a red table card's tile or ×, the glowing Hunt Box, the ✓) | UI-214, UI-430 |
 | CC07 | Hill-Trolls: two regulars chosen in the region panel; ✓ in the console | UI-215 |
-| CC08 | Shadows Gather: armies moved on the map; progress and ✓ in the console; "Skip manoeuvre" in the console | UI-216 |
+| CC08 | Shadows Gather: armies moved on the map; progress and ✓ in the console; "Skip manoeuvre" in the console (UI-431: the ✓) | UI-216, UI-431 |
 | CC09 | No base-game card decision opens the decision window (both sides) | UI-164 |
 
 ## Tasks
@@ -200,7 +210,8 @@ the force column's portraits or figure stacks. A target wears the shared `Choice
 with the choice's title and detail (the cost, e.g. the forfeited Leadership). A single target sends with its click;
 an adjustable set (Aragorn's two misses, Mighty Attack's Companion and miss) keeps its one confirmation. Identical
 figures of one nation and kind are equivalent, so a stack's click takes its next eligible figure. An exclusive
-outcome without an object — Keep misses, Keep Minions — keeps its button, and the list no longer repeats the dice
+outcome without an object — Keep misses, Keep Minions — keeps its button (UI-432, 2026-10-31: the battle window's Skip
+effect and the console's Pass now, [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)), and the list no longer repeats the dice
 and figures. Test: `BattleObjectChoicesTests`.
 
 ## Leadership points and Heroic Death on their objects — UI-246 (2026-10-17)
@@ -213,7 +224,8 @@ pip takes it back so the source can change before the one confirmation, and spen
 Death (`SacrificeAndHits`) takes the sacrificed Leader or Companion on its portrait or stack (UI-245) and the
 cancelled hits as pips (●) on the opponent's roll heading beside its hit count; an amount opens only after a figure
 that can cancel it is chosen, the chosen amount fills from the left, and a smaller pip replaces a larger one. Keep
-hits (zero hits, a legal costly choice for a Companion) and Keep all stay buttons; the confirmation sends the figure
+hits (zero hits, a legal costly choice for a Companion) and Keep all stay buttons (UI-432: Keep all is the Skip effect
+and the Pass; Keep hits stays); the confirmation sends the figure
 and the amount together. Pips keep fixed sizes (14 px, 11 px in short viewports) and never move the figures. Test:
 `BattleObjectChoicesTests`.
 
@@ -222,7 +234,7 @@ and the amount together. Pips keep fixed sizes (14 px, 11 px in short viewports)
 The Breaking of the Fellowship's Companions are chosen on the Hunt panel's roster portraits, and There Is Another
 Way's Move and Hide on the Fellowship's track and Ring (`FellowshipActions.RosterChoice`, `FellowshipCardActions`);
 the choice list and the console no longer repeat them. Stay, Keep-style declines and Lure of the Ring's alternatives
-stay buttons. See FELLOWSHIP_UX, UI-249.
+stay buttons (UI-431, 2026-10-31: Lure's are the companion's red portrait and the corruption marker now, [UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)). See FELLOWSHIP_UX, UI-249. UI-430 (owner, 2026-10-30): Stay is the console's ✓ now ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
 
 ## Reactions at their sources — UI-247 (2026-10-17)
 
@@ -231,7 +243,11 @@ the Hunt panel's response area (UI-214), a battle character on its portrait in t
 draw on the Guide's portrait in the Fellowship panel, and a table card's own reaction outside a battle or the Hunt —
 The Balrog of Moria — at that card's × in the Effects panel (the reaction discards the card). The console keeps
 "Use a table card" (it opens the Effects panel) and Decline; it no longer lists a reaction that has a source object.
-Worn with Sorrow and Toil keeps its three explicit alternatives. Tests: `ReactionSourcesTests`,
+UI-430 (owner, 2026-10-30): "Use a table card" is gone too — the card is red and a click on its tile or × uses it
+([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
+Worn with Sorrow and Toil keeps its three explicit alternatives (UI-432, 2026-10-31: no longer — its table cards are red
+in the Effects panel, its random hand card is the opponent's red card counter and Keep cards is the Hunt window's Skip
+effect and the console's Pass, [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)). Tests: `ReactionSourcesTests`,
 `CharacterNetworkTests`, `Shadow03NetworkTests`.
 
 ## Payments in the dice pool, on the Ring and in the hand — UI-248 (2026-10-17)
@@ -243,25 +259,84 @@ pool, the chosen one is selected, the pool's frame lights, and a click on anothe
 decision window lists no dice. Palantír of Orthanc takes its Elven Ring on the Ring in the console: a click on the
 chosen Ring takes it back without choosing another payment, and choosing a Will of the West die (which pays alone)
 drops a Ring chosen for another die. Hand discards keep their red marking (UI-222). An incomplete payment spends
-nothing; a complete one keeps its single commit. The expansions' Palantír of Barad-dûr, Lore, Council tokens and
-special dice keep their buttons. Test: `CostDiceTests`; `EffectsNetworkTests` (Palantír on the Ring).
+nothing; a complete one keeps its single commit. The expansions' Lore (UI-272), Your Welcome Is Doubtful and Palantír
+of Barad-dûr (UI-278) are paid the same way; the Council tokens and special dice are their own objects (UI-267, UI-270).
+Test: `CostDiceTests`; `EffectsNetworkTests` (Palantír on the Ring).
 
 ## A region's two forces on their sections — UI-251 (2026-10-17)
 
 When a card's region holds two eligible forces — Dreadful Spells' field army and garrison — each force's section in
 the region panel glows and its header chooses it (`RegionForceChoices`); the console keeps the same two named
-alternatives, so the region alone never collapses them. A region with one eligible force is chosen by the region
+alternatives, so the region alone never collapses them. UI-431 (2026-10-31): the console's and the tray's alternatives are
+gone; the lit region's click opens its panel, which holds the decision, and the headers say why ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)). A region with one eligible force is chosen by the region
 click. Test: `RegionForceChoicesTests`.
 
 UI-246 revision (2026-10-17): Leadership points are taken on their source figure or portrait (a badge counts them) and
 Heroic Death's amounts are full-size "−1/−2/−3" buttons; see BATTLE_WINDOW_UX.
 
+## Fate of Erebor cards and Gimli on their objects — UI-266 (2026-10-19)
+
+Every choice of the six Fate cards with their own steps is made on its object; none opens the generic decision
+window (`DecisionRoutes`, test `FateCardStepsHaveObjectHosts`):
+
+| Card | Step | Object |
+| --- | --- | --- |
+| There and Back Again | Separate a Companion or group (+1 range), then a new Guide | Fellowship portraits and the highlighted destination on the map (UI-105) |
+| Book of Mazarbul | Move the Companions outside the Fellowship; the Dwarven region; the recruit | The figures' routes on the map; the lit region (`Region`); the reserve figure (`ReserveFigures`) |
+| Bardings, Dwarves of the Iron Hills | The region next to Dale (or Dale) with its two recruits | The recruitment plan: a region click, then the reserve figures (`RecruitmentPlan`) |
+| Orcs Multiplying Again | Mount Gundabad or Erebor, then the limited reserve | The lit region, then the recruitment plan |
+| Monsters Roused | West or East of the mountains, then the Elite's region and the plan | Two console buttons (`EffectTargets`), the lit region, the recruitment plan. UI-431: the halves' regions lit; a region's click chooses its half and is the next step's region click |
+
+Gimli's abilities keep the path of every character ability: a click on the paying die lights the ability in the
+panel of the region where he stands, and its click uses it (Dwarf of Renown, Messenger of the Dwarves). The task
+first named the Dwarves row of the Politics track as its object; that row shows the result, but the action list
+carries no nation for a character's ability, and a second place for one ability would break the rule that a
+mechanic's control lives at its object. Gimli, Dwarven Lord leaves as the Guide from the Hunt's response row.
+
+The test menu's Fate tab holds the six cards in "Cards" (wotr-server `FateCardScenarios`: the card in hand with
+dice that pay for it) beside "Gimli". Tests: `FateCardsNetworkTests` and `FateGimliNetworkTests` watch both clients'
+decision windows (`GenericWindowWatch`) and check each step's host.
+
+## Lords of Middle-earth cards on their objects — UI-272 (2026-10-19)
+
+No Lords card decision opens the generic window:
+
+- **The Lore of the Elven Rings** is used card → die → face (`LoreChoice`, `LoreInteraction`). Its eligible Shadow dice
+  glow in the pool (a Hunt-box die stands in the pool's row, UI-230); a click picks one and its new results open in a
+  popover over it (`BoardScreen.LorePicker`, the Ring picker of UI-161), a special die's results also with the ★ Remove
+  symbol; the result's click sends the change. Keep results is the console's Pass (UI-347). With Kings, Dismay's "Use Lore
+  first" is the Lore card's click in the Effects panel: the card glows and says what its click does (`EffectEntry.Use`,
+  `TableEffectsView.Uses`). The Dice & tokens panel no longer hosts Lore.
+- **Removing Lore and The Gates are Closed** is paid like Palantír of Orthanc (UI-248): the eligible dice glow in the
+  pool (`CostDice`), a Ring is paid on its socket, a Will of the West die pays alone and drops a chosen Ring, and the
+  console asks for the Ring while a die waits for one. The tray lists neither dice nor Rings.
+- **We Shall Get It! and The Gates are Closed in a Hunt** are response objects in the Hunt window's response row
+  (`HuntCardResponses`, the card, its name and what it does); their click discards the card and answers, the console's Pass declines (UI-291).
+  **We Won't Go Back**'s cost offers the table card (+2 Corruption) in the same row, while the Character cards it
+  accepts glow in the hand; No Corruption is the console's Pass (UI-347). The Gates on a declaration (no Hunt) keep their × in the Effects panel
+  (UI-247); the console's Pass declines (UI-291).
+- **Wind from the West and Safe Paths in the Dark** discard Shadow table cards with their × in the Effects panel
+  ("Discard a table card" opens it, as for The Nazgûl Strike!); Wind's Inspect is a console button and its Finish the
+  console's Pass (UI-347; UI-430, 2026-10-30: the cards are red and their tiles' click discards them, no console button,
+  and Wind's Finish is the console's ✓), and the
+  inspected Shadow hand stands in the player's hand drawer with a Shadow-red edge, marked to discard (`InspectedHand`):
+  the click on one discards it.
+- **Three Rings for the Elven-Kings** recovers Rings on their sockets in the console (`RingRecovery`): the Rings it may
+  return glow (also one the Shadow holds or one out of play), each click picks one, and the click that completes the
+  count sends the choice; the console counts the Rings left.
+
+Tests: `LordsCardChoicesTests`, `CostDiceTests.LoreRemovalListsNoDiceOrRingsAndAsksForTheRingOnItsSocket`,
+`CostDiceTests.GatesRemovalTakesItsDieInThePool`, `DecisionRoutesTests`, `LordsCardNetworkTests` (Gates on a
+declaration, Wind's table and hand, Safe Paths, Three Rings), `LordsShadowNetworkTests` (Lore, removals, We Won't Go
+Back), `LordsFinalCardsNetworkTests` (We Shall Get It!), `ExpansionWindowNetworkTests` and
+`ResourcePanelNetworkTests` (Lore before and after Dismay), each with `GenericWindowWatch`; seeder scenarios `ui272-*`
+(wotr-server `LordsCardScenarioTests`).
 <a id="karta-przeciwnika--ui-308"></a>
 ## The opponent's played card — UI-308 (2026-10-24)
 
 When the opponent plays a public Event, the card opens by itself in the existing read-only inspector for at least 3 s
 ([OPPONENT_ACTIONS_UX §6.12](OPPONENT_ACTIONS_UX.md#wdrozone-308)): no Play bar, the status line "Event played", the
-Event half marked with the observed pale-blue treatment, at the card's normal readable width. This is the limited
+Event half marked with the observed gold treatment (UI-378), at the card's normal readable width. This is the limited
 exception of the opponent-action program; the player's own cards still open only by a click or Enter/Space. A click on
 the shown card pins it and holds the presentation until it is closed; it then docks as "✓ <card>" in the console trail
 for the rest of the presentation. Opening or closing it never plays, discards or marks anything read. A committed
@@ -315,3 +390,83 @@ their backs to the player that dissolve in the air".
   drawn; Skip of a presentation clears it.
 - The opponent's presented discard dissolves a smaller pair out of its hand count in the top bar as the count drops
   ([OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md)).
+- UI-463 uses the same mark-and-settle pattern for the player's own card that goes to the Effects panel: it flies from
+  its place in the hand into the Effects tab (`PlayedCardFlight`, [UX_SPEC](UX_SPEC.md#ui-463)).
+
+## The Lords' optional declines and the Balrog card — UI-347 (2026-10-27)
+
+The owner's decisions EXP-15 D7 and D11 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)):
+
+- **Optional declines are the console's Pass** (`OptionalDecline`), as a reaction window's skip (UI-291): Vilya's
+  "Spend the die", the Lore of the Elven Rings' "Keep results", Wind from the West's and A Balrog is Come!'s "Finish",
+  Orderly Withdrawal's "Keep the hit" and We Won't Go Back's "No Corruption" have no button in the console, the tray, the
+  Battle window or the Hunt's response row. The Pass lights while it can send one, its tooltip names what it skips
+  ("Pass · Finish without inspecting the Shadow hand") and the console's hint ends with "Or Pass to …" unless it names
+  Pass already. Passing answers the whole step: a partial selection of it is dropped. UI-430 (owner, 2026-10-30): Wind
+  from the West's Finish ends the card, so it is the console's ✓ instead (`FinishingOption`, [UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430));
+  `LordsCardNetworkTests.WindsFinishIsTheConsolesPass` is `WindsFinishIsTheConsolesConfirm`.
+- **A Balrog is Come!** (`BalrogCardOrder`): the Balrog's region glows on the map; in its panel the Balrog's figure moves
+  him alone and a figure of the army he stands with moves that army with him — the card's army step then opens with
+  that army's move already started and its panel open (`CardArmyInteraction.Carry`). The console's hint names both
+  clicks and the Pass; no console button remains.
+
+Tests: `LordsCardChoicesTests`, `CardConsoleOptionsTests.TheBalrogsOrderStandsOnHisFigureAndHisArmy`,
+`NamedRingsTests.VilyaIsKeptOnItsSocketAndSpendingTheDieIsThePass`, `LordsCardNetworkTests.WindsFinishIsTheConsolesPass`,
+`LordsCharacterNetworkTests` (the Balrog alone, with his army, Finish through Pass), `LordsShadowNetworkTests` (Lore,
+We Won't Go Back), `ExpansionDecisionNetworkTests` and `ExpansionWindowNetworkTests` (Vilya); seeder scenarios
+`ui347-balrog`, `ui347-balrog-finish`, `ui271-balrog-order`, `ui272-wind-hand`, `ui347-wind-finish` (tests share a
+seeded match by its name, so each test has its own); test-menu group "Lords · Decisions" (wotr-server
+`LordsDecisionScenarios`).
+
+## The Kings' leftovers on their objects — UI-348 (2026-10-27)
+
+- **Palantír of Anárion's Skip extra card** is the console's Pass (EXP-15 D7, every optional decline; it counts only in
+  the deck step, whose id is generic): the decks stay the draw, no button remains in the tray.
+- **The Kings abilities have their pictures** (`AbilityPictures`): the Ruler die's recruitments (Call to Arms, Iron
+  Guard, Mustering of the Mark) the muster, the sovereigns' upgrades (Dwarvenking, Stewardship, Elvenking) the level,
+  the Palantír of Anárion the card draw, Far-sighted the move — none falls back to the generic scroll. Since UI-439
+  each shows its own ability icon instead (`AbilityArt`, [UX_SPEC](UX_SPEC.md#every-ability-has-its-own-icon--ui-439)).
+- **The tray's corruption fallbacks are gone** (`CorruptionAttemptChoices`, `CorruptionInspectionChoices`): the kings'
+  portraits, attempt buttons and tiles host the attempt and the inspection (UI-274), so the tray never built them; the
+  one-frame draw counter of UI-345's audit went with them.
+- **Brand's replacement** is a gilt chip in the Battle window ([BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md)).
+
+Tests: `KingsCards02Tests` (the hosts of the corruption choices, Anárion's Pass, the Kings pictures),
+`KingsDecisionNetworkTests.AnarionsSkipIsThePass`; seeder scenario `ui348-anarion`; test-menu scenario `kings-anarion`.
+
+## The Kings cards on their objects — UI-278 (2026-10-27)
+
+The owner's decisions EXP-15 D15–D16 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)) and decision 17 of 2026-10-19:
+
+- **The Nation step** (It Is Not So Dark Here, Wisdom of Elrond's politics) is the Free Peoples' nation tokens in the
+  Politics panel, which opens for it; each token's tooltip says what its click does ("Click to choose The North for It
+  Is Not So Dark Here · Advance one step, if possible. This does not activate the nation."), and the click sends.
+- **The card branches are object first (D15).** Wisdom's politics is a nation token, its inspection a king's portrait
+  (an Initial king who carries tiles); a recruit-or-cleanse card (House of the Stewards, Riders of Théoden, King
+  Brand's Men, Dáin Ironfoot's Guard, Thranduil's Archers) recruits from its king's nation in the Reserve, whose tab and
+  figures glow, and cleanses on the king's portrait. The console keeps only a branch whose object is not on the board
+  (an empty Reserve, no king to inspect). The server names each branch's object (`KingsRecruitOrCleanseStep`'s
+  `TargetId`: the nation, the sovereign).
+- **A branch's object carries into the card's next step** (`BranchCarry`, an interpretation of D15 recorded here): the
+  click on Gondor's token both chooses the politics and is the Nation step's Gondor, a click on Dáin is the inspection's
+  Dáin, and a Reserve figure is the recruit — sent at once when the card recruits one figure (the Stewards, Thranduil),
+  the plan's first figure otherwise (the Riders, Dáin's Guard). A carry ends with any other decision; nothing else is
+  sent without a click.
+- **Keep tiles** after an inspection and after a political cleanse is the console's Pass (D7), its tooltip "Pass ·
+  Finish looking without returning a tile" / "Pass · Keep the king's tiles in place".
+- **Removals.** Your Welcome Is Doubtful and the Palantír of Barad-dûr are removed as Palantír of Orthanc is: the die in
+  the pool, the × on the card, Barad-dûr's Elven Ring on its socket; the tray lists no removal's dice and the "No Ring"
+  and "O" buttons are gone (`CostDice`).
+- **The Palantír of Barad-dûr's Muster-as-Event starts at its card** (owner, 2026-10-19): while the Shadow may convert a
+  die this turn the card glows in the Effects panel; its click converts the selected Muster die, or lights the Muster
+  dice it may convert so the next die click does (`PalantirConversion`); the hand's cards and the decks then take it.
+  The cost picker no longer offers it.
+
+Tests: `KingsCardChoicesTests` (the Nation step, Wisdom's and a recruit-or-cleanse card's branches, the carry, D16,
+Keep tiles, the Palantír's conversion, the Kings removals), `KingsBranchNetworkTests` (Wisdom's nation token, It Is
+Not So Dark Here, the Stewards' cleanse, Thranduil's and the Riders' Reserve figures, His Power Waxes with a defending
+king), `KingsCards01NetworkTests` (Wisdom's inspection on Dáin's portrait, Keep tiles through Pass),
+`KingsCards02NetworkTests.HopeChoosesWhichInitialSovereignAwakensDuringBattle` (the kings in the attacking army),
+`KingsCards03NetworkTests` (the Palantír from its card), `SovereignPanelNetworkTests` (the cleanse's Pass); seeder
+scenarios `ui278-*`; test-menu scenarios `kings-card-wisdom`, `kings-card-recruit-or-cleanse`, `kings-card-hope`,
+`kings-card-power-waxes`, `kings-card-palantir`.

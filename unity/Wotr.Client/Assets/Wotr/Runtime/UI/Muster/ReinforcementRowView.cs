@@ -18,15 +18,16 @@ namespace Wotr.Client
         private readonly Dictionary<UnitKind, Token> tokens = new Dictionary<UnitKind, Token>();
         private readonly HashSet<UnitKind> shown = new HashSet<UnitKind>();
         private readonly Action<string> chosen;
+        private readonly string key;
         private readonly string nation;
         // UI-301: the tokens a click may choose pulse in ChoiceGlow's rhythm.
         private readonly ChoicePulse pulse;
 
-        public ReinforcementRowView(string nation, Action<string> chosen)
+        public ReinforcementRowView(string key, string nation, Action<string> chosen)
         {
-            this.nation = nation;
+            this.key = key;
             this.chosen = chosen;
-            Root.name = "reinforcement-" + nation;
+            Root.name = "reinforcement-" + key;
             Root.AddToClassList("reinforcement-row");
             pulse = new ChoicePulse(figures);
             Root.Add(Badge(nation));
@@ -51,14 +52,15 @@ namespace Wotr.Client
 
         public void Apply(ReinforcementRow row, ReinforcementsState state)
         {
+            Nation = row.Nation;
             name.text = row.Name;
             Root.tooltip = Tooltip(row);
-            Root.EnableInClassList("recruitable", state.Open && state.Interactive && row.CanRecruit);
+            Root.EnableInClassList("recruitable", state.Open && state.Interactive && row.CanRecruit && !row.Elsewhere);
             Root.EnableInClassList("reinforcement-closed", state.Open && !row.CanRecruit);
             shown.Clear();
             foreach (var figure in row.Figures)
             {
-                TokenFor(figure.Kind).Apply(figure, state, nation);
+                TokenFor(figure.Kind).Apply(figure, state, row.Nation, key);
                 shown.Add(figure.Kind);
             }
             // A kind the current source does not offer (a Muster token during a card plan) is hidden, not left stale.
@@ -80,6 +82,21 @@ namespace Wotr.Client
             return string.Join("\n", lines);
         }
 
+        // UI-454: the nation whose reserves this row shows.
+        public string Nation { get; private set; } = "";
+
+        // UI-454 (owner, 2026-11-03): the picture of the shown token holding a reserve figure (by id), or of a kind; null
+        // when no such token shows. A recruit's flight and a carried figure start from it.
+        public Image Art(string reserveId)
+        {
+            foreach (var pair in tokens)
+                if (shown.Contains(pair.Key) && (pair.Value.Button.userData as DraftToken)?.Id == reserveId)
+                    return pair.Value.Art;
+            return null;
+        }
+
+        public Image Art(UnitKind kind) => shown.Contains(kind) && tokens.TryGetValue(kind, out var token) ? token.Art : null;
+
         private Token TokenFor(UnitKind kind)
         {
             if (tokens.TryGetValue(kind, out var token))
@@ -93,6 +110,7 @@ namespace Wotr.Client
         private sealed class Token
         {
             public Button Button { get; }
+            public Image Art => image;
             private readonly Image image = FigureArtwork.Image(FigureAppearance.FreeRegular);
             private readonly Label count = new Label { name = "reserve-token-count", pickingMode = PickingMode.Ignore };
 
@@ -116,9 +134,9 @@ namespace Wotr.Client
                 Button.Add(count);
             }
 
-            public void Apply(ReinforcementFigure figure, ReinforcementsState state, string nation)
+            public void Apply(ReinforcementFigure figure, ReinforcementsState state, string nation, string key)
             {
-                Button.name = state.TokenPrefix + nation + "-" + figure.Kind;
+                Button.name = state.TokenPrefix + key + "-" + figure.Kind;
                 image.sprite = FigureArtwork.Sprite(FigureAppearances.Unit(nation, figure.Kind, state.Side));
                 ValuePulse.Set(count, figure.Reserve.ToString());
                 Button.userData = figure.ReserveId == null ? null : new DraftToken(DraftObject.Reserve, figure.ReserveId);
@@ -127,12 +145,26 @@ namespace Wotr.Client
                 Button.EnableInClassList("reserve-readonly", !state.Open);
                 var selected = figure.ReserveId != null && figure.ReserveId == state.Selected;
                 Button.EnableInClassList("selected", selected);
-                // UI-213: a token the player may choose now is lit, as figures are in the region panel.
-                Button.EnableInClassList(EligibleClass, state.Open && state.Interactive && figure.ReserveId != null && !selected);
-                Button.tooltip = figure.Kind + " · " + figure.Reserve + " in reserve" + (!state.Open ? "" : " · " + (figure.ReserveId == null
-                    ? figure.Reason.Length > 0 ? figure.Reason : "Not available now"
-                    : state.TokenHint)) + (figure.Warning.Length > 0 ? "\n⚠ " + figure.Warning : "");
+                // UI-213: a token the player may choose now is lit, as figures are in the region panel. UI-412: one the
+                // settlement in focus cannot take stays choosable but unlit.
+                Button.EnableInClassList(EligibleClass, state.Open && state.Interactive && figure.ReserveId != null && !selected &&
+                    !figure.Elsewhere);
+                Button.tooltip = TokenTooltip(figure, state, nation);
                 Button.EnableInClassList("token-warning", figure.Warning.Length > 0);
+            }
+
+            // UI-420 (owner): the figure as printed and its reserve on the first line, what a click does (or why it
+            // cannot) on the second: "Rohan Elite · 2 in reserve\nClick, then click a highlighted settlement, or drag it there".
+            private static string TokenTooltip(ReinforcementFigure figure, ReinforcementsState state, string nation) => TooltipText.Lines(
+                TooltipText.Parts(TooltipText.Unit(nation, figure.Kind), figure.Reserve + " in reserve"),
+                state.Open ? Use(figure, state) : "",
+                figure.Warning.Length > 0 ? "⚠ " + figure.Warning : "");
+
+            private static string Use(ReinforcementFigure figure, ReinforcementsState state)
+            {
+                if (figure.ReserveId == null)
+                    return figure.Reason.Length > 0 ? figure.Reason : "Not available now";
+                return figure.Hint.Length > 0 ? figure.Hint : state.TokenHint;
             }
         }
     }

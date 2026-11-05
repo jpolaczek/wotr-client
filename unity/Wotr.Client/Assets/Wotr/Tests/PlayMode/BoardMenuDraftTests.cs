@@ -97,7 +97,8 @@ namespace Wotr.PlayTests
                     await Press(client.Root, "loss-" + elite, token);
                     break;
                 case "council":
-                    board.CompanionSetup.Open();
+                    board.Fellowship.Open();
+                    await Press(client.Root, "fellowship-portrait-base.character.gandalf-grey", token);
                     await Press(client.Root, "version-lords.character.gandalf-grey", token);
                     break;
                 case "card":

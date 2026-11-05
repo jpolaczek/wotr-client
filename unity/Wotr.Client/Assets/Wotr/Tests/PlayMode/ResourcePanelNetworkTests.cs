@@ -14,10 +14,10 @@ namespace Wotr.PlayTests
     public sealed class ResourcePanelNetworkTests
     {
         [UnityTest]
-        public IEnumerator SpecialChoicesAndBothDiscardsStayAtThePoolAndReopenOnlyForNewDecisions() => Wait(Choices());
+        public IEnumerator SpecialChoicesAndBothDiscardsAreMadeOnThePoolDiceWithoutAPanel() => Wait(Choices());
 
         [UnityTest]
-        public IEnumerator DismayTargetsTheOpponentsRetainedRulerAfterClosingAndReconnect() => Wait(Dismay());
+        public IEnumerator DismayIsTheClickOnTheOpponentsGlowingRulerDie() => Wait(Dismay());
 
         [UnityTest]
         public IEnumerator RulerTokenDropKeepsItsIdentityThroughBothDenethorDraws() => Wait(Ruler());
@@ -36,26 +36,18 @@ namespace Wotr.PlayTests
             var token = option.EligibleIds.Single();
             var ruler = actor.Board.View.Dice.Single(d => d.Owner == Side.Shadow && option.EligibleDice.Contains(d.Id));
             var revision = actor.Board.View.Revision;
-            PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>("ruler-token-" + token));
-            await room.Settle();
+            // UI-276 (D20): the Ruler die's click alone spends the Dismay token.
             PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>(ruler.Id));
             await room.At(revision + 1);
             Assert.AreEqual("removed", actor.Board.View.RulerTokens.Single(t => t.Id == token).Location);
             Assert.AreEqual("DieAndResult", actor.Board.View.Decision.Presentation);
-            Assert.IsTrue(actor.Board.ResourceDecision.IsOpen);
-            Assert.AreSame(actor.Board.ResourceDecision.DecisionHost, actor.Board.Tray.parent);
-            PointerGestureEvents.ClickAt(actor.Board.Tray.Q<Button>("effect-choice-" + ruler.Id));
-            await room.Settle();
+            // UI-272: Lore is made on the pool's die and its result popover.
+            await LoreGestures.Die(room, actor, ruler.Id);
             var face = actor.Board.View.Dice.Single(d => d.Id == ruler.Id).Face == DieFace.Muster
                 ? DieFace.Character : DieFace.Muster;
-            PointerGestureEvents.ClickAt(actor.Board.Tray.Q<Button>("effect-choice-lore." + face + ".keep"));
-            await room.Settle();
-            actor.Board.ResourceDecision.Close();
             await Reconnect(room, actor);
-            Assert.IsFalse(actor.Board.ResourceDecision.IsOpen);
-            PointerGestureEvents.ClickAt(actor.Board.ResourceDecision.Tab);
             await room.Settle();
-            await room.Confirm(actor);
+            await LoreGestures.Result(room, actor, "lore." + face + ".keep");
             Assert.AreEqual(revision + 2, actor.Board.View.Revision);
             Assert.AreEqual(face, room.Fp.Board.View.Dice.Single(d => d.Id == ruler.Id).Face);
             Assert.AreEqual(DieLocation.Available, room.Fp.Board.View.Dice.Single(d => d.Id == ruler.Id).Location);
@@ -63,6 +55,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DecisionKind.Action, room.Fp.Board.View.Decision.Kind);
         }
 
+        // UI-264: the special-die pick and the Ruler discard are made on the lit dice in the pool; neither the
+        // 'Dice & tokens' panel nor the decision window opens, and the console says what the click does.
         private static async Task Choices()
         {
             using var room = await Connect("ui09-dice", ScenarioKind.CardPack);
@@ -70,29 +64,63 @@ namespace Wotr.PlayTests
                 foreach (var actor in new[] { room.Sh, room.Fp })
                 {
                     Assert.AreEqual(kind, actor.Board.View.Decision.Kind);
-                    var panel = actor.Board.ResourceDecision;
-                    Assert.IsTrue(panel.IsOpen);
-                    Assert.AreSame(panel.DecisionHost, actor.Board.Tray.parent);
-                    var opponent = actor == room.Fp ? room.Sh : room.Fp;
-                    Assert.IsFalse(opponent.Board.ResourceDecision.IsOpen);
+                    Assert.IsTrue(RequiredDecisions.Waits(actor.Board.View));
                     var before = actor.Board.View.Revision;
                     var id = actor.Board.View.Options.Single().EligibleDice.First();
+                    await Reconnect(room, actor);
+                    Assert.IsFalse(actor.Board.DecisionWindow.IsOpen, "The pool's decision opens no window.");
+                    var opponent = actor == room.Fp ? room.Sh : room.Fp;
                     Assert.IsTrue(actor.Board.OwnDice.Q<Button>(id).ClassListContains("resource-candidate"));
                     Assert.IsNull(actor.Board.Tray.Q<Button>("cost-" + id), "Choose the actual die in its pool, without a duplicate picker.");
                     Assert.IsNull(actor.Board.Tray.Q<Button>("confirm-decision"));
-                    PointerGestureEvents.ClickAt(panel.Root.Q<Button>("resource-panel-close"));
-                    await Reconnect(room, actor);
-                    Assert.IsFalse(panel.IsOpen, "The same decision must stay closed after refresh.");
-                    PointerGestureEvents.ClickAt(panel.Tab);
-                    await room.Settle();
+                    Assert.IsNull(actor.Board.Tray.Q<Button>("decision-back"), "A single pool choice has nothing to go back to.");
+                    // UI-273: with Lords and Kings the hint numbers the step before the first action.
+                    var hint = actor.Board.Tray.Q<Label>(className: "draft-status").text;
+                    StringAssert.StartsWith(kind == DecisionKind.SpecialDieChoice ? "Step 1 of 4 · " : "Step 2 of 4 · ", hint);
+                    StringAssert.Contains(kind == DecisionKind.SpecialDieChoice ? "Click a highlighted die" : "Click a glowing die to discard it", hint);
+                    if (kind == DecisionKind.RulerDiscard)
+                        RulerDiscardCandidates(actor);
                     await Layout(room, actor, kind + "-" + actor.Board.View.You, "ui58");
                     PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>(id));
                     await room.At(before + 1);
                     Assert.AreEqual(kind == DecisionKind.SpecialDieChoice ? DieLocation.Hunt : DieLocation.Discarded,
                         actor.Board.View.Dice.Single(d => d.Id == id).Location);
+                    if (kind == DecisionKind.RulerDiscard)
+                        await DiscardedDieStaysDimmed(room, actor, opponent, id);
                 }
         }
 
+        // UI-273: the eligible dice say what their click does; no Lords special die is among them; the Ruler die wears
+        // its crown.
+        private static void RulerDiscardCandidates(MountedMatchClient actor)
+        {
+            var view = actor.Board.View;
+            var eligible = view.Options.Single().EligibleDice;
+            foreach (var die in view.Dice.Where(d => d.Owner == view.You && d.Location == DieLocation.Available))
+            {
+                var button = actor.Board.OwnDice.Q<Button>(die.Id);
+                Assert.AreEqual(eligible.Contains(die.Id), button.ClassListContains("resource-candidate"), die.Id);
+                if (eligible.Contains(die.Id))
+                    StringAssert.StartsWith("Click to discard this die", button.tooltip);
+            }
+            Assert.IsFalse(eligible.Any(id => SpecialDice.IsLords(view.Dice.Single(d => d.Id == id))), "A Lords special die is never discarded.");
+            var ruler = view.Dice.Single(d => d.Owner == view.You && RulerDice.IsRuler(d));
+            Assert.IsNotNull(actor.Board.OwnDice.Q<Button>(ruler.Id).Q("ruler-crown"));
+        }
+
+        // UI-273: the discarded die keeps its slot, dimmed, for both players, and leaves the Out count.
+        private static async Task DiscardedDieStaysDimmed(MatchTestRoom room, MountedMatchClient actor, MountedMatchClient opponent, string id)
+        {
+            await room.Settle();
+            var own = actor.Board.OwnDice.Q<Button>(id);
+            Assert.IsTrue(own.ClassListContains(ActionPoolView.DiscardedClass) && !own.enabledSelf);
+            StringAssert.EndsWith("Discarded · Returns at the next Recover", own.tooltip);
+            Assert.IsTrue(opponent.Board.OpponentDice.Q<Button>(id).ClassListContains(ActionPoolView.DiscardedClass));
+            Assert.AreEqual("0", actor.Board.OwnDice.Q<Button>("pool-Discarded").text);
+        }
+
+        // UI-276 (EXP-15 D20): the Shadow's click on the opponent's glowing Ruler die spends a Dismay token picked for it,
+        // which its tooltip names; the Dismay tokens are information; no panel or window opens.
         private static async Task Dismay()
         {
             using var room = await Connect("ui09-dismay", ScenarioKind.CardPack);
@@ -100,16 +128,23 @@ namespace Wotr.PlayTests
             var option = actor.Board.View.Options.Single(o => o.Kind == CommandKind.UseDismay);
             var die = actor.Board.View.Dice.Single(d => d.Owner == Side.FreePeoples && option.EligibleDice.Contains(d.Id));
             var token = option.EligibleIds[0];
-            var revision = actor.Board.View.Revision;
-            PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>("ruler-token-" + token));
-            await room.Settle();
-            actor.Board.ResourceDecision.Close();
             await Reconnect(room, actor);
-            Assert.IsFalse(actor.Board.ResourceDecision.IsOpen);
-            Assert.IsTrue(actor.Board.OwnDice.Q<Button>("ruler-token-" + token).ClassListContains("selected"));
-            Assert.IsTrue(actor.Board.OpponentDice.Q<Button>(die.Id).ClassListContains("resource-candidate"));
-            PointerGestureEvents.ClickAt(actor.Board.ResourceDecision.Tab);
-            await room.Settle();
+            var button = actor.Board.OpponentDice.Q<Button>(die.Id);
+            Assert.IsTrue(button.ClassListContains("resource-candidate"));
+            // UI-433 (owner's report): the die visibly glows in the top bar — the gold rim, not only its lit art — and
+            // nothing else there does.
+            Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), "The offered Ruler die glows.");
+            Assert.AreEqual(3f, button.resolvedStyle.borderTopWidth, "The glow's rim.");
+            Assert.AreEqual(1, actor.Board.OpponentDice.Query<Button>(className: ChoiceGlow.ClassName).ToList().Count);
+            // UI-434: the Shadow may reroll its own Ruler die too, so the hint names both places.
+            StringAssert.Contains("Click a glowing Ruler die, yours or the top bar's, to reroll it with Dismay", actor.Board.Console.Status.Hint.text);
+            StringAssert.Contains("Dismay token and reroll this Ruler die", button.tooltip);
+            Assert.IsTrue(actor.Board.OwnDice.Q<Button>("ruler-token-" + token).ClassListContains("ruler-token-dismay"));
+            StringAssert.Contains("Spent by clicking a glowing Ruler die", actor.Board.OwnDice.Q<Button>("ruler-token-" + token).tooltip);
+            Assert.AreEqual("Pass · Keep your Dismay tokens", actor.Board.Console.Actions.Pass.tooltip);
+            Assert.IsFalse(actor.Board.DecisionWindow.IsOpen);
+            await Layout(room, actor, "dismay", "ui276");
+            var revision = actor.Board.View.Revision;
             PointerGestureEvents.ClickAt(actor.Board.OpponentDice.Q<Button>(die.Id));
             await room.At(revision + 1);
             Assert.AreEqual("removed", actor.Board.View.RulerTokens.Single(t => t.Id == token).Location);
@@ -150,20 +185,17 @@ namespace Wotr.PlayTests
             // panel; a reconnect restores the popover from the saved draft.
             PointerGestureEvents.ClickAt(actor.Board.Console.Rings.For(ring));
             await room.Settle();
-            Assert.IsFalse(actor.Board.ResourceDecision.IsOpen);
             PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>(die.Id));
             await room.Settle();
             Assert.IsTrue(actor.Board.RingPicker.IsOpen);
             await Reconnect(room, actor);
             await room.Until(() => actor.Board.RingPicker.IsOpen);
-            Assert.IsFalse(actor.Board.ResourceDecision.IsOpen);
             PointerGestureEvents.ClickAt(actor.Board.RingPicker.Root.Q<Button>("ring-face-muster"));
             await room.At(revision + 1);
             Assert.AreEqual(DieFace.Muster, actor.Board.View.Dice.Single(d => d.Id == die.Id).Face);
             Assert.AreEqual(DieLocation.Available, actor.Board.View.Dice.Single(d => d.Id == die.Id).Location);
             Assert.AreEqual(Side.Shadow, actor.Board.View.Rings.Single(r => r.Id == ring).Owner);
             Assert.AreEqual(Side.FreePeoples, actor.Board.View.DecisionOwner);
-            Assert.IsFalse(actor.Board.ResourceDecision.IsOpen);
         }
     }
 }

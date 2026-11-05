@@ -11,6 +11,8 @@ namespace Wotr.Client
         public int CompanionFocus { get; set; } = -1;
         public HuntResponse? HuntChoice { get; set; }
         public string ArmedSource { get; set; } = "";
+        // UI-461: the face menu's choice for the draft's Will of the West die (TurnDraft.WillFace).
+        public DieFace? WillFace { get; set; }
     }
 
     public sealed class SavedTurnDraft

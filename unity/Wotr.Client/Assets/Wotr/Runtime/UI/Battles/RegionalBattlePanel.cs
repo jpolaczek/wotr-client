@@ -6,7 +6,10 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // Rehosts the same decision controls. Opening never moves the camera; a new battle opens it (UI-149), otherwise
-    // the player does.
+    // the player does. UI-435: a decision that lights map regions the window or the HUD hides (Scouts' withdrawal into
+    // Helm's Deep at 1920 × 1080 at 125 %) moves the window to the middle's edge away from them and has the camera bring
+    // them into the strip it leaves, once per decision and map size (KeepClear); a window the player moved keeps its place,
+    // and the camera still brings them into view.
     public sealed class RegionalBattlePanel
     {
         public VisualElement Root { get; } = new VisualElement { name = "regional-battle" };
@@ -39,6 +42,11 @@ namespace Wotr.Client
         private float cardPreviewWidth;
         private bool cardDrag;
         private bool combatChoice;
+        // UI-435: the decision the window serves, the edge it keeps to while that decision's lit regions need room (null:
+        // the middle, UI-324), and the decision and map size it was last cleared for.
+        private string decisionId = "";
+        private bool? clearEdge;
+        private string cleared = "";
         // UI-311: a recorded state of the battle the opponent's presentation shows read-only in place of the decision
         // controls; the tray's own display returns with the release.
         private readonly VisualElement presented = new VisualElement { name = "battle-presented" };
@@ -78,8 +86,13 @@ namespace Wotr.Client
                     Resized();
                 map.Refresh();
             });
-            map.RegisterCallback<GeometryChangedEvent>(_ => Position());
+            map.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                Position();
+                KeepClear();
+            });
             map.CameraChanged += Position;
+            map.DraftOverlay.Applied += KeepClear;
             presented.AddToClassList("tray");
             presented.AddToClassList("battle-presented");
         }
@@ -122,6 +135,11 @@ namespace Wotr.Client
         public void Apply(PlayerView view)
         {
             combatChoice = view.Decision?.Kind == DecisionKind.CombatCard && view.DecisionOwner == view.You;
+            if (decisionId != (view.Decision?.Id ?? ""))
+            {
+                decisionId = view.Decision?.Id ?? "";
+                clearEdge = null;
+            }
             var next = view.EventLoss != null ? view.MatchId + "/loss/" + view.EventLoss.SourceId + "/" + view.EventLoss.RegionId
                 : view.Battle != null ? view.MatchId + "/" + view.Battle.Id : "";
             var started = scope != next && view.Battle != null;
@@ -265,6 +283,33 @@ namespace Wotr.Client
                 Position();
         }
 
+        // UI-435: once per decision and map size, when a region the decision lights is hidden under the window or the HUD,
+        // the window keeps to the middle's edge away from the lit regions and the camera brings them into the strip it
+        // leaves (MapCanvas.Reveal, once the window has been laid out there).
+        private const long RevealDelayMilliseconds = 60;
+
+        private void KeepClear()
+        {
+            if (!IsOpen || historyContext || Root.panel == null)
+                return;
+            var lit = map.DraftOverlay.Targets.Concat(map.DraftOverlay.AttackTargets).Distinct().ToList();
+            var key = lit.Count == 0 ? "" : decisionId + "|" + Mathf.RoundToInt(map.contentRect.width) + "×" +
+                Mathf.RoundToInt(map.contentRect.height);
+            if (key.Length == 0 || key == cleared)
+                return;
+            cleared = key;
+            if (lit.All(map.Uncovered))
+                return;
+            var below = lit.Average(id => map.AnchorOnScreen(id).y) > map.contentRect.center.y;
+            clearEdge = below;
+            Position();
+            Root.schedule.Execute(() =>
+            {
+                if (IsOpen && cleared == key)
+                    map.Reveal(lit);
+            }).ExecuteLater(RevealDelayMilliseconds);
+        }
+
         // UI-225: a window placed for this battle keeps its place when its content changes size (No card, a played card,
         // the opponent's choice); it is placed again only when it no longer fits there.
         private void Resized()
@@ -298,8 +343,10 @@ namespace Wotr.Client
                 return;
             }
             placedScope = scope;
-            // UI-324 (owner): the battle window opens in the middle of the board, a Combat choice keeping its card's room.
-            if (Window?.Centre(combatChoice ? reservedWidth : 0) == true)
+            // UI-324 (owner): the battle window opens in the middle of the board, a Combat choice keeping its card's room;
+            // UI-435: at the middle's edge while its decision's lit regions need the rest.
+            var keepRight = combatChoice ? reservedWidth : 0;
+            if (clearEdge is bool top ? Window?.Flush(top, keepRight) == true : Window?.Centre(keepRight) == true)
                 return;
             var anchor = map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]));
             var bounds = MapPanelPlacement.Near(map, Root, anchor, combatChoice ? reservedWidth : 0);

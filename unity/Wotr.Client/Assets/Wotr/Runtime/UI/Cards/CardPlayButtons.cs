@@ -50,12 +50,12 @@ namespace Wotr.Client
             primary.SetEnabled(enabled);
             primary.tooltip = combat ? "Commit this Combat card face down" : freeEvent ? "Play this Event · No action die"
                 : firstFace.HasValue
-                ? "Play using " + firstFace + (firstFace == DieFace.Event ? " · Event die bonuses may open a reaction" : " · No Event die bonus")
+                ? "Play with your " + DieDescriptions.Face(firstFace.Value) + " die" + (firstFace == DieFace.Event ? " · Event die bonuses may open a reaction" : " · No Event die bonus")
                 : "Select a matching die to play this Event";
             Symbol(primary, freeEvent ? null : firstFace);
             alternate.style.display = !combat && secondFace.HasValue ? DisplayStyle.Flex : DisplayStyle.None;
             alternate.SetEnabled(enabled);
-            alternate.tooltip = "Play using " + secondFace + " · No Event die bonus";
+            alternate.tooltip = secondFace.HasValue ? "Play with your " + DieDescriptions.Face(secondFace.Value) + " die · No Event die bonus" : "";
             Symbol(alternate, secondFace);
         }
 

@@ -25,7 +25,7 @@ Controls intended exclusively for the other side are hidden, also in the panels 
 <a id="u02--kość-gest-komenda"></a>
 ## U02 — die, gesture, command
 
-We choose a specific die. Army/Muster and Will of the West immediately highlight all legal applications (UI-28), without separate choice of categories. A gesture on army, reserve, track, character, Fellowship, card or deck determines the use of the same dice. The usual Army movement by Will uses Army; the character's journey uses Character. Special abilities and valuable resources still require your own open choice. Tooltip dice provides applications without redundant Action die/Available. The paid sequence retains the type and budget saved; the unsent intent can be replaced by another object.
+We choose a specific die. Army/Muster immediately highlights all legal applications (UI-28), without separate choice of categories. Since UI-461 (owner, 2026-11-03) a Will of the West die first lights only what it does as itself (Gandalf the White's or Aragorn's entry, the Balrog's deactivation, a removal paid with Will of the West, any-die uses); the console's face menu turns it into Character, Army, Muster or Event, and then it lights exactly what such a die does ([UI-461](#ui-461)). A gesture on army, reserve, track, character, Fellowship, card or deck determines the use of the same dice. Special abilities and valuable resources still require your own open choice. Tooltip dice provides applications without redundant Action die/Available. The paid sequence retains the type and budget saved; the unsent intent can be replaced by another object.
 
 Clicks are the full path of each operation; drag is the shortcut. The end-click of the target or legal drop takes a complete step without additional Confirm. An incomplete gesture collects the next required selection. A wrong target does not release the resource. A preview of known effects appears before the gesture, without promising the result of RNG. Clicking sends through the previously secure sender and retriever; UI does not approve the result itself.
 
@@ -49,7 +49,8 @@ The output, focus change, object nullification or focus loss of the application 
 <a id="u04--armie-i-atak"></a>
 ## U04 — armies and attack
 
-Army → click your own army → illuminated targets → click the illuminated terrain; traffic is done immediately ( UI-105 : no drag figures and the army, no choice on the Characters list). From UI-127 click on your own army, which is a legal source, mark all of its figure can move and open the region panel; click figure in the panel it shows (dividing), another click of the same army retains division, and the two clicks again mark the whole. figures another region before the target replaces an unfinished selection. From UI-140 the power header in the region panel has a switch select/unselect all figure The following is the non-interactive spirit of the selected target. figures with the signature “Move n figures” or “Attack · mode” from the server option. The first Esc in the open region panel removes all unsent selection ( die stays), another one closes the panel. Click on the highlighted area selects the target, also with a busy friendly region.
+Army → click your own army → illuminated targets → click the illuminated terrain; traffic is done immediately ( UI-105 : no drag figures and the army, no choice on the Characters list; the drag part
+is superseded for units and characters by UI-421, see [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md)). From UI-127 click on your own army, which is a legal source, mark all of its figure can move and open the region panel; click figure in the panel it shows (dividing), another click of the same army retains division, and the two clicks again mark the whole. figures another region before the target replaces an unfinished selection. From UI-140 the power header in the region panel has a switch select/unselect all figure The following is the non-interactive spirit of the selected target. figures with the signature “Move n figures” or “Attack · mode” from the server option. The first Esc in the open region panel removes all unsent selection ( die stays), another one closes the panel. Click on the highlighted area selects the target, also with a busy friendly region.
 
 Two symbols of the march at dice show the budget. The first move executed is permanent on the server and irreversible locally. Then the second army and the second goal; the second march ends action automatically. ✓ with dice lets you finish one. figure it cannot move again, even after the merger. We only settle the transitional surplus and the political effects in the right final window of rules.
 
@@ -72,16 +73,26 @@ Superseded by [UI-279](#every-choice-waits-for-a-click--ui-279-2026-10-19): with
 ## Every choice waits for a click — UI-279 (2026-10-19)
 
 Owner decision 2026-10-19: the client never sends a decision without a click, even when only one option is legal. This
-rule replaces UI-151's automatic No card. Automatic single choices cost later work, and opening a saved game must not
-submit anything (UI-12). The single option glows, and its tooltip says what the click does:
+rule replaces the expansions program's "a single legal choice is sent automatically" and UI-151's automatic No card.
+Automatic single choices cost later work: UI-274's forced draw clashed with UI-12, because opening a saved game must
+not submit it. The single option glows, and its tooltip says what the click does:
 
 - a Combat choice without a legal card: No card glows and says "No legal Combat card · Click to fight this round
-  without one" (UI-151).
+  without one" (UI-151);
+- a special-die choice with a forced Eye: the Eye glows (UI-267);
+- a Ruler discard with one eligible die: that die glows, and the hint reads "Click your only eligible die to discard
+  it" (UI-273);
+- a corruption draw that is the only legal step: the console's Draw tiles; a single remaining tile: that tile (UI-274).
+  Since [UI-442](#a-standard-corruption-attempt-draws-all-its-tiles-with-its-click--ui-442) a standard attempt has no
+  draw step (its own click draws every tile) and the server places a single drawn tile itself, a rule of the game (EXP-15
+  D8), not a click the client sends; Sequential corruption keeps its Draw again.
 
 A click that completes a choice still sends it at once (UI-142): recruiting at the only settlement, a card with one
-payment method. The player's own "Skip cards this battle" policy (UI-11) stays, because the player chose it. Tests:
-`BoardInteractionTests.UI279NoLegalCombatCardWaitsForTheNoCardClick…`; `MatchTestRoom.NoCard` clicks No card for every
-own Combat choice.
+payment method, and awakening a king to his only destination. The player's own "Skip cards this battle" policy (UI-11)
+stays, because the player chose it. Tests: `BoardInteractionTests.UI279NoLegalCombatCardWaitsForTheNoCardClick…`,
+`SpecialDiceNetworkTests.AnEyeForcedAmongTheDiceWaitsForItsClick`, `RulerDiceTests`, `ExpansionCorruptionNetworkTests`,
+`SovereignPanelNetworkTests`, `KingsCards02NetworkTests`; `MatchTestRoom.NoCard` clicks No card for every own Combat
+choice.
 
 <a id="panel-posiłków-bez-kart--ui-150"></a>
 ## Meal Panel without cards — UI-150
@@ -119,13 +130,13 @@ Decision of the user from 2026-10-14: The game does not use two clicks. The clic
 User decision with 2026-10-14: the buttons are uniform, most are graphics with a tooltip explaining the symbol, and the buttons with the label have an illustrated frame matching the strategic fantasy game.
 
 - Icon button (`IconButton`): icon action with `graphicalassets/ui/src/actions` on the frame
-  `frames/button-square` (hover, push), with mandatory tooltip. Replaces characters ×, ‹, ›,  ✓, ⁇
+  `frontend/button` since UI-471, before it `frames/button-square` (hover, push), with mandatory tooltip. Replaces characters ×, ‹, ›,  ✓, ⁇
   /◆, ⁇, ⁇, ?, +/−, ⁇, ⁇ /☐ and words Back, Close, Retry, Refresh, Location, Why?, Pin, Older,
   Previous, Next and the button “Reinforcements” in the tray. pass and rejection dice have their own
   icons; the development of the log entry switches the icon more/less. cards version Companion and
   the country of the Council is an icon; reroll becomes a word ("Keep roll" / "Reroll
   selected"), because the label says what it will do to press.
-- Label button (`.action`): `frames/button` frame with hover, selected and pressed variants (UI-114
+- Label button (`.action`): `frontend/button` frame since UI-471, before it `frames/button`, with hover, selected and pressed variants (UI-114
   dims and lowers), gold label with shadow in plain thickness (thickness widened narrow labels and
   came on the nation's tab); buttons with their own graphics (dice, card, figure, chips) retain it.
 - Exceptions: “Back · Cancel game / Leave game” in the waiting room becomes a label because the word
@@ -153,7 +164,7 @@ Policy: click or Enter/Space On the left, the Politics page opens all tracks on 
 
 Muster, Army/Muster or Will → arrow on the next field of the nation, all in the same panel as Activate ( UI-26 . from UI-144 (user decision) we do not mark the nation first: after choosing the cost of each own nation that die can move according to the server option, immediately shows the arrow “→” in the next field, and its click takes a step without Confirm. A click of a token such a nation takes the same step. Drag of the token into the field becomes a shortcut: distinguishes the target of the drag chip and drop sends a step; canceling or illegal drop does not change anything. The nations of the opponent do not have arrows. There is no separate inspector, the list action or the Confirm button. A chip click without legal context leaves the panel; the tooltip explains the state and requirements, does not choose as the player dice The restored draft distinguishes the arrow of its nation. From UI-148 played card who is waiting for the choice of the nation (e.g. the Wisdom of Elrond, `NationTargets` server), opens Politics with highlighted nations, once per play; closed by the player the panel does not return on another revision. The token click selects the nation so far. The policy council uses the same tracks after the open selection of its token action , without a replacement dice A passive nation can approach the field before the war.
 
-UI-27 removes the former lower renderer of the narodu/toru. selection No complete cost or restore the draft does not switch the policy to the bottom panel: a short tip points to a specific dice. UI-28 removes an additional selection of its categories. Track, token and target remain exclusively in the Politics. Recovery of the uncertain response of the server retains its own message and Check result.
+UI-27 removes the former lower renderer of the narodu/toru. selection No complete cost or restore the draft does not switch the policy to the bottom panel: a short tip points to a specific dice. UI-28 removes an additional selection of its categories; UI-461 brings it back for Will of the West only, as the console's face menu (a Will die moves a nation as a Muster result). Track, token and target remain exclusively in the Politics. Recovery of the uncertain response of the server retains its own message and Check result.
 
 From UI-144 Actiate stands without clicking on any passive nation that the server allows to activate (Narya); it is available when selected die can pay, otherwise excluded with explanation. Narya performs existing legal action with selected dice ; tooltip warns of the handover of the Ring, issue dice and entering the war. A nation without such an option has no button, and the source of activation explains the tooltip of its token. There is no any activation of the nation dice Muster or Will. Automatic effects Fellowship , Companion , enemy actions and effects cards Still running the server.
 
@@ -303,7 +314,7 @@ In UI-30, during the drag, the composition of the region extinguishs and passes 
 
 In the distance figure are hidden; zoom from 160% matches reveal them, and drop below 145% hides. The region or figure opens its composition; the invading of the area never opens the description or composition. The selected group and the revealed result of the approved movement retain a clear presentation according to UI-73/UI-76. We do not show the supposed position of the hidden Fellowship. Legal sources and targets have a outline also with the hidden figure. During the dredge, the open composition of the drop stalls and passes to the area while retaining the geometry; cancel restores the hit-test.
 
-From UI-126 the 160%/145% threshold no longer hide the army. Below 1,3× match (return below 1,2×) each force has a token in the hand enamel with the coat of arms of the most numerous nation and number; above, and for the region open-click, selected strength and fresh arrival, figurines on the stand with coat of arms and number. The garrison has blanks. The power government stands over the symbol settlement and does not obscure it; the tooltip gives the composition per nation. The Fellowship tag uses the same threshold 1,3×. Details: [ARMY_MAP_UX](ARMY_MAP_UX.md).
+From UI-126 the 160%/145% threshold no longer hide the army. Below 1,3× match (return below 1,2×) each force has a token in the hand enamel with the coat of arms of the most numerous nation and number; above, and for the region open-click, selected strength and fresh arrival, figurines on the stand with coat of arms and number. The garrison has blanks. The power government stands over the symbol settlement and does not obscure it; the tooltip gives the composition per nation. The Fellowship tag uses the same threshold 1,3×. Details: [ARMY_MAP_UX](ARMY_MAP_UX.md). Since UI-401 (2026-10-30) every force, the Fellowship and the planned ghosts stand on their region's fixed places, sized with the map, and figures need room in the region's capacity besides the 1,3× level ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md)).
 
 <a id="u14--przesuwane-okna-ui-32"></a>
 ## U14 — Sliding windows (UI-32)
@@ -426,7 +437,7 @@ Guide, its ability, return and Reveal have one tray and a clear cost of the ongo
 <a id="ui-58--wybór-zasobu-bez-kopii-obiektów"></a>
 ## UI-58 — selection of a resource without a copy of objects
 
-dice Keeper/Lesser and Ruler discards are selected in the pool; the panel gives a short effect before gesture. The new decision opens Dice & tokens once, Close retains the choice. The council does not choose strategic application or cost per player; its own applications and accurate dice inputs are highlighted. The change of the wall The Ring does not start using dice. Objects not available retain the source inspection, conditions and appropriate recovery time. The enemies of dice may be the target of their own Dismay according to server options.
+dice Keeper/Lesser and Ruler discards are selected in the pool; since UI-264 the console's hint gives the short effect before the gesture and Dice & tokens does not open for them. Its other decisions open Dice & tokens once, Close retains the choice. The council does not choose strategic application or cost per player; its own applications and accurate dice inputs are highlighted. The change of the wall The Ring does not start using dice. Objects not available retain the source inspection, conditions and appropriate recovery time. The enemies of dice may be the target of their own Dismay according to server options.
 
 <a id="ui-53--h05h11h12-w-historii"></a>
 ## UI-53 — H05/H11/H12 in history
@@ -455,6 +466,9 @@ Legend “ ⁇ ” is available on request in English; shows a white line, barri
 <a id="ui-59--decyzje-przy-portrecie-suwerena"></a>
 ## UI-59 — decisions on the sovereign portrait
 
+Superseded by [UI-274](#sovereigns-on-their-objects--ui-274-2026-10-19): the decisions are made on the portraits,
+their attempt buttons and tiles, and the inspector hosts none.
+
 The Politics strip shows three or five portraits according to the projection. Hover/fokus opens a public preview, click it pin. The preview shows the state, region, immunity, overt tiles or reverses and safe conditions; Location is an open navigation. The inspection itself does not move the camera or draft.
 
 The new decision opens one host at the right portrait. die and the selected target remain tied after Close and reconnet. Stay here ends legal awakening; the route retains the existing gestures of the map. Before the end you can see the return of the tile, the identity of the token and conditional subsequent Recovery Ruler. Back adjacent to Stay, the repetitive gesture instruction is in the tooltip of the route; the error and the result of the preview remain visible. No additional Confirm or Place til switch after the selection of the legal tile. The attempt has a cost and limit, public omissions and own legal Draw/Stop or the tiles. Sequential does not restore the previous result to the selection, and Visible does not release FP's private selection of the Shadow. The random return after the policy is signed separately, without the value selector or additional dice.
@@ -481,6 +495,8 @@ UI-54 is a collective acceptance H01–H14: the cost and RNG still on the server
 The Charters tab next to the Politics shares the rules of hower and pin with other previews. Own roster and public portrait on the map lead to one card; the same works Awakened with the sovereign bar. Short signatures do not replace the full inspection. The capacity name is focussable and has a full description of the action and the sources in the tooltip. cost/conditions future version is read from the server; the inspection does not pay itself or selects action.
 
 pinned card is protected from swapping by the hiver. The disappearance of the future version button after the change retains focus in the common inspector. The location appears only for the real region; the opening or update itself does not move the map. UI-66.
+Since [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) the
+location is the picture of the figure's place, enabled only for a region.
 
 <a id="ui-61--pomoc-kontekstowa-i-wyjaśnienia-dostępności"></a>
 ## UI-61 — Contextual assistance and accessibility clarifications
@@ -666,7 +682,7 @@ Notification 2026-10-10 with the user's choice "View on the how card “ Hover o
 <a id="treść-karty-w-panelu-effects--ui-94"></a>
 ## Content of card in the Effects Panel — UI-94
 
-Notification 2026-10-11 with screen: all information from a separate window card display at the bottom of the Effects panel. Source click- card selects them, and under the ranges and term appears a small parchment as developed card in the hands: the icon of the type of event, type (e.g. " STRATEGY CARD · MUSTER EVENT ), full text of the event and the fight section (initiative, title, text). The title is once, in the heading of the detail; card (Free Peoples · In play or "Effect ended", then parchment is extinguished) replaces the window footer. The Effects entry no longer opens a floating preview card ; the capacity of the form and source without card They don't have parchment. card range does not repeat the shortcut of effect (says it card ) Location buttons and expiration date are in one row. When text would push the panel under the bottom pass (e.g. 768 px at 125% ), panel expands like an old window card at most to 55% width board , and the sources entries have one line; the new source or change of window returns to the width of the bar. When paying for the removal of parchment is hidden, because the place is the decision. The content is located above the bottom pass in four systems without changing.
+Notification 2026-10-11 with screen: all information from a separate window card display at the bottom of the Effects panel. Source click- card selects them, and under the ranges and term appears a small parchment as developed card in the hands: the icon of the type of event, type (e.g. " STRATEGY CARD · MUSTER EVENT ), full text of the event and the fight section (initiative, title, text). The title is once, in the heading of the detail; card (Free Peoples · In play or "Effect ended", then parchment is extinguished) replaces the window footer. The Effects entry no longer opens a floating preview card ; the capacity of the form and source without card They don't have parchment. card range does not repeat the shortcut of effect (says it card ) Location buttons and expiration date are in one row. When text would push the panel under the bottom pass (e.g. 768 px at 125% ), panel expands like an old window card at most to 55% width board , and the sources entries have one line; the new source or change of window returns to the width of the bar. When paying for the removal of parchment is hidden, because the place is the decision. The content is located above the bottom pass in four systems without changing. Since UI-424 (2026-11-02) the panel never widens: the details open on their own card beside the panel ([UI-424](#the-effects-panel-keeps-every-source-and-its-width--ui-424)); since [UI-446](#a-card-effect-shows-its-active-part--ui-446) a click opens no details at all and the hover text shows a card's active part.
 
 <a id="płynny-ruch-drużyny--ui-95"></a>
 ## Liquid movement Fellowship — UI-95
@@ -693,7 +709,7 @@ The drag started inside the preview keeps its source and targets to be completed
 
 The left panel loses the curtain and the fastening: the developed panel works immediately, click on the tab only develops it, the focus on the click does not hold the panel, and the focus on the keyboard also keeps it inside. The panel to which the decision tray will be placed, is as open as context. This extension of the change UI-92 rules UI-80 from the user's decision: the edge tab panels are interactive after the raid; other panels, card and options still open click or Enter/Space.
 
-The bar has 44 pt instead of 56 (new 44 pt frame) and is a border control: edge pan works only on the outer edge, so reading the bar does not move the map. Counter counters are an icon with a number (a name in a balloon), without a Hunt counter; Menu has 64 pt (56 in a narrow bar). pass notifications end at column, like the bottom bar, next to a tab in the corner.
+The bar has 44 pt instead of 56 (new 44 pt frame; 36 pt and flat since UI-479) and is a border control: edge pan works only on the outer edge, so reading the bar does not move the map. Counter counters are an icon with a number (a name in a balloon), without a Hunt counter; Menu has 64 pt (56 in a narrow bar). pass notifications end at column, like the bottom bar, next to a tab in the corner.
 
 <a id="powiadomienia-jako-stos-banerów--ui-99"></a>
 ## Notifications as a stack of banners — UI-99
@@ -744,6 +760,8 @@ In the notification bar, in front of the stack, there are two small square icons
 <a id="władcy-w-zakładce-characters--ui-101"></a>
 ## Overlords in Characters tab — UI-101
 
+UI-274 replaces the hiding rules below: every sovereign keeps a fixed slot in every state.
+
 2026-10-12: “We remove buttons to hang in the middle of the map (theoden, denethor, thranduil)”. User selection: We open the rulers from the section on the Charters page.
 
 - There are no more rulers' buttons over the map.
@@ -759,6 +777,8 @@ In the notification bar, in front of the stack, there are two small square icons
 - The panel is developed until the window opened from it the ruler is visible.
 - The master window stands next to the button. When the panel is rolled up, for example, the
   decision opened the window itself, it stands next to the Characters tab.
+  [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) replaces
+  this: every ruler's window opens at one place beside the Characters tab, with one size.
 - When the ruler is a legitimate goal (e.g. waking up after the dice selection), the Characters tab
   has an award for the target also in a rolled-up state.
 - The context of the saved action ruler and Esc indicate the Characters tab.
@@ -859,6 +879,70 @@ The 2026-10-15 application: each character has its own, nice graphics matching t
   like the actors.
 - The expansions characters retain their existing portraits and silhouettes.
 
+<a id="ui-402"></a>
+## Every character is its own miniature — UI-402
+
+UI-421's decision 5 (owner, 2026-10-28), built 2026-10-30 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built
+(UI-402)"; [ARMY_MAP_UX](ARMY_MAP_UX.md#ui-402)):
+
+- On the map every character stands as its own miniature on a small round base in its side's enamel, beside the army in
+  its region, on one of the region's character places (a garrison's beside the gate); it is never a figure of the army's
+  marker, and the army's number counts its units only. Gandalf and Strider standing together are two figures. A region
+  with more than six characters (three at a gate) shows a stacked pair with "+n" on its last place. Far out a character
+  is its portrait in its side's medallion.
+- Its click chooses it exactly as its chip in the region panel does (UI-105): with a Character die it starts its
+  travel, with an Army die it joins the army (the commander-first rule), and a card's choice, an ability or an order lit
+  on the figure is used. The player's own character's click opens no region panel; an enemy character's click is its
+  region's. The army's click still selects every figure that can move, its characters included.
+- The chips and the miniatures show one set of choices: a figure lit, selected or marched in the panel is lit, selected
+  or marched on the map, and the other way round.
+- A character appears, flies in or leaves on its own (UI-334, UI-338); the opponent's traces light an army together with
+  its characters.
+
+<a id="ui-403"></a>
+## A chosen figure lifts off the board — UI-403
+
+UI-421's decisions 1 and 2 (owner, 2026-10-28: "the lifted thing is that object, not a square or its shadow"), built
+2026-10-30 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-403)"; [ARMY_MAP_UX](ARMY_MAP_UX.md#ui-403)):
+
+- A click that chooses figures lifts exactly those off the table: a force's chosen units rise on a base of their own and
+  each chosen character on its stand, drawn as on the table at the same scale, a little larger (1.10) and higher (12 px
+  × the figure's scale), their shadow left on the table. The rest of the army stays on its base; a base none stays on
+  disappears, though a click there is still the army's click. A figure left behind in the region panel drops back onto
+  the base.
+- What is lifted is what the draft has not sent: the army selection, the travelling group being chosen, the Nazgûl a
+  card's next destination click flies. A sent step stays raised until the server's view arrives.
+- On a hovered legal target a landing mark lies on the table where the figures would stand, green for a move and red for
+  an attack, and the click's caption hangs above the lifted figures. The translucent army ghost (UI-127) is gone:
+  nothing is drawn faintly at the target.
+- Esc and undo drop the figures back onto their base, and so does an attack. A card's planned flight or journey
+  dissolves the lifted figure into its faint planned figure at the destination. Reduced motion shows the raised pose at
+  once.
+- The lifted figures never take the pointer and are clipped to the map; clicks remain the whole gesture until UI-405
+  adds carrying them (built 2026-10-30, below).
+
+<a id="ui-405"></a>
+## A unit or character is picked up and carried — UI-405
+
+UI-421's decision 2 (owner, 2026-10-28: drag and click for units and characters only), built 2026-10-30
+([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-405)"; [ARMY_MAP_UX](ARMY_MAP_UX.md#ui-405);
+[BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md#ui-405)):
+
+- A press on the player's own army or character that is a legal source (or already chosen) and moves past the drag
+  threshold lifts it as its click would, without opening a panel, and carries the lifted miniature itself under the
+  pointer — the army together with the characters chosen with it. No text label or square follows the pointer. The
+  opponent's figures, any figure while the board is busy and a figure with nowhere to go do not lift: their press stays
+  a click.
+- The region under the carried figure lights (a legal target more strongly in its own colour), and on a legal target the
+  landing mark and the caption show as on a hover. Held at the map's edge for about a quarter second, the map pans.
+- A drop on a lit target other than the figure's own region is that target's click: the same command, with no Confirm.
+  A sent step leaves the figure raised where it was dropped until the view comes, and its flight goes on from there; a
+  card's planned flight dissolves it where it was dropped; an attack returns its army to its base as the click does.
+- A drop anywhere else (an unlit region, its own region, the HUD), Esc, focus loss, a reconnection or a new revision
+  sends nothing and puts the draft back exactly as it was before the press; the figure glides home.
+- Clicks and the keyboard remain the whole path (R16); dice, cards, tokens, the reserve, the region panel's figure chips,
+  the Characters rows and the Fellowship portraits keep their gestures.
+
 <a id="bez-granicy-mapy--ui-104"></a>
 ## Without map boundary — UI-104
 
@@ -871,9 +955,11 @@ The 2026-10-15 application: each character has its own, nice graphics matching t
 <a id="ruch-wyłącznie-na-mapie--ui-105"></a>
 ## Movement exclusively on the map — UI-105
 
+UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs. UI-405 shipped on 2026-10-30 ([A unit or character is picked up and carried — UI-405](#ui-405)): the clicks below are unchanged, and the map's armies and characters can also be carried to their target.
+
 The 2026-10-12 application: "Moving is only to be done on the map, click on the region, select selected units, characters, nudges etc. and select only by clicking the selected region, move is done immediately". Elections from the conversation: die first; the character's route with a range greater than 1 arranges the game.
 
-Flow. die   → click region → click figures in the region panel → click the highlighted target. The move is executed immediately, without Confirm. Another army or group in the budget dice begins the same way; ✓ with dice He's done early.
+Flow. die   → click region → click figures in the region panel → click the highlighted target. The move is executed immediately, without Confirm. Another army or group in the budget dice begins the same way; ✓ with dice He's done early. Since UI-402 (2026-10-30) a character's own miniature on the map is clicked as its chip in the panel is, without opening the panel ("Every character is its own miniature — UI-402" above).
 
 **Armies.**
 - figure Army select only in the region panel. The two-click banner continues to mark the entire
@@ -898,7 +984,9 @@ Flow. die   → click region → click figures in the region panel → click the
 
 No gestures.
 - Drag of Army, figures, Charters list lines and Fellowship portraits does not capture anything and
-  is not a move.
+  is not a move. Since UI-405 (2026-10-30) the map's own armies and characters are carried and their drop on a lit
+  target is the target's click; the region panel's figure chips, the Characters rows and the Fellowship portraits still
+  do not drag.
 - The list of Characters only shows the inspector. It replaces the UI-67 paragraph with a joint list
   and map selection.
 - Drag remains for reserves (Muster), tokens of nations, cards and portraits of homelands on the
@@ -962,9 +1050,10 @@ The 2026-10-12 application: “Do not add a new move button when moving the ring
   movement. When the motion is activated, the glow pulsates gently; the reduced motion leaves a
   constant glow.
 - Tooltip gives the effect, and the hint of the panel indicates “Click the shining track symbol”.
-- Without legal movement, the icon is a simple, non-clip symbol. Hiding is the Ring icon (UI-232), the
-  declaration the Fellowship's map figure and entry to Mordor the track's gate (UI-236), and the Guide its glowing
-  portrait (UI-249); none of them is a panel button.
+- Without legal movement, the icon is a simple, non-clip symbol. Hiding is the Ring icon (UI-232), the declaration the
+  Fellowship's map figure and entry to Mordor the track's gate (UI-236), and the Guide its glowing portrait (UI-249);
+  none of them is a panel button. Since [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434) (2026-10-31)
+  the offered gate wears the gold ChoiceGlow on the map and the hint names the map's gate.
 
 <a id="proste-powiadomienia-i-pergaminowe-karty--ui-106"></a>
 ## Simple notifications and parchment card — UI-106
@@ -1260,6 +1349,175 @@ the plaque closes it. No new window is made. Details: [TURN_CONSOLE_UX](TURN_CON
 [CARD_CHOICES_UX](CARD_CHOICES_UX.md). Tests: `RequiredDecisionTests`,
 `BoardInteractionTests.RequiredExcessOpensItsRegionPanelFromThePlaqueAndTheNotice`.
 
+## Fate board — UI-265 (2026-10-19)
+
+The Fate map reads as the expansion sets it up: the region overrides from the server make Erebor a Shadow (Sauron)
+Stronghold, Dale a neutral Fortification and the Iron Hills a Dwarven City (New Cities adds Ered Luin and South
+Rhûn), so their gems take the right cut and colour (ruby, quartz trillion, sapphire by control). The map's landmark
+drawings may have a variant per module (`landmarks.json` `"variants": {"fate": …}`): in a Fate game Erebor's drawing
+is the Shadow-held one (ART-05) in the same place, chosen from `BoardPresentation.Modules` and repainted only when the
+modules change. The region panel adds where its points come from (`RegionVictoryText`, `hover-region-points`): "Worth
+2 VP to the Free Peoples if captured" or "Scores 2 VP for the Free Peoples"; the Victory panel lists each scoring region
+with its control, settlement and points. Tests: `MapLandmarksTests.AFateGameDrawsEreborHeldByTheShadowInItsPlace`,
+`RegionVictoryTextTests`, `VictoryPanelNetworkTests.FateNewCitiesAndKingsKeepTheirAuthoritativeScoringOrigins` (with a
+screenshot of Erebor), `ConfigurationLayoutTests` (all 93 configurations in four layouts).
+
+## Lords characters on their objects — UI-271 (2026-10-19)
+
+Every Lords character ability is used on its object; no ability button stands in the region panel or the inspector:
+
+- **Entries** start from the character's row in the Characters panel, as the base characters do (UI-240). The Mouth
+  of Sauron and the Witch-king, whose Lords cards are alternatives to the base ones, listed each version not in play as
+  a row of its own (`CharacterRosterVersions`, key `figure@version`). Superseded by
+  [UI-438](#one-marker-per-character--ui-438) (2026-11-01): one row each, like Strider/Aragorn, its second line naming
+  the version it shows (Lieutenant / Númenórean, Black Captain / Chief) and its window switching between them. With the Black Captain in play, his
+  one row turns him in place: "Click to turn The Witch-king, the Black Captain into The Witch-king, Chief of the
+  Ringwraiths" (before UI-438 the Chief's own row under Not in play did). An entry waiting for its region offers no Change button (which
+  opened the generic window): another lit row changes it. Elrond, Galadriel, Gothmog and the Balrog enter from their
+  rows; the Balrog's optional reserve figure is chosen in the Reserve panel, which now unrolls when that plan begins
+  after the Muster die (`ReinforcementsPanel.Follow`).
+- **The Balrog** is activated (Use Balrog die) or deactivated (Free Peoples' Will of the West, or a Character die with
+  Gandalf beside him) by a click on his figure: with the paying die selected, his region glows on the map and his
+  figure in its panel glows and says what the click does (`FigureAbilityInteraction`, `CharacterAbilityPlaces`).
+- **Gothmog**'s "fling into the fray" stands in the Reserve panel while a Muster die is selected: his row
+  ("Gothmog · Minas Morgul") offers a Sauron Regular (recruit beside him) and an Elite (replace a Regular there); the
+  token's click uses the ability at once (`GothmogReinforcements`). Under UI-317 a die that pays him backs the Reserve
+  even when it cannot recruit (`MusterActions.BacksReserve`).
+- **Evil Knowledge** is the Mouth of Sauron's glowing portrait in the Battle window's besieging column; its click
+  extends the siege without downgrading an Elite (UI-347, D12; [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md)).
+- **The Chief's reactions**: Spear of Terror lights the Shadow's Character deck ("Click to draw a Character card ·
+  Spear of Terror…"); He Sees, He Knows lights the Chief's region and his figure, whose click moves him to the
+  Fellowship (`ChiefReactionObjects`). The console's Pass declines them (UI-291).
+- **One movement pattern**: a card that moves Shadow characters uses the Nazgûl flight gesture (UI-212) for all of
+  them. A walker (the Balrog alone, the Lords Minions) goes along its shortest path within its level, alone in its
+  group, its ghost is its own figure, and the console speaks of figures rather than Nazgûl. The Balrog card's order
+  stands on his figure (alone) and his army's figures (with it), and Pass finishes (UI-347, D11;
+  [CARD_CHOICES_UX](CARD_CHOICES_UX.md)).
+
+Tests: `CharacterRosterVersionsTests`, `NazgulFlightDraftTests.AWalkingCharacterMovesAlongItsPathWithTheSameGesture`,
+`CardConsoleOptionsTests.TheBalrogsOrderStandsOnHisFigureAndHisArmy`,
+`CardConsoleOptionsTests.TheChiefsReactionsLeaveTheConsoleForTheirObjects`, `ExpansionAbilityNetworkTests` (Balrog
+figure, Gothmog's Reserve row), `ExpansionWindowNetworkTests` (Evil Knowledge), `LordsCharacterNetworkTests`
+(entries, the Witch-king's switch, Spear, He Sees, the Balrog alone), seeder scenarios `ui271-*`
+(wotr-server `LordsCharacterScenarioTests`).
+
+## Sovereigns on their objects — UI-274 (2026-10-19)
+
+Owner decision 2026-10-19: the kings' decisions are made on their objects, and no window opens for them.
+
+- **Characters panel.** Every sovereign keeps a fixed slot in every state (`SovereignPortrait`): his painted portrait
+  (an Initial king shows his awakened portrait, dimmed), a status badge (initial, awakened, corrupted, removed), his
+  name, a corruption meter with a pip per point of resistance (filled for known corruption, hatched for hidden tiles;
+  only while Initial) and a row for the tiles of an attempt or an inspection. An unlit portrait's click opens the
+  inspector, which only informs (since
+  [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) a compact
+  window at one place beside the Characters tab, his place as a picture).
+- **Corruption attempt.** For the Shadow a graphic button stands at the top right of each Initial king's portrait. It
+  keeps its place, disabled with its reason in the tooltip, when no attempt is possible. Its click pays an eligible Eye
+  from the Hunt Box: a standard Eye, else a Ruler die; a Lords special Eye only when the player clicked it first. When
+  only special Eyes remain, the button stays disabled and says "Click the special Eye that pays in the Hunt Box
+  first." The drawn tiles stand beside the king: values for the Shadow, backs for the Free Peoples. The Shadow's
+  click attaches a tile. In Sequential corruption the latest tile's click keeps it, and "Draw again" stays in the
+  console; otherwise every draw is the console's Draw tiles. Since UI-279 nothing is sent without a click: a draw that is
+  the only legal step waits for Draw tiles, and a single remaining tile waits for its click. Since
+  [UI-442](#a-standard-corruption-attempt-draws-all-its-tiles-with-its-click--ui-442) a standard attempt's click draws
+  all its tiles: two or three wait beside the king for the Shadow's click, a single one is placed with the attempt.
+- **Awakening.** Die → glowing king (portrait or his force on the map) → destination. A single destination (his
+  besieged home, for one) is sent with the king's click.
+- **Cards and the cleanse.** A card's choice of a king lights his portrait ("Click to …"). The inspection's tiles stand
+  beside the inspected king, and the cleanse returns a random tile from the glowing king; Keep is in the console.
+- **Map.** An Initial king is his force's crowned leader: a crown over the base or token, and "Led by …" in the force's
+  tooltip. An Awakened king is a character figure. A Corrupted king is no figure, so a dark marker
+  (`MapSovereignMarkers`) stands beside the forces of his region. A force holding a king that a decision or the
+  selected die lights glows like an eligible force, its tooltip says what the click does, and its click chooses the
+  king. The exception: when the selected die can move the force itself, the click selects the force and the king's
+  portrait chooses him. The corrupted marker glows and acts the same way. Otherwise its click opens the king's
+  information.
+
+- **Motion and glow (UI-345, 2026-10-26).** A king whose portrait changes (awakened, corrupted) crossfades to it, a
+  changed status pulses on its badge and a changed corruption on the meter; the first values never pulse. The inspector
+  opens and closes with a fade, its rows fade in and out, a value of the same king that changes pulses (another king's
+  values do not), and a newly attached tile fades in. A lit portrait, attempt button or tile pulses with the Characters
+  roster in its one rhythm (`CharacterRosterPanel.OfferSovereigns`); the attempt button and the tiles show their
+  ChoiceGlow rim. The Dice & tokens panel (deleted in UI-276), its tab and the Council's choices fade; a new Ruler or
+  Dismay token arrives in the pool and a Council medallion whose state changes flashes its art (it does not grow: the
+  pool's row has no room beside it). The expansions' tray choices (`ExpansionChoices`) and the version card not chosen
+  glow and pulse (the version card in its rim and plate only, as it fills the tray's width). Per D6 the lit art —
+  special, Lore and Council dice, Keeper Ring sockets offered now, Council medallions, the Spear's deck — keeps its art
+  and dims and back in the shared 750 ms rhythm (`ChoiceGlow.LitArtPulseClass`, a ticker per host that runs only while
+  something is lit). Since [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434) (2026-10-31) an offered
+  die, a Keeper socket, a medallion a hint asks for and an asked deck also wear the gold ChoiceGlow and breathe with it,
+  since the lit art alone read as unlit; only a usable medallion no hint names keeps the lit art's fading alone.
+
+This supersedes UI-59's decision host and UI-101's hiding of portraits. Tests: `SovereignPanelTests`,
+`SovereignMapTests`, `DecisionRoutesTests`, `SovereignPanelNetworkTests`, `ExpansionCorruptionNetworkTests`,
+`KingsCards01–04NetworkTests`, `UI63SiegeNetworkTests`, `SovereignSectionLayoutTests`, `ReturnListTests`.
+
+## Kings of Middle-earth art — ART-07 (2026-10-19, painted part)
+
+Generated and built like ART-06: the awakened figures of Brand, Dáin, Denethor, Théoden and Thranduil, their awakened
+and corrupted portraits (grey-faced and hollow-eyed under a creeping shadow), and the Chieftains — the Black Serpent,
+the Shadow of Mirkwood and Uglúk — figure and portrait. `docs/sources/ART-FIGURES.json` lists nothing pending. The
+UI pieces of the module (Ruler die body, Ruler and Dismay tokens, the corruption-attempt button, the Kings Hunt tile)
+come with UI-273, UI-274 and UI-276.
+
+UI part (2026-10-27): the Ruler die has its own round body, as a Lords special die — `dice/special.svg`'s
+`ruler-free` and `ruler-shadow` variants (a royal blue enamel with an ivory band for the Free Peoples, crimson with an
+iron band for the Shadow; hover, lit and pressed), its crown (UI-273) on its top edge — in place of UI-264's framed tile
+with a text caption, in the pool and in the top bar. With the Ruler and Dismay coins (UI-276), the attempt button and
+the tile back (UI-274) and the Kings mark on a Hunt tile, no Kings placeholder remains. Test: `UiArtKitTests`.
+
+## Lords of Middle-earth art — ART-06 (2026-10-19)
+
+Generated with `graphicalassets/figures/v3/generate.py` (prompts in `prompts.json`) and built with
+`scripts/build_figure_art.py`: the painted figures and portraits of Elrond, Galadriel, the Balrog, Gothmog and Sméagol
+(stature 0.55, as Gollum) join `characters-v1` and `battle-portraits-v2`; the Mouth's and the Witch-king's Lords
+versions keep their base art, as every version does (PortraitArtwork.Key). The rest of the module's art came with its
+UI tasks: the special dice bodies, origin emblems and Remove star (UI-267), the three named Rings (UI-268), the
+versions badge and Guide crown (UI-269), the Council tokens, alternate mark and Fellowship Box icon (UI-270). No Lords
+character shows the silhouette any more. Tests: `CharacterFigureArtTests`, `PortraitArtworkTests`, `UiArtKitTests`.
+
+## Fate of Erebor art — ART-05 (2026-10-19)
+
+Generated and built with the existing pipelines: the Dwarven Lord Gimli's figure and portrait (`gimli-dwarven-lord`
+in `characters-v1` and `battle-portraits-v2`) and the Shadow-held Erebor landmark (`map-landmarks/erebor-shadow`),
+which UI-265 draws in Erebor's place in a Fate game. The base Gimli keeps his cells for Fate's standard version.
+Details: `graphicalassets/figures/README.md`, `graphicalassets/landmarks/README.md`.
+
+## Expansion characters: portrait keys and ability lines — ART-04 (2026-10-19)
+
+A character's portrait and figure cell is its definition id after "<module>.character.", dots as dashes
+(`PortraitArtwork.Key`): the Lords versions share their base cells ("lords.character.gimli" → "gimli"), and every
+sovereign state, Dark Chieftain and the Dwarven Lord has its own ("kings.character.brand.awakened" →
+"brand-awakened"); before, all ten sovereign states collided on "awakened" or "corrupted". A cell without art keeps
+the figure silhouette. The prompts for the expansion characters' figures and portraits (and the five corrupted
+sovereigns' portraits) are in `graphicalassets/figures/v3/prompts.json` under these keys; ART-05–ART-07 generate them.
+Every ability of the expansions' characters has a one-line tooltip form (`character-ability-summaries.json`, at most
+72 characters — 85 since UI-365, so a condition can name its subject — no rule added); where one ability id reads
+differently on another card, the card has its own form
+("fate.character.gimli-dwarven-lord#messenger-dwarves"). Tests: `PortraitArtworkTests.EveryCharacterCardResolvesItsOwnPortraitKey`,
+`CharacterAbilitySummariesTests.EveryAbilityOfEveryCharacterHasOneShortLine`.
+
+## Expansion decisions routed to their objects — UI-264 (2026-10-19)
+
+Every expansion decision kind and card presentation has a host other than the generic window
+(`DecisionRoutes.Expansion`, `DecisionRoutes.Presented`):
+
+| Decision | Host now | Moves to its object in |
+|---|---|---|
+| Special die (Lords), Ruler discard (Kings) | lit dice in the pool; the console hint says what the click does | UI-267, UI-273 (art, dimmed slots) |
+| Vilya keep, Dismay, Council token | Vilya's socket and the console's Pass (UI-347); Dismay on the glowing Ruler dice and the Pass (UI-276); the Council medallions (UI-347) | UI-268, UI-276, UI-270 |
+| Companion versions, homelands (Council) | setup panel | UI-269, UI-270 |
+| Corruption tile, a card's choice of a sovereign | the kings' portraits, attempt buttons and tiles (UI-274); in a battle a king who takes part glows in its army (UI-278, D16) | UI-278 |
+| Fate's Monsters branch, Kings cards' branches | Monsters: console buttons; Kings: the nation tokens, the kings and the Reserve (UI-278, D15) | — |
+
+The special-die pick, the Ruler discard, the Council setup and token and the corruption tile are required decisions
+(`RequiredDecisions`): the red notice at the top waits for them. Vilya's keep and Dismay can be declined and are not.
+Dice & tokens no longer opens for the two pool decisions; UI-276, the last of UI-268, UI-270, UI-272 and UI-276, deleted it.
+Tests: `DecisionRoutesTests.EveryDecisionKindHasAnObjectHost`, `ExpansionDecisionsHaveTheirHosts`,
+`ExpansionCardStepsHaveObjectHosts`, `RequiredDecisionTests`, `ResourcePanelTests.PoolDecisionsStayOutOfThePanel`,
+`ResourcePanelNetworkTests.SpecialChoicesAndBothDiscardsAreMadeOnThePoolDiceWithoutAPanel`.
+
 ## Rail icons stay on their medallions — UI-261 (2026-10-18)
 
 After choosing a die the available left tabs' icons jumped off their medallions: the icon is placed from the tab's
@@ -1289,6 +1547,10 @@ ability and says "Click to use" or "Select an eligible die to use it". The contr
 (`component-<key>`), so a click works as before; Pass and Discard stay action icons and other components keep their
 text. Tests: `ComponentActionTests.SarumansVoiceIsTwoPicturesThatGlowOnlyWhileTheirDieIsChosen`,
 `ComponentActionTests.AbilityPicturesShowWhatTheAbilityDoes`, `T22AbilityNetworkTests`, `CharacterLayoutTests`.
+Since [UI-439](#every-ability-has-its-own-icon--ui-439) the picture is the ability's own icon (`AbilityArt`; an entry
+keeps the board pin), and one ability's several commands side by side (Voice · recruit and upgrade, the Mouth's move and
+attack) differ by a small badge (`AbilityBadges`); `AbilityPictures` and its test are gone
+(`ComponentActionTests.AbilityButtonsShowTheAbilitysOwnIcon`).
 
 ## Unreachable tray fallbacks removed — UI-289 (2026-10-19)
 
@@ -1307,6 +1569,8 @@ no decision reaches any more are removed, each after its reachability was traced
   the map and in the region panel (`DirectArmy`, `CardArmyEvent`); ruler tokens no longer pay for armies.
 
 `ExcessChoices` stays: an excess opened by a battle's retreat, advance or landing is chosen in the Battle window.
+UI-432 (2026-10-31) removed the next fallbacks — the dice, decks, kings and the Hunt's dice of the decision window
+([below](#declines-and-window-lists-follow-the-board-rule--ui-432)).
 Tests: the layout fixtures of `CardPack02LayoutTests` and `Shadow02LayoutTests` now offer the battle's own figures as
 the server does; `CardFigureDraftTests`, `DecisionRoutesTests` and the army and card network tests are unchanged.
 
@@ -1386,7 +1650,3128 @@ human-friendly names" (a Log entry read `base.sh.character.04: base.hunt.special
   tile 1 is in play."
 - An identifier the client cannot name reads as what it is ("a card", "a Hunt tile", "a character"), never as its
   code; `CardLibrary.Title` and the Hunt report's source and region fall back the same way.
+- UI-346 (expansions): a standard action die (`FreePeoples.standard.2`) reads "a Free Peoples action die"; the Ruler
+  dice "the Free Peoples/Shadow Ruler die"; a Lords special die "the Balrog die"; a Keeper Ring by its name ("Vilya");
+  a Ruler token by its sovereign ("Dáin Ironfoot's Ruler token"); an ability id by its printed title ("Great Sorcery",
+  from `CharacterAbilityLibrary`) or, for the commands' own ids, by what it does ("Use the Balrog", "Fling into the fray
+  (recruit)") (`ExpansionLabels`). Tests: `ReadableTextTests.TheExpansionsDiceRingsTokensAndAbilitiesReadAsTheirNames`,
+  `ARulerTokenReadsAsItsSovereigns`.
 - Guards: an EditMode test reads every recorded text of the wire fixtures and fails on any code; a network test scans the
   rendered Log and its opened card.
 - Server follow-up QUAL-21: the server records its texts with names, so an installed client without UI-331 reads well too.
 
+## Ruler tokens, Dismay and Far-sighted on their objects — UI-276 (2026-10-27)
+
+The owner's decisions EXP-15 D7 and D18–D20 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)); the Dice & tokens panel is
+deleted, since no resource decision is made in it any more (UI-264's plan).
+
+- **Dismay (D20, D7).** After the roll the Shadow spends Dismay by clicking a glowing Ruler die alone — the Free
+  Peoples' in the opponent's pool, or the Shadow's own: it pulses with the expansions' lit art (UI-433, 2026-10-31,
+  owner's report "nothing is lit": in the top bar the lit art alone read as unlit, so the opponent's offered die also
+  wears the shared gold ChoiceGlow and pulses, and the hint reads "Click the glowing Ruler die in the top bar to reroll
+  it with Dismay."; [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434), 2026-10-31: the Shadow's own die
+  glows in its pool too, and the hint names where each offered die stands — "Click a glowing Ruler die, yours or the top
+  bar's, to reroll it with Dismay." when both are offered), and its tooltip names the token it
+  spends ("Click to spend Théoden's Dismay token and re-roll this Ruler die"). Which token is spent makes no difference
+  (KINGS, `Kings/KingsDismay.cs`), so the first one offered is picked (`DismayChoice`); the log names it. The Dismay
+  tokens in the Shadow's pool are information. Keeping the tokens is the console's Pass ("Pass · Keep your Dismay
+  tokens"), and the console's hint ends with it; no button, panel or window remains.
+- **Ruler tokens (D19).** A Ruler token is a crowned coin (`graphicalassets/ui/src/tokens/ruler-token.svg`, replaceable
+  art) with its king's nation emblem: blue while the Free Peoples hold it and lit while a die can use it, red for the
+  Shadow's Dismay tokens. The usable token stands in the dice pool; the king who holds it wears it as a small badge on
+  his Characters portrait, whose tooltip says the token stands in the pool.
+- **Far-sighted (D18).** Thranduil's ability is his move picture, offered while a die that can pay it is selected;
+  the standard move simply does not use it — no toggle or mode chip.
+
+Tests: `ResourcePanelTests.DismayIsTheRulerDiesClickAndKeepingIsThePass`, `RulerTokensAreCoinsWithTheirKingsEmblem`,
+`ExpansionDraftTests.ADismayTokenIsPickedByTheRulerDiesClick`, `SovereignPanelTests.AKingHoldingHisRulerTokenWearsItsBadge`,
+`ComponentActionTests.FarSightedIsThranduilsPicture`, `ResourcePanelNetworkTests` (Dismay on the opponent's die, Dismay
+before Lore), `ExpansionDecisionNetworkTests` (Dismay), `ExpansionWindowNetworkTests` (Keep tokens through Pass),
+`ExpansionTokenNetworkTests` (Far-sighted, Ruler tokens); test-menu scenarios `kings-dismay`, `kings-far-sighted`,
+`kings-fp-ruler-token`.
+
+## The Kings cards on their objects — UI-278 (2026-10-27)
+
+The owner's decisions EXP-15 D15–D16 and decision 17 of 2026-10-19 ([CARD_CHOICES_UX](CARD_CHOICES_UX.md),
+[BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md)): the Kings Nation step is the nation tokens in Politics; Wisdom of Elrond's and
+the recruit-or-cleanse cards' branches stand on the nation tokens, the kings' portraits and the king's nation in the
+Reserve, and a branch's object carries into the card's next step, so one click on Gondor's token activates and advances
+Gondor; Keep tiles is the console's Pass; There Is Hope for Victory and His Power Waxes light a king who takes part in
+the battle in its army, any other king by his portrait; Your Welcome Is Doubtful and the Palantír of Barad-dûr are paid
+in the pool with the Ring on its socket; the Palantír's Muster-as-Event starts at its card on the table. No Kings card
+decision opens the generic window.
+
+## The expansions' texts name their subject — UI-365 (2026-10-27)
+
+Owner's report: Gimli's Dwarf of Renown read "Any die in Iron Hills or Ered Luin moves the Dwarves a step toward war",
+as if the die stood in the region. Every expansion text the client writes (ability lines, tooltips, console hints,
+notices, the rules strip) now follows one rule: a condition names its subject and place ("With Gimli in Iron Hills or
+Ered Luin, any die moves the Dwarves a step toward war"), a lit control says what its click does, the game's own terms
+are used (Awakened sovereign, Council token, Ruler die, Hunt Pool) and no engine word ("server", "decision") reaches a
+player. An expansion ability line may have 85 characters (the base game's keep 72). The audit also corrected texts
+that did not match the rules: Narya's line and Keeper note (Gandalf outside the Fellowship in an unconquered Free
+Peoples Settlement; the Ring is given and a die spent), Nenya's (a standard Eye only), Vilya's (Elrond may keep the
+die), Strider's Guide (the Fellowship's first move), Sméagol's departure (the Fellowship declares), Evil Knowledge
+(no Elite downgraded), Spear of Terror (it replaces any Palantír draw), the Sequential Corruption variant (the Shadow may
+stop; the last tile is kept) and the Council variant (only alternate Companions start outside the Fellowship).
+Tests: `CharacterAbilitySummariesTests`, `NamedRingsTests`, `SovereignPanelTests`, `BattleConclusionTests`,
+`PoliticalPanelTests`.
+<a id="one-window-one-glow-named-dice--ui-371-ui-373-2026-10-27"></a>
+## One window, one glow, named dice — UI-371, UI-372, UI-373 (2026-10-27)
+
+Owner requests of 2026-10-27:
+
+- UI-371 — a character's window is one window in one place: it is placed beside its source when a figure is opened or
+  the roster moves; switching an ability's text or a page keeps its top-left and only pulls it back inside the board
+  (`CharacterRosterPanel.PositionInspector`, `KeepInspectorInView`). A version a decision selects is not the player's
+  change: the window still moves clear of the panels that decision opens, such as a Ruler's Reserve. Since
+  [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) this holds for
+  a window opened from a region's window; one opened from the Characters tab, its panel or a ruler stands at one place
+  beside the tab (`CharacterWindowPlace`), clear of every left panel. Since [UI-440](#skill-icons--ui-440) (2026-11-02)
+  no click on an ability changes the window's content (no text unrolls), so the kept place and `KeepInspectorInView`
+  are gone.
+- UI-372 — every choice and legal target uses one highlight, the ChoiceGlow gold (the tabs, the Fellowship's portraits,
+  the map's units): the old pale blue (mint) `.legal-target` border and its copies (playable hand cards and effects,
+  the playable preview, Hunt candidates, decks, the Hunt tab, the opponent's dice, the roster grid, the Reserve rows)
+  are gold, a framed button adds the warm plate, and inside a pulsing host it breathes with the other choices. A
+  usable Click to use (UI-369) wears the ChoiceGlow. UI-378 (owner, 2026-10-27): the opponent's presentation and history
+  marks (the observed trace, rings and light, a revealed card's used half, a presented die, the map's observed
+  outlines, a planned group's portrait, the recorded map label and the history host) turn gold as well; they are not
+  choices, so they never wear the plate or the pulse. Side colours (the Free Peoples' blue against the Shadow's red)
+  stay.
+- UI-373 — a button that spends a die names the die and what it does: the decision tray's ✓ (and the console's, which
+  reads it) and Click to use read "Use your Muster die: <the server preview's summary>" (`DieUse`); before the
+  preview the action's name stands for the effect, and without a die the effect stands alone.
+
+<a id="balrog-order-and-separation-hints--ui-374-ui-375-2026-10-27"></a>
+## The Balrog's glowing region, a separation's region hint — UI-374, UI-375 (2026-10-27)
+
+Owner reports of 2026-10-27 (playtest of the expansions' test scenarios):
+
+- UI-374 — A Balrog is Come! said "Click the Balrog's glowing region" while nothing glowed and a click on Moria did
+  nothing (only Pass worked). The army of a figure whose ability or order a click uses (`ability-owner`: the Balrog's
+  activation, the Chief, A Balrog is Come!) now wears the ChoiceGlow halo over its gold plinth and pulses with the
+  other choices ([ARMY_MAP_UX states](ARMY_MAP_UX.md#stany)); a click on the Balrog's region (its contour or its
+  marker) opens his panel also while the card's ChooseEffect draft stands (`FigureAbilityInteraction.Region`), where
+  his figure moves him alone and his army's figures move it with him. Test:
+  `LordsCharacterNetworkTests.TheBalrogsCardMovesHimAloneAlongHisPath` (glow, map click, lit figure).
+- UI-375 — separating Gimli as the Guide said "Select the highlighted characters, then confirm." when only his region
+  was left to choose. Once a separation's or a companion move's figures are chosen, the console names them and asks
+  for the region, as the Fellowship panel does: "Gimli · Click a highlighted region to move there."
+  (`TravelDraft.DestinationHint`). Tests: `CompanionJourneyMapTests.AChosenSeparationAsksForARegion`,
+  `FateGimliNetworkTests.GuideLeavesDuringHuntAndMovesWithThePrintedRange`.
+- AUDIO-12 — the political token's step sounds a deep bell ([AUDIO_UX](AUDIO_UX.md#dzwon-polityki--audio-12)).
+
+<a id="council-token-uses-on-their-objects--ui-376-ui-377-2026-10-27"></a>
+## A Council token's uses on their objects — UI-376, UI-377 (2026-10-27)
+
+Owner requests of 2026-10-27; the token's printed use still starts on its medallion in the pool (UI-347 D13), and
+neither use opens the decision window any longer (`ExpansionChoices` lists nothing for `UseCouncilToken`).
+
+- UI-376 — the token that advances a Shadow nation opens the Politics panel as its use starts; the console says
+  "Council token · Click a glowing step of a Shadow nation on the Politics track." (since UI-423: "Click a glowing
+  Shadow nation's token or its → arrow in Politics", as UI-410 removed the glowing station). If the player chooses anything
+  else (another token, Back, or one of the own action dice, whose click now leaves the token's use for that die
+  instead of being ignored), the panel the token opened closes at once; a panel that was already
+  open stays as it was; if the player closes it, it stays closed and its tab keeps glowing until the use ends. The
+  step's own presentation keeps the panel (`PoliticalContextInteraction.FollowCouncil`).
+- UI-377 — the token that moves Nazgûl shows a small popover just above the token pool, pointing at the token on the
+  Ring picker's frame (`CouncilTravelPicker`): only the icons of the Nazgûl it may move and the ✓ that ends the
+  choice (UI-379's Finish; since UI-381 the console's ✓). Its planning is UI-379's, below.
+- UI-379 (owner, 2026-10-28) — the token's Nazgûl move group by group. Rules: the token is the Character die's Move
+  Nazgûl and Minions (T26, LORDS p. 30–31): any or all of them, each to its own destination, in one action; the
+  server's `ShadowTravel.Plan` accepts any subset, grouped by origin. A click on a lit icon, on the figure in its
+  region's panel, or on a region holding only that figure chooses it for the group, and a second click releases it;
+  the group is local and never sent. A click on a lit destination (a region every chosen figure reaches, not one's own)
+  plans the group there: one planned group per origin, garrison and destination, drawn faintly with its count at the
+  destination (`PlannedFlights`), and the next group can be chosen; a planned icon dims, and its click gives up its
+  destination and chooses it again. The console's ✓ (UI-381; UI-379's Finish above the token is gone) sends every
+  planned move as one command; planning every figure the token may move sends them at once. The console says "Council token · Click the
+  Nazgûl to move (above the token or on the map), then their destination.", "<Nazgûl ×2> · Click a highlighted region
+  to move there; click a chosen one to release it." and "… planned · Choose more and their destination, or click ✓ to
+  finish." (`CouncilTravel`, `CouncilTravelInteraction`; the general travel path, `TravelActions`, no longer handles the
+  token).
+- Tests: `ExpansionTokenNetworkTests.CouncilPoliticsSpendsTheTokenWithoutADie` (opening, closing on a die's click,
+  staying closed with a glowing tab, the step), `ExpansionTokenNetworkTests.CouncilTravelMovesTheChosenNazgulWithoutADie`
+  (no decision window, the popover above the pool with only the Nazgûl and Finish, a group of two chosen and a third
+  released, the planned ghost without a command, Finish's move of both), `CouncilObjectsTests.TheCouncilTokensTravelPlansGroupsUntilFinish`.
+
+<a id="ruler-token-way-console-confirm--ui-380-ui-383-2026-10-28"></a>
+## A Ruler token's way, the console's ✓ for board choices — UI-380 to UI-383 (2026-10-28)
+
+Owner reports from the Kings test scenarios (Brand's Call to Arms, Dáin's Iron Guard):
+
+- UI-380 — a Ruler token's click takes the Ruler die when it is the only die the token's actions use (the token's
+  actions pay with it; before, the click selected nothing usable). The Characters tab glows while the roster offers
+  something — an entry, an action on a row, a king's decision — so the way is lit before the panel opens; then the
+  king's row glows and, in his window, the usable ability's chip. An expansion's command names its ability with a
+  prefix ("kings.call-to-arms") while the chip has the printed id ("call-to-arms"): the action now belongs to its chip
+  (UI-369), so Click to use appears only while that chip is open, and the other ability (Heir of Bard) shows no button
+  under Limits. Test: `RulerTokenMenuTests` (Brand and Dáin from the test menu).
+- UI-381 — the owner's rule: "in this and every analogous case the button in the bottom panel confirms, not an extra
+  button in the window". A choice planned on the board's objects — a card's or ability's recruitment plan in
+  Reinforcements, a Council token's Nazgûl (UI-379's Finish above the token is gone), an ability's decision in the
+  Characters window — is confirmed with the console's ✓ once the server's preview allows (`ConsoleConfirm`); the
+  Reserve has no ✓ or Finish of its own (the console's ✓ also finishes a recruitment sequence, as for every action of
+  several steps), and the tray keeps its confirmation hidden there. The decision window, the battle and Hunt windows
+  and the Council setup's ✓ beside Finish phase (UI-370) are unchanged. Tests: `ShadowStrategy04NetworkTests`,
+  `ShadowStrategy04LayoutTests`, `BoardInteractionTests`, `ExpansionTokenNetworkTests`, `ExpansionAbilityNetworkTests`.
+- UI-382 — a separation's (or journey's) portraits in the Fellowship panel take the size of its companion icons
+  (54 × 44, 46 × 34 compact) instead of the tray's 66 × 48. Test: `FateGimliNetworkTests`.
+- UI-383 — a corrupted king's tooltip and inspector say "Corrupted · His tiles are resolved; he now serves the Shadow"
+  (T28, KINGS p. 12–13) and a removed one "Removed from play", instead of "Corruption 0 / 4". Test:
+  `SovereignPanelTests.ACorruptedOrRemovedKingShowsNoCorruptionCount`.
+- UI-384 — every rail tab glows alike: Politics and Reserve are framed buttons (`.action`), whose UI-372 choice plate
+  repainted them lighter than the Characters tab; every tab keeps the tabs' warm plate and gold rim (UI-223), the look
+  the owner named as the reference, and pulses the same way.
+- UI-385 — a king's ability names him and the printed ability: its owner is his name from his title ("Dáin"), never
+  his id ("kings.sovereign.dain"), and an ability's picture reads "Dáin · Dwarvenking · Upgrade a Regular · …"
+  (`ComponentActions.AbilityTitle`). Test: `ComponentActionTests.AKingsAbilityNamesTheKingAndThePrintedAbility`.
+- UI-386 (owner) — a second click on the chosen action die releases it, and with it the unsent step it began (the
+  draft clears, as Back to the start); before, it chose the same die again. The Hunt's allocation, a reroll and the
+  special dice's choices keep their own die clicks. Test: `RulerTokenMenuTests.EveryLitTabGlowsAlike` (the tabs the
+  die lit go dark).
+- UI-387 (owner) — a character's versions are tabs right under the window's title, not large framed buttons below its
+  abilities: a low strip on a thin gilt line, the shown version with a gold underline and gold text, the others muted
+  until hovered; each tab reads the version's name ("Strider", "Aragorn"), with its edition only where two names are
+  alike ("Base · Boromir", "Lords · Boromir"); the tooltip names the card and its edition. UI-438 (2026-11-01): one
+  character's alternative cards read their epithets ("Lieutenant", "Númenórean"; "Black Captain", "Chief"; Fate's
+  "Dwarven Lord"), `CharacterLibrary.VersionName`.
+- UI-388 (owner) — a token with several uses opens no panel and lights them all. A Council token a Kings Chieftain can
+  enter with (UI-347 D13) lights, at its one click, the Chieftain's row (and the Characters tab) for the entry and its
+  printed use's objects: the glowing Shadow nations' steps (and the Politics tab) for Politics, the Nazgûl above the
+  token for Travel; a click on any lit option uses the token that way (a step sends Politics at once, a Nazgûl starts
+  Travel), and a second click on the token releases it. The console names both ways. A token with one use keeps UI-376
+  (Politics opens with it). Tests: `ResourcePanelTests`, `ExpansionTokenNetworkTests` (both tokens),
+  `CharacterRosterActionNetworkTests`, `CouncilTokenMenuTests` (UI-376 with `lords-council-token`).
+
+
+## Every use at one click, a deck choice on its decks — UI-389, UI-390 (2026-10-28)
+
+Owner reports from the Kings Ruler token scenarios:
+
+- UI-389 (owner's rule) — every die and token lights all of its available uses at its click, never one use per click.
+  A Ruler token's uses are the server's actions for that token (`RulerTokenActions`), judged by the token's face
+  rather than the face the Ruler die shows (`ActionDieContext.Sync` with the token): Thranduil's token lights the
+  Fellowship's move (its plaque and its figure on the map) beside his own row, where before only his row lit; Denethor's
+  token lights the decks and the Event cards its Event face pays for. None of the Ruler die's own uses light beside
+  them (before, the Muster die's Politics glowed under both tokens). A separation lights the Fellowship as its move
+  does. A second click on the chosen token releases it with the Ruler die it took, as a die's (UI-386); before, it
+  dropped only the token and the die's own uses (another king's ability, Politics) lit in its place. Every path that
+  starts a token's action — the Fellowship panel, the map, a chip — sends the token's ability (Far-sighted), which the
+  server requires (`ExpansionDraft.TokenAbility`). Tests: `RulerTokenUsesTests`, `RulerTokenMenuTests` (Thranduil's and
+  Denethor's tokens from the test menu; the Fellowship's move with Thranduil's token is taken by the server).
+- UI-390 — a deck choice is made on its decks. After Denethor's token (or Ruler die) pays for an Event, the Palantír of
+  Anárion's extra card asks for a deck, with no Skip while his token is spent. Before, the console said "Resolve the
+  played card" beside the played card's chip, the decks beside the hand kept only a thin rim (an expanded hand card
+  could cover it), the console's plaque and the notice opened the army window in Minas Tirith where Denethor stands, and
+  his window showed an Open decision that led back there. Now the decks wear the same halo as a die's draw, the console
+  and the notice read "Denethor · Choose a deck" and "Click a glowing deck beside your hand to draw its top card" (with
+  Pass named when the draw may be skipped), the notice leads to the hand (`DecisionContext.Hand`) — the docked hand
+  shows its decks already, so the plaque has nothing to open — a floating hand drawer opens once for the step, and the
+  character keeps no Open decision link (`DeckChoice`). Tests: `DeckChoiceTests`, `DeckChoiceMenuTests` (Horn of Gondor
+  with Denethor's token from the test menu). Since [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434)
+  (2026-10-31) the offered decks also wear the thick gold ChoiceGlow rim and breathe: the halo and the thin rim alone
+  read as unlit.
+
+## Abilities on their rows, recruitment from the map, a lifted figure — UI-391 to UI-397 (2026-10-29)
+
+Owner requests and reports from the Kings and Lords test scenarios:
+
+- UI-391 (owner) — a character's abilities are used straight from the Characters tab. The third line of each roster
+  row holds a 15-point line of small thematic icons, one per printed ability, right-aligned away from the portrait's
+  level star (`AbilityIcons`: a battle for a combat bonus, the Guide's crown, the Politics track for a political step or
+  a messenger, a muster, a move, a card draw, the Hunt's eye or die, a Ring, the Balrog, Gollum, a plus for an upgrade,
+  a level, a change of version, a bond to a place; the scroll otherwise). The line keeps its height whether a character
+  prints two abilities or four, so every row keeps its size; on a short viewport the icons take the status line's
+  place and the row's tooltip keeps the state and region (a strip under the rows made a full roster too tall for the
+  panel). An icon's tooltip names the ability and its text. An ability usable now glows with the shared gold rim and
+  pulses with the roster; its click starts it as the chip's Click to use does (UI-369), with the same die or token, so
+  Dáin's Iron Guard starts from his row after his token. Two usable actions of one ability (Saruman's Voice), or an
+  ability not usable now, open the character's window with that ability unrolled. The window keeps its chips
+  (`CharacterAbilityStrip`). Since [UI-440](#skill-icons--ui-440) (2026-11-02) the icons are bare, their tooltip is the
+  skill's formatted description, and the window opens with that ability's icon focused (its description shown) instead
+  of unrolled. Tests: `CharacterAbilityStripTests`,
+  `RulerTokenMenuTests.DainsIronGuardStartsFromItsIconInTheCharactersTab`.
+- UI-392 (owner) — a king's recruitment (Iron Guard, Call to Arms, Mustering of the Mark) starts on the map: the
+  Reserve does not open by itself; its tab glows and can be opened by hand, and the target settlements glow green. A
+  click on a lit settlement remembers it, opens the Reserve for it and glides the camera there at the same zoom
+  (`MapCanvas.Glide` over `CameraTravel`, 450–750 ms eased; at once under Reduced motion; the player's own pan or zoom
+  stops it). The chosen settlement wears a wider gold edge that pulses with the green targets and its fill turns to the
+  planned colour, until its figure is placed (`MapDraftOverlay.ChosenRegions`). The next figure's click places it
+  there. The Balrog's optional figure keeps its panel. Tests: `ReinforcementPlansTests`, `RulerTokenMenuTests`.
+- UI-393 (owner) — a reserve figure is dragged onto a lit settlement as its own icon: the pressed figure's art follows
+  the pointer, centred and a little larger, and its slot keeps only a faint trace while it is lifted; a drop on a legal
+  settlement (or on the army standing there) places it, a drop elsewhere returns it with no action (UI-113). Other drag
+  sources keep their label. Test: `RulerTokenMenuTests` (the second Iron Guard figure).
+- UI-395 (owner) — a response made only in the console lights only its choices. Lady Galadriel's Nenya after a Hunt
+  Eye is its Ring socket and Pass: the Hunt window holds nothing then, so the Hunt plaque no longer glows, the decision
+  belongs to no window or region, and the console's banner neither pulses nor opens the Hunt window
+  (`HuntActions.ConsoleReaction`). A table card's or a Guide's response beside Nenya keeps the Hunt window. Tests:
+  `DecisionAttentionTests.ANenyaResponseLeadsToNoWindow`, `ExpansionWindowNetworkTests` (t34-nenya).
+- UI-394 (owner) — the battle window's two sides keep one width in every step; a long figure choice wraps inside its
+  column (`docs/ui/BATTLE_WINDOW_UX.md`, UI-208). Test: `BattleLayoutTests.LossesAndRerollsStandOnTheDecidingPlayersSide`.
+- UI-396 (owner) — a Combat card's replacement (Heir of Bard, Shadows in the North, a Dark Chieftain's) can be skipped
+  from the battle window: Keep card effects stands in its footer on the deciding player's side and sends the decline at
+  once, as the console's Pass still does; the footer's hint names the chip's click and the skip. Tests:
+  `KingsCards02Tests`, `KingsDecisionNetworkTests.KeepingTheCardsEffectsIsThePass`.
+- UI-397 (owner) — an ability shown as a marker or chip in the battle window is described: a made replacement's marker
+  reads its source, the ability (Red Wrath, Lord of the Bats, I Command, Heir of Bard, Shadows in the North), its printed
+  text and what it replaces this round; an offered chip ends with the same text (`CombatReplacementChoice.Ability`).
+  Test: `KingsCards02Tests`.
+- UI-398 (owner) — a corruption attempt starts from its Eye: before, the attempt button beside an Initial king paid a
+  standard Shadow Eye by itself (UI-274), so the attempt and the Characters tab glowed before any die was chosen. Now
+  the Eyes that may pay stand in the Shadow's dice row (UI-230); the click on one lights the kings it may target, their
+  attempt buttons and the Characters tab, and the attempt's click sends it with that Eye. Until then the buttons stay
+  dark and say "Click an Eye that pays in your dice row first". Tests: `SovereignPanelTests`,
+  `ExpansionCorruptionNetworkTests`.
+- UI-399 (owner's question) — a standard corruption attempt's Draw tiles is one click. Under T28 it draws min(3,
+  remaining Eyes) tiles, an Eye or special tile is revealed, set aside and replaced, and a Kings tile ends the draw: no
+  choice falls between the draws, so after the click the client sends each next draw by itself, about half a second
+  after the previous tile shows, until the limit or a Kings tile; then the choice of a tile waits (`CorruptionDrawChain`).
+  Each draw stays the server's own command, and opening the game still draws nothing (UI-12). The Sequential variant
+  keeps one click per draw, as each is a choice. Tests: `ExpansionCorruptionNetworkTests`, `KingsCards02NetworkTests`
+  (`KingsCardNetworkChecks.DrawTiles` clicks once), `SovereignPanelNetworkTests`. Superseded by
+  [UI-442](#a-standard-corruption-attempt-draws-all-its-tiles-with-its-click--ui-442): the server draws every tile in
+  the attempt's own command, so the standard attempt has no Draw tiles and `CorruptionDrawChain` is gone.
+
+## Two characters a line, clear character tooltips, a dark Politics station — UI-408 to UI-410 (2026-10-29)
+
+- UI-408 (owner) — each character in the Characters tab has more room: two rows a line, each about twice as wide,
+  with the portrait, the name and region, and beside them a 2x2 block of 19-point ability icons (17 on a short
+  viewport; UI-391's were 15 points on the text's third line). A roster that two a line would make taller than the
+  board area — the full Kings roster on a 1366 x 768 screen — keeps three a line with UI-391's icons
+  (`roster-compact`); the panel tries two a line again only when the roster or the room for it changes, so the form
+  never flips back and forth. Since [UI-445](#the-full-expansions-roster-fits--ui-445) a roster too tall even then takes
+  one more column (`roster-dense`). (First registered as UI-400, a number another session's registration took over.)
+  The block holds two lines of two icons one above the other and never wraps, so its form does not depend on the UI
+  scale; every icon stays inside its row (`CharacterRosterLayoutTests`).
+  Tests: `CharacterRosterPanelNetworkTests` (two a line, icons of 17+ points; `RulerTokenMenuTests` with Kings),
+  `CharacterRosterLayoutTests`, `LeftRailLayoutTests`, `CharacterAbilityStripTests.EveryAbilityIconsArtExists` (since
+  [UI-439](#every-ability-has-its-own-icon--ui-439) each icon is the ability's own, `AbilityArt`, and `AbilityIcons` with
+  that test is gone: `AbilityArtTests`).
+- UI-409 (owner) — a roster row's tooltip reads in clear parts without growing (`CharacterRowTooltip`): the click's
+  offer in bright gold, the name in bold gold with its edition, the state dim, the statistics plain, the entry in gold
+  with its cost on the same line and its conditions dim under it (✓ met in green, ○ open), the source small and faint,
+  each ability with its name in bold; two thin gaps part identity, entry and abilities, and the merged entry line keeps
+  the height. Only a source with `RuntimeTooltip.FormattedClass` shows rich text; every other tooltip stays plain.
+  Tests: `CharacterRowTooltipTests`, the roster tests reading `CharacterRowTooltip.Plain`.
+- UI-410 (owner) — no station on a Politics track glows: the lit green circle on the next station misled. The
+  nation's token and its arrow show the step; the next station stays the drop target of a dragged token and shows a
+  white rim only while the drag points at it. Tests: `PoliticalGestureTests`, `PoliticalPanelTests`,
+  `PoliticalRecoveryTests`, `MusterNetworkTests`, `MultiUseDiceNetworkTests`, `T22TurnNetworkTests`.
+- UI-411 (owner) — a Corruption tile that can be chosen (an attempt's drawn tiles, an inspection's tiles) pulses
+  visibly: besides its fading gold rim it grows a little in the shared 750 ms rhythm, as the roster's choices do; Reduced
+  motion keeps it lit and still. Test: `SovereignPanelNetworkTests` (the tile's panel pulses during the choice).
+
+## A settlement's own recruits, clear Politics names — UI-412 and UI-413 (2026-10-29)
+
+- UI-412 (owner) — with a Muster die chosen, a clicked settlement lights in the Reserve only the figures it can take:
+  the kinds whose recruitment targets (the server's `RecruitmentOption.Targets`) hold that settlement stay lit, and so
+  do their nations' rows. The others lose their light but stay choosable, as before, for another settlement; their
+  tooltip says why ("Cannot be recruited in Erebor now", or the server's words for a closed settlement) and that their
+  click lights the settlements that take them. The header reads "Reserve · Erebor". Another settlement moves the focus,
+  a region without a settlement clears it, and a committed recruit clears it too, so the next figure sees every
+  settlement again. The narrowing follows the targets, not the region's nation: Helm's Deep under the Mark of the White Hand
+  lights Isengard's figures. The click flow is unchanged (a figure's click still lights its settlements).
+  Test: `RecruitFocusMenuTests` (the Corrupted kings scenario: Erebor, the Iron Hills, Dale, the Old Forest).
+- UI-413 (owner) — the Politics rows carry no effect badges: the small diamond a nation-wide effect (Wormtongue on Rohan,
+  a Corrupted Brand or Théoden) placed at the start of a row covered the nation's name. The Effects tab still lists
+  every effect; the Fellowship's badge keeps its place (`EffectsScopeBadges`; the global one beside the Effects
+  window's close button was removed by UI-429, 2026-10-30). Test:
+  `EffectsNetworkTests` (no badge on the Politics rows while Wormtongue is in play).
+- UI-414 (owner) — the Effects tab lists passive effects and what is happening now (tiles entering the Hunt Pool, a
+  card's lasting effect); an ability a player uses is described and offered only in the Characters tab. Each titled
+  ability of a source has its own button, named by the ability ("Corrupted ruler · Dáin", "Mark of the White Hand ·
+  Théoden"); a card's effects keep one button. A place shows its locate button once per source, and none where the
+  effect's text already names it. The server (`InGameEffectProjection`) projects each Corrupted sovereign's recruitment
+  ban naming its place and Théoden's Mark of the White Hand; Brand's Shadows in the North and the Fate abilities are
+  the Shadow's optional uses, offered in battle, and are no longer effects. Tests: `EffectsPresentationTests`, server
+  `InGameProjectionTests.CorruptedSovereignsProjectOnlyTheirPassiveEffectsTitledByAbility`.
+- UI-414 (owner) — the Effects tab lists passive effects and what is happening now; an ability a player uses is
+  described and offered only in the Characters tab. Each titled ability of a source has its own button; a card's
+  effects keep one. A place shows its locate button once per source, and none where the effect's text already names
+  it (`EffectsPresentation`, `EffectSourceDetails`). Test: `EffectsPresentationTests`.
+
+## A compact menu before the game — UI-415 (2026-10-29)
+
+- UI-415 (owner) — every screen before the game (the sign-in card, the main menu's pages: Open games with the lobby, My
+  games, Replays, Host a game, Demo, Test scenarios, Join by code; the waiting room; Settings) is compact: buttons of 32
+  points (the project's click target) instead of 36–42, rows of 46 (Open games 40) instead of 60 with 3 points between
+  them, text fields with 2 points of padding, and almost no empty space between frames, header plates, tabs and rows.
+  The masthead (title 30 points, the sign-in line under it) gives its height to the window (600 points tall, shrinking
+  on a smaller screen); the action column ends under Sign out and Quit game instead of stretching an empty frame. In
+  Test scenarios, Back stands beside the hint and the page's second title is gone (the window's header names it). Every
+  control keeps its place; no information was added or removed (`Frontend.uss`, `WaitingRoom.uss`, Settings in
+  `Wotr.uss`). Tests: `MainMenuLayoutTests` (four layouts, the audience line now 48 points), `TestScenarioNetworkTests`,
+  `MainMenuNetworkTests`, `InterfaceSettingsTests`.
+
+## A move shows its own figure; A Balrog is Come! in fewer clicks — UI-416 and UI-417 (2026-10-29)
+
+- UI-416 (owner) — a planned move shows and names the figure that moves: the map's planned-figure ghosts keep a
+  character's own figure (`MapPlannedRecruits` used only nation and kind, so the Balrog's planned move showed a
+  Nazgûl), and a card's character move names its figures in the console ("Move the Balrog", "Keep the Witch-king and
+  3 Nazgûl in place") instead of "Nazgûl". Test: `NazgulFlightDraftTests.TheSummaryAndTheGhostShowTheFiguresThatMove`.
+- UI-417 (owner) — A Balrog is Come! in fewer clicks: a click on the Balrog's glowing army moves that army with him at
+  once (the card's army step opens with it chosen, UI-347); his figure in his region's panel moves him alone with him
+  already armed, so the next click is his destination; a card's move of one figure sends with its destination's click
+  (no ✓), as any complete final click does. Pass still finishes the card. The console's trail shows one committed
+  button per card: an option of its effect joins the card's button ("✓ A Balrog is Come! · Balrog alone"); a chosen
+  region, figure or die keeps its own. Tests: `LordsCharacterNetworkTests`, `EffectTrailTests`.
+
+## One button for a card's one option; the battle window's choices pulse and skip — UI-418 and UI-419 (2026-10-29)
+
+- UI-418 (owner) — a card decision with one option besides its decline (the console's Pass) shows one button, named
+  after the card (Wind from the West), lit and pulsing, whose tooltip says what it does ("Inspect Shadow hand · …"); the
+  console's trail leaves out that card's committed button, which said the same. A single reaction response is lit too.
+  Tests: `CardConsoleOptionsTests`, the Lords Wind from the West scenario.
+- UI-419 (owner) — the battle window's clickable pips (the −1 that cancels a hit, Heroic Death's amounts) glow brighter
+  and pulse in the shared rhythm. Every optional effect of a battle can be skipped in the battle window: Skip effect
+  stands in its footer whenever the console's Pass sends a decline, and its tooltip names the effect it skips and what
+  that does ("Skip Orderly Withdrawal · Keep the hit and fight on", "Skip Heir of Bard · Keep your card's effects"). It
+  replaces UI-396's Keep card effects. Tests: `KingsDecisionNetworkTests`, `KingsCards02Tests`.
+
+## Tooltips say what they confirm or pass, once and cleanly — UI-420 (2026-10-29)
+
+- UI-420 (owner) — an audit of every tooltip of the base game and the expansions ([TOOLTIP_AUDIT](TOOLTIP_AUDIT.md)). An
+  action's tooltip names what it confirms or passes: the console's ✓ reads `Confirm · <card>: <chosen options>` or names
+  the armies, routes, recruits and nation of the step; Pass names the card or ability it skips; Finish the action it ends;
+  the battle window's direct steps and Apply losses name the region and the figures; Keep roll and Reroll selected the roll.
+  Informational tooltips drop repeated facts (a Hunt tile's value, a king's state, equal Level/Move/Combat level, a status
+  equal to its label), blank lines and dangling separators, raw ids and enum names; a force, a character, a deck and a
+  played card read the same everywhere. Tests: `TooltipTextTests` and the tests listed in the audit document.
+
+## Layout stress scenarios; console options above the console — TEST-15 (2026-10-29)
+
+- TEST-15 (owner) — nine Testing-catalog scenarios fill the windows at once (the full roster with Fate and with the five
+  kings, three Chieftains in one battle, a Hunt answered at every window, the Council token's twelve figures, the White
+  Rider, every pool resource, the Effects panel with 22 entries, The Nazgûl Strike!'s three options), listed in
+  [LAYOUT_STRESS_SCENARIOS](LAYOUT_STRESS_SCENARIOS.md) with the audit behind them. `LayoutStressScenarioTests` opens each
+  in the four layouts with a screenshot.
+- Console options that do not fit the console's line at their full text stand in a strip just above the console — with
+  the played card's committed button when that does not fit the line either — instead of being cut to "…"; the bottom
+  row keeps its height (UI-160) and wide layouts keep the options in the line (`ConsoleOptionsFit`).
+
+## The owner's playtest fixes where the same defects remained — UI-423 (2026-10-29)
+
+UI-423 (owner) — the expansion playtests of the last days (UI-296 … UI-419) were read as patterns of defects, and the
+other places with the same defects fixed the way the first fix did:
+- **A window has its own skip (as UI-419).** Skip effect also stands in the Hunt window (`hunt-skip-effect`) for its
+  optional effects (We Won't Go Back's No Corruption) and reaction windows (table-card and Guide responses), and in the
+  battle window for reactions (the White Rider, the Witch-king's Sorcerer); a reaction's tooltip lists "Skip <skill>
+  (<owner>)" per response. The console's Pass still declines (D7); Nenya alone stays console-only (UI-395).
+- **A live choice glows and pulses (as UI-411, UI-419).** Battle and Hunt reroll dice while the budget is not full; the
+  Hunt's Ring, Guide and Random companion responses beside the glowing card and Guide rows; the Ring and Lore pickers'
+  faces; a Politics token a click can move (a gold rim and the shared pulse, no glowing station, UI-410); a corruption
+  attempt's lone Draw tiles / Draw again.
+- **A highlight follows the legal context (as UI-412).** A king's region-first recruitment (Dáin's Iron Guard) lights only
+  the figures the chosen settlement can take; the others stay choosable, unlit, and say why.
+- **Texts name the real subject (as UI-416, UI-374, UI-375).** Politics hints name the token and its → arrow; the
+  Council token's travel says "figures" when it offers Minions; A Balrog is Come!'s hint names the Balrog; card journeys
+  name the companions and destinations; with two Chieftains the battle footer, Pass and Skip effect name every chip; the
+  Dead Men of Dunharrow and several-figure choices name what is chosen and what is left.
+- **A link leads somewhere (as UI-390).** A character's window offers no Open decision for a response made on its own
+  object (Nenya at its socket, Spear of Terror at the deck, He Sees, He Knows at the Chief).
+- **A drag shows the object (as UI-393).** A dragged Politics token, Council portrait, Ruler token, card or Hunt tile reads
+  as its name, not as a code word.
+Not changed: a single-figure card choice ("Click a lit region, then its lit figure") sends with the figure's click, so its
+hint cannot advance; the corruption attempt lit on the king's portrait and his attempt button at once is an owner
+question (one lit control, as UI-418?).
+
+## The Effects window's header holds only its close button — UI-429 (2026-10-30)
+
+The owner: the Effects tab's bar keeps only the button that closes the window; the second one, which listed the
+effects, goes. That was the "◇ N" badge of game-wide effects (`EffectsScopeBadges`), placed beside the close button: its
+tooltip listed what the window already shows and its click opened the window that was already open. Game-wide effects
+now get no badge anywhere; the window still lists each of them as a source, and the Fellowship's badge for effects on
+the Fellowship keeps its place in the Fellowship's status row. This completes UI-221 ("the header holds only the close
+button") and follows UI-413 (no nation-wide badge on the Politics rows). Tests: `InGameDenseLayoutTests` (the header's
+only button is `close-effects`, four layouts), `LayoutStressScenarioTests.TheFullestEffectsPanelFits` (the same with ten game-wide effects in play).
+
+<a id="no-button-for-an-option-the-board-draws--ui-430"></a>
+## No button for an option the board draws — UI-430 (2026-10-30)
+
+The owner, about The Nazgûl Strike!'s console buttons ("✓ The Nazgûl Strike!", "Discard a table card", "Roll for the
+Hunt", "Finish"): Finish disappears and the standard confirm choice replaces it; of the other buttons only the card's
+name and the ones with no other picture stay; the Effects tab already lights, the discardable effects only lack a red
+glow; the Hunt Box glows and pulses and its tooltip explains that a click starts a new Hunt because of this effect.
+From now on this is the general rule of the design:
+
+- **A new button only for an option with no other picture on the board.** Otherwise the map, the UI and tooltips signal
+  the option — the lit object's tooltip names the action and the effect that offers it — and a click on the lit object
+  sends exactly what the button sent. Every option keeps a click path (R16).
+- **Finish → ✓, decline → Pass / Skip effect.** A Finish that ends a card's event is the console's ✓ (the standard
+  confirm choice): enabled, lit and pulsing while nothing else is chosen, its tooltip `Finish · End <card> without …`
+  (`FinishingOption`: The Nazgûl Strike!'s Finish, There is Another Way's Stay, and Wind from the West's and A Balrog
+  is Come!'s Finish, which were the Pass since UI-347 D7). A decline of a response or of an optional effect stays the
+  console's Pass and a window's Skip effect (UI-291, UI-419, UI-423; `OptionalDecline`, `ReactionSkip`).
+- **The Nazgûl Strike!** has no console option and its decision window stays closed; the console keeps the card's
+  committed chip. Its Free Peoples Character cards are red in the Effects panel (the tab lights as before), its Hunt
+  roll is the console's Hunt Box — gold choice glow and the shared pulse, no filter and no size change — whose tooltip
+  reads `Roll for the Hunt · Click to start a Hunt roll now because of The Nazgûl Strike!: a Nazgûl is in the
+  Fellowship's region · The Fellowship does not move and no die is spent · <n> Eyes in the Hunt Box`, and its Finish the
+  ✓. The hint names them within two lines of the status column at 1366×768: "Discard: red card in Effects · Roll: Hunt
+  Box · ✓ finishes" ("Click the glowing Hunt Box to roll · ✓ finishes" when no Free Peoples card is on the table); each
+  object's tooltip says the rest. In a Lords or Kings game at 125 % the status column is too narrow for any hint (an
+  earlier limit of that layout, not of this decision). Outside this offer the Hunt Box behaves as before.
+- **The card's name chip is never cut.** In the console's line the committed chips keep their share (up to 45 %) instead
+  of yielding to a long hint; without options, chips that do not fit that share at their full text stand alone in the
+  strip above the console (`ConsoleOptionsFit`, as TEST-15 lifts them with options) and the hint takes the whole line.
+  Before, UI-297 shortened them with "…" (the Strike's chip read "✓ The Nazg…" in all four layouts).
+- **A table card an effect lets the player discard** (The Nazgûl Strike!, Wind from the West, Safe Paths in the Dark, a
+  table card's own reaction, UI-247) wears the hand's red discard parchment (UI-222) on its tile, and a click on the
+  tile or on its × sends the same command (`ChooseEffect`, or `RespondEffect` for a reaction). Its tooltip reads
+  `Discard <card> · Click to discard it because of <effect>[: reason]` (`Discard <card> · Click to discard it and use
+  its reaction · …` for a reaction). The console's "Discard a table card" and "Use a table card" are gone.
+- **Buttons that stay** (no other picture): the console's Back, ✓, Pass and Discard and the committed card-name chips;
+  the battle window's Continue/Stop, Hold, Field/Retreat inside, No card, Stay, Select all, Skip cards this battle,
+  Apply losses, Keep/Reroll and Skip effect; the Hunt window's Keep/Reroll and Skip effect; a Kings branch without a
+  board object; the game end's reopen; the Elven Ring and Lore result pickers; a character's ability controls on its
+  row; the Black Captain's recruit with an empty reserve; a card's one option without an object (Wind from the West's
+  Inspect Shadow hand, UI-418). The other cases of the analysis (the Black Captain's orders, Lure of the Ring, Dreadful
+  Spells, card army events, Worn with Sorrow and Toil, the Scouts, the Fellowship tray) are UI-431 and UI-432.
+
+Playtest (owner's checklist):
+- [ ] The Strike — Testing catalog `layout-console-options` (Lords group, play the Shadow). Expect: no option strip, the
+  card's chip only; the Effects tab lit, its four Free Peoples cards red with "Discard … because of The Nazgûl Strike!";
+  the Hunt Box glowing and pulsing with "Roll for the Hunt …"; the ✓ lit with "Finish · End The Nazgûl Strike! …".
+  A red card's click discards it; in a new session the Hunt Box's click starts the Hunt roll, then the ✓ finishes.
+- [ ] Wind from the West — `lords-card-wind-finish`. Expect: Inspect Shadow hand is the card's one lit button, the ✓
+  lit "Finish · End Wind from the West without inspecting the Shadow hand", the Pass unlit; the ✓ ends the card.
+- [ ] A table card's reaction — base Balrog of Moria when the Fellowship is revealed or declared beside Moria (no catalog
+  scenario yet; PlayMode `Shadow03NetworkTests`). Expect: no "Use a table card"; the card red in Effects; its click uses the reaction.
+- [ ] The Strike in a base game — seeded `shadow-strike` (PlayMode `Shadow02NetworkTests`, the Shadow). Expect: as in the
+  catalog case; a red card's click discards it, in a new game the Hunt Box's click starts the Hunt roll, in another the
+  ✓ finishes.
+- [ ] There is Another Way — Gollum as Guide (`CardPack02NetworkTests`, match `another-way`). Expect: no Stay button,
+  the ✓ lit "Finish · End There is Another Way without moving or hiding the Fellowship"; the ✓ ends the card.
+
+Tests: `ObjectFirstChoicesTests` (the registry, the ✓'s, Hunt Box's and red cards' tooltips, the hints with and without
+table cards, the tray's and the console's hints, the Hunt Box lit only during the offer, and the command the Hunt Box and
+the ✓ build equal to the old buttons' and to the payload recorded from them on a real server; from the base-game line,
+EXP-17), `CardConsoleOptionsTests`, `FellowshipCardActionsTests`, `LordsCardChoicesTests`; PlayMode
+`NazgulStrikeObjectTests` (on a real server, a red table card's tile, the Hunt Box and the ✓ each send the `ChooseEffect`
+payload the old button sent, recorded from the buttons at 7ddddb8e), `Shadow02NetworkTests` (on a real server the red
+tile sends the payload the old × sent, recorded at c7d38fd5; EXP-17), `Shadow02LayoutTests`,
+`CardPack02NetworkTests`, `Shadow03NetworkTests`, `LordsCardNetworkTests`, `LayoutStressScenarioTests` (the Strike's
+scenario, `layout-console-options`, now checks the objects instead of three buttons; screenshots `ui430-strike-*`).
+
+<a id="options-the-board-draws-are-chosen-on-the-board--ui-431"></a>
+## Options the board draws are chosen on the board — UI-431 (2026-10-31)
+
+UI-430's rule (owner, 2026-10-30) applied to the analysis's other cases: a card's option whose object is on the board is
+lit there and chosen with a click; neither the console nor the tray keeps a button for it, and the click sends exactly the
+payload the old button sent (JSON-equal on a real server, recorded from the buttons at 3da66214). Every option keeps a
+click path (R16). Map terrain has no tooltip (UI-80), so where a region is the object the console's hint names it and the
+forces standing there carry the tooltip.
+
+- **A region's two forces** (Dreadful Spells, Work of the Enemy: "Target · Field / · Garrison"). The console's
+  alternatives (`CardConsoleOptions.Alternatives`) and the tray's (`CardChoices.RegionAlternatives`) are gone. The lit
+  region's click opens its panel as a decision panel (`RegionHover.OpenDecision`) and the region keeps the chosen edge
+  (UI-392) until a force is chosen; both force sections glow and breathe with the panel's pulse (UI-251's
+  `.hover-force.choice-glow`, rim and plate only), their headers press (UI-113), and each header's tooltip reads `<server
+  title> · Click to choose the garrison because of <card> · <detail>` (`3 dice · 5+ · Garrison · Click to choose the
+  garrison because of Work of the Enemy · The Free Peoples choose this Army's losses.`). The click sends the choice with
+  its region (`ConsoleOption.Region`), as the region's click and the old button did. Hint: "Click the glowing field army
+  or garrison in the region's panel" ("Click the lit region, then …" while a one-region choice waits).
+- **Card army events** ("Move armies", "Attack", "Skip maneuver": The Black Captain Commands', The Ringwraiths Are
+  Abroad's, A Balrog is Come!'s and Dol Guldur's maneuvers). No mode buttons. The armies of either step glow; once one is
+  chosen, its move destinations light with its attack targets, which are red with the red landing mark and an `Attack ·
+  Field` caption, as for the Army die (UI-389, UI-403; `CardArmyEvent.OtherTargets`, `AttackTargets`, `ArmyGhost`). A red
+  target's click makes the planned army's step that attack with that target, in one undo step — its figures in the
+  attack's own order, so the payload is the old Attack button's — and the ✓ confirms; ↶ takes it back. An army that may
+  only attack starts the attack (and lights its moves, if any). An attack takes one army, so with two armies planned (The
+  Ringwraiths Are Abroad) only moves light, and an army whose destination is chosen lights nothing more. Skip maneuver
+  ends the event, so it is the console's ✓ while no army is chosen (`FinishingOption`: `Finish · End <card> without moving
+  or attacking`, hint "Or ✓ to finish without moving or attacking."); with an army chosen the ✓ confirms its step. Hint:
+  "Click a lit army, then where it moves or a red region it attacks", then "Click a lit destination to move or a red region
+  to attack". **What stays:** the decision window's fallback while the console does not hold the event (nothing is lit
+  then) keeps its buttons.
+- **The Black Captain Commands** (`captain.recruit` / `captain.fly`). Recruit is the Reserve's Nazgûl: the Reinforcements
+  panel shows the Shadow's Nazgûl token alone, lit (`eligible-token`, the tab `legal-target`), `Recruit · 2 Nazgûl · Click
+  to recruit them with the Witch-king because of The Black Captain Commands`; its click recruits. Move Nazgûl is the map's
+  Nazgûl: their forces and the Witch-king's miniature glow (`ability-owner`) and each force's tooltip leads with `Move
+  Nazgûl · Click to move these Nazgûl and the others, the Witch-king among them, because of The Black Captain Commands`
+  (`MapCanvas.OfferForces`); a click on one (force, miniature or region) chooses Move Nazgûl and arms that stack in the
+  flight that follows, so the next click is its destination (`CaptainOrderInteraction`, as A Balrog is Come!'s "alone",
+  UI-417). The view moves once to the lit Nazgûl when they lie off the map's view (`MapCanvas.Reveal`; a force under the
+  console's bottom row still counts as in view, a limit of `Reveal` left as it is). **What stays:** with no Nazgûl in the reserve the recruit has no object, so it keeps its console button, lit
+  and named after the card (UI-418). Hint: "Click a glowing Nazgûl in the Reserve to recruit, or a glowing Nazgûl on the
+  map to move them".
+- **Lure of the Ring** (`lure.eliminate` / `lure.corruption`; the Free Peoples choose). The Fellowship panel opens once for
+  the choice. The companion's portrait glows red (`eliminate-target`: red rim on a red plate, the roster's pulse, no size
+  change, no filter) — `Eliminate · Click to eliminate Gimli because of Lure of the Ring · <detail>` — and its click
+  eliminates him. The Fellowship's marker on the corruption track, a picture until now, is offered as the hide marker is
+  (UI-293: gold glow, pulse, pointer) — `Corruption +2 · Click to keep Gimli and take 2 Corruption because of Lure of the
+  Ring · <detail>` (the companion's Level, `LureChoiceStep`) — and its click takes the Corruption. Hint: "Click Gimli's red
+  portrait to eliminate Gimli, or the Fellowship's corruption marker to take the Corruption".
+- **Monsters Roused** (Fate: "West / East of the mountains"). The regions of both halves light (Angmar, Ettenmoors, Weather
+  Hills, Trollshaws; Western and Northern Mirkwood, Withered Heath — the server's program, `FateCards.cs` and
+  `FateMonstersEliteStep.Regions`, since the branch choices carry no region); a force standing there leads its tooltip
+  with `East of the mountains · Click to recruit east of the mountains because of Monsters Roused · <detail>`. A region's
+  click chooses its half and carries the region into the card's next step (`BranchCarry`), where it is that step's region
+  click: East's Elite destination is that region, sent at once as its own click was (one click makes both steps); West's
+  recruitment plan starts with that region. The regions lie in the north, often off screen, so the view moves to them once
+  for the decision (`MapCanvas.Reveal`). Hint, within two lines of the status column at 1366×768: "Click a lit region west
+  or east of the Misty Mountains to recruit on that side".
+- **A reaction's response whose object is drawn.** A response that draws a card is its deck, as Spear of Terror is the
+  Character deck (UI-271): Gandalf the Grey's draw, whenever the Guide's portrait cannot hold it (UI-247 keeps it there
+  when it can), lights the deck of the Event card just resolved (`ReactionDecks`) — `Draw matching card · Click to draw a
+  Strategy card because of Gandalf the Grey` — and its click sends the response. **What stays:** a response without any
+  object keeps its console button. No seeded match reaches this case (the server offers the draw only while Gandalf the
+  Grey is the Guide, so his portrait holds it); EditMode proves that the deck sends the old button's reaction id.
+- **The finish hint.** "Or ✓ to finish …" joins the console's hint only while the ✓ can act (online and idle), as on
+  ability-chips; offline the ✓ is disabled and the sentence is gone.
+
+Branches: the forces, the army events, the Black Captain, Lure of the Ring, the deck draw and the finish hint are base
+game; Work of the Enemy (Kings), A Balrog is Come!'s maneuver and the Spear's deck (Lords) and Monsters Roused (Fate) are
+expansions. The base port (ability-chips) lacks `BranchCarry` (only Monsters Roused uses it), the chosen-region edge
+(UI-392), the markers' king hint (`ApplySovereignHint`, beside which `OfferForces` composes its line) and the decks'
+lit-art pulse (UI-345), so there the drawn deck lights with `legal-target` alone.
+
+Playtest (owner's checklist):
+- [ ] Work of the Enemy's forces — seeded `kings-enemy-army`. Expect: no console or tray buttons; Minas Tirith lit; its
+  click opens its panel with both Free Peoples sections glowing and pulsing, each header's tooltip "… · Click to choose
+  the garrison because of Work of the Enemy · …"; the garrison's click sends.
+- [ ] The Black Captain Commands — seeded `shadow-captain`. Expect: no console buttons; the Reserve's Nazgûl token lit
+  with "Recruit · 2 Nazgûl · Click to recruit them …"; Osgiliath's force and the Witch-king glowing, "Move Nazgûl · Click to
+  move …". The token recruits; then the Witch-king's maneuver: no buttons, the ✓ lit "Finish · End The Black Captain
+  Commands without moving or attacking"; Osgiliath's army clicked lights its moves and Minas Tirith red ("Attack · Field"
+  on hover); Minas Tirith's click and the ✓ attack. In a new session the force's click moves the Nazgûl with Osgiliath's
+  stack armed.
+- [ ] Lure of the Ring — seeded `shadow-lure` (the Free Peoples). Expect: the Fellowship panel open; Gimli's portrait red,
+  "Eliminate · Click to eliminate Gimli …"; the corruption marker glowing, "Corruption +2 · Click to keep Gimli and take 2
+  Corruption …"; either click sends.
+- [ ] Monsters Roused — seeded `fate-monsters`. Expect: no buttons; the seven regions lit; Withered Heath's click recruits
+  the east with its Elite there (two steps, one click); in a new session Trollshaws' click chooses the west and its plan
+  follows.
+
+Tests: EditMode `CardConsoleOptionsTests` (no buttons for the orders, Lure, the forces and a response's draw; the
+recruit's button with an empty reserve), `CardArmyEventTests` (no buttons; the ✓'s Finish; the attack lit with the moves
+and its click's step JSON-equal to the old Attack button's, in one undo step; an attack-only army; two planned armies),
+`RegionForceChoicesTests` (the waiting region, the tooltips, the region kept in the payload), `BoardDrawnChoicesTests` (the
+Black Captain's objects and Reserve, Lure's red portrait and offered marker, Monsters Roused's halves and the carry);
+PlayMode `BoardDrawnOptionsTests` (one test per path on the seeded matches, each in its own run: the garrison; the
+Reserve's Nazgûl, then the ✓; the map's Nazgûl and the armed stack; the red attack and the ✓; Gimli's portrait; the
+corruption marker; Withered Heath; Trollshaws — each payload JSON-equal to the old button's; screenshots
+`ui431-*-1366-1.00.png`), `Shadow03NetworkTests`, `Shadow04NetworkTests`, `Shadow04LayoutTests`, `KingsCards04NetworkTests`
+(its garrison is the section now, so `EnemySeparatesFieldArmyFromGarrison` no longer expects the UI-214 buttons),
+`FateCardsNetworkTests`.
+
+<a id="declines-and-window-lists-follow-the-board-rule--ui-432"></a>
+## Declines and window lists follow the board rule — UI-432 (2026-10-31)
+
+UI-430's rule (owner, 2026-10-30) applied to the declines and window lists of the analysis (cases 11–16): a decline of an
+optional effect is the window's Skip effect and the console's Pass (UI-419, UI-423, `OptionalDecline`), and a window
+button that repeats an object always on screen goes. Each object sends a payload JSON-equal to its old button's (recorded
+from the buttons at 7b924fb4 on a real server); every option keeps a click path (R16).
+
+- **The base battle cards' declines.** Black Breath's and Heroic Death's "Keep all", Fateful Strike's "Keep Minions" and
+  Andúril's "Keep misses" leave the battle window's list. The window's Skip effect sends them, as the console's Pass does,
+  and both name the card's combat side and what passing does: `Skip Black Breath · Eliminate no Leader or Companion`,
+  `Skip Heroic Death · Eliminate no figure and take every hit`, `Skip Fateful Strike · Eliminate no Minion`, `Skip
+  Andúril · Convert no miss; Aragorn still forfeits his Leadership` (the server forfeits it when he converts none,
+  `AndurilStep`), each with `Pass · ` in front on the console; the hint ends "Or Pass to …". Passing answers the whole
+  step, so a figure already chosen is dropped, as the old exclusive button dropped it. **What stays:** Heroic Death's
+  "Keep hits" (zero hits — a legal, costly choice: the Companion is still eliminated) is no decline and keeps its button
+  (UI-246).
+- **Worn with Sorrow and Toil** (the Shadow, during the Hunt). No list in the Hunt window. A Free Peoples Character card on
+  the table is red in the Effects panel, whose tab lights (UI-430's look and path): `Discard Mithril Coat and Sting · Click
+  to discard it because of Worn with Sorrow and Toil: a Companion was taken as a casualty`; a click on the tile or its ×
+  discards it. The random card from the Free Peoples hand is the opponent's card counter in the top bar, a picture until
+  now: it wears the red of a card to discard (a red rim on a red plate, breathing in the shared pulse, no filter, its size
+  kept), presses like a button and leads its tooltip with `Discard a random card · Click to discard a random card from the
+  Free Peoples hand because of Worn with Sorrow and Toil · <the server's detail>`; its click sends the choice. Keep cards
+  is the Hunt window's Skip effect and the console's Pass: `Skip Worn with Sorrow and Toil · Discard no Free Peoples
+  Character card`. Hint: "Discard: red card in Effects · Random card: red hand counter · Pass discards none" (the hint
+  names the Pass itself, so no "Or Pass to …" sentence is glued after it).
+- **Scouts' Withdraw into siege.** The battle's own region — the stronghold the army withdraws into — lights on the map
+  beside the regions the army may retreat to (Retreat was already their click), and its click sends the withdrawal, as a
+  click on the battle region advances after a won battle (`BattleContextInteraction`). Map terrain has no tooltip (UI-80),
+  so the forces standing there lead their tooltip with `Withdraw into siege · Click to withdraw into the stronghold because
+  of Scouts · End this battle before the Combat roll.` and the hint names the region: "Click Helm's Deep to withdraw into
+  its stronghold, or a lit region to retreat". The battle window lists no button for it. The region panel's garrison
+  section was not used: in a field battle no garrison stands there yet, so the region is the stronghold's only picture.
+- **The Fellowship tray** (`FellowshipChoices`), each button checked against its object:
+  - *Stay here* goes. Its object is the lit origin region of the group or route (`MapDraftOverlay` lights it exactly when
+    the button was enabled), whose click is `TravelDraft.RouteTo` → `TravelDraft.Stay`, the button's own code; the click
+    sends a single route at once instead of waiting for ✓ (same payload). The button stood only outside the Fellowship
+    panel — a journey arriving during the Hunt or a battle, and the kings' awakening, whose tray the kings' portraits
+    replaced (UI-274) — so no live table reached it any longer.
+  - *Stay all* goes. With an empty plan the console's ✓ sends what Stay all + ✓ sent (an empty `CompanionMoves`); a
+    planned group is given up by clicking its members off. Its journeys (the card journeys, the Nazgûl's and the Balrog's
+    flights, the Council token's travel) are on the map with the ✓ since UI-212, UI-294 and UI-379, so the button no
+    longer appeared.
+  - *Standard* / *Far-sighted* go, as UI-276 (D18) already decided ("no toggle or mode chip"): Far-sighted is Thranduil's
+    ability picture with the Ruler die (or his Ruler token, UI-389), the standard move its plain gesture. Both paths send
+    the toggle's command (recorded on a real server at 7b924fb4: the separation chosen with the old buttons and with the
+    objects, JSON-equal). The tray names a Far-sighted move with a label (`Far-sighted · Range +1`).
+  - **What stays:** *Undo step* and *Cancel* of a drawn Fellowship route (Declare, Reveal) and of a separation. The console's
+    ↶ is off while the tray sits in the Fellowship panel, and a step back is not an Undo step (the first map step adds the
+    origin and the region together; after a server view the history is empty), Declare has no die whose second click
+    clears it, and Esc on an empty route opens the menu. Making ↶ do both is a change of its own, not a removal.
+- **The decision window's fallback lists** (`DecisionTray`, `CharacterChoices`, `ExpansionChoices`):
+  - the dice `cost-<die>` go: the only list left was an unsent Discard die (offline or refused) and an unsent Narya, and
+    the own pool — always beside the console, never under the window — sends the same `ChooseDie`; `CharacterChoices`'
+    list was always empty (the pool lights the same dice, `CostDice.Offered`) and the kings' actions never reach the tray
+    (`SovereignPresentation.OwnsDecision`);
+  - the decks `deck-<deck>` go: a draw is the hand's decks (`DirectCard`), so the tray never built them;
+  - the kings `sovereign-choice-<king>` go: a king is his portrait (UI-274), and the tray never built them;
+  - the Hunt's `select-<die>` dice go: the Hunt allocation never reaches the tray (UI-162, UI-172) — dead code, deleted
+    with the tray's `DieChosen`, `DeckChosen` and `CardOrDieToggled` events;
+  - **what stays:** a character's actions `character-action-<id>`. They show when its Characters row and the board offer
+    nothing — after the tray's Change between a king's upgrades, after a new revision took the chosen action away, or in a
+    restored draft (the rows offer actions only before a draft starts) — so the list is the option's only picture then
+    (UI-244's fallback, as UI-431 kept the army event's).
+- **Open owner decisions**, not changed here:
+  - *The Council token's travel picker* (UI-377, the owner's request): the popover above the token pool repeats the Nazgûl
+    that stand lit on the map and in their region panels. Under UI-430's rule it would go; it was the owner's own request,
+    so the owner decides.
+  - *The Kings corruption draw* (UI-423): "Draw tiles" / "Draw again" is a console button while the king's attempt button
+    on his portrait lights for the same attempt. One lit control (as UI-418), or both? The owner's question since UI-423.
+    Since UI-442 only Sequential corruption's Draw again remains: a standard attempt draws all its tiles with its click.
+
+Branches: the battle declines, Worn with Sorrow and Toil, the Scouts, Stay here, Undo step / Cancel and the fallback lists
+are base game; Far-sighted, Narya and the kings' lists are expansions. The base port (ability-chips) has no
+`OptionalDecline` and its Skip effect skips reactions only (`ReactionSkip`), so it ports the decline machinery with it.
+
+Playtest (owner's checklist):
+- [ ] Black Breath — seeded `shadow-black-breath` (the Shadow). Expect: no Keep all; the battle window's Skip effect "Skip
+  Black Breath · Eliminate no Leader or Companion", the console's Pass the same with "Pass · " and lit; either sends.
+- [ ] Heroic Death / Andúril — seeded `heroic`, `anduril` (the Free Peoples). Expect: Keep hits stays, Keep all / Keep misses
+  gone; Skip effect names Heroic Death / Andúril (and that Aragorn still forfeits his Leadership).
+- [ ] Worn with Sorrow and Toil — seeded `shadow-worn` (the Shadow). Expect: no list in the Hunt window; the Effects tab lit,
+  the four Free Peoples cards red ("Discard … because of Worn with Sorrow and Toil: a Companion was taken as a casualty");
+  the Free Peoples card counter in the top bar red and pulsing ("Discard a random card · …"); the Hunt window's Skip
+  effect "Skip Worn with Sorrow and Toil · Discard no Free Peoples Character card". A red card's click discards it; in a new
+  session the counter's click discards a random card; in another, Skip effect keeps the cards.
+- [ ] Scouts — seeded `strategy-scouts` (the Free Peoples). Expect: no Withdraw into siege button; Helm's Deep and Fords of
+  Isen lit; the Helm's Deep army's tooltip leads with "Withdraw into siege · Click to withdraw into the stronghold because
+  of Scouts"; the hint "Click Helm's Deep to withdraw into its stronghold, or a lit region to retreat"; Helm's Deep's click
+  withdraws (the next decision is the Shadow's advance).
+- [ ] Far-sighted — test menu `kings-far-sighted` (or seeded `ui22-separate`). Expect: no Standard / Far-sighted buttons in
+  the Fellowship panel; with the Ruler die, Thranduil's picture starts the Far-sighted separation, named "Far-sighted ·
+  Range +1"; a companion's portrait with the die starts the standard one.
+
+Tests: EditMode `BoardRuleDeclinesTests` (the four declines' Skip effect and Pass tooltips and their payload — Fateful
+Strike's Keep Minions has no seeded match, as the server offers it only without a Nazgûl in the battle, so this is its
+command-equality proof; Worn's offers, hint, Hunt window and counter; Scouts' region, tooltip, hint and the battle region's
+payload), `WindowListsTests` (the Fellowship tray's remaining buttons and its Far-sighted label; the origin's click and an
+empty plan against Stay here and Stay all; no die, deck or king lists), `BattleObjectChoicesTests`, `SovereignPanelTests`;
+PlayMode `BoardRuleDeclineTests` (on a real server, each object's payload JSON-equal to its old button's: Black Breath's,
+Heroic Death's and Andúril's Skip effect, Worn's red table card, red hand counter and Skip effect — three runs —, Scouts'
+battle region; screenshots `ui432-*-1366-1.00.png`), `FarSightedObjectTests` (Thranduil's picture and the plain gesture
+against the old Far-sighted and Standard buttons, each in its own run), `Shadow02LayoutTests`, `Shadow03NetworkTests`,
+`Strategy01NetworkTests`, `Strategy01LayoutTests`, `CardPack02NetworkTests`, `ExpansionTokenNetworkTests`, the Fellowship
+tray tests (`FellowshipNetworkTests`, `FellowshipLayoutTests`, `CharacterNetworkTests`, `CompanionJourneyMapTests`).
+
+<a id="every-object-a-hint-asks-to-click-visibly-glows--ui-434"></a>
+## Every object a hint asks to click visibly glows — UI-434 (2026-10-31)
+
+The owner, after UI-433 (Dismay's Ruler die read as unlit in the top bar): audit every effect whose hint or tooltip asks
+the player to click a glowing, lit, highlighted, red or pulsing object, and make sure that object visibly glows where it
+stands (UI-430's rule: objects signal options by glowing and pulsing). An object is **strong** when it wears the shared
+gold ChoiceGlow (a rim of at least 2 points on a warm plate) or the legal-target rim in a pulsing host, the red discard
+look, or the map's choice glow, and stands on screen; **weak** with its lit art alone, a thin rim, a colour change only,
+or no pulse where others pulse; **hidden** inside a closed panel whose tab does not light, under a window or the
+console, off the map's view, or in a place the hint does not name.
+
+- **The pools' dice.** Every die a resource decision offers wears the gold ChoiceGlow and breathes with its pool — the
+  console's own pool as the top bar's (UI-433) — through one `PoolChoiceGlow` per pool (`BoardScreen.OwnDiceChoices`,
+  `OpponentDiceChoices`): each interaction names its dice (an Elven Ring's die and a payment's, `RingInteraction`; the
+  special-die choice, the Ruler discard, Dismay, Vilya's paid die, Lore and a Council entry's dice,
+  `ResourceContextInteraction`), and the pool lights their union, so one interaction's refresh never puts out another's.
+  The lit art stays under the rim; its own fading stops while the rim and plate breathe (no larger die: a pool's dice
+  may not overlap, so the Elven Ring's die of UI-238 no longer grows either).
+- **Dismay names the die's pool.** The Shadow may reroll either Ruler die (both seeded matches offer both), and the
+  Shadow's own stands in its pool, not the top bar: "Click a glowing Ruler die, yours or the top bar's, to reroll it
+  with Dismay." ("Click your glowing Ruler die …" or "Click the glowing Ruler die in the top bar …" when only one is
+  offered).
+- **The Council medallion a hint asks for** — the Council's offer ("Click the glowing Council token you want") and a
+  Chieftain's entry cost ("· Click a glowing Council token to pay the entry", "· Or click a glowing Council token to
+  enter with it"; `ResourcePresentation.CouncilAsked`) — wears a gold rim on a warm plate round the medallion and
+  breathes with its pool, rim and plate only (the row has no room for a larger medallion). A usable medallion no hint
+  asks for keeps UI-345's lit art and its fading. The marked token's hint keeps both places within the console's two
+  lines (the longer one lost "in Politics" to its ellipsis at 1366×768): "Click a lit Chieftain's row in Characters to
+  enter him, or a glowing Shadow nation's token or → in Politics." (Travel: "…, or the Nazgûl above the token, then
+  their destination.")
+- **The console's Elven Rings a hint asks for** — a Keeper Ring offered now (Nenya's tile, Vilya's keep, UI-268), a
+  card's recovery (Three Rings for the Elven-Kings, UI-272) and a removal's Ring payment ("Click a lit Elven Ring …") —
+  wear a round gold rim on a warm plate inside the fixed socket, the picture kept in place, and breathe (rim and plate:
+  the console keeps its size). A Ring a card's step already picked is selected instead; a Ring the chosen die may merely
+  use (the base Elven Ring use) keeps its bright picture. Lords also has a Vilya die, so Vilya's hint names the console:
+  "Click the glowing Vilya in the console to keep the die that paid, or Pass to spend the die and keep Vilya."
+- **The decks a hint asks for** — a deck choice (the Palantír of Anárion's extra card, UI-390), the Spear of Terror and
+  Gandalf the Grey's draw (UI-431) — wear the thick gold rim round the back, breathing in rim only; the die's pale halo,
+  drawn over the rim, steps aside, and UI-345's lit-art fading of the Spear's deck is gone with it.
+- **The Mordor gate.** The gate the Fellowship may enter by wears the gold rim on a warm plate on the map and breathes;
+  its "gate-next" art alone (a faint green halo at 34 points) read as unlit. The Fellowship panel's Mordor track symbol
+  is a gate too, so the hint says the map's, in one clause with the declaration so that it keeps to two lines: "Declare
+  or enter Mordor: click the glowing figure or gate on the map · or continue to the Hunt." ("Enter Mordor: click the
+  glowing gate on the map" alone).
+- **A siege extension's figures.** "Click a highlighted figure to extend the siege with it": one click extends, so no
+  figure is chosen before it, and the battle window drew every figure dimmed at half opacity as one left behind. Each
+  figure the extension may take now wears the gold ChoiceGlow and breathes with its grid (`BattleChoices`).
+- **Off the map's view.** `MapCanvas.Reveal` (UI-134) counts as visible only the free map — the map minus what covers it
+  (the top bar, the console, open panels and windows; `SafeMapArea`, as a presentation frames its cues) — so the Black
+  Captain's Nazgûl no longer stay under the console (UI-431's noted limit), and the Reserve's settlements and Monsters
+  Roused's halves come out from under the HUD too. Two more decisions bring their lit objects into view once, as those
+  do: the Fellowship phase that offers Mordor's gate (its region, with the figure beside it,
+  `FellowshipContextInteraction`) and a card's Nazgûl flight (the lit Nazgûl, `NazgulFlightInteraction`) — at 1920×1080
+  at 125 % both lay beyond the screen's edge or under the hand.
+
+Click paths and payloads are unchanged: every fix is a class, a pulse, a camera move or a hint's words; no CSS filter,
+no size change beyond the shared pulse, no layout write in a geometry callback.
+
+Inventory (verdict before UI-434; Audit = PlayMode `GlowingHintAuditTests` on the seeded match named, at 1366×768 at 100
+% and 1920×1080 at 125 %, screenshots `ui434-<case>-<width>-<scale>.png`; Classes = EditMode `GlowingHintClassesTests`):
+
+| Case (hint) | Branch | Object | Where | Verdict | Fix · test |
+| --- | --- | --- | --- | --- | --- |
+| "Click a highlighted die to keep it" / "An Eye must be kept: click a highlighted Eye" (`SpecialDice`) — special-die choice | expansions (Lords) | the special dice | own pool beside the console | WEAK: lit art alone, the candidate rim off | ChoiceGlow + the pool's pulse (`PoolChoiceGlow`) · Audit `ui267-tie` |
+| "Click a glowing die to discard it" (`RulerDice`) — Ruler discard | expansions (Kings) | the standard dice and the Ruler die | own pool | WEAK: 2 pt candidate rim beside the dice's own rims; the Ruler die's lit art | ChoiceGlow + pulse · Audit `ui09-dice` |
+| "Click … Ruler die … to reroll it with Dismay" (`ResourcePresentation.DismayHint`) | expansions (Kings) | the Free Peoples' Ruler die; the Shadow's own Ruler die | top bar; own pool | the top bar's STRONG since UI-433; the own pool's WEAK (lit art) and HIDDEN (the hint said "in the top bar") | ChoiceGlow + pulse; the hint names "your", "in the top bar" or both · Audit `ui09-dismay`, `ui58-dismay-before-lore`; Classes |
+| "Click the glowing Vilya …" (`KeepActionDie`) | expansions (Lords) | Vilya's socket; the paid die | console; own pool | WEAK: the socket's lit art and fading; ambiguous with the Vilya die | socket and die ChoiceGlow + pulse; the hint says "in the console" · Audit `ui09-vilya`; Classes |
+| "Nenya can replace this Eye tile: click the glowing Nenya in the console" (Hunt window tray) | expansions (Lords) | Nenya's socket | console | WEAK: lit art and fading | ChoiceGlow + pulse · Audit `t34-nenya`; Classes |
+| "Click N glowing Rings in the console to recover them" (`RingRecovery`) — Three Rings for the Elven-Kings | expansions (Lords) | the Rings' sockets | console | WEAK: a brighter picture only | ChoiceGlow + pulse; a picked Ring selected · Audit `ui272-three-rings`; Classes |
+| "Click a lit Elven Ring to give it to the Shadow with this die" (`CostDice.RingHint`) — Lore, Palantíri removals | expansions (Lords, Kings) | the Rings' sockets | console | WEAK: a brighter picture only | ChoiceGlow + pulse · Audit `lords-lore-remove`; Classes |
+| "Click a lit die to change its result with Lore" (`LoreChoice`) | expansions (Lords) | the dice Lore may change | own pool's row | WEAK: 2 pt rim beside the dice's own rims | ChoiceGlow + pulse · Audit `lords-lore-choice` |
+| "Click the glowing Council token you want" (Council's choice) | expansions (Lords) | a Council medallion | own pool | WEAK: lit art and fading | ChoiceGlow (rim and plate) + pulse · Classes (no one-step seed: `ui09-council` reaches it after the versions and homelands) |
+| "… · Click a glowing Council token to pay the entry" / "· Or click a glowing Council token to enter with it" (`CharacterChoices.RegionHint`) | expansions (Lords + Kings) | a Council medallion | own pool | WEAK: lit art | ChoiceGlow + pulse (`ResourcePresentation.CouncilAsked`) · Classes (the seeded `ui09-entry` enters with the die or with the token, never both open) |
+| "Click a lit Chieftain's row in Characters to enter him, or a glowing Shadow nation's token or → in Politics." (`CouncilHint`) | expansions (Lords + Kings) | the Chieftain's row; Shadow nations' tokens | Characters and Politics panels, closed; their tabs lit | STRONG objects, HIDDEN place: the long hint lost "in Politics" to the console's ellipsis at 1366×768 | shorter hint naming both panels · Audit `ui09-council-politics` (tabs lit, then each panel) |
+| "Click a glowing deck beside your hand …" (`DeckChoice`), Spear of Terror, Gandalf the Grey's draw (`ReactionDecks`) | expansions (Kings, Lords); base (Grey) | the decks | hand drawer, opened once | WEAK: a 2 pt rim under the die's pale halo, no pulse; the Spear's lit art | ChoiceGlow (3 pt rim, the halo steps aside) + pulse · Audit `ui348-anarion`; Classes |
+| "Enter Mordor: click the glowing gate" (`TurnConsoleState`) — Fellowship phase | base | the Mordor gate | map's Mordor track | WEAK: "gate-next" art alone, a faint halo at 34 pt; ambiguous with the panel's gate symbol; HIDDEN at 1920×1080 at 125 % (under the hand) | ChoiceGlow + pulse; "… gate on the map", one clause with Declare; the view comes to it once · Audit `ui34-mordor-morannon-True`; Classes |
+| "Click a highlighted figure to extend the siege with it" (`BattleDraft`) | base | the figures that may extend it | battle window, the side's column | WEAK: drawn dimmed at half opacity, as figures left behind | ChoiceGlow + pulse, not dimmed · Audit `siege`; Classes |
+| "Declare: click the glowing Fellowship figure on the map", "The glowing Fellowship figure moves/hides …", `HideHint`, `MoveHint` | base | the Fellowship figure; its track marker | map; Fellowship panel (corner tab lit) | STRONG (ChoiceGlow + pulse, UI-280/UI-293); beside Mordor off view at 1920×1080 at 125 % | the gate's reveal brings it too · Audit `ui34-mordor-morannon-True` (the figure) |
+| "Click the glowing Mordor track symbol", "Move: click the glowing track" (There Is Another Way) | base | the track symbol | Fellowship panel (corner tab lit) | STRONG: the gilt halo breathing (UI-110) | — · `MordorNetworkTests`, `FellowshipCardActionsTests` |
+| "Click a glowing companion in the Fellowship panel to make it the Guide", "Click the Guide's glowing portrait …", "Click a glowing companion …, then a lit homeland" | base; Council homelands expansions (Lords) | companions' portraits; homelands | Fellowship panel (opens for its decision, corner tab lit); map | STRONG | — · `FellowshipGuideNetworkTests`, `MultiUseDiceNetworkTests`, `CouncilHomelandPanelNetworkTests` |
+| "Click Gimli's red portrait …, or the Fellowship's corruption marker" (`LureChoice`) | base | red portrait; marker | Fellowship panel, opened | STRONG (UI-431) | — · Audit `shadow-lure` |
+| "Discard: red card in Effects · Roll: Hunt Box · ✓ finishes" (`NazgulStrikeChoice`), "Click a red table card in Effects" (`TableDiscardText`) | base | Hunt Box; red table cards | console; Effects panel (tab lit) | STRONG (UI-430) | — · Audit `shadow-strike` |
+| "… Random card: red hand counter …" (`WornDiscardChoice`) | base | the Free Peoples' card counter | top bar | STRONG (UI-432) | — · Audit `shadow-worn` |
+| "Click a red-marked card to discard it face down", inspected Shadow hand, We Won't Go Back's "glowing Character card in your hand" | base; We Won't Go Back expansions (Lords) | hand cards | hand drawer | STRONG: red parchment (UI-222) | — · Audit `ui31-discard` |
+| "Click a glowing Nazgûl in the Reserve …, or a glowing Nazgûl on the map …" (`BlackCaptainOrder`), "a glowing figure of … in the Reserve" (`KingsCardChoices`), reserve tooltips "… a highlighted settlement" | base; Kings | Reserve tokens; the map's Nazgûl; settlements | Reinforcements panel (tab lit); map | STRONG objects; the map's Nazgûl HIDDEN under the console at the fitted view (UI-431's noted limit) | `MapCanvas.Reveal` counts only the free map · Audit `shadow-captain` (Reserve token, then the map's force) |
+| "Click a lit Nazgûl, then where it flies" (`NazgulFlightDraft`) | base | the lit Nazgûl | map | STRONG glow; HIDDEN at 1920×1080 at 125 % (Barad-dûr beyond the screen's edge) | the view comes to them once (`NazgulFlightInteraction`) · Audit `shadow-strike` |
+| The other map figures ("Balrog's glowing army", "a lit army", "a lit companion", "a lit figure") | base; Balrog expansions (Lords) | army and character stands | map | STRONG: the map's choice glow and pulse | — · `LordsCharacterNetworkTests`, `CompanionJourneyMapTests`, `BoardDrawnOptionsTests` |
+| "Choose/click a highlighted/lit region, destination, settlement", red attack regions, Work of the Enemy's lit region, Monsters Roused's halves | base; Kings, Fate | regions | map | STRONG: the map's target glow pulsing | — · Audit `kings-enemy-army`, `fate-monsters` |
+| "Click Helm's Deep to withdraw into its stronghold, or a lit region to retreat" (`ScoutsShelter`), "Choose a highlighted retreat region." | base | the battle region; the retreat regions | map, beside the battle window | STRONG at 1366×768; at 1920×1080 at 125 % HIDDEN until UI-435 (under the battle window and the console) | the window keeps to the middle's top and the view brings both regions below it ([UI-435](#a-battle-window-keeps-its-lit-regions-clear--ui-435)) · Audit `strategy-scouts` in both layouts |
+| "Click the glowing field army or garrison in the region's panel", "Click a lit region, then its lit figure(s)" | base; Kings | force sections; figures | region panel | STRONG (UI-251, UI-431) | — · `BoardDrawnOptionsTests` |
+| "Click a glowing tile beside the king", "Click the glowing king …", "Click a glowing king, by his portrait or on the map / in the battle window's army", "Click the attempt button beside a king in the Characters panel" | expansions (Kings) | portraits, attempt buttons, tiles; map markers; battle kings | Characters panel (tab lit, UI-380); map; battle window | STRONG (UI-274, UI-345, UI-411) | — · `SovereignPanelNetworkTests`, `ExpansionCorruptionNetworkTests` |
+| "Click a glowing nation token in Politics", "a glowing nation token to activate and advance it" (`KingsCardChoices`) | expansions (Kings) | Shadow or Free nations' tokens | Politics panel (tab lit) | STRONG (UI-423) | — · `KingsBranchNetworkTests`; Audit `ui09-council-politics` (same tokens) |
+| "Choose a highlighted card, or No card." (`BattleDraft`), combat card targets, replacement arms, kings in the army | base; arms expansions | combat cards; dice, portraits, stacks; chips | battle window | STRONG: the playable parchment (cards never pulse; No card glows when alone, UI-279); ChoiceGlow + pulse | — · `BattleWindowNetworkTests`, `LordsBattleNetworkTests` |
+| "Click a glowing Guide response in the Hunt window …", "Use a glowing response, or Pass …" (`ReactionSkip`), Hunt card responses | base; Lords | response objects | Hunt window (opens for both) | STRONG (UI-285, UI-360, UI-423) | — · `HuntResponseNetworkTests` |
+| "Click a highlighted die to change its result" (Elven Ring), a payment's dice, "Click, then a glowing Muster die" (Palantír of Barad-dûr) | base; Kings | dice | own pool | STRONG (UI-238, UI-248) | through `PoolChoiceGlow`, unchanged look · Audit `lords-lore-remove` (payment dice) |
+| "Click the glowing ✓ in the console to check its result." | base | ✓ | console | STRONG (ChoiceGlow + pulse) | — |
+| "Choose what this die acts on: the highlighted map, cards and panels", "Choose a highlighted object …", "Select the highlighted …, then confirm" (`DecisionObjects`) | base | a die's uses; a window's choices | each object's family | per family (UI-136, UI-389) | — |
+
+Limits left as they are:
+- *A floating window over a lit region* — resolved by [UI-435](#a-battle-window-keeps-its-lit-regions-clear--ui-435)
+  for the battle window. At 1920×1080 at 125 % its middle place covered Helm's Deep, which Scouts asks to click, and the
+  console the rest of it; the map cannot pan its west edge past the screen, so only the window's move to the middle's
+  top together with a camera move into the strip below it clears the region.
+- *A window's generic console line.* While a decision lives in a window (the siege extension, Nenya's tile), the console
+  reads "Select the highlighted choices, then confirm." and the window's tray names the object; both objects glow.
+- *A hand card over the decks.* A hand card that slid under the pointer stands expanded over the decks until the pointer
+  leaves the hand (UI-390); the decks glow as soon as it does.
+- *No one-step seed:* the Council's token offer (`ui09-council` reaches it after the versions and homelands) and a
+  Chieftain's entry that may pay with the token or a die (the seeded `ui09-entry` offers them as separate entries) are
+  checked by `GlowingHintClassesTests`.
+
+Branches: the Mordor gate, its guidance and reveal, the siege extension's figures, the Nazgûl flight's reveal, the free
+map of `MapCanvas.Reveal`, Gandalf the Grey's drawn deck and `PoolChoiceGlow` with `RingInteraction` (the Elven Ring's
+die, a payment's dice) are base game; the special dice, the Ruler discard, Dismay, Vilya, Nenya, Three Rings, Lore, the
+Ring payments, the Council medallions and hint, and the deck choice are expansions. The base port (ability-chips) takes
+`PoolChoiceGlow` with `RingInteraction` only, the gate, its guidance and reveal, the flight's reveal, the free map and
+the siege figures; there the drawn deck lights with `legal-target` and the gold ChoiceGlow (no Spear, no lit-art pulse).
+
+Playtest (owner's checklist):
+- [ ] Special dice — seeded `ui267-tie` (the Free Peoples). Expect: Vilya and Nenya in the pool beside the console with
+  a thick gold rim, breathing; "Click a highlighted die to keep it"; a click keeps one.
+- [ ] Dismay — seeded `ui09-dismay` (the Shadow). Expect: both Ruler dice glowing gold, the Free Peoples' in the top bar
+  and the Shadow's in its own pool; "Click a glowing Ruler die, yours or the top bar's, to reroll it with Dismay."
+- [ ] Vilya, Nenya, Three Rings — seeded `ui09-vilya`, `t34-nenya`, `ui272-three-rings`. Expect: the named Ring's socket
+  in the console with a round gold rim, breathing; the hints name the console.
+- [ ] A deck choice — seeded `ui348-anarion` (the Free Peoples), and the base game's `shadow-palantir-draw` (the Shadow).
+  Expect: both decks beside the hand with a thick gold rim, breathing, no pale halo; a deck's click draws.
+- [ ] A Nazgûl flight — seeded `shadow-strike` (the Shadow), at 1920×1080 at 125 %. Expect: the view comes to the lit
+  Nazgûl of Barad-dûr.
+- [ ] Mordor — seeded `ui34-mordor-morannon-True` (the Free Peoples), in a small window. Expect: the view comes to
+  Morannon; its gate glowing gold and breathing, the figure glowing; "Declare or enter Mordor: click the glowing figure
+  or gate on the map".
+- [ ] A siege extension — seeded `siege` (the Shadow). Expect: the figures in the battle window's column glowing gold,
+  not dimmed; one click extends.
+- [ ] The Black Captain — seeded `shadow-captain` (the Shadow). Expect: Osgiliath's Nazgûl brought out from under the
+  console, glowing.
+
+Tests: EditMode `GlowingHintClassesTests` (the pool's union across interactions, Dismay's three hints, Vilya's hint, the
+sockets a hint asks for and the base Ring use that does not glow, a Keeper Ring, the deck choice, the Council's offer
+and entry cost, Gandalf the Grey's drawn deck (EXP-17), the Mordor gate, the siege figures), `TurnConsoleStateTests` (the Fellowship phase's clause),
+`ResourcePanelTests` (the Council hint), `NamedRingsTests`; PlayMode `GlowingHintAuditTests` (22 cases, each on its own
+seeded match, all in one run: the special dice, the Ruler discard, Dismay in both seeds, Vilya, Nenya, Three Rings,
+Lore, a Ring payment, the decks of Anárion and of the Palantír of Orthanc (EXP-17), the Mordor gate and figure, the Council's Characters row and Politics tokens behind
+their lit tabs, the Strike's flight, Hunt Box and red table cards, Worn's red hand counter, Lure's portrait and marker,
+the Black Captain's Reserve token and map Nazgûl, Work of the Enemy's and Monsters Roused's regions, the hand's red
+cards, Scouts' regions, the siege extension's figures) with the reusable checks
+`GlowingTargetChecks.AssertVisiblyOffered` (shown, inside the screen, uncovered at its centre, a strong glow, its host
+pulsing), `AssertTabLit` and `AssertRegionOffered`; `ResourcePanelNetworkTests` (UI-433's Dismay, now naming both dice),
+`ExpansionTokenNetworkTests` (the Council hint); unchanged and still passing with the new glows, pulses and reveals:
+`SpecialDiceNetworkTests`, `ExpansionDecisionNetworkTests` and the Council tests'
+`ExpansionMatrixLayoutTests.ResourcesFit` (a pool's dice may not overlap, hence the rim-only pulse),
+`ExpansionWindowNetworkTests`, `LordsCardNetworkTests`, `LordsShadowNetworkTests`, `KingsDecisionNetworkTests`,
+`Shadow02NetworkTests`, `Shadow04NetworkTests`, `StrongholdNetworkTests`, `FateCardsNetworkTests`, `MordorNetworkTests`,
+`DeckChoiceMenuTests`, `MusterNetworkTests`, `FellowshipNetworkTests`, `BattleLayoutTests` and `BoardDrawnOptionsTests`'
+reveals (the map's Nazgûl, the eastern half, the Reserve's Nazgûl).
+
+<a id="both-sides-rows-stand-level--ui-437"></a>
+## Both sides' rows stand level in the battle window — UI-437 (2026-11-01)
+
+The owner's playtest (expansions 80df28fd): after the Black Serpent's Red Wrath "the battle window fell apart" — the
+defending Black Serpent's portrait stood alone in a row above his force (one figure ×1), the card row carried the gilt
+replacement marker, and the Shadow's statistics, card, "Combat · Hits 1" and dice no longer lined up with the attacker's.
+
+- **Cause.** The two columns were independent stacks: a force with characters added a row of medallions and a line of
+  names above its figures, which no other ability's addition matched on the other side; so did the ledge of figures
+  outside the fight, a special attack's pager (20 px against an 18 px heading) and the hit buttons Heroic Death and
+  Orderly Withdrawal add to one side's roll heading (33 px). Red Wrath only made it visible: the Serpent is a character
+  in his force, and the replacement marker sits beside the card. Reproduced on the seeded match `ui277-chieftain`
+  (`ui277-ui277-chieftain-*.png` before, `ui437-*.png` after).
+- **Characters stand in the force row** (`battle-force-row`, `BattleContext.ForceRow`): each medallion with its short
+  name under it, as a figure has its count, beside the nation groups; a force of more than four characters keeps the
+  medallions without names (`BattleContext.NamedCharacters`; the tooltips name them), and a column that chooses
+  figures (losses, an advance, a siege extension; UI-208) hides the names, as UI-394 did on a short viewport. The
+  portraits stay outside `battle-composition`, which a figure choice hides, so a choice made on a portrait (Evil
+  Knowledge during the extension) keeps its object.
+- **Both columns hold the same rows** (`BattleRowPlan`): heading, force row, a spacer, statistics, the ledge when either
+  side has one, the card (a replacement's chip or marker in a row of the card's height, its top on the card's), the
+  roll. A row or control only one side shows keeps an unseen, inert copy on the other (`battle-row-reserved`,
+  `visibility: hidden`): the ledge, a roll with one die's room, the roll's pager, a hit button. The spacer under the
+  shorter force row takes the difference (`flex-grow`), so everything under it stands level whatever either army holds.
+  While a column chooses figures both keep their rows at the top (`battle-forces-choosing`), as before.
+- Pure layout: no layout write in a geometry callback, no measuring; click paths, payloads and hit targets unchanged.
+
+Playtest (owner's checklist):
+- [ ] A battle with a rear guard — seeded `ui44-window` (the Free Peoples attack Lossarnach from Minas Tirith with a
+  rear guard). Expect: the attacker's characters stand beside its figures, each name under its medallion; the ledge
+  naming the rear guard on the attacker's side and an empty row of its height on the defender's; both sides' statistics,
+  cards and rolls level.
+- [ ] Red Wrath — seeded `ui277-chieftain` (the Shadow). Click the Black Serpent's chip, take Red Wrath's hit, roll both
+  armies. Expect: both columns' rows stay level.
+
+Tests: PlayMode `BattleRowsNetworkTests.RedWrathKeepsBothSidesRowsLevel` (seed `ui277-chieftain`: the Shadow clicks the
+Black Serpent's chip, takes Red Wrath's hit, both armies roll; in 1366×768 and 1920×1080 at 100 % and 125 % the force
+rows, statistics, cards, roll headings and dice rows of both sides start level, the marker is no taller than the card,
+and the Serpent stands on his figures' line; screenshots `ui437-red-wrath-*`, `ui437-rolled-shadow-*`,
+`ui437-rolled-free-peoples-*`), `BattleLayoutTests.WhatAnAbilityAddsToOneSideKeepsBothSidesRowsLevel` (nine Companions
+whose figures wrap to a second line, a rear guard, Heroic Death's hit buttons, a special attack's pager and the Black
+Serpent's marker on one side; four layouts; `ui437-abilities-*`) with the shared checks `BattleRowChecks.Level`;
+`BattleLayoutTests` (all windows above the console, the losses' column), EditMode `BattleArtTests` (names under the
+medallions, in the force row).
+Port to `ability-chips` (base game): the force row, `BattleRowPlan`, the spacer, the reserved ledge, roll, pager and hit
+button, the CSS in `Battle.uss`, `BattleRowChecks` and the fixture test without the replacement marker. Expansions only:
+the card row's alignment (`Interaction.uss`, `.battle-card-row`), the replacement marker's checks and the Red Wrath test.
+
+<a id="one-marker-per-character--ui-438"></a>
+## One marker per character, its versions inside — UI-438 (2026-11-01)
+
+The owner's playtest: "two different versions of the Mouth are shown separately, unlike Aragorn, who has one marker and
+switches inside; fix it and make sure every character behaves like Aragorn/Strider".
+
+- **Cause.** UI-271 split a Shadow character whose Lords card is an alternative to the base one into a row per version
+  not in play (`CharacterRosterVersions`): "Mouth · Lieutenant" and "Mouth · Númenórean", the Witch-king's "Black
+  Captain" and "Chief". The server already lists one row per character (identity) with its versions; the client split it.
+- **Audit** of every character with more than one version in the content: Free Peoples — Gimli (base, Lords, Fate,
+  Fate's Dwarven Lord), Boromir, Legolas, Merry, Pippin (base, Lords), Gandalf (the Grey base and Lords, the White),
+  Strider/Aragorn (base and Lords Strider, Aragorn); Shadow — the Mouth of Sauron and the Witch-king (base, Lords). The
+  kings' Awakened and Corrupted cards belong to different sides (the Corrupted ones are not roster characters), the
+  Chieftains have one card each. Only the two Shadow characters were split; the others already had one row.
+- **One row per character** in every section (On board, Not in play, Removed) — `CharacterRosterPresentation.Rows`
+  keeps the server's rows. The row shows one version (`ShownVersion`): in play, the version in play; otherwise the
+  version an offered entry brings in, or the first that may enter. Its second line names that version
+  ("Lieutenant", "Númenórean") and changes to the version the chosen die's entry brings in; the tooltip opens with
+  "Click to bring The Mouth of Sauron, Black Númenórean into play".
+- **Its window switches** between the versions with the UI-387 tabs, which read the epithets of one character's
+  alternative cards (`CharacterLibrary.VersionName`); a map figure (the Witch-king in play) opens the same window with
+  both versions.
+- **Click paths and payloads.** One version that may enter for the chosen cost enters at the row's click, as the
+  version's own row did, with the same entry (`EnterCharacter` with that version). With the Black Captain in play, his
+  one row turns him into the Chief in place. Two versions that may both enter for one die (both Mouths with a Muster die)
+  are the existing explicit choice (UI-108): the row glows and says "Click to choose which version comes into play", its
+  click opens the window, the other version's tab glows and the shown version's Enter sends it.
+
+Tests: EditMode `CharacterRosterVersionsTests` (over the base, Lords, Kings and Fate content: every side's characters
+not entered, on board, in the Fellowship and removed have one row each and one window tab per version, the tabs told
+apart; the Mouth's row shows and sends the entry's version; two enterable versions are chosen in the window; the
+Witch-king's row turns him in place), `CharacterRosterPanelTests` (eight Shadow rows); PlayMode
+`LordsCharacterNetworkTests` (`ui271-entries-sh`: one Mouth row and one Witch-king row and their windows' tabs; every
+Free Peoples nation is at war there, so one Muster die may bring in either version of each — the rows glow and open the
+window, and the Lords Mouth enters from his glowing tab's Enter with the same entry as before; `ui271-witch-king-switch`:
+the Black Captain's row turns him; screenshots `ui438-shadow-entries-*`, `ui438-witch-king-switch-*`,
+`ui438-<figure>-window.png`, `ui438-mouth-choice-window.png`), `BoardCompletionLayoutTests`,
+`CharacterRosterPanelNetworkTests`, `CharacterRosterLayoutTests`.
+Port to `ability-chips`: nothing — it has no version split (`CharacterRosterVersions` is expansions-only); the tab names
+apply only to the expansions' alternative cards.
+
+<a id="a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436"></a>
+## A character's window is compact, shows its place as a picture and opens in one place — UI-436 (2026-11-01)
+
+The owner's playtest (expansions 80df28fd), about "Denethor · ♙ Initial" with its "Minas Tirith" button, "Corruption
+0/3" and "After awakening · Abilities  Unavailable": "the window is too big, the information is vague; the Minas Tirith
+button should be a picture of the place where he is; apply it to all characters and make sure every place any
+character can be has its picture; the window opens in a different place for each ruler — always show it beside the
+rulers' tab, in the same place."
+
+- **One window form.** The king's window (`SovereignInspector`) is framed like a character's window
+  (`.character-window`, 380 points wide in every layout, as the character window now is). From the top: the header —
+  his name, his status badge (its icon and word, its tooltip what the state means: "Initial · Not yet awakened: he leads
+  his force as a Leader"), and Close; the place row; his action in words; his abilities. An attempt's progress and a
+  decision's consequence add their lines below, as before; the window still hosts no decision (UI-274).
+- **The place is a picture** (`PlacePicture`, 128×80 points) captioned with the place's name, in place of the king's
+  "Minas Tirith" text button and of the character window's status line with its Locate button. A region's picture is
+  enabled, its tooltip "Minas Tirith · Click to show this region on the map", and its click sends what the old button
+  sent (`Map.Focus(region)`). A place off the map keeps the picture's slot, disabled, its tooltip naming the place and
+  what being there means ("The Fellowship · Travels with the Fellowship · Not on the map"). `PlacePresentation` maps
+  every roster lifecycle and every king's status to a place: a region on the board; the Fellowship (in it, or leaving
+  it to be placed); not in play (not entered, returning, unknown — a picture per side); removed (eliminated, or
+  eliminated and able to return as Gandalf the White — per side); out of play (a removed king).
+- **Every place has its picture** (`scripts/export_place_pictures.py`, deterministic with `--check`, the pinned
+  Pillow/NumPy/SciPy of the map scripts; report `docs/sources/UI-436-PLACE-PICTURES.json`). 111 replaceable JPEGs of
+  256×160 px (2 MB) in `Resources/Wotr/Art/Places/<place>.jpg`: each of the 105 regions is a crop of the map canvas art
+  round it (the MAP-14/MAP-18 terrain over the UI-102 margins, the painted landmarks and the land borders), its outline
+  in gold, the land round it dimmed and its own landmark kept bright; the six places off the map are painted from the
+  board figures on the bare paper of the margins — the Fellowship's miniature, a ghosted Companion or Minion over an
+  empty stand (not in play), a figure laid down (removed) and the Ruler figure laid down (a removed king). No character
+  stands on the Mordor track (only the Fellowship does, its Companions inside it), and every king's home is a region.
+- **Each line says what it means.** Beside the picture: "Corruption 1/4" on a small meter (a pip per point of
+  resistance, filled for known corruption, hatched for hidden tiles), then "Corrupted when his tiles reach 4"
+  (CorruptionRules: a king is corrupted when his tiles reach his resistance); a Corrupted king reads "Corruption
+  resolved · He now serves the Shadow", a removed one "Out of play · Removed from play"; then "In the stronghold's
+  garrison" or "Corruption attempted this turn", and his attached tiles. The bare "Unavailable" (and the character
+  window's "Limits") is now the action in words (`AvailabilityLines`, `AvailabilityRows`): "Awaken · Muster or Ruler
+  die", then "Available now" in gold or what it still needs ("His nation must be active", "No Muster or Ruler die
+  available", "No region he can reach", "Needs 2 Eyes in the Hunt Box", "Already attempted this turn", "The Free Peoples
+  have no unused die"; another condition as the server words it); the tooltip keeps the server's full cost, every
+  condition with ✓ or ○, the timing and the rules page. An action of another state (Awaken for a Corrupted king) and the
+  tile return outside its moment are left out; without an action of his own the line says what his state means ("Not
+  yet awakened · The Free Peoples may awaken him, the Shadow corrupt him", "Serves the Shadow · His weaknesses below
+  apply", "Out of play · Nothing more can happen to him"). "After awakening · Abilities" with a tooltip is now his
+  abilities under "Abilities once awakened" or "Weaknesses while corrupted", as the character window's lines.
+- **Abilities say what they do** — in every character's window too. An ability chip (`CharacterAbilityChips`) is a line
+  of the window's width: the ability's icon (the roster row's; its own since UI-439, `AbilityArt`), its title in gold
+  and the gist of its text ("Stewardship · With Denethor in Minas Tirith, a Muster die upgrades a Gondor Regular
+  there"); its tooltip is the printed text and page, its click still unrolls the printed text (UI-139) and a usable one
+  still glows and carries Click to use (UI-369). Since [UI-440](#skill-icons--ui-440) (2026-11-02) the lines, their
+  pages, the unrolled parchment and Click to use are gone: each ability is its bare icon in one row, its gist and text
+  in its formatted tooltip, and a lit icon's click uses it.
+- **The character window** keeps every control (pin, close, version tabs, ability lines and pages, Click to use, the
+  entry, the decision host); its place row is the picture and, beside it, a line saying what being there means ("On the
+  board", "Travels with the Fellowship", "Not entered yet", "Eliminated; may return as Gandalf the White") over the
+  statistics. An Awakened king's character window has the rows of every king's window: his action line ("Awakened · A
+  Companion with the abilities below" when he has no action of his own) and "Abilities" over his ability lines.
+- **One place** (`CharacterWindowPlace`). Every ruler's window, and every character's window opened from the Characters
+  tab, its panel or a ruler, stands just right of where the Characters panel unrolls — a hidden slot with the panel's
+  classes (`characters-panel-slot`), laid out while the panel is rolled up, so the panel never covers the window and the
+  window never moves when the panel opens or closes — its top level with the Characters tab, raised only as far as it
+  must to stay whole above the bottom of the board. Every left panel (Politics, Reserve, Effects) is narrower, so none
+  covers it. A ruler's window has one size at rest (`.ruler-window`, 380×288 points: the same rows for an Initial, a
+  Corrupted or an Awakened king, the shorter gists leaving at most a line free; 380×252 since
+  [UI-440](#skill-icons--ui-440), the abilities a row of icons); an unrolled ability text or a decision makes it taller.
+  A character opened from a region's window stands beside that window, its own panel, as
+  before (UI-371); a window the player dragged keeps its place while pinned (`FloatingWindow.Restore`).
+
+Tests: EditMode `PlacePictureTests` (every one of the 105 regions and every place off the map has its 256×160 picture;
+every roster lifecycle of both sides and every king's status leads to one), `AvailabilityLinesTests`,
+`CharacterWindowPlaceTests`, `SovereignPanelTests` (`TheWindowSaysWhatEachLineMeans`,
+`AvailabilityExplainsOnlyProjectedOwnConditionsWithoutGrantingAnAction`), `CharacterRosterPanelTests`; PlayMode
+`CharacterWindowLayoutTests` (the five Initial kings' sovereign windows of ui101-sovereigns and the five Awakened kings'
+character windows of ui66-full, the Free Peoples at 1366×768 and 1920×1080 at 100 and 125 %, the Shadow at 1366×768 at
+125 %: every king's window has the ruler size and one rect beside the Characters panel's place, level with the tab; a
+king opened with the panel rolled up stands in the same rect; a character's window opened from his row stands at the
+same place; the picture's click selects the king's region; nothing is sent; screenshots `ui436-initial-*`,
+`ui436-awakened-*`, `ui436-rolled-up-*`, `ui436-character-*`), `SovereignSectionLayoutTests`,
+`CharacterRosterPanelNetworkTests`, `CharacterRosterActionNetworkTests`, `LordsCharacterNetworkTests`,
+`BoardCompletionLayoutTests` (each ability line equals `CharacterAbilityChips.Line` and shows its whole text in four
+layouts; the short viewport's fixed 32-point height of an inspector's buttons no longer applies to a line), `ReturnListTests`
+(the king's place picture locates his region).
+
+Playtest (owner's checklist):
+- [ ] The kings' window — Testing catalog `kings-fp-ruler-token` (play the Free Peoples). Open Characters and click each
+  king's portrait in turn. Expect: one compact window, the same size at the same place beside the Characters panel for
+  every king; his place as a picture named under it; "Corruption n/r" on a meter and when he is corrupted; his action
+  in words ("Awaken · Muster or Ruler die" and what it still needs); his abilities in lines. Click the picture: the map
+  shows his region. Roll the panel up and open a king from his force on the map: the window opens at the same place.
+- [ ] A character's window — the same game: click a companion's row. Expect: the window at the same place, his region's
+  picture (or the Fellowship's, "Not in play", "Removed") with what it means beside it, and his statistics.
+
+Port to `ability-chips` (base game): `PlacePresentation` (characters), `PlacePicture`, `AvailabilityLines`,
+`AvailabilityRows`, `CharacterWindowPlace` and its slot, the `CharacterInspector` and `CharacterRosterPanel` changes, the
+ability lines (`CharacterAbilityChips`), the character-window styles, the export script and its pictures (the removed
+king's picture is unused there), and their EditMode tests; the kings' window (`SovereignInspector`,
+`SovereignPanel.Position`, `SovereignPresentation`, `CharacterInspector.RefreshRuler`) and `CharacterWindowLayoutTests`
+are expansions-only.
+
+<a id="every-ability-has-its-own-icon--ui-439"></a>
+## Every ability has its own icon, wherever a button stands for it — UI-439 (2026-11-01)
+
+The owner's playtest (expansions 80df28fd): "make better pictures for the characters' skills. Now they are very simple,
+they repeat, they sometimes recycle existing icons. They are small and need not be very complicated, but they should
+show the skill's character better. The Balrog has three skills with the same icon; each should be a little different.
+Then use the same icons every time a button stands for that skill — for every character, for every skill."
+
+- **The art.** One icon per printed ability of every character card — base game, Lords of Middle-earth (with the
+  Council's companions), Kings of Middle-earth and The Fate of Erebor: 76 printed ability ids and one card form, the
+  Dark Chieftains' *Dark Chieftain* (their print of `not-minion-for-gandalf-white`, which the Balrog, Gothmog and the
+  Witch-king print as *Gandalf the White entry*), 77 icons in all, no two alike (the Balrog's: a horned head of shadow
+  and flame, a sword of fire, a whip of fire, a crossed-out white staff). Codex art keyed to alpha, 28 points (56 × 56
+  px, the UI kit's import settings) in `Resources/Wotr/Art/UI/abilities/<key>.png`; the pipeline, prompts, rounds and
+  the twelve icons waiting for a later Codex round (same paths) are in
+  [graphicalassets/abilities](../../graphicalassets/abilities/README.md), every ability and where it was shown in its
+  [INVENTORY](../../graphicalassets/abilities/INVENTORY.md). They replace the 22 pictures borrowed from the rest of the
+  kit (a battle's crossed swords for twelve abilities, the Politics map for nine…), the character window's one scroll
+  for every ability, and the two maps that disagreed (`AbilityIcons` on the roster, `AbilityPictures` on the component
+  buttons), both removed.
+- **One map** (`AbilityArt`). An ability's icon is `Art/UI/abilities/<printed ability id>`. A command, reaction or
+  decision that carries its own id names the printed ability it uses first: the Kings' Ruler abilities drop their
+  prefix (`kings.call-to-arms`); `activate-balrog`, `deactivate-balrog` and `use-balrog` are Balrog Activation;
+  `gothmog-recruit`/`-upgrade` Fling Them into the Fray; `voice-recruit`/`-upgrade` Saruman's Voice; `lords.nenya.replace`
+  Nenya; `lords.chief.spear-of-terror` and `lords.chief.he-sees-he-knows` the Chief's own; the characters' reactions
+  (`character.grey-draw`, `character.white-rider`, `character.sorcerer`, the Hobbits', the Council companions' and
+  Fate's Gimli's Guide separations, Gollum's reveal, the Council Hobbits' cancel) their printed abilities; Use Narya,
+  Use or Decline Vilya and Evil Knowledge by their command kinds. A card's own form comes before the shared one, keyed
+  `"<card id>#<ability id>"` as `character-ability-summaries.json` keys the gists. An id that names no printed ability
+  shows the ability scroll (a button) or no badge.
+- **Where the icons stand** — every place a button, chip or marker stands for an ability (since
+  [UI-440](#skill-icons--ui-440), 2026-11-02, every such button is the bare icon, without frame, plate or words, and a
+  skill's variants each carry a badge, Far-sighted's and the Balrog's moves included):
+  - the Characters roster row's ability icons (15–19 points, `CharacterAbilityStrip`), on the row's card;
+  - the character window's ability lines (18 points, `CharacterAbilityChips`), the king's window's too;
+  - the component action buttons (24-point glyph on the 32-point frame, `ComponentActions`/`ComponentActionView`) in
+    the decision dock, a region's window and the character window: a character's ability, the Mouth of Sauron's Muster
+    die moving or attacking, the Balrog's moves, Thranduil's Far-sighted, Narya in Gandalf's window. Where one ability
+    has several commands side by side that do different things (Saruman's Voice and Gothmog's Fling recruit or upgrade,
+    the Mouth's Muster die — or Great Sorcery's — moves an army or attacks), each button keeps the ability's icon and
+    wears a 13-point badge on its lower right corner of what it does (`AbilityBadges`: the Muster face, the level star,
+    the boot, the crossed swords), so no two side by side look alike. Far-sighted's buttons all move (the Fellowship, a
+    separation, the companions) and keep no badge, as before their tooltips tell them apart. An entry keeps the board
+    pin: it enters a character and uses no ability;
+  - Narya's activation in the Politics panel (`NationTrackRow`, where the generic confirm stood);
+  - in the battle window: Evil Knowledge's framed choice when it stands in the footer (`BattleChoices`), the combat
+    replacement's chip and applied marker (Heir of Bard, Shadows in the North, Red Wrath, Lord of the Bats, I Command;
+    the source's nation arms stood in for them, `CombatReplacementChoice.Icon`), and a portrait whose click uses an
+    ability now — the Mouth of Sauron's Evil Knowledge, the White Rider, the Witch-king's Sorcerer — wears that
+    ability's icon (18 points, 14 on a short viewport) on its upper right rim while the offer lasts;
+  - the Hunt window's Guide responses (`HuntResponsesView`): the Guide stays recognisable by his figure, and his
+    response's ability (Guide · separate, Gollum's reveal, the Council Hobbits' cancel) is a 17-point badge on the
+    figure's lower right, outside the round portrait's clip (14 points on a short viewport). The response's name,
+    consequence and tooltip are unchanged.
+
+  The console's ring sockets and the starting Guide's crown keep their own art: they show the ring and the Guide role,
+  not an ability; so does the Politics panel's advance arrow (the nation's step; a political ability is named in its
+  tooltip). The "Click to use" button keeps its action icon. Text-only buttons (the tray's fallback lists, the
+  character choice fallback, the Fellowship panel's glowing Guide portrait for Gandalf's draw, Gothmog's Reserve row)
+  are unchanged. Hints that named the replacement chip's arms name its ability now: "Click Brand's Heir of Bard beside
+  your Combat card's place to use the ability", "Click The Black Serpent's Red Wrath or The Shadow of Mirkwood's Lord of
+  the Bats beside…". The battle kit's `battle/evil-knowledge` picture is no longer shown.
+
+Tests: EditMode `AbilityArtTests` (every ability of every card of the four catalogues resolves to an existing icon of
+its own, never the scroll; each card's icons differ; 77 icons, no two files alike; the Balrog's four; the card forms;
+every command, reaction and command kind above resolves to its ability's icon; an unknown id; the character window's
+lines and Narya's activation use the map), `UiArtKitTests` (the 77 icons are in the kit's contract at 28 points with
+its import settings), `CharacterAbilityStripTests` (each roster icon is its ability's; a Dark Chieftain's form),
+`ComponentActionTests` (Voice's two buttons share the icon and differ by badge; the Mouth's move and attack, the
+Balrog's command, an entry, Narya; Far-sighted), `KingsCards02Tests` (the replacement chip and marker, the hints),
+`BattleArtTests` (Evil Knowledge's framed choice), `ReactionSourcesTests` (the White Rider's portrait),
+`HuntGuideResponsesTests` (Merry's and Gollum's badges); PlayMode `RulerTokenMenuTests` (Dáin's row, `ui439-roster-dain`),
+`CharacterWindowLayoutTests` (every line's icon in four layouts, `ui439-character-*`), `FarSightedObjectTests`
+(Thranduil's button, no badge, `ui439-component-far-sighted-*`), `KingsDecisionNetworkTests` (the chips and the applied
+marker, `ui439-replacement-applied-*`), `LordsBattleNetworkTests` (the Mouth's portrait, `ui439-evil-knowledge`),
+`HuntAftermathNetworkTests` (Merry's response, `ui439-hunt-merry-guide`), `T22AbilityNetworkTests` (Saruman's Voice
+buttons and their badges, `ui439-voice-recruit`, `ui439-voice-upgrade`), `ExpansionDecisionNetworkTests` (Narya's
+activation, `ui439-narya-activation`).
+
+Playtest (owner's checklist):
+- [ ] The roster and the window in a base game — any game (the Free Peoples). Open Characters. Expect: each row's
+  ability icons its abilities' own (Strider's Guide, Captain of the West and Heir to Isildur differ). Click a
+  companion's row: his window's ability lines show the same icons as the row.
+- [ ] The roster and the window — Testing catalog `kings-ruler-token-dain` (Free Peoples). Click Dáin's Ruler token,
+  open Characters. Expect: Dáin's row shows Iron Guard's and Dwarvenking's own icons, Iron Guard glowing. Click
+  Dwarvenking: his window opens with each ability's line showing the same icon as the row.
+- [ ] Saruman's Voice — a game with Saruman in Orthanc and a Muster die (the Shadow). Click the die, then Orthanc. Expect:
+  two buttons with the same Voice icon, one badged with the Muster face (recruit), one with the level star (upgrade).
+- [ ] The Balrog — Testing catalog with the Balrog (Lords). Open his window. Expect: four different icons; the
+  activation's button on his figure's window shows the Activation icon.
+- [ ] A replacement — `ui348-brand-heir`. Expect: beside your Combat card a gilt chip with Heir of Bard's icon (not the
+  North's arms); after the click the marker shows it for both players.
+- [ ] Evil Knowledge — `ui347-evil-knowledge` (the Shadow). Expect: the Mouth's glowing portrait wears Evil Knowledge's
+  icon on its rim.
+- [ ] A Guide's response — seeded `ui52-hunt-aftermath` (a Hunt with Merry as Guide taking damage). Expect: Merry's
+  figure in the Hunt window with the Guide-separation icon as a badge.
+
+Port to `ability-chips` (base game): `AbilityArt` (its base entries: the Voice's and the characters' reactions),
+`AbilityBadges`, the `IconButton` badge, the roster, character window and component button changes, the battle
+portrait badge and the Hunt Guide response badge, with their styles and tests (`AbilityArtTests` asserts the four
+catalogues and 77 icons there; on base it holds for the base cards and their 22 icons); the 22 base icons are
+`add-gollum-when-no-companions`, `cannot-leave-orthanc`, `combat-strength-plus-one`,
+`draw-after-first-round-combat-card`, `enter-and-guide-when-no-companions`, `entry-activates-all-free-peoples`,
+`forfeit-leadership-to-cancel-nazgul-for-battle`, `guide-draw-after-event-die-card`, `guide-hide-with-any-action-die`,
+`guide-separate-to-reduce-hunt-one`, `ignore-standard-numbered-reveal`, `isengard-elites-have-leadership`,
+`may-transform-to-aragorn`, `may-transform-to-white`, `move-four-alone-or-with-one-hobbit`,
+`muster-as-army-once-per-turn`, `muster-each-isengard-settlement-or-upgrade-two`, `politics-dwarves-at-erebor`,
+`politics-elves-at-stronghold`, `politics-gondor-at-city-or-stronghold`,
+`return-after-fellowship-elimination-except-mordor`, `voluntary-reveal-to-reduce-hunt-one`. Narya's activation, Evil
+Knowledge, the combat replacements, Far-sighted, the card forms and the other 55 icons are expansions-only.
+
+<a id="skill-icons--ui-440"></a>
+## A skill is its icon: a click uses it, the tooltip describes it — UI-440 (2026-11-02)
+
+The owner, about the character window's ability lines ("[icon] Terror on entering play · Entering play activates…"):
+"the skill buttons are still not right: a button must not be a rectangular button with text and a picture, it must be
+ONLY THE ICON". Then, the same day, after a feasibility analysis of the 77 abilities: "I changed my mind: let's apply
+your suggestions so that a click simply uses the skill, with the skill's variants where needed; the skill descriptions
+in nicely formatted tooltips", and "make sure a skill's variants stand together, in one row". This supersedes UI-139's
+and UI-369's "select the chip, then Click to use" for abilities, UI-436's ability lines and their pages, and UI-371's
+kept place (nothing on the window changes size any more).
+
+- **The look** (`SkillIcon`, `Styles/SkillIcons.uss`). A skill button is the skill's icon (`AbilityArt`) alone: no frame,
+  plate or words in any state (resolved border 0, no picture of its own; the icon is its glyph, so
+  `IconButton.SetPicture` and `AddBadge` serve it). Its box is its hit target. While the skill is usable (ChoiceGlow) a
+  rimless gilt light (`ornaments/skill-glow`, a texture — no CSS filter, UI-322) glows behind it and breathes in its
+  host's 750 ms ChoicePulse (Reduced motion keeps it bright and still); the icon keeps its size. Hover brightens it (a
+  faint light); a press sinks and darkens it (UI-113); keyboard focus rings it (`KeyboardFocusRing`: a click focuses it
+  too, but leaves no ring) and opens its tooltip at once. An icon a click does not use now is read only
+  (`ReadOnlyControl`: no light, no press, still focusable for its tooltip). A variant not offered now is dimmed in its
+  fixed slot. An applied replacement is the same icon with a short gold underline.
+- **Where.** The character window's and the king's window's abilities (32-point icons, 28-point pictures); the roster
+  row's icons (15–19 points); the component action buttons of the decision dock and a region's window (32 points; an
+  entry keeps the board pin on its frame, as it uses no ability); Evil Knowledge's choice in the battle footer (lit and
+  pulsing on its own while usable; its tooltip leads with its name); the combat replacement beside the own Combat card
+  and its applied marker (Heir of Bard, Shadows in the North, Red Wrath, Lord of the Bats, I Command); Narya's
+  activation in the Politics panel (26 points, lit while usable). Unchanged: the Hunt window's Guide responses (the Guide
+  is the button, the ability a badge), the battle portraits' ability badges, the console's ring sockets, the tray's text
+  fallbacks and the Council setup labels.
+- **One row per card, variants together** (`CharacterAbilitySlots`, `AbilityVariants`). The window's icons stand in one
+  row in printed order. An ability whose commands do different things shows one icon per variant, side by side as one
+  group — 4 points apart over a thin shared gilt line, abilities 14 apart — each badged with what it does
+  (`AbilityBadges`): Saruman's Voice (recruit: the Muster face; upgrade: the level star), Gothmog's Fling Them into the
+  Fray (the same), the Mouth of Sauron's Muster die and Great Sorcery (move: the boot; attack: the crossed swords), the
+  Balrog's Activation (activate or deactivate, one slot, no badge; move an army, attack, move alone: the board pin) and
+  Thranduil's Far-sighted (the Fellowship: the Ring; companions: the group; a separation: the board pin — the component
+  buttons carry these badges too). The slots are fixed per card, so nothing shifts while a variant comes or goes; a group
+  never wraps. The Balrog's seven icons are the most any card shows; they fit the 380-point window in every layout. The
+  window's former Actions row of the same abilities (Narya, the Muster die's move and attack, Great Sorcery, the Balrog's
+  commands, Far-sighted) is merged into the row; only an entry (several versions) keeps its own button. A ruler's
+  window at rest is now 380×252 points (`.ruler-window`, `SovereignPanel.WindowSize`; UI-436's 288 held the lines), every
+  king's window still of one size.
+- **A click uses the skill.** A lit icon (its ability usable now with the chosen die or token) uses it with one click,
+  through the component path (`ComponentActions.Select`, `TurnInteraction.ChooseComponent`) exactly as Click to use did:
+  a one-click ability (the political steps, the messengers, Dwarvenking, Stewardship, Elvenking, Narya, Voice's upgrade)
+  sends at once; a click-then-choose one (Call to Arms, Iron Guard, Mustering of the Mark, a variant's move or attack)
+  starts its choice on the board, confirmed with the console's ✓ (UI-381). Before any die is chosen, an icon whose one
+  die (or identical dice) could pay was clickable and took that die (`ComponentActions.WithUniformDie`) until
+  [UI-443](#nothing-lights-before-its-die--ui-443) retired it: before a die every icon with die-paid actions says "Choose
+  an eligible die first". Every other icon is read only and its click does nothing: a
+  passive ability, a triggered one (Take Them Alive!, Art of Disappearing), a reaction (used on the object that offers
+  it, UI-247/UI-271) and a change of version (from the Characters row). A king's window shows his abilities read only (an
+  Awakened king's character window uses them as above). Nothing unrolls: the parchment and Click to use are gone.
+- **The roster row** keeps its click: one ready action of the ability starts it; otherwise the character's window opens
+  with that ability's icon focused, so its description shows.
+- **The description is the tooltip** (`SkillTooltip`, rich text, `RuntimeTooltip.FormattedClass`), one form wherever a
+  skill's icon stands (the windows, the roster row, a component button): the name in bold gold (then its variant and, on
+  a component button, its owner), the gist dim on the second line (`CharacterAbilitySummaries`), a thin gap, the printed
+  text as a paragraph, the source small and faint, a thin gap, then the state — what a click does now in bright gold
+  ("Click to use your Muster die: Move the Dwarves one step toward war"; `SkillUse`), or dim: "Choose an eligible die
+  first", "Usable with an eligible die or token", where a reaction is used (`AbilityUsePlaces`: "Offered in battle: click
+  his portrait", "Offered in the Hunt window: click this Guide's response", "Offered after your action: click Vilya on the
+  console", "Used from his Characters row with a Will of the West die"…) or, on the roster, "Click to open the
+  character's window". The tooltip keeps its 360-point width; the longest printed text (Emissary from the West, 381
+  characters) fits 1366×768 at 125 %.
+
+Tests: EditMode `SkillIconTests` (the parts, the name required, the glow and mark), `CharacterRosterPanelTests`
+(`InspectorShowsStatusStatisticsAndAbilityChipsWithoutUnrolledText`: bare, read only, formatted, no unrolled text;
+`AUsableAbilityGlowsAndItsClickUsesIt`: the click raises the very action Click to use raised;
+`AnAbilityWithOneEligibleDieTakesItFromTheClick`; `AVariantAbilityShowsOneBadgedIconPerVariantSideBySide`;
+`EveryCardsVariantsStandTogetherInOneRow`: for every card of the four catalogues each ability's icons stand together in
+printed order and the widest card fits one row), `CharacterAbilityStripTests`, `ComponentActionTests` (bare icons, the
+entry's frame, Narya's and Voice's formatted tooltips, Far-sighted's badge), `SovereignPanelTests`, `AbilityArtTests`,
+`KingsCards02Tests` (the replacement icon and marker), `BattleArtTests` (Evil Knowledge's bare footer choice),
+`UiArtKitTests` (`ornaments/skill-glow`); PlayMode (resolved styles through `SkillIconChecks`: border 0, no plate, no
+words, the light exactly while usable, at least 28 points in the windows) `CharacterWindowLayoutTests` (the kings' and a
+character's windows in four layouts: one row, a read-only click changes nothing and leaves no ring, keyboard focus rings
+the icon and shows the formatted description whole, the longest — Emissary from the West, 381 characters — included;
+`ui440-king-*`, `ui440-character-*`, `ui440-longest-tooltip-*`),
+`CharacterRosterActionNetworkTests` (Fate Gimli's Messenger of the Dwarves sends at one click a payload JSON-equal to the
+old Click to use path's; Théoden's Mustering of the Mark starts its choice; the Balrog's seven icons in one row in four
+layouts and his move alone from its badged variant; `ui440-usable-*`, `ui440-widest-balrog-*`),
+`CharacterRosterPanelNetworkTests` (the roster icon bare; Gimli's passive icon's formatted tooltip and read-only click;
+`ui440-roster-*`), `RulerTokenMenuTests` (Iron Guard starts from its icon, Dwarvenking read only; Dáin's roster icons),
+`T22AbilityNetworkTests` (Gimli's Dwarf of Erebor and Voice's upgrade variant sent at one click from the window's icons,
+each payload JSON-equal to the old component path's on the same die; Voice's bare badged buttons, `ui440-component-*`),
+`FarSightedObjectTests`,
+`KingsDecisionNetworkTests`, `ExpansionDecisionNetworkTests` (Narya), `BoardCompletionLayoutTests` (every card's icons and
+formatted tooltips in four layouts, inside the board; `MeasureTextSize` measures rich text a line taller than its layout
+draws it, so the formatted descriptions are not measured against it).
+
+Playtest (owner's checklist):
+- [ ] A one-click skill — Testing catalog `ui67-fate` (Free Peoples): open Gimli's window. Expect: his abilities as bare
+  icons in one row, no lines, no text. Hover each: a formatted description (gold name, gist, text, source, state). Click
+  the die Messenger of the Dwarves needs: its icon glows. Click the icon: the Dwarves activate at once, no Click to use.
+- [ ] A click-then-choose skill — `kings-ruler-token-dain`: click Dáin's Ruler token, open his window. Expect: Iron
+  Guard glowing, Dwarvenking read only (no light under the pointer, the click does nothing). Click Iron Guard: his
+  settlements light on the map; place the figures; confirm with the console's ✓.
+- [ ] Variants together — the Balrog (`ui67-balrog`, Shadow): choose the Character die, open his window. Expect: seven
+  icons in one row; Balrog Activation's four (activate, move an army, attack, move alone) side by side over a thin gilt
+  line, each move badged; the move alone glows. Click it, then the Balrog's destination: he moves.
+- [ ] Saruman's Voice — a game with Saruman in Orthanc (Shadow): open his window before choosing a die. Expect: Voice's
+  recruit and upgrade side by side, dimmed; hover: "Choose an eligible die first" (or, with one Muster die only, "Click
+  to use your Muster die: …" — a click then takes that die; since UI-441 both icons then glow, and Saruman with them).
+- [ ] A reaction — open the Witch-king's or Galadriel's window. Expect: Sorcerer or Nenya read only, its tooltip saying
+  where it is used ("Offered in battle: click his portrait", "… click Nenya on the console").
+- [ ] Keyboard — Tab to an icon. Expect: a thin gold ring and the description at once; a mouse click leaves no ring.
+
+Port to `ability-chips` (base game; UI-436/UI-439 at 164d87d9, where the kings' window kept its older form): `SkillIcon`,
+`KeyboardFocusRing`, `Styles/SkillIcons.uss` (and its import), `ornaments/skill-glow` (svg, `assets.json`,
+`manifest.json`, PNG and meta, `UiArtKitTests`), `IconButton.GlyphName`, `RichText` (and `CharacterRowTooltip` on it),
+`SkillTooltip`, `SkillUse`, `AbilityUsePlaces` (its base entries: the Grey's Guide draw, the White Rider, the Sorcerer,
+the Guides' separation, Gollum's reveal, Take Them Alive!, the two changes of version), `CharacterAbilityLibrary.Find`,
+`CharacterAbilitySlots`, `AbilityVariants` (on base only Voice and the Mouth's Muster die appear; the table may move
+whole), `AbilityBadges` (the new kinds), `ComponentAction.Definition`, `ComponentActions.WithUniformDie` and the
+`Definition`s, `TurnInteraction.ChooseComponent`, `CharacterAbilityChips`, `CharacterAbilityStrip`, `CharacterInspector`,
+`CharacterRosterContext`, `CharacterRosterPanel` (the kept place removed, `Present`), `ComponentActionView`, the
+character-window and roster rules of `Characters.uss` and the component rules of `Wotr.uss`, with their tests
+(`SkillIconTests`, both `SkillIconChecks`, `CharacterRosterPanelTests`, `CharacterAbilityStripTests`,
+`ComponentActionTests` without Narya and Far-sighted, `AbilityArtTests`' window test on a base card,
+`CharacterRosterPanelNetworkTests`, `BoardCompletionLayoutTests`, `T22AbilityNetworkTests`). Expansions-only: the king's
+window (`SovereignInspector`), Evil Knowledge's footer choice (`BattleChoices`, `Battle.uss`), the combat replacement's
+icon and marker (`BattleContext`, `Interaction.uss`), Narya's activation (`NationTrackRow`, its `Wotr.uss` rule), and
+`KingsCards02Tests`, `KingsDecisionNetworkTests`, `FarSightedObjectTests`, `ExpansionDecisionNetworkTests`,
+`RulerTokenMenuTests`, `CharacterWindowLayoutTests`, `BattleArtTests`' Evil Knowledge part and the Fate, Ruler and Balrog
+parts of `CharacterRosterActionNetworkTests`.
+
+<a id="usable-skills-light-their-character--ui-441"></a>
+## A character whose skill can be used now lights up wherever it stands — UI-441 (2026-11-02)
+
+The owner, with a screenshot of the Characters panel (Gothmog's row unlit under On board) beside Gothmog's window (his
+two Fling Them into the Fray icons lit): "skill postaci jest mozliwy do uzycia ale nie powoduje to podswietlenia sie
+postaci, tylko samego skilla. upewnij sie ze zawsze podswietla sie postac jesli mozna w danym momencie uzyc jej skilla"
+— the character's skill could be used, yet only the skill lit, never the character; make sure the character always
+lights up whenever one of its skills can be used at that moment. (Fling is used on Gothmog's Reserve tokens, UI-271, so
+the roster, which left such abilities out, never lit him.)
+
+- **One rule** (`UsableSkills.Characters`, built once per refresh in `ComponentContextInteraction` from the turn's
+  `ComponentActions`). A character of the player's has a skill usable now exactly while one of its skill icons lights in
+  its window (`CharacterAbilityChips`): an action of the turn that uses one of the printed abilities of its current card
+  — its own command or a variant of it (`AbilityVariants`: Saruman's Voice, Gothmog's Fling, the Balrog's activation), a
+  Muster die's move or attack, Far-sighted, Narya; an ability used on its own object included (Gothmog's Reserve tokens,
+  the Balrog's figure) — offered with the chosen die or token (before
+  [UI-443](#nothing-lights-before-its-die--ui-443) also, before any die, payable by the one die that could pay). A reaction of the
+  character's offered to this player now counts too (a battle portrait's White Rider or Sorcerer, a Guide's Hunt
+  response — its Guide's when it names no source —, Gandalf the Grey's draw on his Guide portrait or its deck, Spear of
+  Terror, Nenya, He Sees, He Knows), named by the printed ability it uses (`AbilityArt.Printed`). Nothing counts while
+  another action is drafted, while a command is being sent, for an entry, for another version's ability or for the
+  opponent's characters.
+- **The window's icons follow the same rule**, so the icon and its character light together. (UI-441 lit the one-die
+  icon before any die; UI-443 put it out again.) The roster row's icons use the abilities used on their own objects, as
+  the window's do. A
+  reaction's icon stays read only (UI-440): its character lights while the reaction is offered.
+- **Where the character lights**, each in its own pulse, with the shared light (no CSS filter; the pulses change
+  colours and opacity only; nothing is laid out in a geometry callback):
+  - its **Characters row** — the shared ChoiceGlow and the roster's pulse, as an offered entry (UI-240); its tooltip
+    leads in bright gold with why: "Usable now: Fling Them into the Fray · Click its glowing icon" (a reaction: "Usable
+    now: The White Rider · Click the glowing portrait in the battle window", `SkillReactionPlaces`);
+  - the **Characters tab** while some row is lit (`legal-target`, the edge tabs' pulse, UI-380);
+  - its **map miniature** (the ability-owner glow, UI-374/UI-402) — or, for an Initial king without a miniature, the force
+    he leads — pulsing with the map's choices; its tooltip leads with "Usable now: … · Click its glowing icon in
+    Characters" (`MapCanvas.LightSkills`, `MapCharacterFigures.LightSkills`; a figure is matched by its id or any of its
+    versions', so Gandalf the White's miniature lights for his row);
+  - its **Fellowship portrait** (a companion in the Fellowship) — ChoiceGlow with the roster's pulse; a portrait whose
+    click makes another choice now keeps that choice's words, and a portrait lit only for a skill opens the companion's
+    window on a click (`FellowshipContextInteraction`);
+  - a **king's portrait** among the Sovereigns — lit as a decision lights it (UI-274); its click opens his character
+    window, where the icon uses the skill, also for an Initial king (`SovereignPanel`);
+  - its **window's header** — a gilt rim on a warm plate behind the plate art and title (`character-header-glow`), shown
+    while the window shows the version in play, breathing in the window's one pulse with the lit icons (opacity only).
+  The light goes out with the last usable skill; every other light and colour is unchanged.
+- **Before any die is chosen** nothing that needs a die is lit (UI-443; UI-441 had lit a skill one die could pay, and
+  the Characters tab with it): a released die puts out every tab it lit (UI-386), the Characters tab included — Brand's
+  Call to Arms with the Ruler die as its only payer (`RulerTokenMenuTests.EveryLitTabGlowsAlike`).
+
+Tests: EditMode `UsableSkillsTests` (a one-click skill with its die, a die that pays nothing, the one die before any die
+is chosen vs two different dice, any variant of Voice lighting Saruman once, Gothmog's Fling on its Reserve tokens, the
+window's icon lit exactly while the rule names Gothmog with the die and with the one die, nothing while another action
+is drafted or a command is sent, entries, another version's ability and the opponent's characters, a reaction and its
+withdrawal, a Guide's Hunt response without a source and a card's reaction), `CharacterRosterPanelTests` (the one-die
+icon glows); PlayMode `RulerTokenMenuTests.EveryLitTabGlowsAlike` (the tab after the die's release) and
+`UsableSkillLightNetworkTests` on real seeds — Gothmog's Fling Them into the Fray
+(`t34-gothmog-upgrade`), Saruman's Voice (`ability-voice-recruit-full`), Gimli's Dwarf of Erebor (`ability-gimli`),
+Théoden's Mustering of the Mark after his Ruler token (`ui67-ruler`), Gandalf the Grey's draw (`grey`) and the White
+Rider (`white-rider`): before a die, with the skill's die, with a die that pays none of its skills and with the die
+released (or before and after the reaction), the window's icon and header, the Characters row and its tooltip, the
+rolled-up Characters tab (lit exactly while the panel holds a light), the map figure (`GlowingTargetChecks`: strong,
+pulsing, uncovered on screen), the king's and the Fellowship portraits glow exactly while the icon does (for a reaction,
+while it is offered); screenshots `ui441-<case>-row|tab|map|window|fellowship.png` and, for Gothmog under Reduced
+motion at 1920×1080 at 125 %, `ui441-gothmog-row|window|map-1920-1.25.png`.
+
+Playtest (owner's checklist):
+- [ ] The owner's case — Testing catalog `t34-gothmog-upgrade` (Shadow): click the Muster die. Expect: Gothmog's row
+  under On board glows and pulses (its tooltip: "Usable now: Fling Them into the Fray · Click its glowing icon"), the
+  Characters tab glows while the panel is rolled up, his figure in Minas Morgul glows, and his window's header glows
+  above his two lit Fling icons. Click a Character die instead: all of them go out together.
+- [ ] Before a die — the same game, no die chosen (one Muster die only). Expect: Fling's icons and Gothmog glow already;
+  a click on an icon takes the Muster die and uses it.
+- [ ] A reaction — `white-rider` (Free Peoples, the battle starts). Expect: Gandalf's row and his figure glow, the row's
+  tooltip saying "Click the glowing portrait in the battle window"; after the White Rider (or Pass) they go out.
+- [ ] A king — `ui67-ruler`: click Théoden's Ruler token. Expect: his row and his portrait among the Sovereigns glow;
+  a click on the portrait opens his window with Mustering of the Mark lit.
+
+<a id="a-standard-corruption-attempt-draws-all-its-tiles-with-its-click--ui-442"></a>
+## A standard corruption attempt draws all its tiles with its click — UI-442 (2026-11-02)
+
+The owner: the Shadow picked an Eye, clicked the king's attempt, and the console then asked to draw ("Draw tiles"), though
+nothing can come between the attempt and its draws (T28: a tile for each Eye left in the Hunt Box, up to three; an Eye
+or special tile is revealed and replaced; a Kings tile ends the attempt). "dla sequential corruption zostawmy obecne
+zachowanie, w innym przypadku klikniecie na ikone rulera od razu pobiera oba tokeny" — with Sequential Corruption keep
+the current behaviour; otherwise the attempt's click draws the tiles at once.
+
+- **The server draws** (server `CorruptionRuntime`, EXPANSIONS K02/X02; Kings rulebook pp. 12–13, 17–18): the standard
+  `AttemptCorruption` (and The West Has Failed's choice of a king) draws every tile in its own command. Two or three
+  numeric tiles open the private choice (`CorruptionChoice`, `ChooseCorruptionTile` only); a single one is the only
+  possible choice, so the server places it (EXP-15 D8) and the attempt ends in that revision; a Kings tile ends it on the
+  king. History, the Shadow-only `OwnCorruptionTile` events and the Free Peoples' backs are unchanged.
+- **The client** shows no Draw tiles for a standard attempt: the attempt's click (the lit button beside the king, after
+  the chosen Eye, UI-398, UI-430) leads straight to the glowing tiles beside the king and the hint "Click a glowing tile
+  beside the king to attach it", or to the placed tile. The attempt's tooltip says what the click draws: "Draws a
+  Corruption tile and places it on Dáin", "Draws 2 Corruption tiles at once · Then click the one to place on Dáin", or in
+  Sequential corruption "Draws up to 2 Corruption tiles, one at a time · Keep a tile or draw the next"
+  (`SovereignAttempt.Tooltip`). The king's window names the choice's consequence ("Attach one drawn tile; the others are
+  revealed and return to the Hunt pool"). UI-399's `CorruptionDrawChain` is removed.
+- **What stays:** Sequential corruption's console Draw again and the latest tile's click (UI-274, UI-423), and its
+  `CorruptionDraw` step after an Eye tile was drawn. A standard draw step saved by an earlier build still shows Draw
+  tiles; its one click now draws the remaining tiles at once.
+
+Tests: EditMode `SovereignPanelTests` (the attempt's tooltip for one, two and Sequential draws; the choice without a draw,
+its hint and consequence; a saved draw's Draw tiles); PlayMode on the pinned backend `ExpansionCorruptionNetworkTests`
+(`ui09-corruption-hidden/visible`: one click, one revision, two own tiles at the choice; `kings-sh-corruption`: the
+tile placed with the click; the Sequential cases unchanged), `SovereignPanelNetworkTests.Replacement`
+(`ui59-replacement-kings`: the click reveals the Eye tile, the pool refills and the Kings tile ends the attempt),
+`KingsCards02NetworkTests` (`kings-west`, `kings-west-draw`: the event's two tiles at the choice,
+`KingsCardNetworkChecks.AtTileChoice`) and `OpponentExpansionPresentationNetworkTests.Corruption`.
+
+Playtest (owner's checklist):
+- [ ] Two tiles — `kings-corruption-three-tiles` (Shadow, four Eyes) or a Kings game with three Eyes in the Hunt Box:
+  click an Eye in the dice row, then the lit attempt beside a king. Expect: no Draw tiles; the drawn tiles stand at once
+  beside the king (three here, values for the Shadow, backs for the Free Peoples), and a click on one attaches it.
+- [ ] One tile — `kings-sh-corruption` (Shadow, two Eyes): the same clicks. Expect: the one tile is placed on the king
+  with the attempt; no choice and no Draw tiles.
+- [ ] Sequential — `kings-variant-sequential-corruption`: the same clicks. Expect: one tile beside the king and the
+  console's Draw again; the latest tile's click keeps it, as before.
+
+<a id="the-effects-panel-keeps-every-source-and-its-width--ui-424"></a>
+## The Effects panel keeps every source and its width — UI-424 (2026-11-02)
+
+Found by TEST-15's `layout-effects-sources` (the panel with 18 sources reached 592.6 points against the bottom row at
+474.4 at 1366×768 and 125 %; the same defect failed `EffectsLayoutTests.MultipleSources`), and reported by the owner with
+two screenshots of that scenario: "czesc nazw efektow nie miesci sie w swoich okienkach" — long names (Mithril Coat and
+Sting, The Power of Tom Bombadil, The Lore of the Elven Rings, The Palantír of Barad-dûr, Threats and Promises, Worn with
+Sorrow and Toil) wrapped out of their parchment tiles — and "przy wybraniu pewnych skilli layout effects sie rozjezdza":
+clicking a source (Captain of Despair) widened the whole panel to almost the screen's width (UI-94's reading width).
+
+- **The grid's arrangement is chosen before layout** (`EffectsGridArrangement`) from the number of sources and the fixed
+  height a docked panel has between the rail's top and the bottom row (518 points at 100 %, 364 at 125 %, the same at
+  1366×768 and 1920×1080). The narrowest grid whose rows fit wins: two columns before three before four, regular rows
+  (42-point tiles, type 12 points, 50-point pitch) before dense ones (38-point tiles, type 11 points, 45-point pitch);
+  every title stays a 32-point target and nothing scrolls or hides behind "more". Each column count has one panel width
+  (two 353, three 506, four 637 points), so a source's details, its × or a lit state never change the panel's width or
+  columns. The arrangement changes only when the source count changes or when the stage takes another size (after
+  layout); the panel's own geometry never changes it, which TEST-15's three-column attempt did ("Layout update failed to
+  stabilize"). The owner's 18 sources: two columns at 100 %, three at 125 %; 22 sources: three at 100 %, four at 125 %.
+- **Every name fits inside its tile** (`EffectTitleFit`): the parchment's frame is drawn finer (about 4 points) and a
+  title's text keeps 4 points inside the tile's top and bottom, so two lines stand inside the frame. The title's runs of
+  words are measured once per name, outside layout callbacks; it keeps the arrangement's size when its wrap at the tile's
+  fixed text width (less the card symbol, the owner label and the ×) fits that height, and otherwise takes the largest
+  smaller size that does, keeping two points of the height for the rounding of a large screen's pixels (not below 8
+  points): a long two-line name takes 11.5 points in a regular tile; with a × in three or four columns the longest names
+  of the catalogue take 9–10 points. A title measured before its style was resolved is measured again. An entry's border
+  is always 2 points (gilt when selected), so selecting a source moves no title.
+- **A source's details open on their own card beside the panel** — retired by
+  [UI-446](#a-card-effect-shows-its-active-part--ui-446) (`EffectDetailsPlace`, 288 points wide on the panel's
+  frame): the state ("Shadow · In play"), the scopes with their Locate buttons and expiry, and the card's text parchment
+  wrap inside the card, which stands level with the panel's top and moves up only as far as it must to end above the
+  bottom row. The grid neither moves nor widens; UI-94's reading width (up to 55 % of the board) and QUAL-19's compact
+  panel are gone. While a removal is paid the details stand inside the panel above the payment, as before. The card's
+  name and state each stand on one line; when the panel closes the card goes at once, so it covers nothing (a Hunt
+  window's response) while the panel fades out. The tiles' tooltips say "beside the list" instead of "below".
+- **The hover unroll (UI-221)** stays under its tile for a tile in the board's upper half; a tile in the lower half
+  unrolls its text upward from above the tile, so the text no longer runs under the bottom row.
+- **What stays:** the sources' order, their tooltips' actions, the click that shows a source (or discards a red tile,
+  UI-430, or uses a lit card, UI-272), the header with only its close button (UI-429).
+
+Tests: EditMode `EffectsGridArrangementTests` (the arrangement for 0–28 sources at both heights, the narrowest first,
+one width per column count, the details card's place) and `EffectTitleFitTests`; PlayMode `EffectsLayoutTests`
+(`MultipleSources…` and the new `ManySourcesAndTheLongestCardTextFitWithoutWideningThePanel`: 22 cards with the
+catalogue's longest names, four with ×, and Dead Men of Dunharrow's text, four layouts, screenshots `ui424-many-*`),
+`LayoutStressScenarioTests.TheFullestEffectsPanelFits` (the UI-424 warning is an assertion; titles inside their tiles,
+the panel and the longest text's details above the bottom row, the same width and columns with the details open;
+screenshots `ui424-effects-sources-*`, `ui424-effects-details-*`), `InGameDenseLayoutTests` (titles inside their tiles),
+`EffectsNetworkTests` (the card text in the details beside the panel). Shared checks: `EffectsPanelChecks`.
+
+Playtest (owner's checklist):
+- [ ] Names — `layout-effects-sources` (Free Peoples), Interface scale 100 % and then 125 %: open the Effects tab.
+  Expect: every source in view, two columns at 100 % and three at 125 %, every name (Mithril Coat and Sting, The Lore of
+  the Elven Rings with its ×, Worn with Sorrow and Toil) inside its parchment, the panel's bottom above the dice row.
+- [ ] Details — the same panel: click Captain of Despair, then The Gates are Closed. Expect: the details card opens to
+  the right of the panel with "Shadow · In play", the expiry and the card's text; the panel keeps its width and its
+  columns, no tile moves, and the card ends above the dice row.
+- [ ] Few sources — `fp-army-event` (Free Peoples): play A Power too Great with the Army die, open Effects and click it.
+  Expect: a two-column panel level with its tab, the details card beside it (moved up only if it would pass the dice
+  row); hovering the tile unrolls its text above the tile.
+- [ ] Payment — a game where the Shadow may remove A Power too Great: choose a die, open Effects and click its ×.
+  Expect: the details stand inside the panel above the cost and the payment, as before.
+
+<a id="one-release-line--exp-17"></a>
+## One release line: the expansions and the base-game UI — EXP-17 (2026-11-02)
+
+The owner: "let's merge everything into one branch, we want to make a release and work on everything at once —
+expansions and the UI changes". `release/0.10.0-rc.1` is `expansions` with `ability-chips` merged in, recorded only:
+every `ability-chips` change was already on `expansions`, equal or a superset (the base ports above, "Port to
+`ability-chips`"), so the tree is the expansions one. What only the base-game line held is carried: the Palantír of
+Orthanc's deck choice (`DeckChoiceTests`, `GlowingHintAuditTests`' `shadow-palantir-draw` case), Gandalf the Grey's drawn
+deck (`GlowingHintClassesTests`), a reserve figure lifted as its own icon in `BoardInteractionTests`' drag (UI-393), the
+Strike's payload and hint checks (`ObjectFirstChoicesTests`, `Shadow02NetworkTests`), and the base playtest items of
+UI-430, UI-434, UI-437 and UI-439. The "Port to `ability-chips`" and "base parts" notes record history; new work branches
+from the one line.
+
+<a id="nothing-lights-before-its-die--ui-443"></a>
+## Nothing lights before its die — UI-443 (2026-11-02)
+
+The owner, reversing UI-440's decision 7 and UI-441's one-die light: "without a chosen die we do not light the options
+available with only one die, which in theory makes choosing it unnecessary". Dice establish context: the player chooses
+the die (or token), and its uses light (UI-389).
+
+- **The rule** (`UsableSkills.Usable`): a character's ability lights — its icon in the character's window and on the
+  roster row, the character's row, map miniature, Fellowship and king's portraits, the window's header and the
+  Characters tab — and its icon's click uses it only while it is offered with the chosen die or token
+  (`ComponentAction.Enabled`). Before a die is chosen an icon with die-paid actions is read only, unlit, and its tooltip
+  ends "Choose an eligible die first"; its click does nothing. `ComponentActions.WithUniformDie` and
+  `UsableSkills.UniformDie` are gone.
+- **Unchanged:** a die's or token's click lights all its uses (UI-389); a Ruler token takes its only Ruler die (UI-380);
+  Vilya's socket answers with its one die (UI-268); a chosen character action takes its cost from one die or identical
+  dice (UI-239, `CharacterDraft.UniformDie`); reactions offered now need no die and still light their character (UI-441).
+
+Playtest (owner's checklist):
+- [ ] Gimli — seeded `ability-gimli` (the Free Peoples). Before any die: Gimli's row, miniature and the Characters tab are
+  dark; his window's Dwarf of Erebor icon is unlit and says "Choose an eligible die first". Click a die that can pay:
+  Gimli and the icon light; the icon's click moves the Dwarves. Release the die: everything goes dark.
+- [ ] Brand — Testing catalog `kings-brand-call-to-arms` (the Free Peoples). Click the Ruler die: Politics, Reserve and
+  Characters light. Click it again: all three go dark, the Characters tab too.
+- [ ] Théoden — `kings-ruler-token-theoden`. Before the token nothing of his lights; his Ruler token's click lights
+  Mustering of the Mark; a second click puts it out.
+
+Tests: EditMode `UsableSkillsTests.BeforeAnyDieIsChosenNoSkillIsUsableEvenWhenOneDieCouldPay`,
+`UsableSkillsTests.TheWindowsIconsLightExactlyWhileTheRuleNamesTheCharacter` (lit with the die, dark before it),
+`CharacterRosterPanelTests.AnAbilityWithOneEligibleDieWaitsForTheDie`,
+`ComponentActionTests.AnAbilityIsNotSelectedBeforeItsDieEvenWhenOneDieCouldPay`; PlayMode `UsableSkillLightNetworkTests`
+(on real seeds nothing is lit before a die or token and after its release) and `RulerTokenMenuTests.EveryLitTabGlowsAlike`
+(the Characters tab goes dark with the released Ruler die).
+
+<a id="a-carried-figure-stands-whole-above-the-hud--ui-444"></a>
+## A carried figure stands whole above the HUD — UI-444 (2026-11-02)
+
+The owner (layout audit item 8): fix the carried army that the map's edge cut in half while the map panned under it
+(UI-407's defect 4). While carried, a figure stands in a layer in front of the HUD and the windows and stays whole on
+the screen, shifting inward only as far as the edge requires; set down it is back on the map, clipped as before.
+Details and tests: [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-444)".
+
+Playtest (owner's checklist):
+- [ ] `fp-army-move` (the Free Peoples). Choose an army, carry it to each edge of the screen and hold it there: the map
+  pans, the army shows whole, a little inside the edge, above the top bar, the console and the rails; dropped on a lit
+  region it moves as its click would; Esc puts it back.
+
+<a id="the-full-expansions-roster-fits--ui-445"></a>
+## The full expansions roster fits — UI-445 (2026-11-02)
+
+The owner (layout audit item 2): fix the Characters panel that reached under the console at 1366 × 768 at 125 %. Since
+the expansions joined (EXP-14) a Kings roster — 13 characters on board, one not in play, five Sovereigns — was 409
+points tall in UI-408's compact form (four a line on a short viewport) with 374.6 points of room under the rail's top
+(`CharacterRosterLayoutTests`: the panel's bottom at 508.8 against 475.4).
+
+- **One more column** (`CharacterRosterPanel`, `roster-dense`): a roster still too tall in the compact form takes one
+  more 110-point row a line — the panel 572 points wide on a short viewport (five a line), 462 otherwise (four) — the
+  rows and their icons as in compact. The step follows UI-408's rule: taken when the panel reaches past the board area,
+  tried again from two a line only when the roster's size or the room changes, so the form never flips. The left
+  panels' 45 % cap does not apply to it.
+- **The window still stands beside it**: the window's slot (`CharacterWindowPlace.Widen`) takes the same width, so a
+  character's or ruler's window opens just right of the wider panel (UI-436).
+- **The Sovereigns label** is 18 points on a short viewport, as "On board" and "Not in play" are.
+- No scrolling, no smaller rows; nothing moves above the rail's top.
+
+Playtest (owner's checklist):
+- [ ] A Kings game with every character in play — 1366 × 768 at 125 % (Windowed, Interface size 125 %). Open Characters:
+  five characters a line, the Sovereigns whole above the console; click a row: its window opens beside the panel.
+  At 1920 × 1080 the panel keeps two a line.
+
+Tests: PlayMode `CharacterRosterLayoutTests` (both seats, 1366 and 1920, 100 % and 125 %: the panel and its window
+inside the board, apart, every button whole and uncovered; `ui66-roster-*`), `CharacterRosterPanelNetworkTests`,
+`CharacterWindowLayoutTests`, `LeftRailLayoutTests`, `LayoutStressScenarioTests`, `RulerTokenMenuTests` (two a line
+where they fit).
+
+<a id="a-battle-window-keeps-its-lit-regions-clear--ui-435"></a>
+## A battle window keeps its lit regions clear — UI-435 (2026-11-02)
+
+Found by UI-434's audit, fixed at the owner's request (layout audit item 9): with Scouts the battle window's middle place
+(UI-324) covered Helm's Deep — the region whose click withdraws into the siege — at 1920 × 1080 at 125 %, and the
+console hid what the window left; the map cannot pan its west edge past the screen, so neither a camera move nor the
+window's move alone cleared it.
+
+- **The rule** (`RegionalBattlePanel.KeepClear`, after the draft's lights are drawn, `MapDraftOverlay.Applied`, and on a
+  map size change): once per decision and map size, when a region the decision lights (`DraftOverlay.Targets` and
+  `AttackTargets`) has its anchor under the window or the HUD (`MapCanvas.Uncovered`: outside the screen or inside one
+  of the map's occlusions), the window keeps to the middle's top edge when the lit regions lie below the board's centre
+  (otherwise its bottom edge), still centred across the middle (`FloatingWindow.Flush`), and once it stands there the
+  view brings the lit regions into the free strip it leaves (`MapCanvas.Reveal`). While that decision lasts, a camera
+  move keeps the window at that edge instead of re-centring it.
+- **Unchanged:** a decision whose lit regions all show opens the window in the middle, as before; a window the player
+  dragged keeps its place (only the view moves); a new decision returns to the middle; nothing moves for a battle
+  without lit regions (UI-149's incoming battle neither opens nor pans).
+
+Playtest (owner's checklist):
+- [ ] Scouts — seeded `strategy-scouts` (the Free Peoples), Windowed 1920 × 1080 at 125 %. Expect: the battle window at
+  the top of the board's middle, Helm's Deep and Fords of Isen lit in the strip below it, above the console; Helm's
+  Deep's click withdraws into the siege. At 1366 × 768 the window opens in the middle as before.
+- [ ] In the same battle drag the window by its header anywhere: it stays where you put it (the next decision too).
+
+Tests: PlayMode `GlowingHintAuditTests.ScoutsBattleRegionAndRetreatAreLitOnScreen` (both layouts: the window open,
+Helm's Deep and Fords of Isen lit with exposed terrain; `ui434-scouts-*`), `BattleLayoutTests`,
+`BattleWindowNetworkTests`, `BoardRuleDeclineTests`, `Strategy01NetworkTests`, `FloatingWindowTests`.
+
+<a id="a-card-effect-shows-its-active-part--ui-446"></a>
+## A card effect shows its active part; no details beside the panel — UI-446 (2026-11-02)
+
+The owner: "if an effect comes from a card, we should show only the effect that is active; the other one need not show
+when we hover. The window that appears on the right after clicking an effect is to be removed." This supersedes UI-94's
+click that shows a source and UI-424's details card beside the panel.
+
+- **The hover text** (UI-221, `EffectUnroll`): a card shows its heading and only the part in effect — its Event text, or,
+  for a source whose every effect lasts a battle or a combat round, its Combat text (`EffectsPresentation.CombatPart`,
+  from the projected `Duration`). Every card effect the server projects today is an Event's (a table card, a lasting
+  event), so the Combat part no longer shows in the panel. An ability or effect still unrolls its descriptions.
+- **A click** opens nothing and selects nothing: it discards a red table card (UI-430), uses a card the decision uses
+  (UI-272), or — the board rule of UI-430 — prepares the removal the tile's × offers when the tile is lit for it.
+  Otherwise the tile is read only (`ReadOnlyControl`: no hover frame, no press, it keeps its plate and parchment) and its
+  tooltip names it ("Wizard's Staff · A card in effect").
+- **A removal being paid** keeps its details (state, scopes, expiry) inside the panel above the payment, as before; the
+  details never stand beside the panel (`EffectDetailsPlace` is gone).
+- `TableEffectsView.Inspect` opens the panel and unrolls the source's text as a hover does (`UnrolledSource`).
+
+Playtest (owner's checklist):
+- [ ] Testing catalog `layout-effects-sources`. Hover a card tile: only its Event text unrolls (no Combat part). Click a
+  plain tile: nothing opens on the right and the tile does not press. In a game with The Nazgûl Strike! the red tiles'
+  click still discards; with a removal offered, the lit tile's click starts the removal like its ×.
+
+Tests: EditMode `EffectsPresentationTests`, `LordsFinalCardsTests`; PlayMode `EffectsLayoutTests`, `EffectsNetworkTests`,
+`LayoutStressScenarioTests`, `ClickInspectionTests`, `CardPackNetworkTests`, `LordsFinalCardsNetworkTests`,
+`CorruptedEffectsMenuTests`, `WindowFamilyNetworkTests`, with the shared `EffectsPanelChecks`.
+
+<a id="a-characters-window-shows-its-portrait--ui-447"></a>
+## A character's window shows its portrait — UI-447 (2026-11-02)
+
+The owner, with a screenshot of Théoden's corrupted ruler window: "the character's window should also show its portrait
+or icon".
+
+- **A medallion at the head of the title bar** (`CharacterWindowPortrait`), before the name, in both window forms
+  (`CharacterInspector`, `SovereignInspector`, UI-436): a round 30-point gilt medallion holding the painted portrait of
+  the version the window shows (`PortraitArtwork`, the battle portraits; a version tab or another character changes
+  it), a ruler's of his state as the Sovereigns strip shows him (`SovereignPortrait.ArtOf`: awakened, corrupted), or the
+  figure's own art where no portrait exists (`FigureArtwork`). It takes no pointer, is written only when the version
+  changes, and the header and the window keep their size.
+
+Playtest (owner's checklist):
+- [ ] Open Characters, click Gimli: his portrait heads the window's title bar; click Gandalf the Grey and his White tab:
+  the medallion follows the version. In a Kings game click Théoden's portrait: his window shows his portrait (corrupted
+  once he is).
+
+Tests: EditMode `CharacterRosterPanelTests.TheCharacterWindowShowsThePortraitOfTheVersionItShows`; PlayMode
+`CharacterWindowLayoutTests`, `CharacterRosterLayoutTests`, `CharacterRosterPanelNetworkTests`, `SovereignPanelNetworkTests`,
+`SovereignSectionLayoutTests`, `RulerTokenMenuTests`.
+
+<a id="the-fellowships-declaration-from-its-own-row--ui-448"></a>
+## The Fellowship's declaration from its own row — UI-448 (2026-11-03)
+
+The owner's playtest of the declaration ("Declare position · Remain hidden", "Hollin · Choose a route", Undo step and
+Cancel, "Trace a route · Using all of the Progress moves at once.", Declare): besides Finish phase a Declare that selects
+the Fellowship and brings the camera to it; no Undo step in the panel (the console's is used); Cancel to the console as a
+general option at the bottom; Declare in one row with the inactive Finish phase; no "Remain hidden … Progress" lines; the
+Fellowship must not disappear from this view. This supersedes UI-236's "no panel button declares".
+
+- **Declare beside Finish phase** (`FellowshipControls`, `fellowship-declare`, in Finish phase's row): while the hidden
+  Fellowship may declare, its click starts the declaration (as the figure on the map does) and brings the camera to the
+  Fellowship (the panel's locate). While the route is drawn the row stays — Finish phase greyed, Declare lit once the
+  declaration can be sent (the tray's ✓ state, `DecisionTray.ConfirmChanged`) and its click sends it.
+- **The panel keeps the route's summary only** (`FellowshipChoices.Route`): no "Declare position · Remain hidden" /
+  "Reveal position · Become revealed" line, no Undo step, no Cancel; while declaring, the tray's own Declare and its hint
+  are hidden in the panel (the console shows the hint). The Fellowship's members stay in view while a position is declared
+  or revealed.
+- **The console takes Back and Cancel**: its ↶ undoes a step of any drawn Fellowship route (declared or revealed position,
+  separation), wherever the route is drawn; Cancel is the console's last option while such a route is drawn
+  (`RouteCancel`, `console-cancel-route`): it ends the declaration, or clears a mandatory route or the chosen companions.
+  UI-455 (owner, 2026-11-03) replaced that option by the console's small fixed Cancel
+  ([below](#the-consoles-fixed-cancel--ui-455)).
+
+Playtest (owner's checklist):
+- [ ] A Fellowship phase with the Fellowship hidden. Expect: Declare beside Finish phase; its click brings the camera to
+  the Fellowship and starts the route; the members stay in the panel; ↶ undoes a step, the console's Cancel ends the
+  declaration; Declare (lit) sends it.
+
+Tests: EditMode `WindowListsTests.ADrawnRouteLeavesUndoAndCancelToTheConsole`; PlayMode `FellowshipRoutesNetworkTests`
+(Declare in Finish phase's row, the camera at the Fellowship, Finish phase greyed), `FellowshipNetworkTests` (↶ and the
+console's Cancel), `FellowshipLayoutTests` (↶ during a reveal), `CharacterNetworkTests` (a forced separation's Cancel).
+
+<a id="a-characters-row-brings-the-camera-to-it--ui-449"></a>
+## A character's row brings the camera to it — UI-449 (2026-11-03)
+
+The owner: a click on a character in the Characters tab that is on the board moves the camera to it. A row's click now
+also focuses the map on the character's region (`PlacePresentation.CameraRegion`: its region on the board; the
+Fellowship's for a companion inside it, as this player sees it); a character off the board moves nothing, and an
+inspection opened any other way (a hover, a window's Show) never moves the camera.
+
+Tests: EditMode `CharacterRosterPanelTests.ARowsCameraRegionIsWhereItsCharacterStands`; PlayMode
+`CharacterRosterPanelNetworkTests` (Gimli's and Dáin's rows bring their regions into view).
+
+<a id="a-recruiting-ability-opens-the-reserve--ui-450"></a>
+## A recruiting ability opens the Reserve at once — UI-450 (2026-11-03)
+
+The owner, about Brand's Call to Arms (the window turned into "On the board", "Abilities", a flag and a back button; the
+flag opened the Reserve; Confirm sent three figures at once): the Reserve opens right after the skill's click, the
+character's window keeps its form with no new buttons, recruitment is instant once a region is chosen, no Undo step in
+the window (the bottom panel's), and the same for every analogous case (Dáin's Iron Guard).
+
+- **The Reserve opens at once** (`CharacterRecruitDraft.Ruler`): a ruler's recruiting ability (Call to Arms, Iron Guard,
+  Mustering of the Mark — from its icon or its Ruler token) no longer moves the decision into the character's window
+  (`CharacterRosterActions.OwnsDecision`), so the window keeps its form, and the Reserve opens by itself; the flag button
+  is gone (the Balrog's entry keeps it).
+- **Each figure with its click; the last one sends** (`ComponentActions.Immediate`): every figure placed stands on the map
+  at once as planned, and the click that places the last figure the ability needs sends the recruitment — no ✓. The
+  console's ↶ takes back a placed figure until then.
+- **Not per-figure commits.** The server takes the ability as one command with all its figures (the rules need the
+  ability's full count, KINGS; `SovereignRecruitPlan`), so a figure placed is a planned figure until the last one; a
+  server-side step per figure (with no undo once placed) would be a change of its own.
+
+Playtest (owner's checklist):
+- [ ] `kings-brand-call-to-arms` (the Free Peoples). Click Brand's Call to Arms: the Reserve opens, his window stays as
+  it was. Place the North figures one by one on the lit settlements: each stands at once; the last one sends without a
+  ✓. ↶ before the last takes one back. The same with `kings-dain-iron-guard`.
+
+Tests: PlayMode `RulerTokenMenuTests`, `CharacterRosterActionNetworkTests`, `ExpansionAbilityNetworkTests`,
+`ExpansionTokenNetworkTests`, `UsableSkillLightNetworkTests`.
+
+<a id="the-councils-homelands-with-one-click--ui-451"></a>
+## The Council's homelands with one click — UI-451 (2026-11-03)
+
+The owner: when assigning homelands at the start for the members we separate, a click on the homeland moves that
+companion there, and the possible regions are marked more clearly.
+
+- **Every homeland lights at once** (`CouncilDraft.OpenHomelands`, as a placement target, UI-452's strong fill), and the
+  view comes to them once (UI-452's reveal); a companion's homeland where he is placed takes the gold edge.
+- **A click on a lit homeland starts its companion there** (`CouncilDraft.Region`): the selected companion when it is
+  his; else the one companion whose homeland it is and who is not there yet (Fate's Gimli moves between his two). The
+  Shire, shared by Merry and Pippin while both may start there, waits with its gold edge for the portrait of the one to
+  start there (the console names them). A portrait's click still selects, and its second click keeps a placed companion
+  with the Fellowship (UI-347); a drag still places.
+- **Still one ✓**: the draft collects the companions and the ✓ sends them together — how many leave decides the Shadow's
+  Council tokens.
+
+Playtest (owner's checklist):
+- [ ] `lords-council-homelands`. Expect: every homeland lit strongly; click Erebor: Gimli starts there (gold edge); click
+  Woodland Realm: Legolas. In `lords-council-setup` with both hobbits as alternates, click the Shire, then Merry: he
+  starts there.
+
+Tests: PlayMode `CouncilHomelandPanelNetworkTests`, `CouncilHomelandFateTests`, `CouncilHomelandLayoutTests`,
+`CouncilHomelandRecoveryTests`, `ExpansionDecisionNetworkTests`.
+
+<a id="every-placement-region-is-lit-clearly--ui-452"></a>
+## Every placement region is lit clearly — UI-452 (2026-11-03)
+
+The owner: with Monsters Roused mark clearly on the map every region where the recruitment may be made, and check the
+analogous effects.
+
+- **A placement target** (`MapDraftOverlay.PlacementTargets`, `MapRegionEmphasis.PlacementTarget`: green at .56 instead of
+  a move's .34, the targets' glowing edge): a Muster die's recruitment, a card's recruitment plan (Monsters Roused,
+  Misty Mountains, Orcs Multiplying, the Musterings, Kings and Fate recruitments), Monsters Roused's halves, a ruler's
+  recruitment and the Council's homelands. A move's targets keep their lighter fill.
+- **The view comes to them once per decision** (`TurnInteraction.RevealPlacements`): a card's, a ruler's or the Council's
+  placement brings every region it may take into the free map (none under a panel or off the view); a die's own Muster
+  in the player's action moves nothing, nor does its next step (the second recruitment point, `DecisionKind.ActionSequence`;
+  fixed with UI-454, `T22BoardNetworkTests.TwoNationsRecruitAtDifferentSettlementsWithOneRemainingRegular`).
+- **Left as they are** (to decide): a figure whose destination is fixed by its card (`ReserveFigures`: Glorfindel,
+  Thranduil's Archers, Brand's Men…, Gothmog's Fling, the Black Captain) lights its Reserve token, not a region — its
+  region's click would do nothing; a ruler-token Muster lights its regions once its figure is chosen.
+
+Tests: EditMode `MapTests.APlacementTargetIsLitMoreStronglyThanAMovesTarget`; PlayMode `GlowingHintAuditTests` (Monsters
+Roused's halves, the deck choices), `MusterNetworkTests`, `FateCardsNetworkTests`.
+
+<a id="placement-targets-pulse--ui-453"></a>
+## Placement targets pulse — UI-453 (2026-11-03)
+
+The owner: "when choosing regions for Monsters Roused the regions are green but do not stand out enough; they should
+pulse". Over UI-452's stronger fill, every placement target (a recruitment, Monsters Roused's halves and plan, a ruler's
+recruitment, the Council's homelands) breathes: one retained layer above the region fills (`MapPlacementPulse`) paints
+them a bright green whose opacity fades fully in and out in the targets' 750 ms rhythm, beside their pulsing edge
+(UI-224). It is a class toggle with an opacity transition under .motion-enabled — Reduced motion keeps the regions lit
+and still — and the layer repaints only when the set changes, never while the camera moves. A move's targets keep their
+still fill. *Since UI-468 every target pulses this way.*
+
+Playtest (owner's checklist):
+- [ ] `fate-card-monsters-roused`. Expect: both halves' regions green and breathing, then the plan's regions likewise;
+  with Skip animations on they stay brightly lit and still.
+
+Tests: EditMode `MapTests.APlacementTargetIsLitMoreStronglyThanAMovesTarget` (a placement target pulses, a move's does
+not, no repaint for the same set); PlayMode `GlowingHintAuditTests` (Monsters Roused), `MusterNetworkTests`,
+`FateCardsNetworkTests`, `MapContourRenderingTests`, `CouncilHomelandPanelNetworkTests`.
+
+<a id="a-recruit-flies-from-the-reserve-or-is-carried-there--ui-454"></a>
+## A recruit flies from the Reserve, or is carried there — UI-454 (2026-11-03)
+
+The owner (translated): "When recruiting units we want animation. If the user just picks with a click, the unit should
+glide smoothly from its Reserve slot to its proper place on the board (like drawn cards), and there should also be the
+option to drag the unit on exactly the same principle as moving it on the map." This supersedes UI-421's decision 2 ("the
+reserve keeps its gestures", UI-393) for the Reserve's figures.
+
+- **A click flies it.** A recruit placed by clicks (its Reserve figure and a lit settlement, a settlement and then the
+  figure, or a figure with one legal settlement) flies as the miniature it will be: it rises out of its slot's picture
+  (the Reserve tab while the panel is closed), grows to the figures' scale, arcs and lands with UI-404's profile on the
+  place it will stand on, above the HUD, following the camera. A Muster recruit is sent at once and lands on its force's
+  place, which shows faintly until it lands, as for any flight; no second arrival in place. A planned recruit (a card's or
+  an ability's plan) lands on its faint planned figure, which shows it once it has landed. Taking it back, a refused
+  step, a disconnect or a view without it ends the flight.
+- **A drag carries it.** A press on a Reserve figure that crosses the drag threshold takes it up and arms it without
+  placing it, so exactly its settlements light. Over the Reserve and the HUD it is its picture; over the map it is its
+  miniature, held up like a carried army, the settlement under it lit as a carried figure's target, the landing mark
+  with "Recruit Rohan Elite" on its place, and the map pans at its edge. A drop on a lit settlement is that settlement's
+  click (the same step, the same payload) and the recruit flies on from where it was dropped; any other release, or Esc,
+  puts the draft back and the figure glides back to its slot. A figure only a click chooses (a Kings card's branch, The
+  Black Captain Commands, Gothmog's ability, a card's figure that already has its region) keeps UI-393's drag.
+- **Skip animations** (Reduced motion): nothing flies; the recruit stands on its place at once, as before.
+
+Details and tests: [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-454)".
+
+Playtest (owner's checklist):
+- [ ] `fp-muster-recruit` (the Free Peoples). Choose the Muster die, open the Reserve, click a Regular, then a lit
+  settlement. Expect: the figure rises out of its slot, flies in an arc above the panel and lands on the settlement's
+  army, which shows faintly until it lands; nothing appears a second time. Then carry the next figure: over the Reserve
+  it is its picture, over the map its miniature with the green ring and "Recruit …" under it; dropped on a lit
+  settlement it recruits there and settles from where it was dropped; dropped elsewhere or with Esc it glides back.
+- [ ] `kings-brand-call-to-arms`. Use Brand's Call to Arms; click a lit settlement, then a figure. Expect: it flies to the
+  faint planned figure, which appears as it lands; carry the next one to another lit settlement the same way; its ×
+  takes it back.
+- [ ] `fate-card-monsters-roused`. Choose a half, then recruit by clicks and by carrying. Expect: each recruit flies or is
+  carried to its region and its faint planned figure appears as it lands.
+- [ ] Any of these with Skip animations on. Expect: no flight; the figure stands on its place (or its faint planned
+  figure) at once.
+
+<a id="the-consoles-fixed-cancel--ui-455"></a>
+## The console's fixed Cancel — UI-455 (2026-11-03)
+
+The owner's playtest of `fp-character-separate-companions` (translated): choosing the character to separate showed a long,
+narrow Cancel in the console; instead the console needs a small, default, always present Cancel among its other buttons,
+greyed when there is nothing to cancel. This replaces UI-448's Cancel option in the console's line.
+
+- **A fifth console action** (`ConsoleActions.Cancel`, `console-cancel`): a small labelled button on its own line under
+  ↶ ✓ ⇥ ⊠, always shown, greyed (with `Cancel · Nothing chosen to cancel`) while there is nothing to cancel. The bottom
+  bar keeps its height and every control its place in every state.
+- **One meaning everywhere** (`DraftCancel`): Cancel drops everything chosen since the last sent step — die or token,
+  action, figures, regions, route — where ↶ undoes one step. A drawn route keeps UI-298's rule (a declaration ends; a
+  reveal or a forced separation starts again), and every forced step starts again (`MandatoryDraft`), so Cancel is enabled
+  only while its click would change the draft. It sends nothing.
+- The console's line keeps its hint while a route is drawn. Details: [TURN_CONSOLE_UX](TURN_CONSOLE_UX.md#ui-455).
+
+Screenshots: `ui455-before-separation.png` (the long Cancel), `ui455-after-separation.png`, `ui455-after-cancelled.png`.
+
+Tests: EditMode `DraftCancelTests`, `WindowListsTests`; PlayMode `ConsoleCancelNetworkTests`, `TurnConsoleLayoutTests`,
+`FellowshipNetworkTests`, `CharacterNetworkTests`.
+
+Playtest (owner's checklist):
+- [ ] `fp-character-separate-companions`. Before choosing anything the small Cancel under the four console buttons is
+  greyed. Click the Character die: Cancel lights. Click Legolas's glowing portrait in the Fellowship panel. Expect: no long
+  Cancel in the console's line, its hint reads "Legolas · Click a highlighted region to move there.", and the small Cancel
+  says "Clear the chosen companions and their route". Click it: the companion and the die are dropped, Cancel greys again.
+- [ ] Any Fellowship phase with the Fellowship hidden. Declare, draw a step, then Cancel. Expect: the declaration ends, as
+  UI-448's option did; ↶ still undoes one step.
+- [ ] Any army move with an Army die: choose an army and a region, then Cancel. Expect: the die and the planned move are
+  dropped at once.
+
+<a id="far-sighted-moves-only-companions-outside--ui-456"></a>
+## Far-sighted moves only companions outside the Fellowship; every instruction in the console — UI-456 (2026-11-03)
+
+The owner's playtest of `kings-far-sighted` (translated): "Move companions" behaves like "Separate companions" when no
+companion is outside the Fellowship — then it must be greyed. Remove "Separated companions cannot rejoin", "Choose a
+group" and "Select figures…" wherever they show in panels and windows: every instruction belongs in the console, correct
+for each step.
+
+- **Root cause.** The server offers Move companions because Thranduil himself, the Awakened king who uses Far-sighted,
+  counts as a Companion outside the Fellowship (KINGS pp. 8–13). Its click started a move whose only lit objects were the
+  Fellowship's portraits, whose click separates — so it looked like Separate companions.
+- **Greyed while no companion but Thranduil is outside** (`FarSightedMoves`): Far-sighted's Move companions variant is
+  greyed in its slot (the Woodland Realm's window, Thranduil's row and window), its tooltip says "No companion is outside
+  the Fellowship" (`ComponentAction.Reason`) and its click starts nothing. Move the Fellowship and Separate companions stay.
+  Thranduil's own move remains his figure's plain move on the map. Open question for the owner: Far-sighted moving
+  Thranduil himself one region further is no longer offered from the picture. Decided by
+  [UI-465](#thranduils-figure-moves-with-far-sighted--ui-465) (owner, 2026-11-03): "both" — the variant stays greyed, its
+  reason now reads "No companion is outside the Fellowship · Thranduil moves from his figure", and with the Ruler die his
+  figure on the map moves him with Far-sighted.
+- **No instruction in the Fellowship panel** (`FellowshipChoices`, `DecisionTray`): no "Separated companions cannot rejoin"
+  line (the fact stays in the ✓'s summary); the route's summary states where the move stands — its origin, then its end and
+  steps — without "Choose a group", "Choose a destination" or "Choose a route"; the tray's status line is hidden while a
+  Fellowship move is drawn in the panel.
+- **The console's hint for each step** (`FellowshipDraft.Hint`, now the console's hint for every move to a destination):
+  a separation before its companions are chosen — "Click the glowing portrait of each companion to separate in the
+  Fellowship panel."; a companions' move — "Click a glowing companion on the map to choose who moves."; another figures'
+  move — "Click a glowing figure on the map to choose who moves."; once the figures are chosen — "‹names› · Click a
+  highlighted region to move there." (UI-375).
+
+Screenshots: `ui456-before-die.png`, `ui456-before-move-companions.png` (the lit portraits after Move companions),
+`ui456-after-far-sighted.png`.
+
+Tests: EditMode `ComponentActionTests.FarSightedMoveCompanionsWaitsForACompanionOutsideTheFellowship`,
+`WindowListsTests.TheFellowshipTrayListsNoStayStayAllOrTravelMode`; PlayMode
+`ConsoleCancelNetworkTests.FarSightedMovesNoCompanionWhileNoneIsOutsideTheFellowship` (`kings-far-sighted`),
+`ConsoleCancelNetworkTests.ASeparationIsCancelledFromTheConsolesFixedCancel`, `FellowshipGuideNetworkTests`,
+`FellowshipRoutesNetworkTests`.
+
+Playtest (owner's checklist):
+- [ ] `kings-far-sighted`. Click the Ruler die, open the Woodland Realm. Expect: Thranduil's Move companions picture is
+  greyed and says "No companion is outside the Fellowship" (since UI-465 followed by "· Thranduil moves from his figure");
+  Move the Fellowship and Separate companions are lit; the greyed picture's click does nothing.
+- [ ] `fp-character-move-companions` with a Character die (Legolas and Gimli outside). Expect: Move companions works as
+  before; the console says "Click a glowing companion on the map to choose who moves.", then names the chosen ones.
+- [ ] `fp-character-separate-companions`. Choose the Character die, then a companion's portrait. Expect: the Fellowship
+  panel shows the portraits and "Rivendell" only — no "Separated companions cannot rejoin", no "Choose …", no "Select
+  figures…"; every instruction is in the console.
+
+<a id="a-version-not-in-play-never-lights--ui-457"></a>
+## A version not in play never lights its Characters row — UI-457 (2026-11-03)
+
+The owner (translated): when a card is drawn whose mechanic concerns Gandalf as the Guide, the Characters tab and row of a
+Gandalf version not yet on the board must not light up; check similar cases.
+
+- **Root cause.** UI-441 lights a character wherever it is drawn while one of its skills is usable now — here Gandalf the
+  Grey's Guide draw after an Event card. A companion in the Fellowship with a next version has its Characters row show that
+  version (Gandalf the White, UI-438), so the row and the Characters tab lit for a version not on the board.
+- **The rule** (`CharacterRosterContext.ShowsVersionInPlay`): a Characters row lights for a usable skill, and for a
+  figure's action, only while it shows the version in play; the Characters tab follows its rows. An entry still lights the
+  row of the version it brings in (UI-240, UI-438). The skill keeps lighting the version in play where it is drawn:
+  Gandalf the Grey's Fellowship portrait, a figure on the map, a king's portrait.
+- **Similar cases** covered by the same rule: Strider in the Fellowship (his row shows Aragorn), any companion with an
+  alternate version, a reaction whose source is a version not in play.
+
+Tests: EditMode `CharacterRosterPanelTests.ARowLightsForASkillOnlyWhileItShowsTheVersionInPlay`, `UsableSkillsTests`.
+
+Playtest (owner's checklist):
+- [ ] Test menu → Free Peoples cards → Book of Mazarbul (event), Gandalf the Grey the Guide. Play it with the Event die.
+  Expect: Gandalf's Fellowship portrait glows for his draw; the Characters tab and Gandalf the White's row do not.
+- [ ] Gandalf the White in play with a skill usable now. Expect: his row and the tab light as before.
+
+<a id="the-hit-buttons-stand-on-their-users-side--ui-458"></a>
+## The hit buttons stand on their user's side — UI-458 (2026-11-03)
+
+The owner's playtest of `lords-card-orderly-withdrawal` (translated): the clickable "−1" must show on the side of the
+faction that uses it, in the battle window. UI-246 and UI-347 had put it on the opponent's hits.
+
+- **The rule** (`BattleDiceStrip.HitCancels`): the hit buttons a card adds — Orderly Withdrawal's −1 and Heroic Death's
+  −1, −2… (one mechanism, so both follow the owner's rule) — stand on the roll heading of the deciding player's own
+  column; the opposite column keeps their unseen room, so both rows stay level (UI-437). A side that cancels hits without
+  a roll of its own shows them in its reserved roll row.
+
+Screenshots: `ui458-before-orderly-withdrawal-1920-1.00.png`, `ui458-orderly-withdrawal-{1366,1920}-{1.00,1.25}.png`.
+
+Tests: EditMode `BattleObjectChoicesTests` (Heroic Death, Orderly Withdrawal); PlayMode `LordsBattleNetworkTests`,
+`BattleLayoutTests.WhatAnAbilityAddsToOneSideKeepsBothSidesRowsLevel`.
+
+Playtest (owner's checklist):
+- [ ] `lords-card-orderly-withdrawal` (the Free Peoples). Expect: the glowing, pulsing −1 stands in the Free Peoples'
+  (defender's) column, on their Combat roll's heading; its click cancels a hit and withdraws; Pass keeps the hit.
+- [ ] A battle where the Free Peoples play Heroic Death. Expect: the −1/−2 buttons stand in the Free Peoples' column.
+
+<a id="a-characters-row-closes-its-window--ui-460"></a>
+## A character's row closes its own window — UI-460 (2026-11-03)
+
+The owner: in the Characters tab, while one character's window is open, a second click on that character's row closes the
+window. A row's click now toggles the pinned window of its character (`CharacterRosterPanel.ShowsWindowOf`); a click on
+another row still switches to that character, an entry row still enters, and the Characters panel stays open.
+
+Screenshots: `ui460-window-open.png`, `ui460-window-closed.png`.
+
+Tests: PlayMode `CharacterRosterPanelNetworkTests.ClickAndKeyboardInspectionPreserveTheDieWhileHoverAndPanStaySilent`.
+
+Playtest (owner's checklist):
+- [ ] Any game: open Characters, click Gimli's row (his window opens), click the row again. Expect: the window closes and
+  the Characters panel stays; a third click opens it again.
+
+<a id="an-events-losses-window-fits-its-content--ui-464"></a>
+## An event's losses window fits its content — UI-464 (2026-11-03)
+
+The owner's playtest of `kings-event-return-to-valinor` (translated): the window in which the Free Peoples eliminate units
+is too big, with a lot of empty space; it must fit its content, and so must the same window for other events' losses.
+
+- **Root cause.** Event losses (UI-251) reuse the battle window, whose loss planning is 820 pt wide for two columns.
+- **The rule** (`Battle.uss`, `.event-loss-panel`): an event's losses window is as wide as its one column needs — 460 pt
+  (at most 95 % of the screen) for the region's heading and hits, a row of figures and Apply losses, more figures wrapping
+  onto the next row — for every event's losses (Return to Valinor, Madness and Horror, Shadow Spells…); battles keep
+  their width. A definite width, not an auto one: an auto width measured the wrapping footer on one line and left Apply
+  losses below the frame.
+
+Screenshots: `ui464-before-valinor-{1366,1920}-1.00.png`, `ui464-after-valinor-{1366,1920}-1.00.png`,
+`kings03-valinor-loss-*.png`.
+
+Tests: PlayMode `KingsCards03NetworkTests` (Return to Valinor's losses at 1366 and 1920: narrower than 700 pt, its figures,
+hit budget and Apply losses inside the frame, no scroll).
+
+Playtest (owner's checklist):
+- [ ] `kings-event-return-to-valinor` (the Shadow plays it; then the Free Peoples). Expect: the Lórien losses window is
+  about as wide as its heading and figures, with no wide empty area; Apply losses works as before.
+- [ ] `lords-card-madness-and-horror-event` (or any other event with losses). Expect: the same fitted window.
+
+<a id="ui-461"></a>
+## Will of the West is itself until the console turns it — UI-461 (2026-11-03)
+
+The owner's playtest of `lords-fp-balrog-deactivate` (translated): "Will of the West can turn into another die but can also
+be used by itself, e.g. for Gandalf's skill. Now we don't choose which die WotW turns into: all possible options are lit
+and the die is chosen from what we do. That's a problem because there are different possibilities, e.g. an army move with
+a leader can be done with more than one die. We need the previous small menu at the bottom (console) that let us choose the
+new face WotW turns into, while the additional effects coming directly from WotW (like deactivating the Balrog) light on
+the table; if the player picks one of them the die is spent and the player needn't choose anything." It replaces UI-28's
+"all uses at once" for Will of the West only; Army/Muster keeps it.
+
+- **As itself** (`WillOfTheWestUses`, presentation only — the server lists the dice of every use and validates every
+  payment): a chosen Will die lights Gandalf the White's and Aragorn's entry, the Balrog's deactivation (LORDS pp. 23–25:
+  a Will of the West result, or a Character result while Gandalf the Grey is in his region; the server pays Will of the
+  West as itself), the removals of Denethor's Folly, The King's Welcome, the Gates, the Palantír cards and the Lore without
+  a Ring, and what any die pays (a political ability, a Council messenger, Narya, a region's protection). One click on such
+  an object spends the die; the console's hint says so.
+- **The face menu** (`ConsoleFaceMenu`, `WillFaceChoices`): four fixed medallions — Character, Army, Muster, Event — at
+  the start of the console's line, beside the hint (where the line is too narrow for both, as with Lords at 1366 × 768 and
+  125 %, in the strip just above the console, as TEST-15's options); a result with no use now is disabled, not hidden. A click turns the die
+  into that result: the board lights exactly what such a die does (UI-389) and the as-itself uses go dark. A second click
+  on the chosen result, or ↶, makes it Will of the West itself again; a second click on the die releases it. Details:
+  [TURN_CONSOLE_UX](TURN_CONSOLE_UX.md#ui-461).
+- **The cost the server gets**: the chosen result is a local part of the draft (`TurnDraft.WillFace`, saved with it, never
+  sent); the command carries it as its cost — an army move's `MovementCost` (Army: up to two moves; Character: one move of
+  a led army), a card's `CardCost`, a draw, a recruitment or a political step. A started action names its result, so a
+  restored draft needs no menu (`ActionDieContext.BindCost`). No contract or server change.
+
+Screenshots: `ui461-as-itself-{1366,1920}-{1.00,1.25}.png` (the menu and the lit Balrog), `ui461-will-character.png`,
+`ui461-will-army.png`, `ui136-will-options.png`.
+
+Tests: EditMode `WillFaceTests`, `DieOptionsTests`, `ContextInteractionTests`, `CardActionTests`, `FellowshipDraftTests`,
+`TravelActionTests`, `PoliticalActionTests`; PlayMode `WillOfTheWestFaceNetworkTests` (`lords-fp-balrog-deactivate`:
+deactivation with one click, a Character and an Army march, Back, the menu's layout in four sizes),
+`MultiUseDiceNetworkTests`, `BoardInteractionTests`, `T22BoardNetworkTests`, `FellowshipPanelNetworkTests`,
+`ExpansionAbilityNetworkTests`.
+
+Playtest (owner's checklist):
+- [ ] `lords-fp-balrog-deactivate` (Free Peoples). Click the Will of the West die. Expect: four medallions at the start of
+  the console's line, none pressed; no army glows; the Balrog's figure in Dimrill Dale glows with "Click to deactivate the
+  Balrog". Click it: the die is spent and the Balrog is eliminated, with no menu choice.
+- [ ] Same scenario, a fresh start: click the Will die, then Character in the menu. Expect: Character stays pressed;
+  Gandalf, the Fellowship and led armies light; the Balrog's figure goes dark. Click Character again (or ↶): the die is
+  Will of the West itself again.
+- [ ] Any base-game action phase with a Will of the West die and an army with a leader (e.g. Minas Tirith): choose the
+  die, then Army, click the army and a region — the move leaves one more army move (Finish ends it); start again with
+  Character instead — one move of the led army spends the die.
+
+<a id="ui-459"></a>
+## The Balrog's force marks who goes — UI-459 (2026-11-03)
+
+The owner's playtest of `lords-sh-use-balrog-active` (translated): "Moving the Balrog alone or with the army should not be
+chosen by clicking the skill icon in different versions; when we click the units a window with them opens where we mark
+who goes and who doesn't, then the move is done as always, by click or drag."
+
+- **The die is its ability** (`ActionDieContext.Implied`): when every movement cost the server offers a die names one
+  ability — the Balrog die's Use Balrog — choosing the die binds it, so his force lights on the map with no icon first.
+  Balrog Activation's move, attack and move-alone variants are gone from the Characters window and the region panel
+  (`AbilityVariants`, `ComponentActions`); its one slot keeps the activation (level 0) and the Free Peoples'
+  deactivation. Great Sorcery and the Mouth of Sauron keep their icons.
+- **One selection** (`BalrogSelection`): a click on his army marks every figure that can move (UI-127) and opens his
+  region's panel, where a click leaves a figure behind or takes it along. With only the Balrog marked he moves alone (the
+  server's travel of the Balrog, `LordsArmyCosts.ValidTravel`) and his route's regions light; with soldiers marked too he
+  moves or attacks with them (an army move whose Character cost includes him, `ValidArmy`); soldiers without him have no
+  target; the Nazgûl never travels with him (no army unit, no target). The move is then made as always: a click on a
+  lit region, or the Balrog's miniature carried there (UI-405). Server unchanged.
+- The console's hint: "Click the Balrog’s army to select all of it · mark who goes in its panel; the Balrog alone moves by
+  himself".
+
+Screenshots: `ui459-army-marked.png`, `ui459-alone-marked.png`.
+
+Tests: EditMode `BalrogSelectionTests`, `ComponentActionTests`; PlayMode `BalrogMoveNetworkTests`
+(`lords-sh-use-balrog-active`: alone by the panel and a click, alone carried, the whole army's attack and the army without
+him), `ExpansionCostNetworkTests`, `CharacterRosterActionNetworkTests`.
+
+Playtest (owner's checklist):
+- [ ] `lords-sh-use-balrog-active` (Shadow). Click the Balrog die. Expect: no Balrog icon lights in the Characters tab or
+  the region panel; the Moria army glows. Click it: the panel lists the Balrog and his Orcs, all marked. Click each Orc to
+  leave it behind: the Balrog alone stays marked and his reachable regions light; click one — he moves alone, the Orcs stay.
+- [ ] Same scenario, a fresh start: click the die, then carry the Balrog's miniature to a lit region. Expect: he moves
+  alone with that drop.
+- [ ] Same scenario, a fresh start: click the die and the Moria army, then Dimrill Dale. Expect: the whole force attacks
+  the Elves. Unmarking the Balrog first darkens Dimrill Dale: his soldiers move only with him.
+
+<a id="ui-462"></a>
+## Sméagol flies into the Fellowship — UI-462 (2026-11-03)
+
+The owner (translated): "we need a graphical animation presenting Sméagol joining the Fellowship."
+
+- **The join.** Sméagol's Hunt tile brings him into the Fellowship as its Guide (LORDS pp. 21-22); the server records the
+  drawn tile, then the Guide change, in the shared Hunt report. In the Hunt's presentation a Guide change whose Guide is
+  no Companion of the staged roster yet is a join (`FellowshipJoin`): the Fellowship panel opens, the drawn tile glows, a
+  portrait plate with his artwork rises out of the tile and flies, eased and shrinking, into his new place at the end of
+  the roster (`DrawFlight` with a dress hook), which stands empty until it lands; then his portrait shows, takes the
+  Guide's badge from the previous Guide and glows (`StagedBoard.Join`, `StagedBoard.Guide`). A Guide already in the
+  roster keeps UI-310's badge step; Gollum, who has no portrait, never joins.
+- **Both players.** A Hunt is a shared resolution (`PresentationSelection`), so the Free Peoples whose move drew the tile
+  see the flight as the Shadow does; their roster holds him as their own Companion, the Shadow's by his identity.
+- **Skip animations** (Reduced motion): no flight; once the panel has settled he stands in the roster with the badge and
+  the mark at once. Skip or a rebase ends the flight: his portrait shows and the release draws the latest roster.
+- Only translate, scale and opacity move, above the HUD, never taking the pointer. No server or contract change.
+
+Screenshots: `ui462-join-flight.png`, `ui462-join-landed.png` (the presented board), `ui462-network-flight.png`,
+`ui462-network-landed.png` (`lords-smeagol-joins`, the Shadow's board).
+
+Tests: PlayMode `OpponentHuntPresentationTests` (`SmeagolsPortraitFliesFromHisTileIntoTheRosterAndTakesTheBadge`,
+`TheFreePeoplesWhoseMoveDrewHisTileSeeHimJoinToo`, `UnderSkipAnimationsSmeagolStandsInTheRosterWithTheBadgeAtOnce`;
+`ANewGuideTakesTheBadgeOnItsPortrait` unchanged), `SmeagolJoinNetworkTests` (`lords-smeagol-joins`: both boards fly him
+in and end with him guiding), `OpponentResourcePresentationTests` and `OpponentExpansionPresentationTests` (the other
+`DrawFlight` beats).
+
+Playtest (owner's checklist):
+- [ ] `lords-smeagol-joins` (Free Peoples). Click the Character die and move the Fellowship. Expect: the Hunt window rolls
+  and turns up Sméagol's tile; the Fellowship panel opens, the tile glows and his portrait flies out of it into a new,
+  empty place at the end of the roster; there it shows with the Guide badge and glows, and Strider loses the badge.
+- [ ] Same scenario watched from the Shadow (switch side in the test menu, or a second client). Expect: the same flight
+  on the Shadow's board.
+- [ ] Same scenario with Skip animations on. Expect: no flight; once the panel opens Sméagol stands in the roster with the
+  Guide badge, lit.
+- [ ] Same scenario, Skip (or Esc) during the flight. Expect: the flight ends at once and Sméagol stands in the roster as
+  the Guide.
+
+<a id="ui-463"></a>
+## A played card goes to the Effects tab — UI-463 (2026-11-03)
+
+The owner (translated): "let's add an animation when playing a card makes it go to Effects."
+
+- **The flight.** The opponent's table card already shrinks into the Effects tab, which glows (UI-316); the player's own
+  play is never presented (`PresentationSelection`), so the card only vanished from the hand. Now `PlayedCardFlight`, on
+  UI-326's mark-and-settle pattern, marks the hand card where it stands when its play is sent (`TurnInteraction` →
+  `BoardScreen.MarkPlayedCard`: the card the command names, its unrolled face or its slot) and settles with the view in
+  which it has left the hand and a new source of the player's own with its id stands among the effects
+  (`EffectsPresentation.Sources`: a table card, or an Event's lasting effect). Its parchment stand-in with the card's
+  title (UI-324) appears at that place and shrinks, eased as a presented card (`CardFlight`, 0.6 s), into the Effects
+  tab, or into its tile while the panel is open; the tab then glows for 0.8 s.
+- **Only a card that goes to Effects.** A card still in the hand at a newer revision is forgotten (a refused play); a card
+  that left for anything else (an Event that does not stay, a combat card, a discard) is forgotten once its resolution no
+  longer leads the effect trail; a quiet view (a reconnect, the first view) plays nothing.
+- **Skip animations** (Reduced motion): no flight; the tab glows only.
+- Only translate, scale and opacity move (the stand-in's place and size are set once), above the HUD, never taking the
+  pointer; nothing waits for it. No server or contract change.
+
+Screenshots: `ui463-flight.png`, `ui463-landed.png` (`PlayedCardFlightTests`), `ui463-network-flight.png`,
+`ui463-network-landed.png` (`lords-card-we-wont-go-back-event`, the Shadow's board).
+
+Tests: PlayMode `PlayedCardFlightTests` (the flight toward the tab, shrinking, the glow and its end; a kept, resolved,
+opponent's or quiet card plays nothing; Skip animations' glow only), `PlayedCardFlightNetworkTests`
+(`lords-card-we-wont-go-back-event`: the Character die, one click on the card, the flight and the Shadow's table),
+`CardDissolveTests`, `OpponentCardPresentationTests`.
+
+Playtest (owner's checklist):
+- [ ] `lords-card-we-wont-go-back-event` (Shadow). Click the Character die, open the hand and click We Won't Go Back.
+  Expect: the card leaves its place in the hand as a small parchment card with its title, which shrinks and glides into
+  the Effects tab on the left; the tab then glows and counts one more source.
+- [ ] Same scenario with the Effects panel pinned open. Expect: the card glides into its new tile in the panel and the tab
+  glows.
+- [ ] Same scenario with Skip animations on. Expect: no flight; the card leaves the hand and the Effects tab glows briefly.
+- [ ] Any Event card that does not stay on the table (e.g. a recruiting Event). Expect: nothing flies to the Effects tab.
+
+<a id="thranduils-figure-moves-with-far-sighted--ui-465"></a>
+## Thranduil's figure moves with Far-sighted — UI-465 (2026-11-03)
+
+The owner's decision on UI-456's open question (translated): "both" — while Awakened Thranduil is the only companion
+outside the Fellowship, Far-sighted's "Move companions" stays greyed, and Thranduil's own figure on the map lights as
+Far-sighted's mover, so his own move can use Far-sighted's +1 range.
+
+- **Why his figure's move is Far-sighted's with the Ruler die.** Far-sighted is paid by the Free Peoples' Ruler die
+  showing a Character (KINGS pp. 8–13, as UI-456 cites; the server's `KingsFarSighted.Valid`,
+  `KingsRulerAbilities.CanPay`). For Move companions the server offers it as the option's `RulerTravel` (`AbilityId`
+  `kings.far-sighted`, `RangeBonus` 1, one travel per Free Peoples character on the board, Thranduil included) and moves
+  with `MoveCompanions`, `AbilityId` `kings.far-sighted` and `CompanionMoves` (`ActionStepRules.Companions`,
+  `KingsFarSighted.Bonus`). With that die it gives Thranduil his plain move plus one region for the same die (a
+  destination within his plain range stays reachable), so with the Ruler die his figure's move is Far-sighted's. With any
+  other Character die his plain move stays as it is.
+- **The figure** (`FarSightedFigure`, `TravelActions`): with the Ruler die chosen, no companions' move drafted and no
+  Ruler token chosen, while he is the only companion outside the Fellowship, Thranduil's miniature glows as a choosable
+  figure and its tooltip — and his chip in the Woodland Realm's panel — leads with "Far-sighted · Range +1 · Click to move
+  Thranduil one region further" (`MapCanvas.OfferFigures`, `TravelContextInteraction.Offers`). Its click (or a drag past
+  the threshold, UI-405, which makes the same click) starts `MoveCompanions` with `AbilityId` `kings.far-sighted`, his
+  group and the Ruler die (`DraftOptions.WithRulerTravel`), and lights his Far-sighted range; a lit region's click (or the
+  drop there) sends it. Back leaves him behind and his figure still offers the Far-sighted move; Esc and the console's
+  Cancel undo as for any move.
+- **The variant stays greyed** (`FarSightedMoves`): Far-sighted's Move companions keeps UI-456's greyed slot; its reason
+  now points at the figure: "No companion is outside the Fellowship · Thranduil moves from his figure". Move the Fellowship
+  and Separate companions are unchanged.
+- **Another companion outside**: behaviour as before UI-465 — the variant is enabled and moves the chosen companions (him
+  among them) one region further; every figure's own click, his included, starts a plain move. A chosen Ruler token keeps
+  its own travel (UI-389).
+- No server or contract change.
+
+Screenshots: `ui465-lit-figure.png` (the Ruler die chosen, his lit figure), `ui465-far-sighted-range.png` (his Far-sighted
+range after his click).
+
+Tests: EditMode `FarSightedFigureTests` (the Ruler die starts Far-sighted from his figure with its range, Back and a
+second click; another Character die moves him plainly; the variant stays greyed with the new reason; another companion
+outside keeps the plain move and the enabled variant; a Ruler token keeps its travel),
+`ComponentActionTests.FarSightedMoveCompanionsWaitsForACompanionOutsideTheFellowship`; PlayMode
+`FarSightedFigureNetworkTests` (`kings-far-sighted`: the click path and the drag path send `MoveCompanions` with
+`AbilityId` `kings.far-sighted` and Thranduil's move to a region one beyond his plain range; the variant is greyed with
+its reason), `ConsoleCancelNetworkTests.FarSightedMovesNoCompanionWhileNoneIsOutsideTheFellowship`;
+`ExpansionTokenNetworkTests.FarSightedIsAnExplicitModeForMovement` and `ThranduilsTokenPaysForFarSightedInTheSameAction`
+(seeded `ui09-travel`, Thranduil alone outside) now move him from his figure — with the Ruler die, or with his token —
+instead of clicking the variant UI-456 greyed.
+
+Playtest (owner's checklist):
+- [ ] `kings-far-sighted`. Click the Ruler die. Expect: Thranduil's figure in the Woodland Realm glows; its tooltip begins
+  "Far-sighted · Range +1 · Click to move Thranduil one region further". Open the Woodland Realm: Far-sighted's Move
+  companions picture is greyed and says "No companion is outside the Fellowship · Thranduil moves from his figure".
+- [ ] Same scenario. Click Thranduil's figure. Expect: he lifts, the console says "Thranduil — King of the Woodland Realm ·
+  Click a highlighted region to move there.", and the lit regions reach one region further than his plain move. Click
+  Back: he is put back and still glows with the Far-sighted line. Click him again, then a lit region one beyond his plain
+  range. Expect: he moves there at once.
+- [ ] Same scenario, a new start. With the Ruler die chosen, drag Thranduil's figure onto a lit region one beyond his
+  plain range. Expect: the drop moves him there with Far-sighted, as the click did.
+- [ ] Same scenario, when the Free Peoples' pool also shows a standard Character die: choose it instead of the Ruler die.
+  Expect: Thranduil's figure glows without the Far-sighted line and lights only his plain range.
+
+<a id="the-free-peoples-band-is-blue--ui-466"></a>
+## The Free Peoples' side band is blue — UI-466 (2026-11-03)
+
+The owner: "the bar at the bottom left that shows Free Peoples should be blue for the Free Peoples, unlike the red one
+for the Shadow". The own dice panel's header band (`ActionPoolView.Header`) takes `dice-header-free` for the Free
+Peoples and shows `frames/panel-header-free-lacquer`: the same gilt-ruled band as `frames/panel-header` in blue lacquer
+(the `free-lacquer` variant of `graphicalassets/ui`, which overrides only the lacquer tokens). The Shadow keeps the red
+band; every other panel header is unchanged.
+
+Playtest (owner's checklist):
+- [ ] Any Free Peoples game. Expect: the band at the bottom left reading FREE PEOPLES is blue with its gilt rule.
+- [ ] Any Shadow game. Expect: the band reading SHADOW stays red.
+
+Tests: PlayMode `DicePanelLayoutTests` (both sides in four layouts: blue band for the Free Peoples, red for the Shadow).
+
+<a id="a-compact-dice-panel-in-expansion-games--ui-467"></a>
+## A compact dice panel in expansion games — UI-467 (2026-11-03)
+
+The owner (with a screenshot of a Ruler token): "in some cases, e.g. when there is a token to spend, the panel on the left
+widens a lot and the bar with instructions shrinks; the left part should be designed more compactly, with less free
+space, which leaves room for a bigger bar with hints on what to click". In a Lords or Kings game the own dice panel was
+432 px: the dice in a 210 px column and, beside them, a second column as wide holding the counters spread across it and
+the tokens below. Now the counters (spent, Hunt, out, the Fellowship Box) stand under the dice as in the base game
+(`ActionPoolView.OwnResources`, `own-dice-column`), and beside the dice only a 100 px column of tokens, three a row (Kings'
+Ruler and Dismay tokens, the Shadow's Council tokens), and only in a game that has them (`token-column`). The panel is
+230 px without tokens and 336 px with them (the fullest pool, five Dismay and two Council tokens, fits in three rows); its height is unchanged, the header band spans the panel, and the console
+takes the width freed.
+
+Playtest (owner's checklist):
+- [ ] `kings-far-sighted` or any Kings game. Expect: the dice with the counters under them, the Ruler token beside the dice
+  in a narrow column; the console's hint line clearly wider than before.
+- [ ] A Lords game without the Council (e.g. `lords-sh-use-balrog-active`). Expect: no token column, the panel only as wide
+  as the dice.
+
+Tests: PlayMode `ExpansionMatrixLayoutTests` and `LayoutStressScenarioTests` (`ResourcesFit`: the own panel at most 336 px,
+every die, counter and token inside it without overlap, in 186 matrix views and the stress scenarios, four layouts),
+`DicePanelLayoutTests`, `TurnConsoleLayoutTests`, `RulerTokenMenuTests`, `CouncilTokenMenuTests`, `CompactBoardLayoutTests`,
+`InGameDenseLayoutTests`.
+
+<a id="every-target-region-pulses-clearly--ui-468"></a>
+## Every target region pulses clearly — UI-468 (2026-11-03)
+
+The owner: "the regions that can be clicked and are suggested by colour should pulse more clearly; now it is barely
+noticeable, especially against similar colours all around". UI-453's breathing fill now covers every target region
+(`MapTargetPulse`, was `MapPlacementPulse`): a move's or a placement's in a bright mint, an attack's in a bright red, both
+lighter than any land of the map, over the region's still fill, fading fully in and out in the 750 ms rhythm. The target
+edge (`MapTargetGlow`, UI-224) gets an ink line under its bright line, a wider halo, and fades to 20 % instead of 35 %
+between beats, so it stands out against a neighbour of a similar colour. The chosen region (UI-392) keeps its gold edge
+without the fill. Still one retained layer each, toggled by class under .motion-enabled (Reduced motion keeps them lit
+and still) and repainted only when a set changes.
+
+Playtest (owner's checklist):
+- [ ] `fp-muster-recruit` and any army move. Expect: every lit settlement or region clearly breathes, also next to green
+  regions such as Rohan or Mirkwood; an attack's region breathes red.
+- [ ] With Skip animations on. Expect: the targets brightly lit and still.
+
+Tests: EditMode `MapTests.APlacementTargetIsLitMoreStronglyThanAMovesTarget` (a move's, a placement's and an attack's
+target pulse, a region that is no target does not, no repaint for the same set); PlayMode `GlowingHintAuditTests`,
+`MusterNetworkTests`, `FateCardsNetworkTests`, `MovementNetworkTests`, `BoardInteractionTests`, `MapClickMoveNetworkTests`.
+
+<a id="skills-beside-the-place-picture--ui-469"></a>
+## Skills beside the place picture, no empty strip — UI-469 (2026-11-03)
+
+The owner (Thranduil's window): "let's change the design of the window of a character with skills: move the row with the
+skills to the right of the map or the Fellowship marker, and get rid of the empty strip at the bottom by making the whole
+window smaller". In a king's window (`SovereignInspector`) and a character's (`CharacterInspector`) the ability heading
+("Abilities once awakened", …) and the row of skill icons now stand in the facts column beside the place picture, under
+the corruption meter or the card's statistics. The king's flags line and corruption tiles collapse when they show nothing,
+and a ruler's window no longer keeps the 252-point minimum (UI-436): it is as tall as its content, about 208 points at
+rest, and still opens at one place with one width (a king with an extra action line is a line taller).
+
+Playtest (owner's checklist):
+- [ ] `kings-far-sighted` (or any Kings game): open Thranduil, then Brand, from the Characters tab. Expect: the skill icons
+  beside the place picture under the corruption meter, the Awaken line below, no empty strip at the bottom; every king's
+  window opens at the same place.
+- [ ] A companion with skills (e.g. Gandalf the Grey). Expect: the skill icons beside the place picture under the
+  statistics.
+
+Tests: PlayMode `CharacterWindowLayoutTests` (every king's window at one place and width, as tall as its content with no
+empty strip, four layouts), `CharacterRosterLayoutTests`, `CharacterRosterPanelNetworkTests`,
+`CharacterRosterActionNetworkTests`, `SovereignPanelNetworkTests`, `SovereignSectionLayoutTests`, `InGameDenseLayoutTests`,
+`LayoutStressScenarioTests`, `ExpansionWindowNetworkTests`.
+
+<a id="the-menus-in-thin-lines--ui-470"></a>
+## The menus in thin lines — UI-470 (2026-11-03)
+
+The owner (with a reference picture of a sign-in card): "let's change the design of the main menu, the settings, etc. —
+all windows that are not part of the game's own interface: Test scenarios, Host a game and the rest. Everything less
+thick and in-your-face; slick and elegant — now it is terribly coarse. Do not add right-pointing arrows on every button.
+Do not add or change any functionality; we only care about the graphics." Only art and colours changed: every text,
+control, name, order, place and size class is the one it was, and no button carries an arrow or a new icon.
+
+One chrome for every menu window. `Styles/Menus.uss` holds it; `FrontendTheme.ApplyChrome` attaches the sheet and the
+class `menu-chrome` to the sign-in, main menu, waiting room and replay library (through `FrontendTheme.Apply`), Settings
+(`InterfaceSettingsPanel`), the questions (`ConfirmationDialog`: Quit, delete; `GameDeletedNotice`) and the board's Menu
+panel (`BoardMenu`). Nothing reaches the board's HUD: the top bar's Menu toggle, the panels, the battle, card and
+character windows keep their art.
+- A window is a card (`frontend/card`): translucent charcoal under one thin muted-gilt rule with small concave corners, a
+  tiny gilt lozenge in each cut and a hairline inner rule — no bevel, band or shadow.
+- A button, tab or segment (`frontend/button`) is a dark field edged with one muted-gold line, its words in Alegreya
+  Regular. Hover lightens the line and the field; a press darkens the field and sinks it a point (UI-113); an open page,
+  a chosen segment or tab and a variant that is on wear `selected` (a warm field with a bright line) instead of red
+  lacquer; a disabled control is greyed; keyboard focus brightens the words only, so a clicked button never looks held.
+  The one main action of a screen — Login, Create game, Start game — is `primary`, a soft warm-gold gradient with a
+  brighter line (`primary-hover`, `primary-pressed`).
+- A text field is a dark field with one muted-gold line that brightens on hover and turns gold on focus, a muted
+  placeholder, a gold caret and selection. Checkboxes are small boxes with a gold tick (`frontend/check`); a slider is a
+  quiet gold track with a small dark dragger edged in gold; a scroll bar has no plate, a slim muted-gold thumb and quiet
+  arrows, 10 points wide instead of 13.
+- Titles are Cinzel capitals, letter-spaced, light gold, without the faux bold.
+
+Per screen:
+- **Sign-in**: the card instead of a flat plate with a border (one point more padding for the border it replaced); the
+  title 21 points with wider spacing; a small line icon inside the account name and password fields
+  (`frontend/icon-account`, `icon-password`); Login primary; Create account and Forgot password? thin; a hairline with a
+  tiny lozenge (`frontend/divider`) over Settings and Replays, which now keep the 8-point gap between them that the old
+  `:first-child` rule (unsupported in USS) never gave.
+- **Main menu**: the window and the action column are cards; the red header band is gone — the page's name stands
+  centred in spaced capitals over the divider, Refresh keeps its place at the header's right end. Open games, My games
+  (own rooms and saved games), Replays and the test scenarios are quiet rows (`frontend/row`, `row-hover`) instead of
+  gilt entry plates; a saved game waiting for your decision keeps its gold mark, 2 points instead of 4. The open page's
+  action is `selected`. Join by code's rules, the lobby panel, the players-online strip and tab, a name's context tab
+  and the challenge tab (now a warm charcoal plate under a bright gilt line instead of red) are in charcoal and muted
+  gold.
+- **Host a game / Demo vs CPU**: the side cards are rows and the chosen side is lit by `row-selected` (a thin gold line
+  over a warm field; the 2-point ring is gone); Public and Private are segments; Create game is primary. The rules strip
+  (demo page and waiting room): the expansions' medallions are the thin `frontend/medallion` (a dark enamel disc in one
+  ring, lit in the module's enamel with a soft halo when on), the ticks are boxes, and a variant chip that is on is
+  `selected`.
+- **Test scenarios**: the tabs are thin buttons (the open one `selected`), a lens (`frontend/icon-search`) stands inside
+  the search field, the scenarios are rows; the hint and descriptions are muted parchment instead of grey-teal.
+- **Waiting room**: the seats are rows and your own seat is `row-selected`; the observers' chips and the chat log are
+  edged in muted gold; Start game is primary.
+- **Settings, the questions and the board's Menu**: the card instead of a flat plate (the Menu panel keeps its inner
+  size: the 1-point border became a point of padding), thin buttons (the chosen size, window mode and resolution
+  `selected`), boxes for the toggles, quiet sliders.
+- The map behind the menus is a little dimmer (tint rgb(72, 66, 56) instead of rgb(88, 80, 66)), so the thin cards stand
+  clear of it.
+
+Art (`graphicalassets/ui/src/frontend`, `render.py --only frontend`; tokens `--fe-*` in `palette.css`; new variants
+`primary`, `primary-hover`, `primary-pressed`, and `--fe-*` overrides in `hover`, `pressed`, `selected`, `fate-on`,
+`lords-on`, `kings-on`): `card` (64 pt, slices 12), `button` with six variants (64×32 pt, slices 6), `row` with `hover`
+and `selected` (96×40 pt, slices 8), `divider` (200×8 pt, unscaled), `medallion` with five variants (56 pt), `check` and
+`check-selected` (14 pt), `icon-account`, `icon-password`, `icon-search` (16 pt). The board keeps `frames/panel`,
+`panel-header`, `entry` and `button`; `rules/medallion*` and `rules/check-*` are no longer referenced but stay in the
+kit.
+
+Playtest (owner's checklist):
+- [ ] Start the game. Expect: the sign-in card thin and dark over a dimmer map; small icons in the two fields; Login warm
+  gold; the other buttons dark with a thin line; no arrows anywhere; Settings and Replays with a gap under a hairline
+  with a tiny lozenge.
+- [ ] Hover, press and release Create account; tab into a field. Expect: the line lightens on hover, the button darkens
+  and sinks while held; the focused field's line turns gold.
+- [ ] Sign in. Expect: the window and the column as thin cards; "OPEN GAMES" centred over the hairline; Open games
+  marked in the column by a warm field; rows quiet with a dim line that brightens on hover; a disabled Observe clearly
+  grey.
+- [ ] Host a game. Expect: the chosen side card lit by a thin gold line; Public as a warm segment; Create game warm gold.
+- [ ] Demo vs CPU, then Test scenarios. Expect: thin medallions and boxes in the rules row; thin tabs with the open one
+  warm; a lens in the search field; scenario rows like the game rows.
+- [ ] Open a waiting room (as host, with expansions). Expect: your seat lit by a gold line; the medallions lit in their
+  enamel when on; the chips that are on warm; Start game warm gold once both are ready, grey before.
+- [ ] Settings from the menu and from a game's Menu; Quit game. Expect: the same thin card, buttons, boxes and sliders;
+  the chosen 100 %/125 % and window mode warm; the board's Menu panel as a small thin card while the top bar keeps its
+  look.
+- [ ] Repeat one screen at 1366×768 with 125 %. Expect: nothing clipped, every control in its usual place.
+
+Tests: EditMode suite (`UiArtKitTests` lists the 23 new textures; `FrontendThemeTests`, `GatewayScreenTests`,
+`MainMenuTests`, `WaitingRoomTests`, `ConfirmationDialogTests` unchanged and green); PlayMode `MainMenuLayoutTests` (two
+new screenshots, `ui470-host-form-*` and `ui470-quit-*`; every page, the waiting room, Settings and the question in four
+layouts), `TestScenarioNetworkTests`, `WaitingRoomRulesTests`, `ConfigurationLayoutTests`, `LayoutTests`,
+`InterfaceSettingsTests`, `SoundSettingsTests`, `BoardMenuLayoutTests` and the menu network classes. Results
+(2026-11-03): EditMode 1504/1504; every PlayMode class above passes except four failures already known before UI-470
+(`MenuBrowserNetworkTests.Scrolling…`, `WaitingRoomRemovalNetworkTests.TheHostRemoves…`, `ReturnListTests.BothPlayers…`,
+`BoardMenuNetworkTests.MenuReceives…`: status texts and timeouts, not styles). Screenshots:
+`.artifacts/screenshots/ui470-before-*.png` and `ui470-after-*.png`.
+
+## The game's buttons in the menus' thin line — UI-471 (2026-11-03)
+
+First task of the game chrome migration (UI-471–UI-479). The owner: "update the game interface so it uses the same styles
+and buttons as the main menu; we do not change the graphics of the map, characters, icons etc., only the tabs'
+backgrounds, frames and buttons." This task changes every game button's chrome and creates the shared tokens. Panels,
+windows, the rail, the console's frame, the battle's insides, notices and the top bar's plate keep their art until their
+own tasks; their buttons change now. Sizes, paddings and positions are unchanged.
+
+What changed:
+- `.action`, icon buttons and every context override wear `frontend/button` (64×32 pt, 6-point slices, 12 texture pixels at
+  scale 0.5) instead of `frames/button` and `frames/button-square`. Hover is `button-hover`; a press is `button-pressed`
+  and still sinks a point (UI-113); a chosen button is `button-selected`, the warm field with a bright line, instead of
+  red lacquer. Disabled is greyed. An icon on an icon button stays as it was.
+- Words are the menus' muted parchment, not bright gold: `rgb(228, 216, 188)`, lighter on hover, warm when chosen, grey when
+  disabled. Keyboard focus brightens the words only on a text button, so a clicked button does not look held; an icon
+  button has no words, so focus lightens its line.
+- A chosen button's old 2-point gold rim keeps its width in the layout and is transparent, so nothing moves and gold stays
+  the sign of a legal target: a legal target keeps its thick gold rim and warm plate (UI-193, UI-223, UI-372, UI-384).
+- The context overrides lost their copies of the art: they now only size and place the button, and the shared states apply.
+- Buttons that stand directly on the bright map (the map legend and political view, chat, the Cards tab, the Victory tab,
+  the notices' log and battle icons, the decision notice, Retry) have a nearly opaque dark field under the line
+  (`--game-button-fill-over-map`, 0.92) and a 2-point radius matching the art's corners. `MapLegend` lost its inline colours.
+- A figure or die on a `.action` that wore the old lacquer plate behind its picture (the battle's dice and losses, the
+  Fellowship's portraits, the region panel's figures, Hunt responses) now stands on the thin plate. The picture itself is
+  unchanged.
+
+The shared tokens. `Styles/GameChrome.uss` is imported first by `Wotr.uss` and declares USS custom properties on
+`.client-interface` and `.board-screen`; they are inherited by everything below. UI Toolkit in Unity 6000.6 resolves `var()`
+for `background-image` with `resource()`, for the slices, for `-unity-slice-scale` and for colours (`GameButtonChromeTests`
+reads the resolved values), so a later task changes one line:
+- Art: `--game-button`, `--game-button-hover`, `--game-button-pressed`, `--game-button-selected`.
+- Slices: `--game-button-slice` (12), `--game-button-slice-scale` (0.5px).
+- Words: `--game-button-text`, `--game-button-text-hover`, `--game-button-text-focus`, `--game-button-text-selected`,
+  `--game-button-text-disabled`.
+- Over the map: `--game-button-fill-over-map`.
+
+Rules for the next tasks (UI-472–UI-479):
+- Add a surface's art and colours as `--game-<surface>…` tokens in `GameChrome.uss` and use `var()` in its rules. A token
+  has no fallback outside those two roots.
+- Never put `menu-chrome` on the board's root: `.menu-chrome .action` would repaint dice, cards and tokens.
+- Do not give a context rule `background-image`, `color` or slices for a button: it would beat the states. Size it only.
+- The states of `.action` (`:hover`, `:focus`, `.selected`, `.pressed`, `:disabled`) have two classes and stand in the first
+  sheet on purpose, so that any art button's rule of two classes or more wins and a press never paints the chrome over
+  its picture. The base `.action` stays in `Wotr.uss` at its old place in the cascade. `Interaction.uss` and `SkillIcons.uss`
+  stay last. Static USS only, no CSS filter.
+
+Art buttons. `docs/ui/BUTTONS.md` counts 70 `art` buttons, but an audit of every `.action` the tests below render showed that
+few inherit `.action`'s slices: dice (`BoardScreen.Die`), Council and Ruler tokens, rings, skill icons and map figures are
+not `.action` at all; cards, decks, battle cards, reserve slots, rail tabs and character rows already set their own slices.
+Only two kinds inherited them: the Politics panel's `nation-token` and the region panel's `moved` tick. Both now set the
+same 24 texture pixels beside their picture, so they render as before. `.battle-hit` gained a class so the hover's words
+do not beat its green. `frames/button` and `frames/button-square` stay in the art kit, unreferenced.
+
+Tests: `GameButtonChromeTests` (new) reads what UI Toolkit resolved for a text and an icon button in every state and for an
+art button; `LeftRailLayoutTests` and `RightColumnLayoutTests` now expect the shared button art in panel headers. Results
+(2026-11-04): EditMode 1504/1504. PlayMode, one class per run, passing: `GameButtonChromeTests`, `DicePanelLayoutTests`,
+`TabletopObjectsTests`, `TurnConsoleLayoutTests`, `ConsoleCancelNetworkTests`, `BattleLayoutTests`, `LeftRailLayoutTests`,
+`RightColumnLayoutTests`, `TopBarLayoutTests`, `ActionNoticeLayoutTests`, `BoardChromeLayoutTests`, `BoardMenuLayoutTests`,
+`GlowingHintAuditTests`, `FateCardsNetworkTests`, `CharacterWindowLayoutTests`, `CharacterRosterPanelNetworkTests`,
+`CharacterRosterActionNetworkTests`, `RulerTokenMenuTests`, `ExpansionDecisionNetworkTests`, `KingsDecisionNetworkTests`,
+`T22AbilityNetworkTests`, `PressFeedbackClickTests`, `NoFocusOutlineTests`, `PoliticalPanelTests`. Two failures also occur
+without this task's changes: `BoardCompletionLayoutTests.FullRosterVersions…` (same values before the change) and
+`FarSightedObjectTests.ThranduilsPicture…` ("Missing component far-sighted-SeparateCompanions", also 2/2 with HEAD's
+stylesheets). A temporary audit (removed) of what every `.action` resolved to while 26 classes ran, before and after, found
+no art button with a changed picture or slices. Over the 18 classes with sizes recorded on both sides, 173 of 176 kinds of
+button showed only known sizes; the other three (`pool-Hunt`, `pool-Spent`, a Kings roster row) were one-off samples that fit
+a value pulse and a panel's slide. Screenshots: `.artifacts/screenshots/ui471-before-*.png` and `ui471-after-*.png`.
+
+Playtest (owner's checklist):
+- [ ] Start a game at 1366×768. Expect: Menu, the console's four squares and Cancel as dark fields with one thin muted-gold
+  line, the words in muted parchment; the panels, the console's frame and the top bar's plate as they were.
+- [ ] Hover, press and release a console square and Menu. Expect: the line lightens on hover; the field darkens and the
+  button sinks a point while held; moving off while held does nothing.
+- [ ] Open Politics, Characters and a card. Expect: thin header buttons in their old places; a pinned card's pin on the warm
+  field.
+- [ ] Fight a battle to its footer choices (Continue, Retreat…) and assign losses. Expect: thin footer buttons with their
+  icons; figures and dice on thin plates; a chosen loss with its gold rim on the warm field, not red.
+- [ ] Choose an action that offers a legal target among text buttons or tabs. Expect: the thick gold rim that pulses,
+  clearly different from a chosen button's warm field and thin bright line.
+- [ ] Look at the map legend, the political view, the chat icon, the Cards tab and the log icon over the brightest parchment.
+  Expect: a dark field and a readable line and icon.
+- [ ] Press a nation's token in Politics, a reserve figure and a hand card. Expect: their own pictures throughout.
+- [ ] Repeat one screen at 125 %. Expect: nothing clipped, every control in its usual place.
+
+## The docked panels in the menus' card — UI-472 (2026-11-04)
+
+Second task of the game chrome migration. The owner (2026-11-03): "update the game interface so it uses the same styles and
+buttons as the main menu; only the tabs' backgrounds, frames, buttons … remember to adapt elements such as the bars at the top
+of the windows 'Denethor', 'Effects', 'Shadow' etc." UI-471 did the buttons; UI-472, UI-473 and UI-474 do the frames and header
+bars of every panel and window. Only art and colours changed: every text, order, behaviour, size, padding and place is the one
+it was.
+
+What changed:
+- The left panels (Politics, Reserve, Characters, Effects), the Fellowship dropdown, the corner tab, the card drawer and the dice
+  panel's frame moved from `frames/panel` to the board's card (`frontend/card-board`). The deck buttons' card backs, the corner
+  tab's gold rim for a usable Fellowship, the rail tabs (UI-475) and the dice panel's side band (UI-476) keep their art.
+- The red lacquer headers are gone. Each is a quiet title (Cinzel, the menus' light gold, no faux bold) with the panel's icon, over
+  a hairline fading at both ends. Heights are unchanged (32 points on the left, 28 on the right, 26 when compact), and so is each
+  child's place. Politics' plain label takes the same Cinzel as the other titles.
+
+Decisions:
+- The board has its own card. The menus' `frontend/card` stands over a dimmed map, at 0.9. Over the bright parchment 0.9 let the
+  map's white borders and tokens show through the log's words and mixed a pool list with the Hunt window under it, and the muted
+  gilt line disappeared on parchment. `frontend/card-board` keeps the shape (the same concave corners, lozenges and inner rule) with a
+  0.985 field and a dark hairline outside the gilt rule.
+- The hairline is a picture (`frontend/title-rule`, 200×1 points, `background-size: 100% 1px`), not a border. A border would take a
+  point from the row, moving each child half a point and blurring a thin button's line, and would grow the character window's
+  30-point header, whose portrait fills it.
+- Titles stay at their old left place rather than centred as in the menus' reference: the row must fit an icon, a locate button, a
+  portrait, a status badge and buttons, and a centred lozenge cannot sit on a stretched line. A later task can centre the title-only
+  ones if the owner prefers.
+- Dropping the faux bold frees about 0.07 em per letter, which pays for wider letter-spacing, so no title takes more room than it
+  did (`GameWindowChromeTests` measures this with a long battle title).
+
+Tokens (`Styles/GameChrome.uss`, on `.client-interface` and `.board-screen`): `--game-card`, `--game-card-slice`,
+`--game-card-slice-scale`, `--game-card-fill`, `--game-card-text`, `--game-card-text-muted`, `--game-hairline`,
+`--game-hairline-quiet`, `--game-title-text`, `--game-title-rule`, `--game-title-ink`, `--game-title-rule-ink`. The frames' and the
+headers' art stand in two shared rules of the same sheet; a surface's own sheet keeps its size, padding and transparent
+`background-color`. A new frame joins the first rule. `Interaction.uss` still comes after the chrome; no CSS filter.
+
+Art (`graphicalassets/ui/src/frontend`, `render.py --only frontend/card-board`, `--only frontend/title-rule`): `card-board` (64 pt, slices
+12) and `title-rule` (200×1 pt), both in `UiArtKitTests`' contract. `frames/panel` stays in the kit, unreferenced;
+`frames/panel-header` and `panel-header-free-lacquer` now hold only the dice band.
+
+Playtest (owner's checklist):
+- [ ] Start a game at 1366×768. Open Politics, Reserve, Characters and Effects over the bright map. Expect: a dark, thin card whose
+  edge reads clearly against the parchment; a quiet gold title and a fine line instead of the red band; every button in its old place.
+- [ ] Hover the corner tab. Expect: the Fellowship panel unrolled in the same card, its title beside the Hidden/Rivendell button.
+- [ ] Look at the card drawer and the dice panel. Expect: both in the thin card; the card backs and the red or blue side band as they
+  were.
+- [ ] Make the Fellowship usable (a Guide's skill). Expect: the corner tab's gold rim still pulses over the thin card.
+- [ ] Repeat at 125 %. Expect: nothing clipped, every control in its usual place.
+
+## The floating windows in the menus' card — UI-473 (2026-11-04)
+
+The same treatment for what floats over the board: the decision window, the battle window's frame and header, the chronicle's frame,
+the Hunt window and its nested pool, the character and sovereign windows (the owner's "Denethor" bar), the end-of-game panel, and the
+headers of the recorded-action card and the card inspector.
+
+- Frame: `frontend/card-board`. Header: a quiet title over the hairline. Heights are unchanged (26 points; 24 in a short viewport;
+  30 for a character; 34 for the recorded action), and the portrait medallion, title, status badge, pin and close keep their places.
+- A skill's gold rim on a character's header (UI-441) lies over the row as before. No window header carried a side colour before this
+  task, so none was lost; a character's side stays on his medallion's ring.
+- On parchment the title is ink and the same line is tinted dark (`--game-title-ink`, `--game-title-rule-ink`). The parchment faces of
+  the recorded action and the card inspector stay.
+- Kept for UI-477: the force frames, the stage ribbon, card slots and round tabs. The end-of-game title plaques stay.
+
+Playtest (owner's checklist):
+- [ ] Open a king's window from Characters. Expect: the portrait medallion at the head of a quiet name over a fine line, the status
+  badge and the close button in their old places, and no red bar.
+- [ ] Fight a battle with the longest name you can (Dol Amroth, a siege). Expect: the whole title, the card setting and the close
+  button on one row; forces, ribbon and footer as they were.
+- [ ] Open a Hunt and its pool list from the header. Expect: the pool over the window in the same card, and the window's words not
+  showing through it.
+- [ ] Choose something that opens the decision window. Expect: the same card and header, anchored above the console.
+- [ ] Click a notice and a hand card. Expect: parchment with a dark title and a dark fine line; the pin and the close button in place.
+- [ ] Open a battle's report from a recorded action. Expect: the same card round its parchment pages.
+- [ ] Finish a game. Expect: the thin card round the painting, the green or iron title plaque unchanged.
+
+## The flat windows and scroll bars — UI-474 (2026-11-04)
+
+The windows that had no art take the card, each old border staying in the layout as a transparent one so nothing moves: region
+information, board information, the expansion inspector, the action log, the notice overflow list, the victory panel and the map legend.
+Their rules also lost their old colours (a separator is `--game-hairline-quiet`, a muted line `--game-card-text-muted`), and a region's
+name, like every title, is the quiet gold. Three stay flat with the card's colours and hairline: the tooltip, because it can be very
+small; the undocked hand drawer, because the docked hand wears the same class and clears only its colour (`Cards.uss`); and the board's
+chat, which was not listed but had the same old rule. `MapLegend` lost its last inline colours.
+
+Scroll bars under the board are the menus' thin ones, by rules scoped to `#board-screen` in `GameChrome.uss`, never by putting
+`menu-chrome` on the board's root (tokens `--game-scroll-track`, `--game-scroll-thumb`, `--game-scroll-thumb-hover`,
+`--game-scroll-arrow`, `--game-scroll-arrow-hover`). Copying the menus' rules alone was not enough: they narrow the bar to 10 points but
+leave the theme's thumb 18 points wide and its track and arrows 24, so those stand out of the bar. On the board every part is sized to
+it: a 6-point thumb inside a 10-point bar. A view's content gains the 3 points the bar gave up.
+
+Playtest (owner's checklist):
+- [ ] Hover a console button over the parchment. Expect: a small dark tooltip with one fine gold line.
+- [ ] Click a region with forces, then an empty one. Expect: the card round its figures; the name in quiet gold; the small window for the
+  empty region sized to its text.
+- [ ] Open the log and scroll it. Expect: a thin card, faint separators, a slim gold thumb inside a slim bar, and no map showing through
+  the words.
+- [ ] Open the map legend over the left rail, the game rules and the victory panel. Expect: the same card; the words readable; every
+  button in its place.
+- [ ] Open a chat. Expect: the same dark field and fine line.
+
+Tests for the three tasks: `GameWindowChromeTests` (new) reads what UI Toolkit resolved for every frame and header, the ink headers,
+scroll bars and flat surfaces, and measures the titles. `LeftRailLayoutTests` (the title fits, Politics included), `RightColumnLayoutTests`,
+`EdgePlaqueTests`, `DicePanelLayoutTests` and `ActionNoticeLayoutTests` expect the new art where they named the old; what they check is
+unchanged. `UiArtKitTests` lists the two new textures.
+
+Results (2026-11-04): EditMode 1504/1504. PlayMode, one class per run, passing: `GameWindowChromeTests`, `LeftRailLayoutTests`,
+`RightColumnLayoutTests`, `EdgePlaqueTests`, `DicePanelLayoutTests`, `BattleLayoutTests`, `HuntLayoutTests`, `CharacterWindowLayoutTests`,
+`CharacterRosterLayoutTests`, `ActionNoticeLayoutTests`, `BoardChromeLayoutTests`, `TurnConsoleLayoutTests`, `GameButtonChromeTests`,
+`InGameDenseLayoutTests`, `LayoutStressScenarioTests`, `ClickInspectionTests`, `GlowingHintAuditTests`, `SovereignSectionLayoutTests`,
+`GameEndNetworkTests`, `VictoryPanelLayoutTests`, `RuntimeTooltipTests`, `RegionNameOnlyTests`, `ReinforcementsLayoutTests`,
+`FloatingWindowTests`, `CardViewportLayoutTests`, `PoliticalPanelTests`. `PoliticalPanelTests` first failed in 2 of 3 runs with "Title and
+toggle overlap" (2 of 2 passed on HEAD's stylesheets; a flake at that line has been on record since 2026-10-27): the growing title's edge
+meets the toggle's and rounding can cross them. The title now stands a point apart, and the class passed 4 of 4 runs. One failure is not
+from this work:
+`BattleReportNetworkTests.ClosedReportRejects…` ("last-battle is covered by notification-bar") fails the same way on HEAD's stylesheets.
+Screenshots: `.artifacts/screenshots/ui472-before-*.png`, `ui472-after-*.png`, and the same for `ui473` and `ui474`.
+
+
+## The left rail in the menus' thin line — UI-475 (2026-11-04)
+
+Next task of the game chrome migration (UI-471–UI-479). The owner (2026-11-03): "the game interface takes the main menu's styles and
+buttons; only the tabs' backgrounds, frames and buttons change, not the map, characters, icons, dice or cards." Only art and colours
+changed: every text, order, behaviour, size, padding and place is the one it was.
+
+What changed:
+- A rail tab's plate (UI-223's lacquer plate, radius 12) is one thin line on a nearly opaque dark fill, radius 2, like a menu button.
+  Hover lightens the line and the field. The art `rail/edge-tab` keeps its name, 94×66 size, icon centre (47, 22) and six variants, and
+  is re-drawn after `frontend/medallion`: a dark enamel disc in one thin ring and a hairline ring, without beads or bevel. The panel
+  icons on it are unchanged.
+- The selected tab (a panel held open) lost its red rim for the warm selected line, with a warm plate and disc.
+- The usable tab keeps its 3-point gold rim on a warm plate, its gold label and its pulse (UI-193, UI-223, UI-384), and the art's gold
+  halo round the disc. It stays clearly apart from the selected line.
+- A press darkens disc, ring and plate and sinks a point (UI-113). Politics and Reserve are `.action`, whose press cleared the plate over
+  the map; `Interaction.uss` now gives every pressed tab its dark plate.
+- Effects and Characters entries are thin rows (`frontend/row`, hover `row-hover`); a Shadow effect stands on `row-shadow`. A roster row
+  has a press of its own (`row-pressed`). A chosen roster row is `row-selected`, its 2-point rim staying in the layout and transparent,
+  because a gold rim means a legal target (as for buttons, UI-471). A sovereign's portrait stands on the same row.
+- Politics rows are the side rows (`row-free`, `row-shadow`) instead of translucent fills: a hairline in the side's colour keeps their
+  meaning, and the old 1-point separator stays in the layout as a transparent border.
+
+Tokens (`Styles/GameChrome.uss`): `--game-rail-tab`, `-hover`, `-pressed`, `-selected`, `-available`, `-available-hover`;
+`--game-rail-fill`, `-hover`, `-pressed`, `-selected`; `--game-rail-line`, `-hover`, `-selected`; `--game-row`, `-hover`, `-pressed`,
+`-selected`; `--game-row-slice` (16), `--game-row-slice-scale` (0.5px); `--game-row-free`, `--game-row-shadow` and their `-hover`. Every row
+of the board shares one slices rule in that sheet; each surface's sheet names its picture.
+
+Art (`render.py --only rail`, `--only frontend/row`): `rail/edge-tab` re-drawn; new `frontend/row-pressed`; `--tab-enamel-*` overrides in
+the `selected` variant, `--fe-line` in `available` and `available-hover`. All in `UiArtKitTests`' contract. `frames/entry*` stay in the kit,
+unreferenced.
+
+Playtest (owner's checklist):
+- [ ] Start a game at 1366×768. Expect: four tabs as dark plates with one thin line, a thin disc round each icon, labels readable over the
+  map and the sea.
+- [ ] Hover a tab, then press and release it. Expect: the line lightens; the plate and disc darken and sink a point while held, the map
+  never showing through.
+- [ ] Choose a Muster die. Expect: Politics and Reserve with a thick gold rim on a warm plate that pulses, clearly different from the rest.
+- [ ] Open Politics. Expect: blue rows and red rows with a fine line in their colour; nation tokens as they were.
+- [ ] Open Characters and Effects in an expansion game. Expect: quiet rows; a Shadow effect on a dark red row; a row darkens while held;
+  portraits, ability icons and parchment card tiles unchanged.
+
+## The console and the dice panel in the thin line, with their side's colour — UI-476 (2026-11-04)
+
+Colour variants of the kit, without new SVG (`assets.json`): `frontend/row-free`, `row-shadow` (and `-hover`), `frontend/button-free`,
+`button-shadow` (and `-hover`, `-pressed`). They override the `--fe-*` tokens with the side's enamel: the field `#0c2135` or `#2a0b09`, the line
+`#2f5f82` or `#7c2b22`, at 0.96, so they read as blue and red over the dark card and the bright map alike (checked in the screenshots: the
+force frames are the largest such areas). Only the `frontend` sources read `--fe-*`, so the other art of those variants is unaffected.
+
+What changed; every height and control's place stays (bottom row 140, console 132, dice panel 132, `TurnConsoleLayoutTests`):
+- The console and its options strip are the board's card (`frontend/card-board`, joining `GameChrome.uss`'s shared frames rule); the
+  dividers are the quiet hairline.
+- The status plaque is the button in the side's enamel (`button-free`, `button-shadow`), which gives it a hover and a pressed picture it did
+  not have. Its halo (`console/status-glow`, "must act", UI-241) stays; it only toggles classes.
+- The Hunt well (108×60) is a thin row; while eligible for Hunt dice it is `row-selected`, the warm field with a bright line. The plaque's gold
+  rims inside it are unchanged.
+- The small popover of the Elven Rings, Lore and the Council token's travel is the board's card; its tail is re-drawn thin under the same name
+  and size (`console/picker-tail`).
+- The dice band is the side row (`row-free`, `row-shadow`) with a quiet title in the menus' gold, without the faux bold. It keeps FREE PEOPLES
+  blue and SHADOW red (UI-466), its 24-point height and the title's place. CHOOSE A DIE stays gold.
+- The turn band over the map (440×52) is the side row with a gold Cinzel title. The side row has 8-point slices instead of 12 and 28.
+
+Tokens: `--game-row-free`, `--game-row-free-hover`, `--game-row-shadow`, `--game-row-shadow-hover`, `--game-side-button-free`, `-free-hover`,
+`-free-pressed`, `--game-side-button-shadow`, `-shadow-hover`, `-shadow-pressed`. `console/frame`, `status-plaque-*`, `hunt-box*`, `picker`, `ribbon-*`,
+`frames/panel-header` and `panel-header-free-lacquer` stay in the kit, unreferenced.
+
+Playtest (owner's checklist):
+- [ ] Start a game as the Free Peoples. Expect: a thin console card; a dark blue status button with a thin blue line; a blue dice band with a
+  quiet gold FREE PEOPLES; every control in its usual place.
+- [ ] Hover and press the status button. Expect: it lightens, then darkens and sinks a point; the click opens the decision's window as before.
+- [ ] Wait for the action to come to you. Expect: a thin dark blue band over the map for about a second and a half, the gold halo round the
+  status button while the decision waits.
+- [ ] Play as the Shadow. Expect: the same in dark red. Allocate Hunt dice. Expect: the Hunt well warm with a bright line, clearly lit.
+- [ ] Use an Elven Ring on a die. Expect: the results in a small thin card with a thin tail over the die.
+- [ ] Choose an option too long for the console's line. Expect: the strip above the console in the same card.
+- [ ] Repeat at 125 % and in an expansion game. Expect: nothing clipped, every control in its usual place.
+
+## The battle window's insides in the thin line — UI-477 (2026-11-04)
+
+UI-473 did the battle window's frame and header; this task does what is inside it. The scene strip's illustration, dice, figures, portraits and
+cards are unchanged.
+- The force frames are the side rows: blue for the Free Peoples and red for the Shadow, one thin line, flat fill, in the battle and in the
+  report. At their size the art stretches only flat fill and straight lines, on 8-point corners instead of 14.
+- The stage ribbon (22 points; 20 in a short viewport), used by the battle and Hunt windows, is a thin row. Its gilt marker and icons stay.
+- An empty card slot (33 points) is a thin row with `row-hover` and `row-pressed`. A committed card's back and a revealed card's parchment keep
+  their pictures and their own slices, so the shared rule stays out of them: the slot sets its slices beside its picture.
+- The report's round tab is a thin row with a card's words instead of a parchment tab.
+- The ledge of figures that stay out of the fight (`battle/garrison-shelf`) was not listed, but it is the last frame of the window, so it is a thin
+  row too.
+- The policy control (138×22) has been `.action` since UI-471, so it was already a thin button; `GameWindowChromeTests` now reads that.
+
+`battle/force-frame-*`, `stage-ribbon`, `card-slot`, `garrison-shelf` and `round-tab` stay in the kit, unreferenced.
+
+Playtest (owner's checklist):
+- [ ] Fight a battle. Expect: a blue force and a red force with flat fields and one thin line, no gilt corners; figures, dice and portraits as
+  they were.
+- [ ] Look at the stage ribbon as the stages advance. Expect: a thin row; the marker gliding as before.
+- [ ] Choose a Combat card. Expect: the other side's empty slot as a thin row; a committed card with its leather back; a revealed one on parchment.
+- [ ] Fight where figures stay out of the fight. Expect: a quiet row with the same words.
+- [ ] Open the report of a battle with more than one round. Expect: the round's name on a thin row between the arrows.
+- [ ] Repeat at 1366×768 with 125 %. Expect: nothing clipped, the rows level on both sides.
+
+## The notices in the thin line — UI-478 (2026-11-04)
+
+- The notice bar has no plate, and its plain decision notice and icon buttons have been thin since UI-471, on a nearly opaque field over the map.
+- A required decision (UI-254) stays red as a signal: a clear red field under one thin warm line instead of a gold one, with the buttons' 2-point
+  corner. Its pulse keeps the 750 ms rhythm and dims the same two colours; Reduced motion keeps it still. Tokens: `--game-warning-fill`, `-fill-hover`,
+  `-fill-dim`, `--game-warning-line`, `-line-dim`, `--game-warning-text`.
+- The pennants and the wax seal are unchanged, as the owner asked.
+
+Playtest (owner's checklist):
+- [ ] Let the opponent act. Expect: pennants and seal as they were, next to the thin log icon.
+- [ ] Reach a decision the game waits on (excess units, losses). Expect: a red notice with "!" and a thin warm line, pulsing, clearly a warning next
+  to the dark buttons; a click opens the decision's window as before.
+
+Tests for the four tasks: `GameWindowChromeTests` gains checks of what UI Toolkit resolved: the console, its strip and the popover among the frames, the
+rail tab's states, the side surfaces and their slices, the battle's rows, a card keeping its back and slices, and the required notice's red.
+`DicePanelLayoutTests` and `LeftRailLayoutTests` expect the side rows and rows where they named the old art; what they check is unchanged. `UiArtKitTests` lists the
+11 new textures.
+
+Results (2026-11-04): EditMode 1504/1504. PlayMode, one class per run, all passing: `GameWindowChromeTests`, `LeftRailLayoutTests`,
+`BoardInteractionTests`, `GlowingHintAuditTests`, `PoliticalPanelTests`, `ReinforcementsLayoutTests`, `TurnConsoleLayoutTests`, `TurnRibbonTests`,
+`DicePanelLayoutTests`, `ConsoleCancelNetworkTests`, `WillOfTheWestFaceNetworkTests`, `HuntLayoutTests`, `BattleLayoutTests`, `LordsBattleNetworkTests`,
+`ActionNoticeLayoutTests`, `BoardChromeLayoutTests`, `GameButtonChromeTests`, `InGameDenseLayoutTests`, `ExpansionMatrixLayoutTests`,
+`LayoutStressScenarioTests`, `PressFeedbackClickTests`, `CharacterRosterLayoutTests`, `SovereignSectionLayoutTests`, `EffectsLayoutTests`,
+`RightColumnLayoutTests`, `EdgePlaqueTests`, `CharacterRosterActionNetworkTests`, `BattleRowsNetworkTests`. The new required-notice check first read the colour
+in the first frames of its 750 ms transition and now waits it out. The full PlayMode suite was not run.
+Screenshots: `.artifacts/screenshots/ui475-*`, `ui476-*`, `ui477-*`, `ui478-*` (`before` and `after`), taken by a temporary test that was removed. States that the
+fixtures do not reach (a tab's states, a pressed or chosen row, the Hunt well lit in the fixture, the options strip, the required notice, the round tab) were forced by
+their classes. `ui475-before-roster-free` and `ui475-before-sovereigns` are copies of `ui472-after-characters` and `ui473-after-king`; the round tab has no before picture.
+
+## The top bar in the thin line — UI-479 (2026-11-04)
+
+The last task of the game chrome migration (UI-471–UI-479). The owner (2026-11-03): "the top bar we could try to slim a little, but without losing any
+information"; he chose 36 points, with click targets staying at 32 points or more. Art and sizes only: no behaviour, text, order or control changed. Every
+counter, die, state and tooltip stays.
+
+| Part | Before | Since UI-479 |
+| --- | --- | --- |
+| Bar | 44 points, `surfaces/topbar-plate` under `frames/topbar-frame` | 36 points, the card's colour, opaque, with one 1-point muted gilt rule along its foot |
+| Shadow on the map | 8 points | 4 points, the same `surfaces/cast-shadow` |
+| Phase, side name, status | 15, 11, 11 px | unchanged; the status lost the theme's padding, so its longest text (two lines) is 30 points high instead of 38 |
+| Crests | 18 points | 16, in the bar only |
+| Divider after the crests | 10×34 ornament | 1×18 hairline |
+| Opponent's dice | medallions 29 (28 compact), tiles 44×32 (42×32) | unchanged, with every rim |
+| Counters | in a 32-point cartouche; 28 high, icon 22, value 16 | on the bar; 24 high, icon 18, value 15 |
+| Between counters | 8×24 ornament | 1×18 hairline |
+| Menu | 64×32 picture and target (56 wide compact) | a 28-point `frontend/button` picture on the same 64×32 target |
+
+Width: Kings and Lords against the Shadow, six counters: 328 points become 252. The fullest pool in the screenshots (10 dice, Ruler, two Lords dice and a tile) squeezed the
+phase at 1366×768 and 125 %; it now leaves 79 points free. `TopBarView.CompactBelow` (1340) is unchanged.
+
+Decisions the numbers above do not explain:
+- **The Menu's two heights.** UI Toolkit draws a sliced picture over the whole element, whatever its `background-size` (measured in the screenshot: 32 pixels), so a 28-point button on a
+  32-point target needs the picture whole: `#open-board-menu` sets the slices to 0, an exception to UI-471's rule that a context rule sizes a button only. All its states take the same
+  size, so no state is beaten. At 7/8 its lines stay one pixel, in the same colour (measured).
+- **The offered card counter.** The only counter a click can reach (UI-432) was 28 points high. While offered it stands 32 high over -4-point margins, so nothing moves; a plain
+  counter stays at 24.
+- **An opaque fill.** The map's figures run under the bar and showed through at 0.96, as faint ghosts.
+- **The Ruler die's crown** stands 2 points lower (`top: -5px`), or its tip would leave the screen. A Lords die's star and emblem already fit.
+
+Everything that hung from the old height follows the new one. `Styles/Notices.uss` and the Menu panel read `--game-topbar-height` (36px) and `--game-topbar-menu-top` (38px) instead of 44 and 46.
+The stage, the right column, the dropdown panels (`BoardEdgeLayout`), `BoardScreen.CardBounds` and `BoardMiddle` read the bar's own bounds. The left rail, the panels beside it and the turn band
+are placed in the stage (`top: 58px`, `top: 48px`), so they rise with it, and the map's stage is 8 points taller. Nothing else in the sheets or code named 44 or 46 for the bar.
+
+Tokens (`Styles/GameChrome.uss`): `--game-topbar-height`, `--game-topbar-menu-top`, `--game-topbar-fill`, `--game-topbar-rule`, `--game-topbar-hairline`. `surfaces/topbar-plate`, `frames/topbar-frame`, `frames/cartouche` and
+`ornaments/divider` stay in the kit, unreferenced, and in `UiArtKitTests`' contract; `ornaments/divider-small` is still used by the right column. The element tree is unchanged: `TopBarView.Frame` now carries the rule, out of the bar's flow.
+
+Known limit: at a fractional panel scale a 1-point hairline rounds to one pixel or two, by its position, as the console's dividers do.
+
+Playtest (owner's checklist):
+- [ ] Start a base game at 1366×768. Expect: a flat dark bar with one fine gilt line; phase, dice and four counters readable; the map 8 points taller; notices right under the bar.
+- [ ] Hover and press Menu, then open it. Expect: a thin button that lightens, then darkens and sinks a point; the panel just under the bar. The top and bottom 2 points around the button still click.
+- [ ] Start a Kings and Lords game as the Free Peoples. Expect: the Shadow's dice with the crown and emblems whole, six counters with Dismay and Council, crests after the phase.
+- [ ] Reach Worn with Sorrow and Toil as the Shadow. Expect: the Cards counter with a taller red rim, pulsing, clicking as before, and nothing else moving.
+- [ ] Repeat at 125 %. Expect: nothing cut, the side's name hidden as before, every tooltip as before.
+- [ ] Lose the connection. Expect: the status beside Menu, in two lines at most, inside the bar.
+
+Tests: `TopBarLayoutTests` expects 36 points, a 4-point shadow, flat chrome (no art on the bar, frame, summary or hairlines; a fill of at least 0.92; a 1-point rule), counters of 24, 18 and 15, 16-point crests, a die's
+marks inside the bar and Menu's 32-point target with its 28-point picture. Its new `EveryTargetAndStateStaysInsideTheSlimBar` covers, in four layouts, a special tile at 32 points, the offered counter at 32 with nothing moved and
+returning to 24, the three rims keeping a die's box, and the longest status. `EdgePlaqueTests` expects 36, `GameButtonChromeTests` reads the Menu's picture and an icon button's slices apart, and `BoardMenuLayoutTests` checks that the panel opens
+just under the bar.
+
+Results (2026-11-04): EditMode 1504/1504. PlayMode, one class per run, all passing: `TopBarLayoutTests` (2), `EdgePlaqueTests` (4), `ActionNoticeLayoutTests` (1), `BoardChromeLayoutTests` (3),
+`BoardMenuLayoutTests` (7), `LeftRailLayoutTests` (1), `RightColumnLayoutTests` (3), `ExpansionMatrixLayoutTests` (2), `InGameDenseLayoutTests` (1), `LayoutStressScenarioTests` (9), `OpponentResourcePresentationTests` (8),
+`CharacterWindowLayoutTests` (2), `GameButtonChromeTests` (2), `GameWindowChromeTests` (10), `GlowingHintAuditTests` (22), `NazgulStrikeObjectTests` (3), `InterfaceSettingsTests` (2), `PressFeedbackClickTests` (2), `BattleLayoutTests` (5),
+`CardViewportLayoutTests` (2). `BoardRuleDeclineTests` passes 5 of 7 as a class: `WornsRedTableCard…` and `WornsSkipEffect…` fail in that order and pass each in its own run, and the same two failed as a class on 2026-11-02 (`ui435-3`), so they are
+order-dependent and not this task's. The full PlayMode suite was not run.
+Screenshots: `.artifacts/screenshots/ui479-before-*` and `ui479-after-*` (`base`, `kings-lords-shadow`, `kings-lords-free`, `discard`, `discard-pulse`, `rims-status`, `menu`, each at `1366-1.00`, `1366-1.25` and `1920-1.00`), taken by a temporary test that was removed.
+Rims, the press and the status were forced by their classes and text; the before set has no `discard-pulse` or transition frame.
+
+<a id="the-top-bar-framed-all-round--ui-480"></a>
+## The top bar framed all round — UI-480 (2026-11-04)
+
+The owner: "add gold frames to the top bar on every side; now the frame looks ideal but it is only on the bottom edge".
+UI-479's 1-point gilt rule now runs round the whole bar: the bar's Frame element (`.topbar-frame`, absolute, no layout) has
+all four borders in `--game-topbar-rule`, so nothing in the bar moves.
+
+Playtest (owner's checklist):
+- [ ] Any game. Expect: one thin gold line along the top, both ends and the foot of the bar, the same on all sides.
+
+Tests: PlayMode `TopBarLayoutTests` (four borders of one colour).
+
+<a id="the-fellowship-panels-decisions-confirm-in-the-console--ui-481"></a>
+## The Fellowship panel's decisions confirm in the console — UI-481 (2026-11-04)
+
+The owner, on the companions' versions at the Council's setup: "the confirm button is to be clicked in the bottom panel, not
+in the Fellowship panel". As UI-381 did for the other choices on the board's objects, `ConsoleConfirm.Owns` now covers every
+decision the Fellowship panel hosts (`FellowshipActions.UsesPanel`: the private versions, the homelands, a grouped
+separation): the tray keeps its confirm hidden and the console's ✓ sends it. UI-370's ✓ beside Finish phase
+(`DecisionTray.ConfirmHost`) is gone. The setup's instruction moves to the console too (the standing rule of UI-456,
+`CompanionSetupPresentation.Hint`); the panel keeps only its portraits, cards and Declare / Finish phase. The Declare button
+stays beside Finish phase (UI-448, owner), and the console's ✓ also sends a ready declaration.
+
+Playtest (owner's checklist):
+- [ ] A Lords game's setup (`lords-*` with the Council, or a new Lords game). Expect: no ✓ in the Fellowship panel; the console
+  says what to do, and its ✓ is lit once the choice is complete and sends it.
+- [ ] A Council game's homelands. Expect: the same ✓ in the console.
+
+Tests: PlayMode `CompanionSetupPanelNetworkTests`, `CompanionSetupRecoveryTests`, `CouncilHomelandPanelNetworkTests`,
+`CouncilHomelandRecoveryTests`, `BoardCompletionContextNetworkTests`, `FellowshipNetworkTests`, `ExpansionDecisionNetworkTests`.
+
+<a id="the-homelands-answer-themselves-with-no-companion-to-place--ui-482"></a>
+## The homelands answer themselves with no companion to place; their instruction in the console — UI-482 (2026-11-04)
+
+Three owner requests (translated).
+
+**(a) "If I play with the Council of Rivendell but change nothing in the Fellowship that requires declaring a companion's
+position on the map, I have to press confirm twice and one of them does not really confirm anything."**
+
+- **The decision stays on the server.** `CouncilSetup.BeginHomelands` always opens `CouncilHomelands`, even with no eligible
+  figure: the step's existence must not reveal the private versions, so the Shadow's view is the same either way.
+- **The client answers it** (`CouncilHomelandSkip`, `Application`). With no candidate (`CharacterActions.Count == 0`,
+  `CouncilHomelandPresentation.NothingToPlace`) it sends the mandatory draft's empty list through the normal send
+  (`TurnInteraction.Submit`), after a random pause of 1–2.5 s (`UnityEngine.Random`: this is not game randomness). A quick
+  click takes that long, so the timing tells the Shadow nothing about the versions chosen.
+- **When.** Once per decision id; only while online, with no command, presentation or newer revision under way
+  (`SelectionBusy`), the decision still open and owned and the draft ready. Each pause is a fresh
+  `Root.schedule.Execute(...).ExecuteLater(ms)`; any change of those conditions ends it, and the client starts a new one when it
+  is free again. A reconnection or a restored match arms the same still-open decision once more. Observers and replays never
+  send: they have no `TurnInteraction`, and `Applies` reads the view's owned decision alone.
+- **A refused send.** No retry loop: the console's ✓ stays enabled and the hint becomes "All companions stay with the
+  Fellowship · ✓ confirms." An uncertain response keeps the existing receipt recovery.
+- **The console during the pause** says "All companions stay with the Fellowship." with no "✓ confirms", and the required
+  notice ("! Place Companions in homelands") does not show (`DecisionAttention`): nothing can be placed.
+- **With a candidate nothing changes:** choosing nobody and pressing ✓ is a real decision, and nothing leaves by itself.
+
+**(b) Owner, on the Fellowship panel during the homelands: the lines "Click Legolas again to keep this companion with the
+Fellowship, or another lit homeland · ✓ confirms." and "◇ Politics → Travel  Shadow chooses one": "this information should
+be only in the bottom panel".**
+
+- The panel's part is gone (`CouncilHomelandChoices`, its labels `homeland-hint`, `homeland-tokens`, `homeland-token-effect`,
+  the element `council-homeland-choices` and their styles). `CompanionSetupChoices.ContainsInput` now names the version cards
+  alone; the homelands' keyboard is the board's (Enter is the console's ✓, Esc its ↶).
+- **The console's hint carries the consequence:** one departure "… · Shadow chooses one Council token · ✓ confirms.", more than
+  one "… · Shadow receives both Council tokens · ✓ confirms.", none adds nothing.
+- **The hint's tooltip** (`TurnConsoleState.GuidanceDetail`, `CouncilHomelandPresentation.Detail`) keeps what the token labels
+  said: the full hint, `TokenDetail`, and what the Politics and Travel tokens do.
+- **Fit.** At 100 % the longest hints stay in the console's two lines, in every game checked (Lords, the Council, Kings and
+  Fate). At 125 % a Lords and Kings game leaves the hint a narrow line (136 pt, at 1920×1080 too: the same logical width), so a
+  long hint ends in an ellipsis and the Shadow's tokens are read in its tooltip.
+- **Audit of the panel during the setup and the homelands:** no other instruction. It holds the header and its position row,
+  the two tracks, the portraits (with "→ Ered Luin" on a placed one), the greyed Declare and Finish phase, and at the versions
+  the two cards, whose captions name the versions. The tray's status line is hidden there (`hintInConsole`, UI-481), and
+  `fellowship-action-hint` shows only during actions.
+
+**(c) Declare.** The server will stop offering `DeclareFellowship` at the start of turn 1 when a declaration can change nothing
+(EXP-19). The button keeps its place, greyed, and its tooltip says why: "Declare · The Fellowship has not moved yet: there is
+nothing to declare at the start of the game" (`FellowshipActions.NothingToDeclare`: turn 1, progress 0, the Free Peoples'
+Fellowship phase decision, no such option). Elsewhere it keeps its general reason; the homelands too, since the phase's own
+choices may yet offer a declaration. No hint or glow offers it, because the console's guidance, the Fellowship figure and the
+button all read the server's option. The pinned test backend still offers it, so this is tested on a view without the option
+until the pin moves.
+
+`HomelandProfileScene` follows: it still clicked the `homeland-stay` button UI-347 removed, and now uses the portrait's second
+click. It no longer reads the tokens: the scene is offline, so the console's hint holds the Offline notice there.
+
+Screenshots: `ui482-empty-homelands-pause.png` (the pause: the console's line, no notice),
+`ui482-homelands-placed-1366-1.00.png`, `ui482-homelands-placed-1366-1.25.png` (the ellipsis),
+`ui482-homelands-placed-1920-1.00.png`, `ui482-homelands-placed-1920-1.25.png`.
+
+Tests: EditMode `CouncilHomelandSkipTests`, `CouncilHomelandPanelTests`, `FellowshipDeclareUnavailableTests`; PlayMode
+`CompanionSetupPanelNetworkTests.BaseVersionsReachTheFellowshipPhaseWithOneConfirm`,
+`CouncilHomelandPanelNetworkTests.EmptyAndStayKeepTheSamePrivateWaitingViewAndGrantNoTokens` (the Shadow's view compared whole;
+a refused answer; a candidate waits for the ✓),
+`CouncilHomelandPanelNetworkTests.FivePortraitsAndTokenPreviewFitBothRolesAtFourLayoutsWithoutScrolling`,
+`BoardCompletionLayoutTests` (`FullRosterVersions…` still fails at its roster stage, before the homelands; its homelands stage
+passed with that stage skipped for one run), `ExpansionLobbyNetworkTests`, `T36DesktopGameTests` through
+`FullGameExpansionChoices` (one ✓ crosses the homelands; the 125 % game then fails later with its recorded camera check),
+`BoardProfileDriverTests` (still fails in its characters workload on a camera check; `homelands-fp` passed its four layouts when
+run alone).
+
+Playtest (owner's checklist):
+- [ ] A new game with Lords and the Council of Rivendell. At the versions change nothing, or only Gandalf, and press the
+  console's ✓ once. Expect: the console says "All companions stay with the Fellowship." for a moment, with no red notice, and
+  the game reaches the Fellowship phase with no second click.
+- [ ] The same game on the Shadow's client. Expect: the usual waiting console; nothing shows that the step was empty.
+- [ ] A new game where a version with a homeland is chosen (Legolas or Gimli, Alternate). Expect: at the homelands the
+  panel shows portraits, tracks and the greyed buttons only; the console says what to click; nothing leaves by itself; choosing
+  nobody takes the console's ✓.
+- [ ] In that game place one companion, then two. Expect: the hint adds "Shadow chooses one Council token", then "Shadow
+  receives both Council tokens". Hover over the hint: it says what the ✓ gives and what the Politics and Travel tokens do.
+- [ ] The same at 125 % in a Lords and Kings game. Expect: the hint ends in an ellipsis and its tooltip holds all of it.
+- [ ] Once EXP-19's server is pinned: a new base game's first Fellowship phase. Expect: Declare greyed in its place with
+  "The Fellowship has not moved yet: there is nothing to declare at the start of the game", the console says "Continue to the
+  Hunt.", and the Fellowship's figure on the map does not glow.
+
+<a id="an-available-confirm-stands-out--ui-483"></a>
+## An available confirm stands out — UI-483 (2026-11-04)
+
+The owner: "when the confirm button is available we should highlight it more clearly, so it catches the eye". Until now the
+console's ✓ glowed only while recovering a response or finishing a card; otherwise an enabled ✓ looked much like a disabled
+one. Now every ✓ that can be clicked (`ChoiceGlow`) is solid gold under a light rim with a dark check (`--game-confirm-*`), the
+strongest contrast in the console; it breathes in brightness and size (scale 1.12), never fading away, and Reduced motion
+keeps it bright and still. A disabled ✓ stays quiet. A window's confirm (Apply losses, Keep roll…) wears the menus' primary
+plate (`--game-button-primary`) without the pulse.
+An action of several steps offers ✓ to finish early, so the ✓ is lit there too while further steps remain available.
+
+Playtest (owner's checklist):
+- [ ] A Lords game's setup. Expect: the ✓ in the console clearly gold and pulsing; with Skip animations gold and still.
+- [ ] A battle's losses. Expect: Apply losses on the gold plate once the losses are assigned, quiet before that.
+- [ ] A Muster die with a second point. Expect: the ✓ lit while it can finish the action early; say if this should be calmer.
+
+Tests: PlayMode `CompanionSetupPanelNetworkTests` (the available ✓ lit, solid gold with a dark check), `ExpansionLobbyNetworkTests` (a
+disabled ✓ is not), `TurnConsoleLayoutTests`, `GlowingHintAuditTests`, `GameButtonChromeTests`, `BattleLayoutTests`,
+`PressFeedbackClickTests`, `T22BoardNetworkTests`.
+
+<a id="the-side-colour-melts-into-the-dice-panel--ui-484"></a>
+## The side's colour melts into the dice panel — UI-484 (2026-11-04)
+
+The owner (a screenshot of the SHADOW bar): "this red bar looks a bit out of place, integrate it better with the rest of the
+tab". The own dice panel's header (`ActionPoolView.Header`) drops the framed side row: the side's enamel washes in from the left
+edge and fades out, over a hairline of the same colour that fades out too (`frontend/side-band-free`, `-shadow`; stretched, no
+slices), under the same quiet gold title as the other panels. Blue for the Free Peoples and red for the Shadow stay (UI-466). The
+console's status plaque and the YOUR ACTION ribbon keep their side rows.
+
+Playtest (owner's checklist):
+- [ ] A Shadow game and a Free Peoples game. Expect: the side's name on a soft red or blue wash that melts into the panel to the
+  right, with no frame round it.
+- [ ] An Elven Ring being used. Expect: CHOOSE A DIE in the same place, readable on the wash.
+
+Tests: EditMode `UiArtKitTests`; PlayMode `DicePanelLayoutTests` (the side's band, both sides, four layouts), `RingUseNetworkTests`,
+`GameWindowChromeTests`, `InGameDenseLayoutTests`.
+
+<a id="a-recruit-is-one-figure--ui-485"></a>
+## A recruit is one figure — UI-485 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 1): one Regular showed "+2" on the map badge and "+2 Regular" in the pennant, because the
+server records a recruit twice with different origins. The client now counts a figure's arrival once, on the badge, in the stack, in
+the pennant and in the record, whichever backend it talks to. A figure that really moved away and came back stays two facts.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-recruit-is-one-figure--ui-485).
+
+To watch with two clients: start the scenario from the Testing catalog in one client and join its seat with a second one (or
+switch side in the test menu), play from one and watch the other.
+
+Playtest (owner's checklist):
+- [ ] `fp-muster-recruit`, watched as the Shadow. The Free Peoples recruit one Regular with the Muster die. Expect: the map badge says "+1"
+  and the pennant's tooltip "+1 Regular · <region>".
+- [ ] `sh-muster-recruit`, watched as the Free Peoples. Recruit two Regulars in two regions with one die. Expect: "+1" at each, one after
+  the other.
+
+Tests: EditMode `OpponentPresentationModelTests` (`ARecruitRecordedTwiceIsOneFigureAtItsRegion`, `TwoRealMovesOfOneFigureStayTwoFacts`),
+`ActionResultTextTests.ARecruitRecordedTwiceCountsOnce`; PlayMode `OpponentRecruitmentPoliticsTests.ARecruitRecordedTwiceShowsItsRealCount`
+(both viewers), `OpponentRecruitmentPoliticsNetworkTests` (the exact count on the real server, both directions).
+
+<a id="an-events-casualties-have-their-scene--ui-486"></a>
+## An event's casualties have their scene — UI-486 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 2): the camera travelled to the region of Dreadful Spells, Ents, Dead Men, Valinor,
+Rangers, Madness or a Kings card, and nothing played; the stack dropped at the release. Now they play as figure changes: the force glows,
+the badge says "−N", the stack settles. A downgrade is its Elite out ("−1"), then its Regular in ("+1"). A battle's casualties stay in its window.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#an-events-casualties--ui-486).
+
+Playtest (owner's checklist):
+- [ ] `layout-dreadful-spells-siege` with two clients. The Shadow plays Dreadful Spells on the Parth Celebrant army (its Nazgûl roll, so
+  try again if nothing hits) and the Free Peoples remove a Regular. Expect on the Shadow's board: the camera at Parth Celebrant, the force
+  glowing, "−1" beside it and the stack one smaller, before the next decision. The Free Peoples, who chose, get no scene.
+- [ ] Same, the Free Peoples downgrading their Elite. Expect: "−1" with the Elite's figure, then "+1" with the Regular's, the count back
+  where it was.
+- [ ] Same with Skip animations on. Expect: the same badges and counts, the camera jumping. Say if the two beats of a downgrade feel long.
+
+Tests: EditMode `OpponentPresentationModelTests.AnEventsLossesAreFigureChangesTheCameraFrames` (both viewers); PlayMode
+`OpponentRecruitmentPoliticsTests` (`AnEventsRemovalPlaysItsSceneAtTheRegion`, `AnEventsDowngradeShowsItsEliteOutAndItsRegularIn`, both
+viewers), `Shadow04NetworkTests.EventLossesRemainTheDefendersChoice`, `ShadowStrategy01NetworkTests` (a real downgrade),
+`CardPack04NetworkTests` (the Free Peoples watching the Shadow's casualties).
+
+<a id="the-spent-die-leaves--ui-487"></a>
+## The spent die leaves — UI-487 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 3; "it must be clear, not slow"): the spent die was ringed, stayed in the row and vanished in
+one frame. Now, as the action's last beat (about 0.7 s), the ring ends and a copy of the die flies from its row into the count where it
+lies: the opponent's Spent or Out chip, or the Hunt plaque's count for a die entering the Hunt Box. The count steps as it lands and the
+row closes. A Muster die with two points leaves once, at the end; a die a new turn recovers flies nowhere. Skip animations: no flight, the
+count steps with its pulse. Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#the-die-leaves--ui-487).
+
+Playtest (owner's checklist):
+- [ ] `sh-muster-recruit`, watched as the Free Peoples. Recruit one Regular and click ✓ to finish. Expect: the die stays with its "•" after
+  the recruit, and only at the finish flies to the Spent chip, which steps. Say if 0.7 s per action is right.
+- [ ] `fp-character-move-fellowship`, watched as the Shadow. Move the Fellowship. Expect: Hunt window, tracks, then the die flies to the
+  Hunt plaque's footprint count, which steps.
+- [ ] `sh-army-attack`, watched as the Free Peoples, fought to its end. Expect: the die stays in the row through the battle, and flies
+  to Spent as the battle ends, its window staying open.
+- [ ] Any action forfeited with a die. Expect: it flies to the Out chip.
+- [ ] Skip animations on, then Skip during a flight. Expect: no flight; the count steps; Skip shows the latest state.
+
+Tests: EditMode `OpponentPresentationModelTests` (`TwoMarchesLetTheirDieLeaveOnceAtTheEnd`, `AnAttacksDieLeavesWhenItsBattleEnds`,
+`ADieRecoveredByItsOwnRevisionFliesNowhere`, `AFellowshipMovesDieEntersTheHuntBoxAfterItsHunt`, `ADieKeptByVilya…`); PlayMode
+`OpponentSpentDieTests` (both viewers), `OpponentSpentDieNetworkTests` (two points, both directions); frames `ui487-*`.
+
+<a id="what-the-opponent-gains-through-your-own-click--ui-488"></a>
+## What the opponent gains through your own click — UI-488 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 5): a step you decided showed nothing, so the Shadow never saw the Free Peoples' roll, and
+when your click ended the turn the opponent's dice and draws simply appeared. These facts now play on your own step, the camera staying yours:
+the opponent's dice rolled or recovered, its paying die leaving, its automatic draws as backs, and the Fellowship's Mordor inactivity. Nothing you
+did yourself is played back, and hands stay hidden. Dice that are in no row yet appear lit at once instead of 0.7 s of nothing. These beats
+come between your click and your next decision (about 1.5–3 s); Skip ends them.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#through-your-own-click--ui-488).
+
+Playtest (owner's checklist):
+- [ ] `fp-event-draw` with two clients, both sides forfeiting every die, watched from whichever side clicks last. Expect on that board: the
+  opponent's dice appear lit, then two backs fly from its decks into its card count; your own draws arrive with your hand, no back flies
+  for them.
+- [ ] Same game, next turn: Continue as the Free Peoples, then allocate the Hunt as the Shadow. Expect on the Shadow's board: the Free Peoples'
+  dice light in the top bar and show their faces before your own roll appears; the camera stays where you left it. Say if the wait after
+  your click is right.
+- [ ] `fp-mordor-track` with two clients, both sides forfeiting every die with no attempt to move or hide. Expect: the panel opens and the
+  corruption track moves one, on both boards, before the next decision.
+
+Tests: EditMode `OpponentPresentationModelTests` (`TheShadowSeesTheFreePeoplesRollOnItsOwnAllocation`,
+`TheOpponentsDrawsAndDiceFollowWhenOurClickEndedTheTurn`, `OurOwnPaymentWithTheOpponentsDieStaysOurs`,
+`MordorInactivityShowsOnOurOwnStepAndOtherTracksDoNot`); PlayMode `OpponentOwnClickPresentationTests` (both viewers),
+`OpponentSpentDieNetworkTests.TheEndOfTheTurnAndTheRollShowOnTheClickersOwnBoard`; frames `ui488-*`.
+
+<a id="a-retreat-into-a-siege-has-its-scene--ui-489"></a>
+## A retreat into a siege has its scene — UI-489 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 6): figures hopped onto the walls at the release. On the server's new record (EXP-20) a withdrawal plays the
+ordinary retreat's scene: the force glows in the field, the camera frames the region, the figures rise and land on the walls. The player's own click plays it too, with
+the camera theirs, as with an ordinary retreat; Scouts' Withdraw into siege is the same. The pennant reads "Defender withdraws into the stronghold", not "retreats".
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-retreat-into-a-siege-has-its-scene--ui-489).
+
+Playtest (owner's checklist):
+- [ ] A battle scenario with an army attacking a stronghold (`shelter-stay` on the test server), watched as the attacker. The defender withdraws. Expect: their force glows in the
+  field, then flies onto the walls of the same region; the pennant's tooltip says "withdraws into the stronghold".
+- [ ] Same, from the defender's own board. Expect: the same flight, and the camera stays where you left it.
+- [ ] `strategy-scouts`, the Free Peoples clicking the battle's own region. Expect: the same scene on both boards.
+- [ ] Skip animations on. Expect: no flight; the figures stand on the walls, glowing.
+
+Tests: EditMode `OpponentPresentationModelTests.AWithdrawalIsAShelterRetreatForBothPlayers`, `ActionResultTextTests`; PlayMode `OpponentArmyPresentationTests` (both viewers),
+`OpponentFreePeoplesActingNetworkTests` (`AWithdrawalFliesOntoTheWallsForBothPlayers`, `ScoutsWithdrawalIsTheSameScene`); frames `ui489-*`.
+
+<a id="looking-away-pauses--ui-490"></a>
+## Looking away pauses — UI-490 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 4): alt-tab ended the opponent's presentation and showed the latest state. Now it pauses, with the card, the panels and a flight
+in the air standing as they were, and resumes on the return. A backlog of more than 20 cues (about half a minute of catching up) is not replayed: that absence shows the latest
+state, as before. The alert that it is your decision still sounds in the background, once. A reconnect and a return to an async game stay as they were.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#looking-away-pauses--ui-490).
+
+Playtest (owner's checklist):
+- [ ] Two clients, `sh-muster-event`. Play the Event as the Shadow and alt-tab on the Free Peoples' board while the card is being read; come back after ten seconds. Expect: the card
+  still stands, its reading goes on, then it docks and the recruits follow. Say if resuming feels right, or if it should start the beat over.
+- [ ] `sh-army-move`. Alt-tab while the army flies. Expect: on the return it is where it stopped, and it lands.
+- [ ] With "Background alerts" on, wait on another window for the opponent's action that passes the decision to you. Expect: the alert sounds at once, the presentation plays on your
+  return, then your decision opens, without a second alert.
+- [ ] Skip on the return. Expect: the latest state at once, and your next click reaches nothing it should not.
+- [ ] Say if 20 cues is the right cap; the normal game rarely gets near it.
+
+Tests: EditMode `OpponentPresentationQueueTests`, `GameSoundsTests`; PlayMode `OpponentFocusPresentationTests`; frames `ui490-*`.
+
+<a id="a-quiet-battle-decision-reads--ui-491"></a>
+## A quiet battle decision reads — UI-491 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 7): Hold, Continue, Stop, Fight in the field, Evil Knowledge and No card now stand as one short caption ("Holds", "Stops", "No card"…) on the deciding
+side's column for 0.8 s, before the ribbon steps. A committed card still has no caption and stays a back until its reveal.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-quiet-battle-decision-reads--ui-491).
+
+Playtest (owner's checklist):
+- [ ] `sh-army-attack`, watched as the Free Peoples, fought through two rounds. Expect: "No card" when the Shadow declines; "Continues" when it goes on; on the Shadow's board "Holds" when you
+  hold. Each on the deciding side's column, before the ribbon moves.
+- [ ] A round whose last commit is "No card". Expect: the caption before the dice roll, not after.
+- [ ] A committed card. Expect: no caption, only its back.
+- [ ] Say if 0.8 s per decision reads well, and if a round feels slower.
+
+Tests: EditMode `OpponentPresentationModelTests`; PlayMode `OpponentBattlePresentationTests` (both viewers), `OpponentFreePeoplesActingNetworkTests` (No card, both directions); frames `ui491-*`.
+
+<a id="a-cards-dice-are-shown--ui-492"></a>
+## A card's dice are shown — UI-492 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 8): the dice a card rolls outside a battle now stand as a plate of die faces above the region for about a second, with the dice sound, before
+the losses they cause; the faces that hit wear the battle dice's hit face. A roll with no region (a healing roll) stands in the middle of the map.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-cards-dice-are-shown--ui-492).
+
+Playtest (owner's checklist):
+- [ ] `layout-dreadful-spells-siege` with two clients. The Shadow plays Dreadful Spells. Expect on the Free Peoples' board: after the card, the camera at Parth Celebrant, three dice above it with the
+  hits lit, the dice sound, then your losses decision.
+- [ ] `dead-men` on the test server, watched as the Shadow. Expect: one die at Pelargir (Dead Men has no target number, so it is plain), then your losses.
+- [ ] A Fellowship card that rolls to heal, watched as the Shadow. Expect: the dice in the middle of the map.
+- [ ] Say if a second is enough to read the dice.
+
+Tests: EditMode `OpponentPresentationModelTests`; PlayMode `OpponentCardRollPresentationTests` (both viewers); `OpponentFreePeoplesActingNetworkTests`; frames `ui492-*`.
+
+<a id="the-rest-of-a-cards-way--ui-493"></a>
+## The rest of a card's way — UI-493 (2026-11-04)
+
+The owner's decision on the opponent audit (gaps 9, 10, 11): a table card leaving while the Effects panel is closed names itself beside the lit tab for 1.5 s ("− Flocks of Crebain"); Voice of Saruman's
+source is Saruman, whose moment now stands over his force; the opponent's hand count steps as an Event sets out or a Combat card is committed, not seconds later at the release. A table card played as a
+combat card steps it too: the public count already holds it.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#the-rest-of-a-cards-way--ui-493).
+
+Playtest (owner's checklist):
+- [ ] `sh-muster-event`, watched as the Free Peoples. Expect: the card count steps as the card leaves it, and not again at the end.
+- [ ] `sh-army-attack`, the Shadow committing a card. Expect: the count steps as its back appears.
+- [ ] `effects-palantir` (or any table card removed) with the Effects panel closed. Expect: the tab lights and the card's name stands beside it for 1.5 s. With the panel open: its tile lights, no name.
+- [ ] `ability-voice-recruit-full`, watched as the Free Peoples. Expect: Saruman's portrait and name stand over his force before the recruits.
+
+Tests: EditMode `OpponentExpansionCueTests`, `CharacterPresentationTests`; PlayMode `OpponentCardPresentationTests`, `OpponentBattlePresentationTests` (both viewers), `Shadow03NetworkTests.TableBalrog…`,
+`OpponentCharacterPresentationNetworkTests.VoiceOfSarumanNamesItsSourceOnTheWatchingBoard`; frames `ui493-*`.
+
+<a id="both-viewers--test-20"></a>
+## The opponent suites watch from both sides — TEST-20 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 12). The Army, Recruitment, Card, Resource and Battle suites play each scene for both viewers; `OpponentFreePeoplesActingNetworkTests` has the Shadow
+watch a march, a political step, an Event, a Ring, Dead Men's die and a capture on the real server; recorded `muster-recruit` and `event-loss` fixtures join the model tests. They found no wrong scene for either viewer, and one bug, fixed: a retreat's or
+an advance's pennant read only "Battle at X · Round N". Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#both-viewers--test-20).
+
+Playtest (owner's checklist):
+- [ ] Nothing new to play; a game played as the Shadow against the Free Peoples should read as clearly as the other way round. Say if any scene does not.
+
+<a id="the-bottom-row-stands-on-the-screens-edges--ui-494"></a>
+## The bottom row stands on the screen's edges — UI-494 (2026-11-04)
+
+The owner: "let's stick the tabs at the bottom to the edge of the screen, like the tabs at the top or the cards' tab". The own dice
+panel stands on the left and bottom edges and the console on the bottom edge (they stood 4 points off); their heights and everything
+inside them stay, and the options strip keeps its 4 points above the console. The gaps between the bottom row's panels stay.
+
+Playtest (owner's checklist):
+- [ ] Any game. Expect: the dice panel in the bottom left corner and the console on the bottom edge, level with the cards, with no map
+  showing under them.
+
+Tests: PlayMode `TurnConsoleLayoutTests` (the panels on the edges, every layout), `DicePanelLayoutTests`, `CompactBoardLayoutTests`,
+`InGameDenseLayoutTests`, `WillOfTheWestFaceNetworkTests`, `LayoutStressScenarioTests`.
+
+<a id="combat-titles-wrap--ui-495"></a>
+## Combat titles wrap in a full hand — UI-495 (2026-11-04)
+
+Found in the website's pictures: with five cards in the battle window, a Combat title ran out of its narrow card and was cut
+("They Are Terr", "We Come to Ki"). The title wraps into its two lines now.
+
+Playtest (owner's checklist):
+- [ ] `showcase-siege` as the Shadow. Expect: five cards in the battle window, each title whole on one or two lines.
+
+Tests: PlayMode `WebsiteScreenshotTests.TheGreatSiege`, `BattleLayoutTests`.

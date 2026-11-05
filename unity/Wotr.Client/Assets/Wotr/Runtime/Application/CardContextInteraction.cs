@@ -10,13 +10,16 @@ namespace Wotr.Client
         private readonly Action<Action, bool> edit;
         private readonly Func<bool> busy;
         private readonly Action<string> problem;
+        private readonly BranchCarry carry;
         private PlayerView view;
         private TurnDraft draft;
         private string politicsOpenedFor = "";
 
-        public CardContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy, Action<string> problem)
+        public CardContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy, Action<string> problem,
+            BranchCarry carry)
         {
             this.board = board;
+            this.carry = carry;
             this.edit = edit;
             this.busy = busy;
             this.problem = problem;
@@ -38,8 +41,16 @@ namespace Wotr.Client
             board.Decks.Refresh(view, draft, board.ActionDie, busy());
             board.CardCosts.Refresh(view, draft, board.ActionDie, busy());
             var targets = draft.Kind == CommandKind.PlayEvent ? CardDraft.Event(draft, DraftOptions.For(view, draft))?.NationTargets : null;
-            board.Nations.Highlight(targets ?? Enumerable.Empty<string>());
-            OpenPolitics(targets?.Count > 0 && draft.Payload.NationId.Length == 0);
+            var kings = KingsCardChoices.Nations(view);
+            if (targets?.Count > 0)
+                board.Nations.Highlight(targets);
+            else
+                board.Nations.Highlight(kings);
+            OpenPolitics(targets?.Count > 0 && draft.Payload.NationId.Length == 0 ||
+                view.Decision?.Presentation == KingsCardChoices.NationStep && kings.Count > 0);
+            // UI-278 (D15): the nation whose token chose Wisdom's politics is the Nation step's nation.
+            if (!busy() && carry.Take(view, KingsCardChoices.NationStep) is { Length: > 0 } nation)
+                board.Root.schedule.Execute(() => KingsNation(nation));
         }
 
         // UI-148: a played card that waits for a nation opens Politics once per play, so its highlighted nations
@@ -98,7 +109,7 @@ namespace Wotr.Client
                         MarkDiscard(card);
                 edit(() => draft.Adopt(next), ready);
             }
-            else if (draft.Kind == CommandKind.ChooseEffect && view.Hand.Contains(id))
+            else if (draft.Kind == CommandKind.ChooseEffect && (view.Hand.Contains(id) || InspectedHand.Contains(view, id)))
             {
                 if (HandView.DiscardChoice(view))
                     MarkDiscard(id);
@@ -184,8 +195,23 @@ namespace Wotr.Client
 
         private void Draw(string deck)
         {
-            if (!busy() && view != null && CardActions.CanDraw(view, draft, board.ActionDie, deck))
+            if (busy() || view == null)
+                return;
+            // UI-271: the Spear's deck; UI-431: a response's draw from its deck (ReactionDecks).
+            var reaction = ChiefReactionObjects.DeckReaction(view, deck);
+            if (reaction.Length == 0)
+                reaction = ReactionDecks.Draw(view, deck);
+            if (reaction.Length > 0)
+                edit(() => Respond(reaction), true);
+            else if (CardActions.CanDraw(view, draft, board.ActionDie, deck))
                 edit(() => CardActions.Draw(draft, view, board.ActionDie, deck), true);
+        }
+
+        private void Respond(string reaction)
+        {
+            if (draft.Kind != CommandKind.RespondEffect)
+                draft.Choose(CommandKind.RespondEffect);
+            draft.Change(p => p.ReactionId = reaction);
         }
 
         private void Cost(EventCostOption cost)
@@ -199,8 +225,25 @@ namespace Wotr.Client
             }, false);
         }
 
+        // UI-278 (D15): a Kings card's nation choice — the Nation step, or Wisdom's politics carrying its nation there.
+        private bool KingsNation(string nation)
+        {
+            var effect = view == null ? "" : KingsCardChoices.NationEffect(view, nation);
+            var option = view?.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.ChooseEffect);
+            if (effect.Length == 0 || option == null)
+                return false;
+            if (busy())
+                return true;
+            if (effect == KingsCardChoices.Politics)
+                carry.Set(view, KingsCardChoices.NationStep, nation);
+            edit(() => EffectChoiceSelection.Choose(view, draft, option, effect), true);
+            return true;
+        }
+
         private bool Nation(string nation)
         {
+            if (KingsNation(nation))
+                return true;
             if (view == null || draft.Kind != CommandKind.PlayEvent ||
                 CardDraft.Event(draft, DraftOptions.For(view, draft))?.NationTargets.Contains(nation) != true)
                 return false;

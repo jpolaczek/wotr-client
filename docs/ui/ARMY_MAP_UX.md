@@ -38,7 +38,9 @@ The decisions of the user from this conversation:
   test server package in GitHub releases for client tests;
 - documentation, tasks and implementation in turn; no push.
 
-The REQUIREMENTS R08, R09, R15–R20, R22, R23, UX_SPEC U01, U04, U05, [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md) and the rule of pressing with [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md). Without changing the rules of the game, commands and Contracts. Army movement remains only clicks (UI-105); drag remains only for reserves (R16). The graphics do not contain text, digits or rules; numbers, legality and hitboxes belong to the code (R08).
+The REQUIREMENTS R08, R09, R15–R20, R22, R23, UX_SPEC U01, U04, U05, [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md) and the rule of pressing with [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md). Without changing the rules of the game, commands and Contracts. Army movement remains only clicks (UI-105); drag remains only for reserves (R16) — for units and characters superseded
+by UI-421 (2026-10-28), [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md): they are picked up and carried, a drop sending
+what the target click sends (built by UI-405, 2026-10-30: [below](#ui-405)). The graphics do not contain text, digits or rules; numbers, legality and hitboxes belong to the code (R08).
 
 <a id="znaczniki-armii"></a>
 ## Army markers
@@ -51,7 +53,9 @@ The REQUIREMENTS R08, R09, R15–R20, R22, R23, UX_SPEC U01, U04, U05, [BOARD_IN
 | Token | approximation < 1,3× match (return below 1,2×) | puck approx. 28 pt in the enamel of the page, coat of arms of the nation with the highest number of figures, total number; garrison has blanks on the upper edge |
 | Figures on the stand | approximation ≥ 1,3× match | up to three figures from the `board-figures-v2` atlas on the base of the page (approx. 76×56 pt, from UI-185 100×72 pt, from UI-192 116×84 pt); in front of the base game coats of arms of the nation (up to two, hereinafter ‘+’) and total number; garrison on the stand with blanks |
 
-The thresholds are start values; UI-126 fine-tunes them on the entire 1366×768 and 1920×1080 map. No tag disappears at a distance. The level switch changes only the class (`army-token`/`army-figures`) without redevelopment of the elements. The Silvets retain the priority of `MapArmyArtwork` (the character, elite, regular, leader or Nazgûl). figure in the atlas is common to the page; the nation shows the coat of arms with `Art/UI/icons/nations`.
+Since UI-406 (2026-10-30) the token is a puck lying on the table: the painted enamel puck (a garrison's walled with
+battlements) over a contact shadow, emblem and count on it, the state a rim round it ("Tokens, kings and settlements on
+the table — UI-406" below). The thresholds are start values; UI-126 fine-tunes them on the entire 1366×768 and 1920×1080 map. No tag disappears at a distance. The level switch changes only the class (`army-token`/`army-figures`) without redevelopment of the elements. The Silvets retain the priority of `MapArmyArtwork` (the character, elite, regular, leader or Nazgûl). figure in the atlas is common to the page; the nation shows the coat of arms with `Art/UI/icons/nations`.
 
 <a id="położenie"></a>
 ### Location
@@ -65,10 +69,14 @@ The thresholds are start values; UI-126 fine-tunes them on the entire 1366×768 
   the interval, it never puts the tags on itself.
 - Fellowship tag unchanged, in the same collision layer.
 
+Superseded by UI-401 (2026-10-30): every force stands on its region's fixed place and is sized with the map; nothing
+moves to make room ("Figures on their places, sized with the map — UI-401" below).
+
 <a id="treść-i-informacja"></a>
 ### Content and information
 
-- The total number includes regular, elite, leaders, Nazgûle and characters.
+- The total number includes regular, elite, leaders, Nazgûle and characters. Since UI-402 (2026-10-30) characters
+  stand as their own miniatures: the number and the tooltip are the army's units only.
 - Tooltip after 200 ms (R19) gives the composition per nation: regular, elite, leaders, Nazgûle
   separately, character names; garrison/pole/obl Only data on the safe projection.
 - The `ArmyMarker` model in `BoardPresentation` gets counters per nation and a separate Nazgûli
@@ -83,11 +91,20 @@ The thresholds are start values; UI-126 fine-tunes them on the entire 1366×768 
 | --- | --- | --- |
 | Hover | `:hover` | base game Lightening |
 | Legal Source | `eligible-army` | ChoiceGlow halo behind the marker (UI-301): gold rim on a warm plate, pulsing |
-| Chosen Army | `selected-force` | Gold border and lift 2 |
-| Capacity owner | `ability-owner` | gold border without lifting |
+| Chosen Army | `selected-force` | Gold rim round the stand (UI-400); since UI-403 the chosen figures are lifted into the hand (rows below) |
+| Capacity owner | `ability-owner` | gold plinth without lifting and, since UI-374, the ChoiceGlow halo, pulsing; since UI-441 also the miniature of a character whose skill can be used now (or the force an Initial king leads), its tooltip leading with "Usable now: …" ([UX_SPEC](UX_SPEC.md#usable-skills-light-their-character--ui-441)) |
 | Pressing | `pressed` | principle UI-114 |
 | After the march | `moved` | extinguishing and sign ✓ on the stand |
-| The Spirit of Purpose | `army-ghost` | 40% opacity, without hitbox |
+| Lifted, in place (UI-403) | `figure-hand-piece` `figure-lifted` (in `map-hand`) | The chosen figures — a force's units on a base of their own with the gold rim, each character on its stand — drawn by the same miniature at the same scale, 1.10 × round the feet and 12 px × scale higher; their contact shadow stays on the table at .8 and .35 opacity; opaque, never takes the pointer |
+| What stays behind (UI-403) | the source's own classes; `lifted-away` when nothing stays | The source shows only its figures not lifted (its count too); a base none stays on disappears, its hit shape kept, so a click there is still its click |
+| Returning (UI-403) | `hand-returning` | Esc, undo, a figure left behind in the region panel or an attack: the piece drops back onto its base (0.22 s), then the base shows it again |
+| Planned (UI-403) | `hand-planned` | A card's planned flight or journey now shows the figure at its destination (the planned ghost): the piece dissolves where it hovers (0.25 s) and its place keeps showing only what stays behind |
+| Landing mark (UI-403) | `landing-mark` `landing-move` / `landing-attack` | On a hovered legal target: the baked ring on the table at the place the figures would take (an army's field or planned place, a lone character's next character place), green for a move, red for an attack; the click's caption (`landing-caption`) hangs above the lifted figure. Replaces UI-127's `army-ghost`: nothing is drawn faintly at the target |
+| Sent, awaiting the view (UI-404) | `figure-hand-piece` `figure-lifted` | The step left: the lifted piece stays raised (at most 5 s) and its flight is expected from there (`MapFigureMotion.Expect`); a rejection, a disconnect or the expiry drops it back onto its base |
+| In flight (UI-404) | `figure-flight` (in `map-figure-motion`) | The destination's own miniature at the figures' scale rises from its place (or goes on from the hand's raised pose), arcs with its shadow on the ground and lands on the destination's place, where its stand waits at a quarter opacity; `figure-arrival` under Reduced motion: it stands on the place and fades a little. Details: [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-404)" |
+| Carried (UI-405) | `figure-hand-piece` `figure-lifted`; the region under it `CarriedTarget` / `CarriedAttack` | A press dragged past the threshold carries the raised pieces of the unsent move under the pointer, in the raised pose, clipped to the map; no label; a legal target under it lights more strongly in its own colour, with the landing mark and the caption |
+| Dropped, sent (UI-405) | `figure-hand-piece` `figure-lifted` | It stays raised where it was dropped (at most 5 s) and its flight leaves from there |
+| Gliding home (UI-405) | `hand-gliding` on the piece's holder | A drop that sends nothing, Esc or a lapse: the holder's translate glides back over its source in 0.22 s (with `hand-returning` when it drops onto its base) |
 
 The `.illustrated-army` rule stops overwriting the colors of the pages and the border of the states; the pixel test in UI-126 checks each state.
 
@@ -113,7 +130,9 @@ Flow: die Army/Character → legal armies shine → **Army click marks the entir
 - **Review of the goal.** The implementation of the legal target shows the spirit marked figures
   (`army-ghost`) at the place they will take, and tooltip "Move n figures" or "Attack ·
   <BattleMode>" with `ArmyTargetOption.BattleMode`. Without predicting political effects and
-  control: tooltip does not ask the server (R19).
+  control: tooltip does not ask the server (R19). Superseded by UI-403 (2026-10-30): the hovered
+  target shows the landing mark on that place and the caption hangs above the lifted figure; no
+  faint copy is drawn ("A chosen figure lifts off the board — UI-403" below).
 - **The target click sends a step immediately (without a Confirm) as today.
 - Second march. figure They've already moved, they've got a condition. `moved` in panel (✓, not
   selected) and on the tag; the tray shows ‘ →   → “ from `ActionProgress`,  ✓ He's done early.
@@ -144,6 +163,10 @@ with the whole army and opens its region panel, whose lit figures toggle; a lit 
 n of m", offers the event's alternatives (another kind of army step, Skip maneuver) as buttons, ↶ undoes the last
 step and ✓ sends. The decision window no longer lists plans, routes or figures. Code: `CardArmyEvent`
 (presentation), `CardArmyInteraction` (application); details in [CARD_CHOICES_UX](CARD_CHOICES_UX.md).
+UI-431 (2026-10-31): the alternatives are no buttons any more. As with the Army die (UI-389) the armies of both steps
+glow and the chosen army's attack targets light with its moves, red with the red landing mark (UI-403); an attack
+target's click makes the step that attack, and Skip maneuver is the console's ✓ while no army is chosen
+([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 
 ## Meal Panel
 
@@ -219,8 +242,8 @@ Category `graphicalassets/ui/src/armies/`, entries in `assets.json`, contract in
 
 | Group | Files | Options |
 | --- | --- | --- |
-| Bases | `base-field` (76×22), `base-garrison` (76×28, wall with blanks) | `free`/`shadow` × base, `selected`, `eligible`, `pressed`, `moved` |
-| Tokens | `token-field` (30×30), `token-garrison` (30×34, crown blank) | like a stand |
+| Bases | `base-field` (76×22), `base-garrison` (76×28, wall with blanks) — removed by UI-406 (the UI-400 stands replaced them) | `free`/`shadow` × base, `selected`, `eligible`, `pressed`, `moved` |
+| Tokens | `token-field` (30×30), `token-garrison` (30×34, crown blank) — removed by UI-406 (the puck `token-puck-*` and the rim `rim-token`) | like a stand |
 | Characters | `moved-check` (14×14), `ghost-outline` (48×48, 9-slice) | — |
 | Reserves | `reserve-slot` (48×48, 9-slice), `budget-slot` (18×18) | `selected`, `pressed`; `filled` |
 | Cards | variant `playable`lic card in hand: green glow (UI-124) | — |
@@ -510,7 +533,7 @@ acceptance zmielny 2026-10-14 zmielny ed UI-124–UI-157 (last changes to accept
 | AM03 | UI-125: 47 Army Textur with `.meta`, `UiArtKitTests`; in acceptance full EditMode 722/722. |
 | AM04–AM08 | UI-126: `ArmyMarkerTests`, `MapMarkerVisibilityTests`, `MapArmyArtworkTests`, `MapVisibilityTests` (drops `ui126-map-fit/zoom` in four layouts), legend of "Armies"; dense scenes `map17-dense-*` both sides in four layouts and before/after with panorama (`MapContourAcceptanceTests`), field and garrison Helm's Deep separated. |
 | AM09 | UI-126 (tooltip per nation, public data); `map17` Development Player profile performed only including acceptance, cf. “Profile”. |
-| AM10–AM15 | UI-127 : `ArmyMovementTests` , `BoardInteractionTests` ( `UI127OneClickSelects…` ), `ArmyContextNetworkTests` ; in acceptance `BoardInteraction` and `ArmyContextNetwork` 19/19 , `MapClickMove` , `FigureMotionNetwork` , `Movement` (specify 1/1 ). |
+| AM10–AM15 | UI-127 : `ArmyMovementTests` , `BoardInteractionTests` ( `UI127OneClickLifts…` since UI-403 ), `ArmyContextNetworkTests` ; in acceptance `BoardInteraction` and `ArmyContextNetwork` 19/19 , `MapClickMove` , `FigureMotionNetwork` , `Movement` (specify 1/1 ). |
 | AM16 | UI-128: Packages expansions,  ShadowStrategy, Strategy,  CardPack, Kings,  Fate/Lords/Muster; in acceptance   `ExpansionToken` / `ExpansionAbility`   19/19,  `KingsCards01` / `LordsShadow`   9/9,  `KingsCards02`   7/7. |
 | AM17 | UI-129: `RecruitmentAvailabilityTests`, `MusterTests`, `RecruitSequenceTests`; in acceptance full `scripts/test.sh` server 3848/3848; package published (UI-133). |
 | AM18–AM19 | UI-130 (with UI-134, UI-135, UI-142, UI-150): `ReinforcementsLayoutTests` (split `ui130-reinforcements-*` from both sides in four systems), `MusterNetworkTests`, `MultiUseDiceNetworkTests`, `ResourcePanelNetworkTests` 12/12. |
@@ -668,7 +691,7 @@ own draft. During an opponent presentation:
   its rear guard and the destination its true count (dimmed until the flight lands);
 - only the recorded participants fly, with the same flight figures, sizes and timing as today's figure motion;
 - attackers stay at their origin; a retreat into a stronghold lands on its garrison row and a sortie leaves it;
-- the acting stack glows in the observed pale-blue light around its own figures (UI-314; before it a ring), never the
+- the acting stack glows in the observed gold light around its own figures (UI-314; before it a ring), never the
   legal-target, choice, selected or ghost treatments;
 - the release applies the latest view without replaying the presented flights.
 
@@ -688,11 +711,11 @@ trace ignore the pointer; the marker keeps its own inspection.
 
 Owner review of the live presentation: armies and characters are not marked by a rectangle around them, they glow. A
 presented force, the march's source and destination, a character's force and the Fellowship's figure light around their
-own shapes — the plinth, the figures, the emblems and the count — in the observed pale-blue light (`PresentationGlow`, a
+own shapes — the plinth, the figures, the emblems and the count — in the observed gold light (`PresentationGlow`, a
 zero-offset `drop-shadow` filter on the marker's artwork), fading in over 200 ms and out over 400 ms; Reduced motion
 shows it without the fades. It is never the gold ChoiceGlow halo of a choosable army, takes no pointer and moves nothing.
 New figures — recruits, an upgrade's Elite, an entering character — land and keep glowing for 1.5 s, with the delta badge
-beside them. Settlements keep their pale-blue ring. Spec: [OPPONENT_ACTIONS_UX §5](OPPONENT_ACTIONS_UX.md#slownik) and
+beside them. Settlements keep their ring, gold since UI-378. Spec: [OPPONENT_ACTIONS_UX §5](OPPONENT_ACTIONS_UX.md#slownik) and
 §6.18.
 
 <a id="region-zrodlowy--ui-323"></a>
@@ -717,7 +740,8 @@ occlusion changed until the picture is fully clear; the new number shows and the
 - Characters are part of their region's marker (`ArmyMarker.Characters`, counted in its total): a character standing alone
   in a region is that region's marker and emerges like an army; a character joining an army makes it flare and step its
   number (UI-336, which corrects UI-334's note that character marks were not covered; `CharacterMark` is a presentation
-  trace's identity, not a map marker). The Fellowship's figure never appears from nothing; it flies.
+  trace's identity, not a map marker). The Fellowship's figure never appears from nothing; it flies. Superseded by
+  UI-402 (2026-10-30): each character is its own miniature and emerges on its own; an army counts its units only.
 - UI-322: the map's armies use no filter. The first version blurred the flare and the emerging figures, and a blurred
   element on a marker made Unity's renderer fail when the panel's scale, size or target changed (`FellowshipTrackLayoutTests`,
   `Shadow02LayoutTests`); the flare is now the soft glow texture (`move-glow`), the figures fade in opacity only, and the
@@ -740,3 +764,203 @@ Owner: "a unit that disappears from the map should also fade out slowly and smoo
 - The first view, a quiet view, Reduced motion and Skip animations remove the marker at once; Skip of a presentation ends
   every fade (`MapCanvas.EndEmerging`). The map's slice of UI-322's "a figure leaving a stack fades out".
 
+## Miniatures on the table — UI-400 (2026-10-29)
+
+UI-400 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md)): at the figures level an army is a miniature. Its figures stand
+on a painted stand in their side's enamel — an oval one (`stand-field-*`, 112 × 44 points) or a crenellated one for a
+garrison (`stand-garrison-*`, 112 × 48) — over a contact shadow a little down and right on the table; the marker is
+116 × 92 points (garrison 116 × 96). Each figure's box is its painted cell's shape, so its feet are the box's bottom edge
+and stand on the stand's top face: one figure in the middle, two staggered, three with the first farther back (8 points
+higher, 90 %) and two in front. The painted atlases carry each figure's stature (a regular about .78 of an elite, a
+hobbit about .62), so they are shown at one height (54 points for an elite); the Balrog stands 1.1 tall and the UI-76
+fallback silhouettes take their kind's share (`FigureStature`). The state is a rim round the stand instead of the eight
+plinth pictures: eligible and a king's target (legal green), ability owner (amber), selected and armed (gold), pressed
+(dim gold), moved (a veil); ChoiceGlow stays, as a capsule round the stand. The nation emblems and the count are a
+code-drawn plaque on the stand's front. Only the stand's ellipse and the figures' boxes take a press (`MiniatureButton`),
+so the headroom above a figure passes it to whatever lies behind. No filter is used on a map army. The far-zoom token
+kept its UI-125 pictures until UI-406 (below). Tests: `MapArmyArtworkTests`, `UiArtKitTests`.
+
+## Figures on their places, sized with the map — UI-401 (2026-10-30)
+
+UI-401 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "Stand places, scale, depth and hit shape"): an army no longer
+looks for room in a row beside its region's point. It stands on its region's fixed place (UI-422) at every zoom, sized
+in board units, and keeps that place while the map pans, glides or zooms.
+
+- **Where.** A garrison stands at its fortress's gate; the region's main field force (the one with army units,
+  otherwise the larger) on the field place; a second field force (Nazgûl or companions beside the other side's army)
+  on the planned place (since UI-402 a Nazgûl force beside the other side's army; the characters stand on their own
+  places, "Every character is its own miniature — UI-402" below). Planned recruits, a card's planned Nazgûl flights and
+  journeys stand on the planned place; the planned army at a hovered target on the field place, or on the planned
+  place when a field force already stands there; a corrupted king's marker on the region's last character place; the
+  Fellowship's figure on its Fellowship place.
+- **How large.** The miniature is designed in board units: its stand is the army's 40-unit base and an elite stands as
+  tall as the base is wide (54 points at the design size, as since UI-192). It is drawn at the zoom clamped between the
+  worst-case Detail zoom and its design size, so a base is 32–54 points wide; a token is about as wide as the base,
+  32–44 points. The marker keeps its design size and is moved and scaled by a transform only (`MapStand`).
+- **Which level.** Figures show at the Detail level when the region's group fits its capacity at the current size, and
+  in a focused region (inspected, holding a selected force, just reached by a flight); otherwise the token. The fifteen
+  tightest regions show tokens at scale 1 and get figures as the zoom passes the design size.
+- **Depth.** One layer holds the armies, the Fellowship, the planned ghosts and the kings' markers, sorted by the feet
+  on the board whenever the board changes, so a nearer (lower) figure is drawn in front; a siege shows the besieger
+  behind its garrison.
+- **Supersedes** "Location" above, the UI-126 row and its fallbacks to tokens on crowding, UI-199's row that gives way
+  only to the forces placed before it, and UI-228's Fellowship places around the region's point.
+
+Tests: `MapStandLayoutTests`, `MapStandScaleTests`, `MapVisibilityTests`, `LayoutTests`, `MapMarkerEdgeTests`.
+
+<a id="ui-402"></a>
+## Every character is its own miniature — UI-402 (2026-10-30)
+
+UI-402 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), decision 5, "As built (UI-402)"): a force's characters leave its
+army marker. Each stands as its own miniature on a small round base beside the army in its region, and its click chooses
+it exactly as its region panel's chip does.
+
+- **The army** keeps its units only: its figures, emblems and count are its units' (`ArmyMarker.Units`, `Total`); a
+  region where characters stand alone has no army marker. Gandalf and Strider standing together are two figures, never
+  two Gandalfs. An Initial king still crowns his army; an Awakened king stands on his own figure. Nazgûl are units: a
+  lone Nazgûl is an army of one, a Nazgûl in a stack stands on its base (and lifts with it, UI-403).
+- **The miniature** (`character-<id>`): the character's painted figure at its stature on a round stand in its side's
+  enamel (`stand-character-*`), with a contact shadow and the state rim (`rim-character-*`): legal choice (green, with
+  ChoiceGlow pulsing with the armies), selected (gold), pressed, ability owner (amber), marched (a veil and ✓). It is
+  drawn at the armies' size for the zoom; far out, where the armies are tokens, it is the character's portrait in its
+  side's medallion.
+- **Where.** A field's characters stand on the region's six character places, a garrison's on the three beside the
+  gate, the field army's side nearest it; a character keeps its place while others come and go. More than six (three at
+  a gate) stand as a stacked pair on the last place with a code-drawn "+n" for the characters behind the front one; the
+  pair lights when any of them may be chosen, and its click chooses the front one (the others in the region panel or by
+  the army's click). The other side's field force (Nazgûl beside an army) stays on the planned place.
+- **Click.** With a Character die the character's click starts its travel; with an Army die it joins the army (the
+  commander-first rule, UI-105); a card, an ability or an order lit on the figure is used — the same command as the
+  chip's (`ActionContextInteraction.SelectFigure`). An enemy character's click is its region's (an attack target, or its
+  panel). The player's own character opens no region panel: a click that chooses nothing does what its region's click
+  does, without the panel. A reserve dropped on a character is dropped on its region. The army's click is unchanged: it
+  selects every figure that can move, its characters included, and opens the panel.
+- **One set of highlights.** The region panel's chips and the map's miniatures read one model (`FigureChoices`), so a
+  context that lights a chip lights the figure, and a selection made on either shows on both. The army's base is marked
+  marched when all of its units have; each character on its own.
+- **Appearing and leaving** apply per character (UI-334, UI-338): a character that enters or changes its place without
+  a flight flares and emerges there; one a flight brings waits faintly for it; one removed fades out where it stood. An
+  army no longer flares or steps its number when a character joins it.
+- **The opponent's traces** light a force's base together with its characters' miniatures, and the delta badges and
+  portraits stand beside the whole force (`ForceArtworks`, `ForceBounds`).
+- **Supersedes** "The total number includes … characters" and the tooltip's character names (Content and information),
+  UI-336's "characters are part of their region's marker" (UI-334 above) and UI-401's second field force "until UI-402".
+
+Tests: `CharacterMiniatureTests`, `CharacterPlacementTests`, `ArmyMarkerTests`, `SovereignMapTests`, `ArmyEmergeTests`,
+`TravelGestureNetworkTests`, `MapArmyArtworkTests`.
+
+<a id="ui-403"></a>
+## A chosen figure lifts off the board — UI-403 (2026-10-30)
+
+UI-403 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "The lifted figure, drag and drop" and "As built (UI-403)"): the
+figures a click chooses leave the table. Before, a selection only changed the stand's rim, and a hovered target showed a
+faint copy of the army (UI-127's ghost), which the owner rejected.
+
+- **Lifting.** The units an army click (or a figure's click) chooses rise off their base on a base of their own — the
+  same miniature at the same scale, 1.10 × round its feet and 12 px × its scale higher, with the gold rim and their
+  count — and each chosen character rises on its own stand. Their contact shadow stays on the table, smaller and
+  fainter. The lifted figures are what the draft has not sent: the army selection, the travelling group being chosen,
+  the Nazgûl a card's next destination click flies. A sent step stays raised until the server's view takes the figures
+  (then the flight shows them).
+- **What stays behind.** The base shows only the figures that stay, with their count; when none stays it disappears,
+  but its click is still the army's. A figure the player leaves behind in the region panel drops back onto the base. A
+  region holding lifted figures shows figures, never tokens.
+- **The target.** Hovering a legal target lays the landing mark on the table where the figures would stand (the field
+  place, or the planned place beside a force already there; a lone character's next character place): green for a move,
+  red for an attack. The caption ("Move 3 figures", "Attack · Siege", "Fly a Nazgûl", "Move Strider") hangs above the
+  lifted figures. Nothing is drawn faintly at the target.
+- **Back down.** Esc and undo drop the figures back onto their base; so does an attack (its army fights from where it
+  stands). A card's planned flight or journey dissolves the lifted figure where it hovers, as the faint planned figure
+  appears at its destination, and its place keeps showing only what stays behind. Reduced motion shows the raised pose
+  and the return at once.
+- **States:** see the table in "States" above (lifted, what stays behind, returning, planned, landing mark).
+- **Supersedes** UI-127's `army-ghost` ("Review of the goal" above, BOARD_INTERACTION_UX "Implementation — UI-127").
+
+Tests: `MapFigureHandTests`, `ArmyMovementTests`, `FigureHandTests`, `BoardInteractionTests`
+(`UI127OneClickLiftsTheArmyALandingMarkPreviewsTheTargetAndEscapePutsItBack`).
+
+
+<a id="ui-405"></a>
+## A unit or character is picked up and carried — UI-405 (2026-10-30)
+
+UI-405 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "The lifted figure, drag and drop" and "As built (UI-405)"): the
+army or character the player presses and drags is the lifted miniature itself, and its drop is the target's click.
+Supersedes "armies are never dragged" (UI-105, UI-128) for the map's units and characters; dice, cards, tokens, the
+reserve, the region panel's figure chips, the Characters rows and the Fellowship portraits keep their gestures.
+
+- **Pick up.** A press on the player's own army or character that is a legal source, or already chosen, lifts it once the
+  pointer moves past the drag threshold: its click's selection is made (without opening the region panel) and every
+  raised figure of the unsent move — the army and the characters chosen with it — follows the pointer. An enemy figure,
+  any figure while a command is on its way or a presentation plays, a force holding a lit king, a figure whose click
+  would send a step, and a figure with no lit target lift nothing: the press stays a click.
+- **Carry.** The region under the pointer lights (a legal target more strongly, green or red), the landing mark lies on
+  its place and the caption hangs above the carried figures; the open region panel turns translucent and lets the drop
+  through. At the map's edge the map pans after about a quarter second.
+- **Drop.** On a lit target other than its own region the drop calls the target's click, so the command is the click's.
+  A sent move stays raised where it was dropped and flies on from there; an attack's army returns to its base; a card's
+  planned flight dissolves the figure where it was dropped and the next Nazgûl rises at its stack.
+- **Back.** A drop elsewhere (Lamedon beyond the mountains, the HUD, its own region), Esc, focus loss, a reconnection or a
+  new revision sends nothing and restores the draft as it was before the press, undo history included; the figure
+  glides home.
+- **States:** see "Carried", "Dropped, sent" and "Gliding home" in the table in "States" above.
+
+Tests: `DraftTests`, `MapFigureHandTests`, `MapFlightTests` (EditMode); `DraftInputTests`, `BoardInteractionTests`
+(`FinalTargetClickSendsTheStepWithoutConfirmAndTheArmysDropSendsTheSameStep`,
+`UI405TheCarriedArmyLightsItsTargetAndFliesOnFromWhereItWasDropped`,
+`UI405AnIllegalDropOrEscapeSendsNothingAndLeavesTheDraftAsItWas`, `UI405EdgePanMovesTheMapUnderACarriedFigureAfterADwell`,
+`ArmyDragAndEscapeCannotSpendTheSelectedDie`), `FigureHandTests`, `MapContourInteractionTests`,
+`TravelGestureNetworkTests` (PlayMode).
+
+<a id="ui-406"></a>
+## Tokens, kings and settlements on the table — UI-406 (2026-10-30)
+
+UI-406 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), decisions 3 and 4, "As built (UI-406)"): what the map shows far
+out, and the settlements and kings at every zoom, get the miniatures' physical language. The two zoom levels stay.
+
+- **The token** is a puck lying on the table: the painted enamel puck of its side — a domed top face, a side band for its
+  thickness and a gilt (Free Peoples) or bronze (Shadow) rim — over the contact shadow down and right, 44 points wide at
+  its design size (UI-401's `clamp(40 × zoom, 32, 44)`). A garrison's puck is walled with crenellated stone, so the
+  battlements of UI-125 stay; it is now as large as a field army's. The nation emblem lies on the top face and the count
+  on the band, as before.
+- **States** are a rim drawn round the puck (`rim-token`) instead of a whole picture per state, in the stands' colours:
+  a legal source or a king's target green, a chosen or armed force gold, pressed dim gold, an ability owner amber, a
+  marched force veiled with ✓. ChoiceGlow's pulsing halo is a capsule round the puck. The colour meanings are unchanged.
+- **A character's token** — its portrait in its side's medallion — is a thick coin with a shadow.
+- **Settlements** are gem stones on the table: a darker band of side facets below the girdle (and below a Stronghold's
+  gold setting) and a soft shadow down and right; the control colour is unchanged (UI-195). They are sized
+  `clamp(zoom / reference, .85, 1.4)` of the UI-195 size, the reference being the worst-case Detail zoom, so between the
+  clamps a gem keeps one size on the board like the figures. Each gem is painted once and moved with the map by a
+  transform; a camera move repaints no gem and no vector layer, and only a change of control repaints its gem. A
+  region's name that its own gem reaches into moves just clear of the stone, within its room.
+- **A Corrupted king's marker** is a small dark iron puck with an ember rim and the crown under the Eye, over its shadow;
+  a click that chooses him lights a steady gold halo behind it.
+- **The legend** shows the pucks and their rims.
+- **Supersedes** the token pictures of "Graphics to create" (UI-125) and UI-301's "the plinth … keep their pictures"
+  for the token; UI-125's `base-*` and `token-*` art is removed.
+
+Tests: `MapArmyArtworkTests`, `TabletopObjectsTests`, `MapSettlementGemsTests`, `MapStandScaleTests`, `UiArtKitTests`,
+`SovereignMapTests`, `MapVisibilityTests`, `MapRegionNamesTests`.
+
+<a id="ui-425"></a>
+## Counts, stones and names kept readable — UI-425, UI-426 (2026-10-30)
+
+UI-425 and UI-426 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-425)" and "As built (UI-426)") fix the
+UI-407 matrix's readability defects; the stand places (`stand-slots.json`, `stand-slots-2`) were laid out again.
+
+- **No count or plaque is covered.** A force's label — its token's count badge far out, its plaque (emblems and count)
+  at the figures' level — never lies under another stand of its region drawn in front of it: in a siege the other side,
+  and everywhere its own characters, the planned recruits and the Fellowship. Neighbouring regions' forces keep clear of
+  each other's labels at one level. At Helm's Deep the besieger's field now stands north-west of the gate with its plaque
+  clear of the garrison, and the garrison's characters stand to the west, the east and behind the gate.
+- **No token on a settlement.** A field force's token stands on its puck's lower edge, as its figures stand on their
+  feet, so it rises above its settlement's gem; a garrison's walled token lies with the middle of its top face on its gate;
+  a character's medallion stands on its coin's lower edge. Zoomed out past the whole map of 1366 × 768 at 125 %, tokens,
+  medallions, kings' markers and gems keep their board size.
+- **Kings.** A Corrupted king's marker stands on its own place beside the forces, chosen so that it covers no count,
+  plaque or gem at any zoom.
+- **Names.** A region's name its own stone reaches into steps down, up or sideways just clear of it — clear of the stand
+  places where they leave room, otherwise only inside its region — and hides where no step clears it, instead of being
+  split by the stone.
+
+Tests: `TabletopAcceptanceMatrixTests` (`TabletopFrameChecks.AssertReadable` in every static frame),
+`TabletopObjectsTests`, `MapRegionNamesTests`, `MapStandSlotsTests`, `MapStandScaleTests`.

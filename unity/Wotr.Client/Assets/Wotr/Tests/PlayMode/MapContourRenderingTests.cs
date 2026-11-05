@@ -317,7 +317,7 @@ namespace Wotr.PlayTests
             return bytes;
         }
 
-        private static Color32[] Capture(RenderTexture target)
+        internal static Color32[] Capture(RenderTexture target)
         {
             var previous = RenderTexture.active;
             var texture = new Texture2D(target.width, target.height, TextureFormat.RGBA32, false);

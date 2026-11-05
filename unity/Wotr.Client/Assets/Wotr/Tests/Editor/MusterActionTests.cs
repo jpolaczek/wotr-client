@@ -49,6 +49,30 @@ namespace Wotr.EditorTests
             Assert.IsTrue(MusterActions.CanRecruit(view, draft, context), "An open Recruit sequence keeps its Reserve.");
         }
 
+        // UI-271 under UI-317: a Muster die that cannot recruit still backs the Reserve while it pays Gothmog's row there.
+        [Test]
+        public void AMusterDieThatPaysGothmogBacksTheReserveWithoutARecruit()
+        {
+            var fixture = new BoardFixture();
+            var view = fixture.View;
+            var context = new ActionDieContext();
+            context.Sync(view, "muster");
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = "muster");
+            view.Options.Single(o => o.Kind == CommandKind.Recruit).Enabled = false;
+            Assert.IsFalse(MusterActions.BacksReserve(view, draft, context), "Without Gothmog nothing backs the Reserve.");
+            var gothmog = new ActionOption { Kind = CommandKind.UseCharacterAbility, Enabled = true, EligibleDice = { "muster" } };
+            gothmog.CharacterActions.Add(new CharacterActionOption
+            {
+                CharacterId = "lords.character.gothmog", AbilityId = CharacterAbilityPlaces.GothmogRecruit, Dice = { "muster" }
+            });
+            view.Options.Add(gothmog);
+            Assert.IsFalse(MusterActions.CanRecruit(view, draft, context));
+            Assert.IsTrue(MusterActions.BacksReserve(view, draft, context), "Gothmog's row in the Reserve takes the die.");
+            gothmog.CharacterActions[0].Dice.Clear();
+            Assert.IsFalse(MusterActions.BacksReserve(view, draft, context), "A die that cannot pay him backs nothing.");
+        }
+
         [Test]
         public void PaidSequenceOnlyAllowsRemainingServerChoicesAndCannotChangeToPolitics()
         {

@@ -15,7 +15,8 @@ namespace Wotr.PlayTests
 {
     // UI-306/UI-307: one mounted board receiving the Shadow's recorded steps while it presents the Free Peoples' earlier
     // view, at one layout; the presentation tests drive it. UI-309: the Shadow may watch instead, with the Free Peoples'
-    // Will of the West die in play.
+    // Will of the West die in play. TEST-20: Main and Second are the acting side's nations, Own the viewer's, so a suite
+    // plays one scene for both viewers.
     internal sealed class PresentedBoardStage : IDisposable
     {
         public const string Die = "shadow-army";
@@ -36,6 +37,9 @@ namespace Wotr.PlayTests
         public Side Viewer { get; }
         public Side Opponent => Viewer == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
         public string OpponentDie => Viewer == Side.FreePeoples ? Die : FreeDie;
+        public string Main => Opponent == Side.Shadow ? "sauron" : "gondor";
+        public string Second => Opponent == Side.Shadow ? "isengard" : "rohan";
+        public string Own => Viewer == Side.FreePeoples ? "gondor" : "sauron";
 
         public PresentedBoardStage(int width, float scale, bool reduced, Side viewer = Side.FreePeoples)
         {
@@ -62,6 +66,20 @@ namespace Wotr.PlayTests
             view.Decision = null;
             view.Options.Clear();
             view.Dice.Add(new DieView { Id = FreeDie, Owner = Side.FreePeoples, Face = DieFace.WillOfTheWest, Source = "standard", Location = DieLocation.Available });
+        }
+
+        // A frame of the Free Peoples' board: the mirrored run of a scene writes none of its own.
+        public void Save(string file)
+        {
+            if (Viewer == Side.FreePeoples)
+                LayoutTests.Save(Texture, file);
+        }
+
+        // Both players' hands, so a beat at the opponent's card count has a number to step.
+        public void Hands(int free, int shadow)
+        {
+            before.Players.Add(new PlayerSummary { Side = Side.FreePeoples, HandCount = free });
+            before.Players.Add(new PlayerSummary { Side = Side.Shadow, HandCount = shadow });
         }
 
         public List<string> Put(string nation, UnitKind kind, string region, int count)
@@ -131,8 +149,15 @@ namespace Wotr.PlayTests
             return step;
         }
 
+        // UI-487: the opponent's die moved by this step, as the board's difference records it.
+        public ActionLogStep Moves(ActionLogStep step, DieLocation from, DieLocation to, DieFace? before, DieFace? after)
+        {
+            step.Facts.Dice.Add(new ActionDieChange { Id = OpponentDie, Owner = Opponent, Before = before, After = after, From = from, To = to });
+            return step;
+        }
+
         public int Characters(string region, Side side) =>
-            Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == side).Sum(a => a.Characters);
+            Board.Presentation.Characters.Count(c => c.RegionId == region && c.Side == side);
 
         // The names on the character moments and the moving groups' identities now on the map.
         public string Moments() => string.Join(",", Board.Map.Query<Label>("observed-portrait-name").ToList().Select(label => label.text));
@@ -188,8 +213,8 @@ namespace Wotr.PlayTests
         public Vector2 Anchor(string region) =>
             new Vector2(Board.Map.Data.Shapes[region].Anchor[0], Board.Map.Data.Shapes[region].Anchor[1]);
 
-        public int Army(string region, bool garrison = false) =>
-            Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == Opponent && a.Garrison == garrison).Sum(a => a.Total);
+        // The opponent's figures in a force: its army's units and (UI-402) the characters standing beside it.
+        public int Army(string region, bool garrison = false) => Board.Presentation.FigureCount(region, Opponent, garrison);
 
         public bool Flying(string destination) =>
             Board.Map.Figures.ActiveCount > 0 && Board.Map.Figures.Moves.Any(move => move.To.Region == destination);
@@ -216,8 +241,9 @@ namespace Wotr.PlayTests
                 .Concat(latest.Characters.Where(c => c.Side == Opponent).Select(c => (c.Location, c.Garrison)));
             var expected = figures.Where(f => Board.Map.Data.Regions.ContainsKey(f.Location))
                 .GroupBy(f => f).ToDictionary(g => g.Key, g => g.Count());
-            var shown = Board.Presentation.Armies.Where(a => a.Side == Opponent)
-                .ToDictionary(a => (a.RegionId, a.Garrison), a => a.Total);
+            var shown = Board.Presentation.Armies.Where(a => a.Side == Opponent).Select(a => (a.RegionId, a.Garrison))
+                .Concat(Board.Presentation.Characters.Where(c => c.Side == Opponent).Select(c => (c.RegionId, c.Garrison)))
+                .Distinct().ToDictionary(force => force, force => Board.Presentation.FigureCount(force.RegionId, Opponent, force.Garrison));
             CollectionAssert.AreEquivalent(expected, shown);
             foreach (var region in latest.Control.Keys)
                 Assert.AreEqual(latest.Control[region], Board.Presentation.Control.GetValueOrDefault(region), region);

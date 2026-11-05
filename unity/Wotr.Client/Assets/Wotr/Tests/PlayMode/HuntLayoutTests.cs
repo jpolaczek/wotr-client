@@ -172,7 +172,7 @@ namespace Wotr.PlayTests
                             var pass = board.Console.Actions.Pass;
                             Assert.IsTrue(pass.enabledSelf);
                             Assert.IsTrue(pass.ClassListContains(ChoiceGlow.ClassName));
-                            StringAssert.Contains("Mithril Coat and Sting · Replace tile", pass.tooltip);
+                            StringAssert.Contains("Replace tile (Mithril Coat and Sting)", pass.tooltip);
                             // UI-285: Mithril is a glowing card object in the response row, not a tray choice.
                             var mithril = board.Hunt.Root.Q<Button>("effect-choice-card.mithril-replace");
                             Assert.IsTrue(mithril.ClassListContains("legal-target"));

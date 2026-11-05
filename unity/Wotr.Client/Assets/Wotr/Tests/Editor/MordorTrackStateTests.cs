@@ -19,8 +19,21 @@ namespace Wotr.EditorTests
             StringAssert.StartsWith("Mordor · Step 2 of 5", state.SlabTooltip(2));
             // UI-157: a Fellowship off the track (in Gorgoroth too) learns where the track is entered.
             StringAssert.Contains(MordorTrackState.EntryHint, state.SlabTooltip(0));
-            StringAssert.Contains(MordorTrackState.EntryHint, MordorTrackState.GateTooltip("morannon"));
+            // UI-420: the gate names itself once and the other gate on its second line.
+            Assert.AreEqual("Morannon · Entrance of the Mordor track\nThe Fellowship enters Mordor here or at Minas Morgul.",
+                MordorTrackState.GateTooltip("morannon"));
+            Assert.AreEqual("Minas Morgul · Entrance of the Mordor track\nThe Fellowship enters Mordor here or at Morannon.",
+                MordorTrackState.GateTooltip("minas-morgul"));
             Assert.AreSame(MordorTrackState.Outside, MordorTrackState.For(null));
+        }
+
+        // UI-420: off the track the figure's tooltip is the Fellowship's, with its region as the last known position.
+        [Test]
+        public void TheFigureOnARegionNamesTheFellowshipItsStateAndItsCorruption()
+        {
+            Assert.AreEqual("Fellowship · Hidden · Rivendell (last known position)\nCorruption 3/12",
+                MapFellowshipMarker.RegionTooltip(true, 3, "Rivendell"));
+            StringAssert.StartsWith("Fellowship · Revealed · Fangorn", MapFellowshipMarker.RegionTooltip(false, 0, "Fangorn"));
         }
 
         [Test]

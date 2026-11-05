@@ -20,6 +20,9 @@ namespace Wotr.Client
 
         public IPresentationBeat Begin(PresentationCue cue, double now)
         {
+            // UI-487 (owner, 2026-11-04): the battle's die leaving is its action's last beat, no next scene.
+            if (cue.Kind == PresentationCueKind.SpentDie)
+                return null;
             var window = board.Battles;
             var battle = window.BattleId;
             if (window.IsOpen && battle.Length > 0 && !Shows(cue, battle) && Over(battle) && !Moved())
@@ -31,7 +34,7 @@ namespace Wotr.Client
         // siege's figure changes.
         private static bool Shows(PresentationCue cue, string battle) => cue.BattleId == battle && cue.Kind is
             PresentationCueKind.Attack or PresentationCueKind.Battle or PresentationCueKind.Card or PresentationCueKind.Losses or
-            PresentationCueKind.Removal or PresentationCueKind.Recruit or PresentationCueKind.Upgrade;
+            PresentationCueKind.Removal or PresentationCueKind.Recruit or PresentationCueKind.Upgrade or PresentationCueKind.BattleChoice;
 
         // Over in the latest view, and nothing more of it queued but its state after the decision (an advance, the end),
         // which the window would show unchanged.

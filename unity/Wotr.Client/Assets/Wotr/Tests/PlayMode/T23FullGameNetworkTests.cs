@@ -25,11 +25,14 @@ namespace Wotr.PlayTests
             task.GetAwaiter().GetResult();
         }
 
+        // EXP-04: onObjects checks that every decision has its object host and the generic window never opens;
+        // finished runs on the finished game before the room closes.
         internal static async Task Play(MatchConfiguration configuration = null, bool largeInterface = false,
-            string artifact = "t23-full-game.json")
+            string artifact = "t23-full-game.json", bool onObjects = false, Func<MatchTestRoom, Task> finished = null)
         {
             var trace = new List<object>();
             using (var room = await MatchTestRoom.CreateNormalGame(configuration))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 Assert.AreEqual(0, room.Fp.Board.View.Revision);
                 Assert.AreEqual(configuration?.Council == true ? 0 : 1, room.Fp.Board.View.Turn);
@@ -60,6 +63,8 @@ namespace Wotr.PlayTests
                             FullGameDesktopChecks.Layout(actor);
                             FullGameDesktopChecks.Layout(waiting);
                         }
+                        if (onObjects)
+                            watch.OnItsObject(actor);
                         var kind = FullGameChoices.Select(view);
                         trace.Add(new { view.Revision, view.Turn, view.You, view.Phase, Decision = view.Decision.Kind,
                             Command = kind, view.Fellowship });
@@ -73,6 +78,10 @@ namespace Wotr.PlayTests
                         }
                     }
                     await CheckFinished(room);
+                    if (onObjects)
+                        watch.NeverOpened();
+                    if (finished != null)
+                        await finished(room);
                     var result = room.Fp.Board.View;
                     trace.Add(new { result.Revision, result.Turn, result.Winner, result.Victory, result.Fellowship });
                     TestContext.WriteLine($"Complete game {result.MatchId}: {result.Turn} turns, {result.Revision} decisions, {result.Victory}.");

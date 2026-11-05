@@ -27,7 +27,7 @@ namespace Wotr.PlayTests
             using (var client = new MountedMatchClient("http://localhost", "configuration-layout"))
             {
                 var root = client.Board.Root.parent;
-                var room = new RoomScreen();
+                var room = new WaitingRoomScreen();
                 foreach (var width in new[] { 1366, 1920 })
                     foreach (var scale in new[] { 1f, 1.25f })
                     {
@@ -39,11 +39,12 @@ namespace Wotr.PlayTests
                         {
                             client.Board.Root.RemoveFromHierarchy();
                             root.Add(room.Root);
-                            room.Update(new RoomView { ExpansionsAvailable = true, Id = view.MatchId, Version = 2, Configuration = view.Configuration,
-                                FreePeoples = "Free Peoples player", Shadow = "Shadow player" });
+                            room.Update(new RoomView { ExpansionsAvailable = true, IsHost = true, Id = view.MatchId, Version = 2,
+                                Configuration = view.Configuration, FreePeoples = "Free Peoples player", Shadow = "Shadow player" });
                             for (var frame = 0; frame < 4; frame++)
                                 yield return null;
-                            Fits(room.Root, root);
+                            // UI-263: the rules strip holds every configuration inside the waiting room's window.
+                            Fits(room.Rules.Root, room.Root.Q("waiting-window"));
                             room.Root.RemoveFromHierarchy();
                             root.Add(client.Board.Root);
                             client.Apply(view);

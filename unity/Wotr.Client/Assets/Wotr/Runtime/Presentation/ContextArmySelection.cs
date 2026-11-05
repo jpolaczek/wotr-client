@@ -10,7 +10,7 @@ namespace Wotr.Client
         public static bool Active(PlayerView view, TurnDraft draft, ActionDieContext context) =>
             view.Decision?.Kind is DecisionKind.Action or DecisionKind.ActionSequence &&
             (context.Supports(DieFace.Army) || context.Supports(DieFace.Character)) &&
-            draft.Payload.RulerTokenId.Length == 0 && draft.Payload.AbilityId == context.AbilityId &&
+            draft.Payload.RulerTokenId.Length == 0 && context.Matches(draft.Payload.AbilityId) &&
             ActionDieContext.DirectIntent(draft) &&
             (view.ActionSequence == null || view.ActionSequence.Kind == CommandKind.MoveArmies);
 

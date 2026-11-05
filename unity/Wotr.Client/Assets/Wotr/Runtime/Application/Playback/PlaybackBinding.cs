@@ -7,7 +7,7 @@ namespace Wotr.Client
 {
     // UI-304: the playback coordinator of one mounted match. Every received view goes to the history feed first (its
     // cues and the read mark of its revision) and then to the coordinator, which applies it through `present` when its
-    // presentation allows. The coordinator ticks with the board's scheduler and rebases when the window loses focus.
+    // presentation allows. The coordinator ticks with the board's scheduler and pauses while the window has no focus (UI-490).
     // UI-328: a replay has no live feed (`notices` null); it gives the coordinator its cues and history itself.
     public sealed class PlaybackBinding : IDisposable
     {

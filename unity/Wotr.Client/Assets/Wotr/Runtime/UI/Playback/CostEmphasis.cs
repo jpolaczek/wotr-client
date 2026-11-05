@@ -30,7 +30,8 @@ namespace Wotr.Client
 
         public IPresentationBeat Begin(PresentationCue cue, double now)
         {
-            if (cue.ActionId != action)
+            // UI-487 (owner, 2026-11-04): the ring ends as its die leaves (SpentDieFlight), before the row reflows.
+            if (cue.ActionId != action || cue.Kind == PresentationCueKind.SpentDie)
                 Clear();
             if (cue.Kind != PresentationCueKind.Cost || cue.Cost.Kind != ActionCostKind.Die || cue.Cost.Id.Length == 0)
                 return null;

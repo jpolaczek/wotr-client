@@ -15,6 +15,52 @@ namespace Wotr.EditorTests
         [Test]
         public void WhiteRiderIsUsedOnGandalfsPortraitInTheBattleWindow()
         {
+            var view = WhiteRiderWindow();
+            var gandalf = view.Battle.Attacker.Characters.Single(c => c.Id == "gandalf");
+
+            Assert.AreEqual("character.white-rider", BattleReactions.Of(view, gandalf)?.Id);
+            Assert.IsTrue(BattleReactions.OnPortrait(view, "character.white-rider"));
+            Assert.IsTrue(BattleReactions.AllOnPortraits(view), "The tray needs no Respond step.");
+            var root = new VisualElement();
+            var context = new BattleContext(root, view.Battle, view, new TurnDraft(), _ => { }, _ => { }, complete: _ => { });
+            context.Refresh();
+            var portrait = root.Q("portrait-gandalf");
+            Assert.IsTrue(portrait.ClassListContains(ChoiceGlow.ClassName), "The source glows.");
+            StringAssert.StartsWith("Click to use White Rider", portrait.tooltip);
+            // UI-439: the portrait wears the White Rider's own icon while its click uses it.
+            Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "forfeit-leadership-to-cancel-nazgul-for-battle"),
+                portrait.Q(BattleContext.OfferedAbilityName).style.backgroundImage.value.texture);
+
+            var draft = new TurnDraft();
+            BattleReactions.Choose(draft, "character.white-rider");
+            Assert.AreEqual(CommandKind.RespondEffect, draft.Kind);
+            Assert.AreEqual("character.white-rider", draft.Payload.ReactionId);
+            Assert.IsTrue(CardDraft.Ready(draft, view.Options[0]), "One click completes the reaction.");
+
+            view.Decision.Kind = DecisionKind.BattleContinue;
+            Assert.IsNull(BattleReactions.Of(view, gandalf), "Outside a reaction window the portrait is only a portrait.");
+        }
+
+        // UI-423 (owner's playtest pattern, like UI-419): the battle window skips a reaction with its own Skip effect, which
+        // sends the console's Pass and names the response it skips.
+        [Test]
+        public void TheBattleWindowSkipsTheWhiteRiderWithItsSkipEffect()
+        {
+            var view = WhiteRiderWindow();
+            view.Battle.Stage = "BeforeReveal";
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.RespondEffect);
+            var root = new VisualElement();
+            new DecisionTray(root).Render(view, draft, false, false);
+            var skip = root.Q<Button>("battle-skip-effect");
+            Assert.IsNotNull(skip, "Skip effect stands in the battle window's footer.");
+            Assert.AreEqual("Skip effect", skip.text);
+            Assert.AreEqual("Skip White Rider (" + CharacterLibrary.Name("base.character.gandalf-white") + ")", skip.tooltip);
+            Assert.AreEqual("Pass · " + skip.tooltip, ReactionSkip.Tooltip(view), "Skip effect and Pass skip the same response.");
+        }
+
+        private static PlayerView WhiteRiderWindow()
+        {
             var view = BattleScreenFixture.Create(CommandKind.ContinueBattle);
             var force = view.Battle.Attacker;
             var gandalf = new CharacterView { Id = "gandalf", DefinitionId = "base.character.gandalf-white", Side = Side.FreePeoples, Location = force.RegionId };
@@ -26,25 +72,7 @@ namespace Wotr.EditorTests
             view.Options.Clear();
             view.Options.Add(Respond("character.white-rider", "base.character.gandalf-white", "White Rider"));
             view.Options.Add(new ActionOption { Kind = CommandKind.DeclineReaction, Enabled = true });
-
-            Assert.AreEqual("character.white-rider", BattleReactions.Of(view, gandalf)?.Id);
-            Assert.IsTrue(BattleReactions.OnPortrait(view, "character.white-rider"));
-            Assert.IsTrue(BattleReactions.AllOnPortraits(view), "The tray needs no Respond step.");
-            var root = new VisualElement();
-            var context = new BattleContext(root, view.Battle, view, new TurnDraft(), _ => { }, _ => { }, complete: _ => { });
-            context.Refresh();
-            var portrait = root.Q("portrait-gandalf");
-            Assert.IsTrue(portrait.ClassListContains(ChoiceGlow.ClassName), "The source glows.");
-            StringAssert.StartsWith("Click to use White Rider", portrait.tooltip);
-
-            var draft = new TurnDraft();
-            BattleReactions.Choose(draft, "character.white-rider");
-            Assert.AreEqual(CommandKind.RespondEffect, draft.Kind);
-            Assert.AreEqual("character.white-rider", draft.Payload.ReactionId);
-            Assert.IsTrue(CardDraft.Ready(draft, view.Options[0]), "One click completes the reaction.");
-
-            view.Decision.Kind = DecisionKind.BattleContinue;
-            Assert.IsNull(BattleReactions.Of(view, gandalf), "Outside a reaction window the portrait is only a portrait.");
+            return view;
         }
 
         [Test]
@@ -83,7 +111,7 @@ namespace Wotr.EditorTests
             var guidance = TurnConsoleState.For(view, new TurnDraft(), context, id => id).Guidance;
             StringAssert.StartsWith("Click the Guide's glowing portrait", guidance);
             StringAssert.EndsWith("or Pass to skip it.", guidance);
-            Assert.AreEqual("Pass · Skip Gandalf the Grey · Draw matching card", ReactionSkip.Tooltip(view));
+            Assert.AreEqual("Pass · Skip Draw matching card (Gandalf the Grey)", ReactionSkip.Tooltip(view));
             var draft = new TurnDraft();
             Assert.IsTrue(FellowshipActions.Portrait(view, draft, context, "base.character.gandalf-grey"));
             Assert.AreEqual(CommandKind.RespondEffect, draft.Kind);

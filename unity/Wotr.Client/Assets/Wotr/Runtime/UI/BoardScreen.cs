@@ -21,6 +21,9 @@ namespace Wotr.Client
         public VisualElement OwnDice { get; } = new VisualElement { name = "own-dice" };
         public VisualElement Hand { get; } = new VisualElement { name = "hand" };
         public VisualElement OpponentDice { get; } = new VisualElement { name = "opponent-dice" };
+        // UI-434: the dice a choice offers glow in gold in their own pool and pulse with it (PoolChoiceGlow).
+        public PoolChoiceGlow OwnDiceChoices { get; }
+        public PoolChoiceGlow OpponentDiceChoices { get; }
         public Label Phase { get; } = new Label();
         public Label Connection { get; } = new Label();
         public Label Tracks { get; } = new Label();
@@ -67,12 +70,18 @@ namespace Wotr.Client
         public DecisionWindow DecisionWindow { get; } = new DecisionWindow();
         // UI-161: the results an Elven Ring can give the chosen die, above that die.
         public RingFacePicker RingPicker { get; } = new RingFacePicker();
+        // UI-272: the new results of a die changed by The Lore of the Elven Rings.
+        public RingFacePicker LorePicker { get; } = new RingFacePicker("lore-face-picker");
+        // UI-377: the Nazgûl a Council token's travel may move, above the token.
+        public CouncilTravelPicker CouncilPicker { get; } = new CouncilTravelPicker();
         public PoliticalPanel Nations { get; }
         private readonly Label loading = new Label("Loading match…") { name = "match-loading" };
         public CardInspector Cards { get; } = new CardInspector();
         public HandDrawer HandDrawer { get; }
         // UI-326: two card backs dissolving where discarded cards leave.
         public CardDissolve Dissolve { get; }
+        // UI-463: the player's own card that stays on the table flies from its place in the hand into the Effects tab.
+        public PlayedCardFlight PlayedCards { get; }
         // UI-332: a tile the Hunt pool gains shows its face and drops into the Hunt plaque.
         public HuntTileDrop HuntDrops { get; }
         public DeckView Decks { get; } = new DeckView();
@@ -83,7 +92,6 @@ namespace Wotr.Client
         private readonly EffectsScopeBadges effectScopes;
         public TableEffectsView TableEffects => tableEffects;
         private readonly ActionPoolView actionPool;
-        public ResourcePanel ResourceDecision { get; } = new ResourcePanel();
         // UI-130: reserves of every own nation during a Muster action.
         public ReinforcementsPanel Reinforcements { get; } = new ReinforcementsPanel();
         // UI-136: halos on the controls the chosen action die can use.
@@ -109,14 +117,17 @@ namespace Wotr.Client
             // UI-181: the Reserve tab lights for a die that can recruit, like the other tabs.
             DieGlow.Light(Reinforcements.Tab, options => options.Recruit);
             DieGlow.Attach(Fellowship.Status, options => options.Fellowship);
+            // UI-390: a deck choice (the Palantír of Anárion's extra card) lights the decks with the same halo, without a die.
             foreach (var deck in Decks.Root.Query<Button>().ToList())
-                DieGlow.Attach(deck, options => options.Draw);
+            {
+                var id = ((DraftToken)deck.userData).Id;
+                DieGlow.Attach(deck, options => options.Draw || DeckChoice.Offers(View, id));
+            }
         }
 
         // UI-134: the Reinforcements panel presses hand cards through the hand's own selection.
         public SovereignPanel Sovereigns { get; }
         public CharacterRosterPanel Characters { get; }
-        public CompanionSetupPanel CompanionSetup { get; } = new CompanionSetupPanel();
         public FellowshipPanel Fellowship { get; }
         public HuntPanel Hunt { get; }
         public BattleReport BattleReport { get; }
@@ -151,6 +162,8 @@ namespace Wotr.Client
             Presentation = BoardPresentation.Load();
             Presentation.ClearGameState();
             Root.AddToClassList("board-screen");
+            OwnDiceChoices = new PoolChoiceGlow(OwnDice);
+            OpponentDiceChoices = new PoolChoiceGlow(OpponentDice);
             Escape = new BoardEscape(this);
             Root.RegisterCallback<GeometryChangedEvent>(e =>
                 Root.EnableInClassList("short-viewport", e.newRect.height > 0 && e.newRect.height < 700));
@@ -170,6 +183,9 @@ namespace Wotr.Client
             actionPool = new ActionPoolView(id => DieSelected?.Invoke(id), id => RulerTokenSelected?.Invoke(id));
             actionPool.CouncilChosen = id => CouncilTokenSelected?.Invoke(id);
             Sovereigns = new SovereignPanel(Presentation, id => Map.Focus(id));
+            // UI-274: the kings' map objects light and act like their portraits.
+            Sovereigns.Lit += Map.LightSovereigns;
+            Map.SovereignMarkers.Selected += Sovereigns.Click;
             Root.Add(stage);
             // UI-100: no map control row. The wheel zooms, the Fellowship panel locates,
             // and the log and last battle icons join the notice stack (ActionNoticeBar).
@@ -194,6 +210,8 @@ namespace Wotr.Client
             Root.Insert(Root.IndexOf(Viewing.Root) + 1, Replay.Root);
             Log.CardBounds = CardBounds;
             Nations = new PoliticalPanel(Root, Presentation.Board);
+            Nations.RegionName = id => ActionCardText.Region(id, Presentation);
+            CouncilPicker.RegionName = id => ActionCardText.Region(id, Presentation);
             stage.Add(Nations.Root);
             stage.Add(Nations.Drawer);
             Fellowship = new FellowshipPanel(FocusFellowship, Map);
@@ -222,11 +240,7 @@ namespace Wotr.Client
             stage.Add(Information.Root);
             Victory.KeepShortcutClearOf(tableEffects.Root);
             stage.Add(Sovereigns.Inspector);
-            stage.Add(ResourceDecision.Tab);
-            stage.Add(ResourceDecision.Root);
             stage.Add(Reinforcements.Root);
-            stage.Add(CompanionSetup.Tab);
-            stage.Add(CompanionSetup.Root);
             stage.Add(Cards.Root);
             stage.Add(Log.Root);
             stage.Add(Log.Popup);
@@ -239,10 +253,6 @@ namespace Wotr.Client
             Hover = new RegionHover(Root, stage, Map);
             DecisionWindow.Opening += Hover.Close;
             DecisionWindow.Opening += Cards.CloseTransient;
-            CompanionSetup.Opening += Hover.Close;
-            CompanionSetup.Opening += Cards.CloseTransient;
-            CompanionSetup.Opening += Nations.CloseTransient;
-            CompanionSetup.Opening += HandDrawer.CloseTransient;
             Hover.Panel.EffectInspected += tableEffects.Inspect;
             tableEffects.Opening += Hover.Close;
             tableEffects.Opening += Log.CloseTransient;
@@ -344,15 +354,11 @@ namespace Wotr.Client
             Fellowship.Attach(Tray, decisionDock);
             Hunt.Attach(Tray, decisionDock);
             tableEffects.Attach(Tray, decisionDock);
-            ResourceDecision.Attach(Tray, decisionDock);
-            Sovereigns.Attach(Tray, decisionDock);
-            CompanionSetup.Attach(Tray, decisionDock);
             Map.RegisterCallback<GeometryChangedEvent>(_ => Sovereigns.RequestPosition());
             stage.Insert(stage.IndexOf(Cards.Root), Battles.Root);
-            var overlays = new[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Map.Legend.Popup, GameChat.Icon, GameChat.Root, Nations.Root, Nations.Drawer, Sovereigns.Inspector, ResourceDecision.Root, ResourceDecision.Tab, Reinforcements.Root,
+            var overlays = new[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Map.Legend.Popup, GameChat.Icon, GameChat.Root, Nations.Root, Nations.Drawer, Sovereigns.Inspector, Reinforcements.Root,
                 Fellowship.Root, Fellowship.Status, Hunt.Root, Hunt.Tab, Tracks, Information.Root, tableEffects.Tab, tableEffects.Root, BattleReport.Root, Battles.Root, Cards.Root,
-                HandDrawer.Tab, Hand, Log.Root, Log.Popup, Notifications.Overflow, Victory.Tab, Victory.Root, Victory.Banner, DecisionWindow.Root,
-                CompanionSetup.Tab, CompanionSetup.Root };
+                HandDrawer.Tab, Hand, Log.Root, Log.Popup, Notifications.Overflow, Victory.Tab, Victory.Root, Victory.Banner, DecisionWindow.Root };
             // UI-322: a panel fading out is closed, so it occupies nothing.
             bool Occupied(VisualElement element) => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&
                 element.resolvedStyle.visibility == Visibility.Visible && element.worldBound.width > 0 && element.worldBound.height > 0 &&
@@ -362,7 +368,7 @@ namespace Wotr.Client
             // UI-98: the Fellowship and Hunt plaques sit in the corner tab, a summary one hover away from the full
             // panels; like the hand, a decision window may cover it when the board has no other room (overlays).
             var fixedControls = new VisualElement[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, GameChat.Icon, Nations.Root,
-                tableEffects.Tab, HandDrawer.Tab, ResourceDecision.Tab, Victory.Tab, Victory.Banner, CompanionSetup.Tab };
+                tableEffects.Tab, HandDrawer.Tab, Victory.Tab, Victory.Banner };
             foreach (var control in fixedControls)
             {
                 control.AddToClassList("map-edge-control");
@@ -393,6 +399,9 @@ namespace Wotr.Client
             bottom.Add(Console.Root);
             Root.Add(bottom);
             Root.Add(RingPicker.Root);
+            Root.Add(LorePicker.Root);
+            Root.Add(CouncilPicker.Root);
+            Root.Add(Console.Status.RaisedOptions);
             Root.Add(GameEnd.Root);
             var mapOcclusions = overlays.Concat(new[] { top, Notifications.Root, bottom }).ToArray();
             Map.Occlusions = () => mapOcclusions.Where(element => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&
@@ -414,6 +423,8 @@ namespace Wotr.Client
             AttachDieGlows();
             Dissolve = new CardDissolve(ReducedMotion);
             Root.Add(Dissolve.Root);
+            PlayedCards = new PlayedCardFlight(ReducedMotion, tableEffects);
+            Root.Add(PlayedCards.Root);
             HuntDrops = new HuntTileDrop(BoardMiddle, () => Hunt.Tab, ReducedMotion);
             Root.Add(HuntDrops.Root);
             Root.Add(Menu.Root);
@@ -443,8 +454,6 @@ namespace Wotr.Client
         private void AttachWindows()
         {
             _ = new FloatingWindow(Information.Root, Windows);
-            _ = new FloatingWindow(ResourceDecision.Root, Windows);
-            _ = new FloatingWindow(CompanionSetup.Root, Windows);
             _ = new FloatingWindow(BattleReport.Root, Windows);
             Log.Window = new FloatingWindow(Log.Root, Windows);
             ActionHistory = new ActionContextRouter(this);
@@ -533,7 +542,6 @@ namespace Wotr.Client
         {
             var b = new Button(action) { text = face };
             b.AddToClassList("die");
-            b.tooltip = "C Character · A Army · M Muster · P Event · W Will of the West";
             return b;
         }
         // OBS-03: an observer's board — the bar with the shown side, and the end of the game without Victory or Defeat.
@@ -590,6 +598,9 @@ namespace Wotr.Client
         // released view redraws both.
         public void StageOpponentDice(PlayerView staged) => actionPool.Apply(OpponentDice, staged, Opponent(staged), false);
         public void StageOpponentSummary(PlayerView staged) => TopBar.Opponent.Apply(staged, Opponent(staged));
+
+        // UI-344: the kings' portraits in the Characters panel as a presentation stages them (a tile's hatched pip, a status).
+        public void StageSovereigns(PlayerView staged) => Sovereigns.Apply(staged);
 
         // UI-330: an observer's presentation shows both sides' actions — the side the board is shown from has its dice at the
         // bottom and its cards in the hand, the other side its dice and its card count in the top bar. A player's
@@ -650,6 +661,7 @@ namespace Wotr.Client
             Map.MordorTrack.Apply(MordorTrackState.For(tracks));
             Map.Figures.Apply(view);
             Phase.text = $"Turn {view.Turn} · {PhaseName(view.Phase)}";
+            ExpansionCrests.Show(TopBar.Crests, view.Configuration);
             actionPool.Apply(OwnDice, view, view.You, true);
             var opponent = view.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
             actionPool.Apply(OpponentDice, view, opponent, false);
@@ -661,6 +673,7 @@ namespace Wotr.Client
             HuntDrops.Settle(view.HuntPool, quiet);
             HandDrawer.Apply(view);
             tableEffects.Apply(view);
+            PlayedCards.Settle(view, quiet);
             mapEffects.Apply(view);
             BattleReport.Apply(view);
             Nations.Apply(view);
@@ -789,6 +802,16 @@ namespace Wotr.Client
         {
             var card = Hand.Q<Button>(id);
             Dissolve.Mark(id, card?.Q("hand-card-face") ?? card, View?.Revision ?? -1);
+        }
+
+        // UI-463 (owner, 2026-11-03): a hand card the player is playing is marked where it stands now (its unrolled face,
+        // else its slot); the view in which it stays on the player's own table flies it into the Effects tab.
+        public void MarkPlayedCard(string id)
+        {
+            if (View == null || string.IsNullOrEmpty(id) || !View.Hand.Contains(id))
+                return;
+            var card = Hand.Q<Button>(id);
+            PlayedCards.Mark(id, card?.Q("hand-card-face") ?? card, View);
         }
 
         // UI-324: the middle of the board a window opens in — between the top bar and the console, between the side

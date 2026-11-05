@@ -12,25 +12,37 @@ namespace Wotr.Client
         public Button Root { get; }
         public VisualElement Drawer { get; } = new VisualElement { name = "politics-panel" };
         public bool Pinned => hover.Pinned;
+        public bool IsOpen => hover.Visible;
         public FloatingWindow Window { get; set; }
         // UI-197: a short caption keeps the narrower header clear of the title; the tooltip says it in full.
         public Toggle ShowOpponent { get; } = new Toggle("Opponent") { name = "politics-show-opponent", value = true,
             tooltip = "Show the opponent's nations" };
         public Func<string, bool> SelectTarget { get; set; }
+        // UI-366: region names for the abilities' explanations.
+        public Func<string, string> RegionName { get; set; }
+        // UI-366: the political abilities the selected die pays for, by nation; set before RefreshActions.
+        public IReadOnlyDictionary<string, CharacterPolitics.Offer> Abilities { get; set; } =
+            new Dictionary<string, CharacterPolitics.Offer>();
         public event Action<string> Advanced;
         public event Action<string> Activated;
         public event Action Opening;
         private readonly Dictionary<string, NationTrackRow> rows = new Dictionary<string, NationTrackRow>();
         private readonly VisualElement tracks = new VisualElement { name = "politics-tracks" };
         private readonly PoliticalHover hover;
+        // UI-423: the glowing tokens pulse in the shared rhythm, one ticker for every row.
+        private readonly ChoicePulse pulse;
         private readonly Dictionary<string, Side> sides;
-        private HashSet<string> cardTargets = new HashSet<string>();
+        // A card's nation targets and what each click does ("" for the general hint).
+        private IReadOnlyDictionary<string, string> cardTargets = new Dictionary<string, string>();
         private PlayerView view;
         private TurnDraft draft = new TurnDraft();
         private ActionOption advancement;
         private string selected = "";
         private string dragged;
         private bool interactive;
+        // The time an own step's token takes to travel, the server's answer included.
+        private const long OwnStepMilliseconds = 2000;
+        private IVisualElementScheduledItem ownStep;
         private bool visible;
 
         public PoliticalPanel(VisualElement surface, BoardData board)
@@ -55,6 +67,7 @@ namespace Wotr.Client
             AddAxis();
             tracks.AddToClassList("politics-tracks");
             Drawer.Add(tracks);
+            pulse = new ChoicePulse(tracks);
             ShowOpponent.RegisterValueChangedCallback(_ => Filter());
             hover = new PoliticalHover(surface, Drawer);
             hover.Changed += RefreshVisibility;
@@ -139,9 +152,12 @@ namespace Wotr.Client
             RefreshRows();
         }
 
-        public void Highlight(IEnumerable<string> targets)
+        public void Highlight(IEnumerable<string> targets) => Highlight(targets.Distinct().ToDictionary(id => id, _ => ""));
+
+        // UI-278: the Kings cards' nation choices say what their token's click does.
+        public void Highlight(IReadOnlyDictionary<string, string> targets)
         {
-            cardTargets = targets.ToHashSet();
+            cardTargets = targets;
             RefreshRows();
         }
 
@@ -165,7 +181,9 @@ namespace Wotr.Client
                 activationAvailable |= actions.CanActivate;
                 row.Refresh(actions);
             }
-            Root.EnableInClassList("legal-target", cardTargets.Count > 0 || advancement?.Targets.Count > 0 || activationAvailable);
+            pulse.Run(rows.Values.Any(row => row.Glowing));
+            Root.EnableInClassList("legal-target", cardTargets.Count > 0 || advancement?.Targets.Count > 0 || activationAvailable ||
+                interactive && Abilities.Count > 0);
         }
 
         // UI-148: while a card waits for its nation, the tokens choose that nation; the die's own steps and
@@ -174,11 +192,16 @@ namespace Wotr.Client
         {
             var id = row.Nation.Id;
             var own = row.Own && cardTargets.Count == 0;
+            var step = advancement?.Targets.Contains(id) == true;
+            var ability = Abilities.TryGetValue(id, out var offer) ? offer : null;
             return new NationRowActions
             {
-                CanAdvance = interactive && own && advancement?.Targets.Contains(id) == true,
+                CanAdvance = interactive && own && (step || ability != null),
+                Advancement = advancement,
+                AdvanceHint = ability == null || step && !ability.Activates ? "" : CharacterPolitics.Hint(view, ability, RegionName),
                 Highlighted = (dragged ?? selected) == id,
-                CardTarget = cardTargets.Contains(id),
+                CardTarget = cardTargets.ContainsKey(id),
+                CardHint = cardTargets.TryGetValue(id, out var hint) ? hint : "",
                 ActivationOffered = own && PoliticalActions.ActivationOffered(view, draft, id),
                 CanActivate = interactive && own && PoliticalActions.CanActivate(view, draft, id),
                 ActivationHint = PoliticalActions.ActivationHint(view, draft, id)
@@ -213,6 +236,15 @@ namespace Wotr.Client
                 hover.Open();
                 Drawer.BringToFront();
             }
+        }
+
+        // UI-366: an own political step opens the panel and its token travels as in the opponent's political beat.
+        public void PresentOwnStep()
+        {
+            Open();
+            Drawer.AddToClassList(PoliticsPresenter.MovingClass);
+            ownStep?.Pause();
+            ownStep = Drawer.schedule.Execute(() => Drawer.RemoveFromClassList(PoliticsPresenter.MovingClass)).StartingIn(OwnStepMilliseconds);
         }
 
         public void Close() => hover.Close();

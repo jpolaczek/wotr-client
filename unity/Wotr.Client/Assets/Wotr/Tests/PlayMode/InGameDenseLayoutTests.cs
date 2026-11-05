@@ -65,7 +65,7 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(decision, board.View.Decision?.Id);
                 Assert.AreEqual(phase, board.View.Phase);
             }
-            var portraits = board.Sovereigns.Root.Query<Button>().ToList();
+            var portraits = board.Sovereigns.Root.Query<Button>(className: "sovereign-portrait").ToList();
             var pool = board.OwnDice.Q<Button>("pool-Spent");
             Assert.AreEqual(5, portraits.Count);
             Assert.AreEqual(5, board.View.RulerTokens.Count);
@@ -111,9 +111,13 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.AreEqual("Effects · 6", board.TableEffects.Tab.text);
             Inside(board.TableEffects.Root.worldBound, board.Map.worldBound);
-            // UI-221: every source is in view at once; the header has only its close button.
+            // UI-221, UI-429 (owner): the header holds only its close button; every source is in view at once.
+            CollectionAssert.AreEqual(new[] { "close-effects" }, board.TableEffects.Root.Q(className: "window-header")
+                .Query<Button>().ToList().Select(button => button.name).ToArray());
             Assert.AreEqual(6, Sources(board));
-            Assert.AreEqual(1, board.TableEffects.Root.Q(className: "window-header").Query<Button>().ToList().Count);
+            // UI-424: every title within its tile (Mithril Coat and Sting spilled out of its parchment), the panel above the row.
+            EffectsPanelChecks.TitlesInsideTiles(board, $"{board.View.You} {width} {scale:0.00}");
+            EffectsPanelChecks.PanelAboveBottomRow(board, $"{board.View.You} {width} {scale:0.00}");
             SovereignTargets(board);
             LayoutTests.Save(target, $"ui63-dense-effects-{board.View.You}-{width}-{scale:0.00}.png");
             Press(board.TableEffects.Root.Q<Button>("close-effects"));
@@ -185,7 +189,7 @@ namespace Wotr.PlayTests
         // UI-101: the portraits stand in the Characters panel; its tab stays reachable beside dense panels.
         private static void SovereignTargets(BoardScreen board)
         {
-            var portraits = board.Sovereigns.Root.Query<Button>().ToList();
+            var portraits = board.Sovereigns.Root.Query<Button>(className: "sovereign-portrait").ToList();
             Assert.AreEqual(5, portraits.Count);
             foreach (var portrait in portraits)
             {

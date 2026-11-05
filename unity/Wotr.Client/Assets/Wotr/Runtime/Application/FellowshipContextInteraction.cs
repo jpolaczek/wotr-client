@@ -15,6 +15,10 @@ namespace Wotr.Client
         private TurnDraft draft;
         // UI-155: this player asked to enter Mordor, so the entry brings the track into its view.
         private bool entering;
+        // UI-431: the Lure of the Ring decision whose objects the panel was opened for.
+        private string lureShown = "";
+        // UI-434: the decision whose Mordor gate the view was brought to.
+        private string gateRevealed = "";
 
         public FellowshipContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
         {
@@ -23,6 +27,8 @@ namespace Wotr.Client
             this.busy = busy;
             board.Fellowship.ActionSelected += Choose;
             board.Fellowship.PortraitSelected += Portrait;
+            board.Fellowship.GuideChosen += Guide;
+            board.Fellowship.CorruptionChosen += LureCorruption;
             board.Fellowship.VisibilityChanged += HighlightDice;
             board.Map.MordorTrack.StepClicked += Step;
             board.Map.MordorTrack.GateClicked += Gate;
@@ -39,6 +45,30 @@ namespace Wotr.Client
             board.Fellowship.Context(view, draft, board.ActionDie, !busy());
             HighlightDice();
             OfferTrack();
+            ShowLure();
+        }
+
+        // UI-431: Lure of the Ring's objects are the Fellowship panel's portrait and corruption marker, so the panel opens once
+        // for the decision.
+        private void ShowLure()
+        {
+            var decision = LureChoice.Active(view) ? view.Decision.Id : "";
+            if (decision == lureShown)
+                return;
+            lureShown = decision;
+            if (decision.Length > 0)
+                board.Fellowship.Open();
+        }
+
+        // UI-431: the red portrait eliminates the companion and the corruption marker takes the Corruption, each sending
+        // what its old console button sent.
+        private void LureCorruption() => ChooseLure(LureChoice.Corruption);
+
+        private void ChooseLure(string choice)
+        {
+            var option = view == null || busy() || !LureChoice.Active(view) ? null : DraftOptions.For(view, draft);
+            if (option?.EligibleIds.Contains(choice) == true)
+                edit(() => CardDraft.Choose(draft, option, choice), true);
         }
 
         // UI-155: the track takes the clicks of the server's options: step 0 and the gate enter, the next step
@@ -51,13 +81,35 @@ namespace Wotr.Client
             var enter = !busy() && Offered(CommandKind.EnterMordor);
             var move = !busy() && step < MordorTrackGeometry.LastStep && Offered(CommandKind.MoveFellowship);
             board.Map.MordorTrack.Offer(enter ? 0 : move ? step.Value + 1 : -1, enter ? fellowship.RegionId : "");
+            if (enter)
+                RevealGate(fellowship.RegionId);
             board.Map.FellowshipMarker.OfferHide(!busy() && !fellowship.Hidden && Offered(CommandKind.HideFellowship));
             board.Map.FellowshipMarker.OfferMove(!busy() && !step.HasValue && fellowship.Hidden && Offered(CommandKind.MoveFellowship));
             board.Map.FellowshipMarker.OfferDeclare(!busy() && !step.HasValue && draft.Kind == null && Offered(CommandKind.DeclareFellowship));
         }
 
+        // UI-434 (owner, after UI-433): "Enter Mordor: click the glowing gate on the map" — the gate and the figure beside it
+        // may lie off the map's view or under the console and the hand: the view moves to the gate's region once for the
+        // decision, as for the Black Captain's Nazgûl (UI-431).
+        private void RevealGate(string region)
+        {
+            if (gateRevealed == view.Decision?.Id || board.Map.contentRect.width <= 0)
+                return;
+            gateRevealed = view.Decision.Id;
+            board.Map.Reveal(new[] { region });
+        }
+
         private bool Offered(CommandKind kind) => FellowshipActions.Option(view, board.ActionDie, kind, draft) != null ||
             FellowshipCardActions.Choice(view, kind).Length > 0;
+
+        // UI-269: a candidate's crown sets the starting Guide in the private versions' draft.
+        private void Guide(string id)
+        {
+            var option = CompanionSetupPresentation.VersionOption(view);
+            if (busy() || option == null || !option.Targets.Contains(id) || draft.Kind != CommandKind.ChooseCompanionVersions)
+                return;
+            edit(() => draft.Change(p => p.GuideId = id), false);
+        }
 
         private void Step(int step) => Choose(step == 0 && view?.Fellowship.MordorStep == null ? CommandKind.EnterMordor : CommandKind.MoveFellowship);
 
@@ -115,7 +167,33 @@ namespace Wotr.Client
 
         private void Portrait(string id)
         {
+            // UI-270: a companion who may start in its homeland is selected by its click; its homelands light on the map.
+            // UI-347 (D14): a second click on the selected companion already placed keeps it with the Fellowship.
+            if (CompanionSetupPresentation.HomelandOption(view) is { } homelands)
+            {
+                if (busy() || draft.Kind != CommandKind.ChooseCouncilHomelands || homelands.CharacterActions.All(c => c.CharacterId != id))
+                    return;
+                // UI-451: a shared homeland waiting for its companion takes the clicked one.
+                if (CouncilDraft.Waiting(draft).Length > 0 && CouncilDraft.Candidates(draft, homelands, CouncilDraft.Waiting(draft)).Contains(id))
+                    edit(() => CouncilDraft.Portrait(draft, homelands, id), false);
+                else if (draft.Payload.CharacterId != id)
+                    edit(() => draft.Change(p => p.CharacterId = id), false);
+                else if (CouncilHomelandPresentation.Placed(draft, id))
+                    edit(() => CouncilDraft.Homeland(draft, id, ""), false);
+                return;
+            }
+            if (view != null && LureChoice.Eliminates(view, id))
+            {
+                ChooseLure(LureChoice.Eliminate);
+                return;
+            }
             var kind = FellowshipActions.PortraitKind(view, board.ActionDie, id, draft);
+            if (!kind.HasValue && !busy() && board.Fellowship.SkillUsable(id))
+            {
+                // UI-441: a portrait lit for its companion's skill opens the companion's window, where its icon uses it.
+                board.Characters.Show(id, true, board.Fellowship.PortraitButton(id));
+                return;
+            }
             if (busy() || !kind.HasValue || HuntActions.UsesPanel(view, draft))
                 return;
             board.Fellowship.Open();
@@ -127,6 +205,8 @@ namespace Wotr.Client
         {
             board.Fellowship.ActionSelected -= Choose;
             board.Fellowship.PortraitSelected -= Portrait;
+            board.Fellowship.GuideChosen -= Guide;
+            board.Fellowship.CorruptionChosen -= LureCorruption;
             board.Fellowship.VisibilityChanged -= HighlightDice;
             board.Map.MordorTrack.StepClicked -= Step;
             board.Map.MordorTrack.GateClicked -= Gate;

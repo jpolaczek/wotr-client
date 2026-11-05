@@ -16,6 +16,8 @@ namespace Wotr.Client
             // A dotted identifier (base.sh.character.04, base.hunt.special-sh.1.1.1, kings.sovereign.dain); a sentence's
             // full stop after it is not part of it.
             @"(?<id>\b(?:base|lords|kings|fate|council)(?:\.-?[A-Za-z0-9_]+(?:-[A-Za-z0-9_]+)*)+)" +
+            // UI-346: a standard action die (FreePeoples.standard.2), before its side's name.
+            @"|(?<die>\b(?:FreePeoples|Shadow)\.standard\.\d+\b)" +
             // A side's enum name, as the server writes it.
             @"|(?<side>\bFreePeoples\b)" +
             // A lower-case word or kebab-case id: a region or a nation when it is one.
@@ -37,6 +39,8 @@ namespace Wotr.Client
             {
                 if (match.Groups["id"].Success)
                     return Name(match.Value, data);
+                if (match.Groups["die"].Success)
+                    return ExpansionLabels.StandardDie(match.Value);
                 if (match.Groups["side"].Success)
                     return BoardScreen.SideName(Side.FreePeoples);
                 return Word(match.Value, data);
@@ -56,6 +60,13 @@ namespace Wotr.Client
                 return CharacterLibrary.Name(id);
             if (id is ExpansionDraft.CouncilPolitics or ExpansionDraft.CouncilTravel)
                 return ExpansionLabels.CouncilToken(id);
+            // UI-346: the expansions' dice, Keeper Rings and Ruler tokens by their names.
+            if (id.Contains(".die."))
+                return ExpansionLabels.DieName(id);
+            if (id.StartsWith("lords.ring.", StringComparison.Ordinal))
+                return ExpansionLabels.Ring(id);
+            if (id.StartsWith("kings.token.", StringComparison.Ordinal))
+                return ExpansionLabels.RulerToken(id);
             var parts = id.Split('.');
             if (parts.Length == 4 && Nations.Contains(parts[1]) && UnitKinds.Contains(parts[2]))
                 return FigureGrid.Name(parts[1]) + " " + (parts[2] == "nazgul" ? "Nazgûl" : FigureGrid.Name(parts[2]));
@@ -66,6 +77,9 @@ namespace Wotr.Client
         {
             if (data?.Regions != null && data.Regions.TryGetValue(word, out var region))
                 return region.Name;
+            // UI-346: an ability id (use-balrog, great-sorcery) reads as its title.
+            if (word.Contains('-') && ExpansionLabels.Ability(word) is { } ability)
+                return ability;
             return Nations.Contains(word) ? FigureGrid.Name(word) : word;
         }
 

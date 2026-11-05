@@ -84,9 +84,12 @@ namespace Wotr.EditorTests
             Assert.IsFalse(FellowshipActions.Choose(view, draft, context, CommandKind.MoveFellowship));
             Assert.AreEqual("Select a Character die", FellowshipActions.ActionHint(view, draft, context));
             Assert.IsEmpty(draft.Payload.DieId);
+            // UI-461: a Will die moves the Fellowship once the console's face menu turned it into a Character result.
+            context.Sync(view, "will");
+            Assert.IsFalse(FellowshipActions.Choose(view, draft, context, CommandKind.MoveFellowship));
             foreach (var id in new[] { "character", "will" })
             {
-                context.Sync(view, id);
+                context.Sync(view, id, "", id == "will" ? DieFace.Character : (DieFace?)null);
                 Assert.IsTrue(FellowshipActions.Choose(view, draft, context, CommandKind.MoveFellowship));
                 Assert.AreEqual(id, draft.Payload.DieId);
                 Assert.IsEmpty(draft.Payload.Route);

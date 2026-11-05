@@ -10,15 +10,35 @@ namespace Wotr.Client
         public EffectSource Source { get; private set; }
         private readonly Button title, removal;
         private readonly Label owner = new Label();
+        // UI-446: what the tile is, when its click does nothing now (its text unrolls on hover).
+        private string restingTooltip = "";
+        // UI-272: what a click on the card itself does now (Lore before Dismay), or "".
+        private string use = "";
+        // UI-446: the removal the × prepares now, which a click on the lit tile prepares too (UI-430's board rule), or null.
+        private ComponentAction removable;
+        // UI-430: why an effect offers this card's discard now (its tile's and its ×'s tooltip), or "".
+        private string offer = "";
+        // UI-424: the grid the entry stands in, and its title's words measured once per text (null until measured).
+        private EffectsGridArrangement arrangement = EffectsGridArrangement.Regular;
+        private EffectTitleFit fit;
+        private FontDefinition measuredFont;
+        private float fittedSize;
+        private readonly IVisualElementScheduledItem measuring;
 
-        // UI-94: a click selects the source; its details, including a card's complete text, open below the list.
-        // UI-221: hovering or focusing the tile unrolls its text over the other tiles (EffectUnroll).
-        public EffectEntry(EffectSource source, Action<EffectSource, bool> inspect, Action<string> remove,
-            Action<EffectEntry, bool> hover)
+        // UI-221: hovering or focusing the tile unrolls its text over the other tiles (EffectUnroll). UI-446 (owner): a
+        // click opens no details; it discards a red card (UI-430), uses a card the decision uses (UI-272) or prepares the
+        // removal the × offers, and otherwise does nothing, so the tile is read only then.
+        public EffectEntry(EffectSource source, Action<string> remove, Action<EffectEntry, bool> hover, Action<string> used)
         {
             Source = source;
             Root.AddToClassList("effect-entry");
-            title = BoardScreen.Button(source.Title, () => inspect(Source, true));
+            title = BoardScreen.Button(source.Title, () =>
+            {
+                if (offer.Length > 0 || removable != null)
+                    remove(Source.SourceId);
+                else if (use.Length > 0)
+                    used(Source.SourceId);
+            });
             title.AddToClassList("effect-source");
             title.name = "effect-source-" + source.SourceId;
             if (CardLibrary.Cards.ContainsKey(source.SourceId))
@@ -39,6 +59,59 @@ namespace Wotr.Client
             Root.RegisterCallback<PointerLeaveEvent>(_ => hover(this, false));
             title.RegisterCallback<FocusInEvent>(_ => hover(this, true));
             title.RegisterCallback<FocusOutEvent>(_ => hover(this, false));
+            // UI-424: the words are measured once the title has its style, outside layout callbacks.
+            measuring = title.schedule.Execute(MeasureTitle);
+            measuring.Pause();
+            title.RegisterCallback<AttachToPanelEvent>(_ => RequestMeasure());
+            title.RegisterCallback<GeometryChangedEvent>(_ => RequestMeasure());
+        }
+
+        // UI-424: the entry's size, its title's height and type follow the grid's arrangement; the title fits its tile.
+        public void Arrange(EffectsGridArrangement next)
+        {
+            arrangement = next;
+            Root.style.width = next.EntryWidth;
+            Root.style.height = next.EntryHeight;
+            Root.style.marginBottom = next.RowGap;
+            title.style.height = next.TitleHeight;
+            FitTitle();
+        }
+
+        // A title measured before its style was resolved (another font) is measured again.
+        private void RequestMeasure()
+        {
+            if (fit != null && !measuredFont.Equals(title.resolvedStyle.unityFontDefinition))
+                fit = null;
+            if (fit == null && title.panel != null)
+                measuring.ExecuteLater(0);
+        }
+
+        private void MeasureTitle()
+        {
+            var size = title.resolvedStyle.fontSize;
+            if (fit != null || title.panel == null || float.IsNaN(size) || size <= 0)
+                return;
+            var runs = EffectTitleFit.Measure(EffectTitleFit.Split(title.text), TextWidth);
+            fit = new EffectTitleFit(runs, TextHeight("A"), TextHeight("A\nA"), size);
+            measuredFont = title.resolvedStyle.unityFontDefinition;
+            FitTitle();
+        }
+
+        private float TextWidth(string text) =>
+            title.MeasureTextSize(text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
+
+        private float TextHeight(string text) =>
+            title.MeasureTextSize(text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).y;
+
+        // The arrangement's type size, or the largest smaller one whose wrap fits the tile (EffectTitleFit).
+        private void FitTitle()
+        {
+            var width = arrangement.TitleTextWidth(removal.style.display == DisplayStyle.Flex, title.ClassListContains("effect-card-tile"));
+            var size = fit?.Size(arrangement.TitleSize, width, arrangement.TitleTextHeight) ?? arrangement.TitleSize;
+            if (Mathf.Approximately(size, fittedSize))
+                return;
+            fittedSize = size;
+            title.style.fontSize = size;
         }
 
         // UI-288: a card is a small parchment card, as in the hand, with the symbol printed on its corner.
@@ -53,9 +126,15 @@ namespace Wotr.Client
         public void Apply(EffectSource source)
         {
             Source = source;
-            title.text = source.Title;
-            title.tooltip = source.Kind == "Ability" ? "Show this public ability below"
-                : CardLibrary.Cards.ContainsKey(source.SourceId) ? "Show the complete Event and Combat text below" : "Show this effect below";
+            if (title.text != source.Title)
+            {
+                title.text = source.Title;
+                fit = null;
+                RequestMeasure();
+            }
+            restingTooltip = TooltipText.Parts(source.Title, source.Kind == "Ability" ? "A public ability in play"
+                : CardLibrary.Cards.ContainsKey(source.SourceId) ? "A card in effect" : "An effect in play");
+            Refresh();
             owner.text = source.Owner == Wotr.Contracts.Side.FreePeoples ? "FP ◆" : "SH ◆";
             owner.tooltip = BoardScreen.SideName(source.Owner);
             Root.EnableInClassList("shadow-effect", source.Owner == Wotr.Contracts.Side.Shadow);
@@ -63,20 +142,62 @@ namespace Wotr.Client
 
         public void Context(ComponentAction action, bool enabled, Wotr.Contracts.PlayerView view)
         {
+            WithdrawOffer();
             removal.style.display = action == null ? DisplayStyle.None : DisplayStyle.Flex;
             removal.SetEnabled(enabled && action?.Enabled == true);
             removal.tooltip = action == null ? "" : "Remove " + Source.Title + " · " + EffectsPresentation.RemovalCost(view, action) +
                 (action.Enabled ? "" : " Select an eligible die.");
+            removable = enabled && action?.Enabled == true ? action : null;
             title.EnableInClassList("legal-target", action?.Enabled == true);
+            Refresh();
+            FitTitle();
         }
 
-        // UI-214: a card's effect offers this source (The Nazgûl Strike! discards a table card); its × chooses it.
+        // UI-272: a decision uses this card itself (The Lore of the Elven Rings before Dismay): the card glows, its tooltip
+        // says what the click does, and the click uses it instead of showing its text.
+        // Applied after the removal context, whose lit state a card without a use keeps.
+        public void Use(string tooltip)
+        {
+            var next = tooltip ?? "";
+            if (next.Length == 0 && use.Length == 0)
+                return;
+            use = next;
+            Refresh();
+            ChoiceGlow.Apply(title, use.Length > 0);
+            if (use.Length > 0)
+                title.EnableInClassList("legal-target", true);
+        }
+
+        // UI-214: a card's effect offers this source (The Nazgûl Strike! discards a table card); its × chooses it. UI-430
+        // (owner): the card is red instead of lit, and a click on the card itself chooses it too; both say why.
         public void Offer(string tooltip, bool enabled)
         {
+            offer = tooltip ?? "";
             removal.style.display = DisplayStyle.Flex;
             removal.SetEnabled(enabled);
-            removal.tooltip = tooltip;
-            title.EnableInClassList("legal-target", enabled);
+            removal.tooltip = offer;
+            title.EnableInClassList("legal-target", false);
+            title.EnableInClassList(TableEffectsView.DiscardClass, enabled);
+            Refresh();
+            FitTitle();
+        }
+
+        private void WithdrawOffer()
+        {
+            if (offer.Length == 0)
+                return;
+            offer = "";
+            title.RemoveFromClassList(TableEffectsView.DiscardClass);
+            Refresh();
+        }
+
+        // What a click on the card itself does now — discard it for an effect (UI-430), use it (UI-272), prepare its
+        // removal — or, read only, what the tile is (UI-446).
+        private void Refresh()
+        {
+            var interactive = offer.Length > 0 || use.Length > 0 || removable != null;
+            ReadOnlyControl.Apply(title, interactive);
+            title.tooltip = offer.Length > 0 ? offer : use.Length > 0 ? use : removable != null ? removal.tooltip : restingTooltip;
         }
     }
 }

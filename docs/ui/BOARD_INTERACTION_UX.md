@@ -48,6 +48,21 @@ Simple rasters have a clear background, a recognizable type figure, a separate p
 
 The traffic after the server confirmation takes about 0,65–1,05 p. figure or a compact group clearly moves from a known source to a target. Animation is only a presentation of subsequent public projections: without RNG , sending commands or queue blocking next choice. We do not add the supposed intermediate fields. Hidden progress Fellowship the first view, the reconnet and the revision gap show the current score without replay. Reduced motion skips the move and leaves a short accent. After animation, the actual target stack remains visible also at the distance, until the next projection or reset connection. This result indication does not open the preview, does not change the selection and does not show the secret route. UI-95 another projection that leaves flying figure for their purpose (e.g. next step turn right after the declaration Fellowship ), does not interrupt the flight; this new move figure replaces it and her disappearance ends. Corruption on track Fellowship moves smoothly to the new field (approx. 260 ms), and the first position and the change of scale set it immediately.
 
+**UI-404 (2026-10-30): a moving figure rises, flies in an arc and lands on its place.** `MapFigureMotion` no longer
+slides a box of pictures from anchor to anchor. Each flight is the destination marker's own miniature at the figures'
+scale (`FlightMiniature`: the army's base with the flying units and their count, a character on its stand, the
+Fellowship's figure), one per destination marker and source, from the place its figures stood on before the view
+(`FlightPlaces`, recorded on every sync) to the place they stand on now. It lifts in place into UI-403's raised pose
+(0–15 %), flies in an arc of `clamp(.12 × distance, 20, 80)` px with its shadow on the ground (15–85 %) and drops onto
+its place with a short settle (85–100 %); its last frame is the standing figure, drawn before the stand takes over, so
+nothing snaps. The duration is unchanged (0.65–1.05 s, arrivals 0.45 s), and every frame writes only transforms and
+opacity (`FigureFlight`, `FlightProfile`). A figure the player holds is expected (`MapFigureMotion.Expect`): as a step
+leaves, the raised pieces of the hand (and a card's faint planned figures) give the flight their place and pose, so a
+click-lifted army goes on from where it hovers and never rises again from its source; a rejection, a disconnect or 5 s
+without the view put it back on its base. A projection that moves a flying figure again takes it over in the air (UI-95
+above). Reduced motion and Skip are unchanged: an arrival on the destination's place, and the result at once. Details:
+[TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-404)".
+
 <a id="macierz-odbioru"></a>
 ## Acceptance matrix
 
@@ -241,7 +256,7 @@ The window of the ruler.
 
 **Notifications.**
 - `ActionNoticeBar.Root` lies in the root of board behind the stage, so it draws over it. It has
-  `position: absolute` under the top bar (44 pt) and width resulting from the content
+  `position: absolute` under the top bar (36 pt since UI-479, `--game-topbar-height`) and width resulting from the content
   (`Styles/Notices.uss`).
 - It does not take up the space in the column: the scene and `topbar-shadow` begin at the bottom
   edge of the top bar.
@@ -278,15 +293,20 @@ Camera and map area.
 <a id="ruch-kliknięciami-na-mapie--ui-105"></a>
 ## Move clicks on the map — UI-105
 
+UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs. UI-405 shipped on 2026-10-30: the two "Enter" points below are superseded for the map's `Army` and `Miniature` (see [Carrying a figure — UI-405](#ui-405)); the clicks are unchanged.
+
 Enter.
 - `DraftInput.Move` does not start drag for `DraftObject.Army`, `Figure` or `FellowshipPortrait`.
-  Pressing and moving the indicator does not capture it and show no spirit.
+  Pressing and moving the indicator does not capture it and show no spirit. Since UI-405 an `Army` or `Miniature` press
+  drags only when `IFigureDrag.Begin` accepts it; `Figure` (the region panel's chips), `Character` and
+  `FellowshipPortrait` still never drag.
 - `TurnInteraction.Drop` no longer has branches of the army, figures, travel, battle or portraits;
-  `RegionHover.PreviewDrag` only responds to reserve.
+  `RegionHover.PreviewDrag` only responds to reserve. Since UI-405 its first branch is the carried figure's drop
+  (`FigureLiftInteraction.Drop`, the target's click), and `PreviewDrag` also responds to a carried army or character.
 
 The figures election.
-- `ActionContextInteraction.SelectFigure` (region panel) first joins figure in an army collected in
-  the same region.
+- `ActionContextInteraction.SelectFigure` (region panel; since UI-402 also a character's own miniature on the map)
+  first joins figure in an army collected in the same region.
 - Then he asks `FigureSelector` (a journey of the character).
 - At the end of the army begins: it is joined by characters and Nazgûle previously selected in this
   region, so they do not lose the mark.
@@ -467,6 +487,21 @@ User decisions with 2026-10-13 save [ARMY_MAP_UX](ARMY_MAP_UX.md) : armies alway
 
 `MapMarkerVisibility` selects only the level: `Detail` ed 1,3 × to drop below 1,2 × match. `MapCanvas` puts the forces of the region in one row (garnison, then field forces) over the symbol settlement and in the region without settlement on an anchor. A government that would be on a set marker (from UI-199 Not on panel anymore HUD or open panel of the region), tries to turn to the right, left and bottom sides; the government shown with figures only because of zoom then returns to chips, and the government of the region open by clicking, with the chosen force or upon arrival becomes figures. The government of the region opened in the panel does not bypass this panel; it is a panel ( `RegionHover` ed `MapPanelPlacement.Near` ) avoids `MarkerBounds` So the cursor mark doesn't run away when you open it.
 
+UI-401 (2026-10-30) replaces the row: `MapStandLayout` stands every force on its region's fixed place (UI-422) — a
+garrison at the gate, the main field force on the field, a second one on the planned place — sized in board units and
+moved and scaled by a transform only (`MapStand`), so it keeps its place at every zoom and while the map pans. A region
+shows figures at `Detail` when its group fits its capacity at the current size, or when it is inspected, holds a
+selected force or was just reached by a flight; nothing turns to tokens because of crowding any more. One stand layer,
+sorted by the feet on the board when the board changes, draws nearer forces in front. The region panel still avoids
+`MarkerBounds`, which are now the stands' visible parts. Details: [ARMY_MAP_UX](ARMY_MAP_UX.md), "Figures on their
+places, sized with the map — UI-401", and [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md).
+
+UI-402 (2026-10-30): the characters leave the army markers. Each is its own miniature (`character-<id>`,
+`DraftObject.Miniature`) on its region's character places, in the same stand layer; the panel avoids `FigureBounds`
+(the armies, the Fellowship and the characters). Its click goes through `TurnInteraction.ChooseMiniature` to
+`ActionContextInteraction.SelectFigure` — the chip's own path below — and opens no region panel; the army's click is
+unchanged. The chips and the miniatures read one `FigureChoices`. Details: [ARMY_MAP_UX](ARMY_MAP_UX.md#ui-402).
+
 <a id="wdrożenie-ruchu--ui-127"></a>
 <a id="implementation-z-moj--ui-127"></a>
 ## implementation with my — UI-127
@@ -484,7 +519,10 @@ User decisions with 2026-10-13 save [ARMY_MAP_UX](ARMY_MAP_UX.md) : armies alway
 - `ArmyGhost` builds a selection model and target signatures only with options
   (`ArmyActionTargets.Options`, `BattleMode`); `MapCanvas.SetGhost` draws an uninteractive
   `army-ghost` spirit with a signature next to the target force at `SetHovered`, without queries to
-  the server.
+  the server. Superseded by UI-403 (2026-10-30): `ArmyGhost` only provides the captions (and which
+  targets attack); `MapCanvas.SetLanding` lays the landing mark on the hovered target's place and
+  hangs the caption above the figures lifted into the hand (`MapFigureHand`); no faint copy is drawn
+  ([ARMY_MAP_UX](ARMY_MAP_UX.md#ui-403)).
 - `ActionSequence.UsedIds` gives `moved` figures status in the panel (`RegionHoverPanel.Moved`) and
   on the tag (`MapCanvas.ShowMarched`, when all figure forces have moved).
 - `ArmyActionTargets.Blocking` lists figure outside `EligibleIds` of any purpose; the text trays and
@@ -493,7 +531,47 @@ User decisions with 2026-10-13 save [ARMY_MAP_UX](ARMY_MAP_UX.md) : armies alway
 <a id="jeden-przepływ-ruchu--ui-128"></a>
 ## One movement flow — UI-128
 
-The path inventory and justification of exceptions (the ruler's token, card with routes and rescues) is in [ARMY_MAP_UX](ARMY_MAP_UX.md), ‘implementation UI-128’. `DraftGesture.Drop` rejects armies, and `BoardDraft.Drop` only supports reserves; the dead army drag branch with UI-105 disappeared.
+UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs.
+
+The path inventory and justification of exceptions (the ruler's token, card with routes and rescues) is in [ARMY_MAP_UX](ARMY_MAP_UX.md), ‘implementation UI-128’. `DraftGesture.Drop` rejects armies, and `BoardDraft.Drop` only supports reserves; the dead army drag branch with UI-105 disappeared. Since UI-405 (2026-10-30) a carried army or character never reaches `DraftGesture.Drop`: `TurnInteraction.Drop`'s first branch hands it to `FigureLiftInteraction`, whose drop is the target region's click (`TurnInteraction.ChooseRegion`), so there is still one movement flow.
+
+<a id="ui-405"></a>
+## Carrying a figure — UI-405
+
+Owner decision 2 of UI-421, built 2026-10-30. Design and details: [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "The
+lifted figure, drag and drop" and "As built (UI-405)".
+
+- **Input.** `DraftInput` takes an `IFigureDrag` (`Runtime/UI/IFigureDrag.cs`). An `Army` or `Miniature` press that
+  crosses `DraftClickSequence.MovementTolerance` asks `Begin` once; refused, the press stays the button's click (UI-113:
+  the pressed state ends only when the drag takes the pointer). Accepted, the root takes the pointer, `Carry` gets each
+  move with `DraftInput.At` (the release's own pick), no `.drag-ghost` and no UI-393 icon shows, the release is the drop
+  callback and `ResetDrag` (Esc, focus loss, a cancelled pointer, a changed scope) calls `Cancel`.
+- **Lift.** `FigureLiftInteraction.Begin` checks the side, `SelectionBusy` and a lit king, keeps `TurnDraft.Checkpoint`,
+  and, unless the figure is already raised for the unsent move (`MapCanvas.Lifts`), makes its click through
+  `TurnInteraction.SelectToLift` (`RegionHover.Quiet`: no panel; a send it would make is held back and refuses the
+  lift). No raised piece, no lit target other than its own region, or no piece taken up (`MapCanvas.GrabFigures`) puts the
+  checkpoint back (`TurnDraft.Rewind`, `TurnInteraction.Restore`).
+- **During the drag.** `MapCanvas.CarryFigures` (the hand's pieces follow by translate), `MapCanvas.SetDragTarget` (the
+  renderer's `CarriedTarget`/`CarriedAttack`/hover tint; the landing mark reads `DragTarget` before `Hovered`),
+  `MapEdgePan.SampleDrag` (dwell 0.25 s; `DragPanned` reads the region under the resting pointer again);
+  `RegionHover.PreviewDrag` makes the open panel translucent and transparent to the pointer.
+- **Drop.** `FigureLiftInteraction.Drop`: `MapCanvas.DropFigures` rests the pieces on the board point under them; a lit
+  target other than the figure's own region, while nothing is busy, runs `TurnInteraction.ChooseRegion`. If the carried
+  figures are still in `LiftedFigures.Selection` afterwards, nothing happened to them and the checkpoint is put back.
+  `MapCanvas.HomeFigures` then glides home every raised piece that no flight awaits. A sent step's `ExpectFlights` reads
+  each piece's `Ground`, the drop point (UI-404's hand-off).
+- **Cancel.** `FigureLiftInteraction.Cancel` (and `TurnInteraction.Update` before a new revision meets the draft) puts the
+  checkpoint back, saves it, shows it and glides the figures home.
+- **UI-428 (2026-10-30): every map object is its region's drop.** The region under a carried figure, and the drop's, is
+  `DraftToken.StandsIn`: the terrain's region, or the region the map object under the pointer stands in — an army marker,
+  a character's miniature, the Fellowship's figure (`DraftObject.Fellowship` now carries its region; on the Mordor track
+  the region under its step) and a Corrupted king's marker (`DraftObject.Sovereign` with the capital). A drop on the
+  Fellowship's figure in a lit target is therefore that region's click, payload and all (it used to send nothing and
+  glide home). Pickable map elements without a token (the Mordor track's stones and gates) already read the terrain under
+  them; gems, names, labels, the hand and the landing mark take no pointer. For every other drag `DraftToken.AsRegion`
+  turns the Fellowship's figure into its region too, as a character's miniature; a king's marker keeps its own drop (a
+  die dropped on it chooses the king, UI-274). Details and the carried pose that keeps the landing mark visible:
+  [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-428)".
 
 <a id="panel-posiłków--ui-130"></a>
 ## Meal Panel — UI-130
@@ -703,6 +781,10 @@ Gorgoroth's point lies just under the Barad-dûr border, so its figure used to s
 the forces. A region too small for every place keeps the figure above its forces, as before. On the Mordor track the
 figure stays on its step, which lies inside Gorgoroth (the Crack of Doom is drawn at Barad-dûr's foot). Test:
 `MapContourDataTests.FellowshipFigureStandsInsideGorgoroth`.
+
+UI-401 (2026-10-30): the figure stands on its region's Fellowship place (UI-422), which lies inside the region at every
+zoom, Gorgoroth included, and is sized with the map like the armies (`MapStand`); `RegionCentre` and its four tries are
+gone. Test: `MapContourDataTests.FellowshipFigureStandsInsideItsRegion`.
 
 ## Fortress drawings on the terrain — UI-234 (2026-10-17)
 

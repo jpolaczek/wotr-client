@@ -13,8 +13,13 @@ namespace Wotr.PlayTests
 {
     public sealed class MapContourInteractionTests
     {
+        // UI-405 (flipped from "…AndNeverDragsIt"): a drop that is no step leaves the selection; the click commits it.
         [UnityTest]
-        public IEnumerator BothSidesClickOnContoursCommitsTheArmyStepAndNeverDragsIt() => MatchTestRoom.Wait(MoveBothSides());
+        public IEnumerator BothSidesClickOnContoursCommitsTheArmyStepAndADropElsewhereIsNone() => MatchTestRoom.Wait(MoveBothSides());
+
+        // UI-405: the army carried onto the target's contour and dropped there commits the step its click commits.
+        [UnityTest]
+        public IEnumerator BothSidesDropOnTheTargetContourCommitsTheSameArmyStep() => MatchTestRoom.Wait(DropBothSides());
 
         [UnityTest]
         public IEnumerator BothSidesAttackOnTheEnemyContourWithoutAnotherConfirmation() => MatchTestRoom.Wait(AttackBothSides());
@@ -47,11 +52,12 @@ namespace Wotr.PlayTests
                 Assert.IsEmpty(board.Map.Query<Button>(className: "map-target").ToList());
                 Assert.IsEmpty(board.Map.Query<Label>(className: "placement-ghost").ToList());
                 Assert.IsNull(board.Tray.Q<Button>("confirm-decision"));
-                // UI-105: the army token is not a drag source; only the destination click moves it.
-                MapContourProbe.AttemptDrag(board, Army(board, from), MapContourProbe.Terrain(board.Map, to));
+                // UI-405: the army is carried as itself; dropped on the HUD it is no step and stays chosen.
+                MapContourProbe.DragFigure(board, Army(board, from), board.Phase.worldBound.center);
                 await room.Settle();
-                Assert.AreEqual(0, room.Boundary.Commands, "Dragging the army is not a move.");
+                Assert.AreEqual(0, room.Boundary.Commands, "A drop where the click does nothing is not a move.");
                 Assert.IsTrue(Army(board, from).ClassListContains("selected-force"));
+                Assert.Contains(to, board.Map.DraftOverlay.Targets.ToArray());
                 MapContourProbe.ReachRegion(board.Map, to);
                 await room.Settle();
                 var pan = board.Map.Camera.Pan;
@@ -73,6 +79,35 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DieLocation.Resolving, board.View.Dice.Single(d => d.Id == die).Location);
                 Assert.AreEqual(pan, board.Map.Camera.Pan);
                 Assert.AreEqual(zoom, board.Map.Camera.Zoom);
+                CollectionAssert.AreEquivalent(room.Fp.Board.View.Units.Where(u => u.Location == to).Select(u => u.Id),
+                    room.Sh.Board.View.Units.Where(u => u.Location == to).Select(u => u.Id));
+            }
+        }
+
+        private static async Task DropBothSides()
+        {
+            foreach (var side in new[] { Side.FreePeoples, Side.Shadow })
+            {
+                using var room = await UI10TestRoom.Connect($"map15-{side}-drop", shadowBoundary: side == Side.Shadow);
+                var client = side == Side.FreePeoples ? room.Fp : room.Sh;
+                var from = side == Side.FreePeoples ? "minas-tirith" : "lossarnach";
+                var to = side == Side.FreePeoples ? "osgiliath" : "pelargir";
+                await Select(room, client, from, .95f);
+                var board = client.Board;
+                MapContourProbe.ReachRegion(board.Map, to);
+                await room.Settle();
+                var die = board.ActionDie.DieId;
+                MapContourProbe.DragFigure(board, Army(board, from), MapContourProbe.Terrain(board.Map, to));
+                await room.At(1);
+                Assert.AreEqual(1, room.Boundary.Commands, "The drop is the step, with no Confirm.");
+                Assert.AreEqual(CommandKind.MoveArmies, room.Boundary.LastCommand.Kind);
+                var command = room.Boundary.LastCommand.Payload;
+                Assert.IsTrue(command.Stepwise);
+                Assert.AreEqual(die, command.DieId);
+                Assert.AreEqual(from, command.Moves.Single().From);
+                Assert.AreEqual(to, command.Moves.Single().To);
+                Assert.AreEqual(1, board.View.ActionSequence.Remaining);
+                Assert.AreEqual(DieLocation.Resolving, board.View.Dice.Single(d => d.Id == die).Location);
                 CollectionAssert.AreEquivalent(room.Fp.Board.View.Units.Where(u => u.Location == to).Select(u => u.Id),
                     room.Sh.Board.View.Units.Where(u => u.Location == to).Select(u => u.Id));
             }
@@ -110,7 +145,8 @@ namespace Wotr.PlayTests
             Assert.IsTrue(board.Presentation.Geometry.Boundaries.Any(boundary =>
                 boundary.Owners.Contains("minas-tirith") && boundary.Owners.Contains("lamedon")));
             Assert.IsFalse(targets.Contains("lamedon"), "A shared mountain contour is not a legal army route.");
-            MapContourProbe.AttemptDrag(board, Army(board, "minas-tirith"), MapContourProbe.Terrain(board.Map, "lamedon"));
+            // UI-405: carried onto Lamedon, beyond the mountains, the army comes back and nothing is sent.
+            MapContourProbe.DragFigure(board, Army(board, "minas-tirith"), MapContourProbe.Terrain(board.Map, "lamedon"));
             await room.Settle();
             Assert.AreEqual(0, room.Boundary.Commands);
             MapContourProbe.Click(board.Map, MapContourProbe.Terrain(board.Map, "lamedon"));

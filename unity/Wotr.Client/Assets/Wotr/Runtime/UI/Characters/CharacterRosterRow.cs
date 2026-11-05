@@ -5,34 +5,55 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-139: a roster row speaks in symbols: the portrait carries the level, the second line a status symbol and
-    // the region or a short state; the row's tooltip reads the full state and statistics.
+    // the region or a short state; the row's tooltip reads the full state and statistics. UI-391: a third line holds the
+    // character's ability icons, inside the row, so every row keeps its size.
     internal sealed class CharacterRosterRow
     {
         public Button Root { get; }
+        public CharacterAbilityStrip Abilities { get; }
+        // The version the row shows: the next one for a character not in play, the current one otherwise.
+        public string Definition { get; private set; } = "";
         private readonly Image portrait = new Image { pickingMode = PickingMode.Ignore, scaleMode = UnityEngine.ScaleMode.ScaleToFit };
         private readonly Label level = new Label { name = "character-roster-level", pickingMode = PickingMode.Ignore, enableRichText = false };
         private readonly Label title = new Label { name = "character-roster-title" };
         private readonly VisualElement statusIcon = new VisualElement { name = "character-roster-status", pickingMode = PickingMode.Ignore };
         private readonly Label detail = new Label { name = "character-roster-detail" };
+        private readonly VisualElement alternate = new VisualElement { name = "alternate-badge", pickingMode = PickingMode.Ignore };
+        private readonly VisualElement text = new VisualElement();
         private string status = "";
-        private string description = "";
+        // UI-409: the tooltip's parts; the offer is added when the click enters.
+        private CharacterRowTooltip.Parts description = new CharacterRowTooltip.Parts();
         private CharacterRosterView shown;
         private bool offered;
+        private bool versionOffered;
         private bool chosen;
+        private string offeredVersion = "";
+        // UI-441: the character's skills usable now, or null.
+        private UsableSkills.Skill skill;
+        private BoardPresentation data;
         private string statusText = "";
         // UI-243: the chosen row while its entry waits for a region: solid gold and a short instruction.
         public const string ChosenClass = "entry-chosen";
         public const string ChosenHint = "Choose a highlighted region";
+        public const string RowClass = "character-roster-row";
+        // UI-441: the row's offer while a skill of the character is usable now.
+        public const string SkillHint = "Click its glowing icon";
 
         public CharacterRosterRow(string id)
         {
             Root = BoardScreen.Button("", null);
             Root.name = "character-roster-" + id;
+            Root.AddToClassList(RowClass);
+            Root.AddToClassList(RuntimeTooltip.FormattedClass);
             // UI-108: a row of the Characters list, distinct from a figure on the map; its double-click enters it.
             Root.userData = new DraftToken(DraftObject.Character, id);
             portrait.AddToClassList("character-roster-portrait");
             level.AddToClassList("character-roster-level");
             portrait.Add(level);
+            // UI-270: the owner's mark of a companion in its alternate version.
+            alternate.AddToClassList("alternate-badge");
+            alternate.style.display = DisplayStyle.None;
+            portrait.Add(alternate);
             title.AddToClassList("character-roster-title");
             statusIcon.AddToClassList("character-status-icon");
             detail.AddToClassList("character-roster-detail");
@@ -40,25 +61,47 @@ namespace Wotr.Client
             line.AddToClassList("character-roster-line");
             line.Add(statusIcon);
             line.Add(detail);
-            var text = new VisualElement();
             text.AddToClassList("character-roster-text");
             text.Add(title);
             text.Add(line);
+            Abilities = new CharacterAbilityStrip(id);
+            text.Add(Abilities.Root);
             Root.Add(portrait);
             Root.Add(text);
         }
 
         public void Apply(CharacterRosterView entry, BoardPresentation data)
         {
+            this.data = data;
+            Render(entry);
+        }
+
+        // UI-438: the row of a character not in play shows the version its offered entry (or the chosen entry) brings in;
+        // without one, the first that may enter. The row changes only when that version does.
+        public void ShowVersion(string version)
+        {
+            if (version == offeredVersion)
+                return;
+            offeredVersion = version;
+            if (shown != null)
+                Render(shown);
+        }
+
+        private void Render(CharacterRosterView entry)
+        {
+            var definition = CharacterRosterPresentation.ShownVersion(entry, offeredVersion);
             var candidate = CharacterRosterPresentation.Section(entry) == CharacterRosterSection.NotInPlay
-                ? entry.FutureVersions.FirstOrDefault() : null;
-            var definition = candidate?.DefinitionId ?? entry.CurrentDefinitionId;
+                ? entry.FutureVersions.FirstOrDefault(v => v.DefinitionId == definition) : null;
+            Definition = definition;
+            Abilities.Apply(definition);
             title.text = CharacterLibrary.ShortName(definition);
             portrait.sprite = FigureArtwork.Sprite(FigureAppearances.Character(definition, entry.Side));
             portrait.EnableInClassList("free-peoples", entry.Side == Side.FreePeoples);
             portrait.EnableInClassList("shadow", entry.Side == Side.Shadow);
+            alternate.style.display = entry.Side == Side.FreePeoples && CompanionSetupPresentation.Alternate(entry.FigureId, definition)
+                ? DisplayStyle.Flex : DisplayStyle.None;
             var location = data.Regions.TryGetValue(entry.RegionId, out var region) ? region.Name : "";
-            var state = CharacterCardFacts.Status(entry, location);
+            var state = CharacterCardFacts.Status(entry, location, definition);
             statusText = state.Short;
             detail.text = chosen ? ChosenHint : statusText;
             statusIcon.RemoveFromClassList("character-status-" + status);
@@ -72,20 +115,46 @@ namespace Wotr.Client
                 ? location + (entry.Garrison ? " · Garrison" : "") : CharacterRosterPresentation.State(entry);
             // UI-187: the card's abilities follow in their short form.
             shown = entry;
-            description = CharacterAbilitySummaries.Append(CharacterRosterPresentation.Title(entry) + (edition.Length > 0 ? " · " + edition : "") +
-                "\n" + fullLocation + "\n" + CharacterCardFacts.Summary(facts) +
-                (candidate == null ? "" : "\n" + CharacterRosterPresentation.Conditions(candidate.Entry)), definition);
+            description = new CharacterRowTooltip.Parts
+            {
+                Name = CharacterRosterPresentation.Title(entry, definition), Edition = edition, State = fullLocation,
+                Stats = CharacterCardFacts.Summary(facts), Entry = candidate?.Entry,
+                Abilities = CharacterAbilitySummaries.Lines(definition)
+            };
             ShowOffer();
             Root.EnableInClassList("legal-target", entry.FutureVersions.Any(v => v.Entry.CanAct || v.CouncilEntry?.CanAct == true));
         }
 
+        // UI-408 (owner): two rows a line hold the ability icons beside the text, as a 2x2 block; three a line keep them as
+        // the text's third line (UI-391).
+        public void Wide(bool wide)
+        {
+            VisualElement host = wide ? Root : text;
+            if (Abilities.Root.parent != host)
+                host.Add(Abilities.Root);
+        }
+
         // UI-240: a row whose click enters a character, or changes one into its next version, glows and pulses
-        // (ChoiceGlow), and its tooltip starts with what the click does.
-        public void Offer(bool entry)
+        // (ChoiceGlow), and its tooltip starts with what the click does. UI-438: so does a row whose versions may each
+        // enter now; its click opens the window where the version is chosen.
+        public void Offer(bool entry, bool chooseVersion = false)
         {
             offered = entry;
+            versionOffered = chooseVersion && !entry;
             ShowOffer();
         }
+
+        // UI-441 (owner): a character whose skill can be used now glows and pulses on its row, as an offered entry does,
+        // and its tooltip starts with why; the light goes out with the last usable skill.
+        public void ShowSkill(UsableSkills.Skill usable)
+        {
+            if (usable == skill || usable != null && skill != null && UsableSkills.Line(usable, SkillHint) == UsableSkills.Line(skill, SkillHint))
+                return;
+            skill = usable;
+            ShowOffer();
+        }
+
+        public bool SkillLit => skill != null;
 
         public void Choose(bool value)
         {
@@ -97,8 +166,19 @@ namespace Wotr.Client
 
         private void ShowOffer()
         {
-            ChoiceGlow.Apply(Root, offered);
-            Root.tooltip = offered && shown != null ? CharacterRosterPresentation.EntryOffer(shown) + "\n" + description : description;
+            ChoiceGlow.Apply(Root, offered || versionOffered || skill != null);
+            Root.tooltip = CharacterRowTooltip.Format(OfferText(), description);
+        }
+
+        private string OfferText()
+        {
+            if (shown == null)
+                return "";
+            if (offered)
+                return CharacterRosterPresentation.EntryOffer(shown, offeredVersion.Length > 0 ? offeredVersion : Definition);
+            if (versionOffered)
+                return CharacterRosterPresentation.ChooseVersionOffer;
+            return UsableSkills.Line(skill, SkillHint);
         }
     }
 }

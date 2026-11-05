@@ -25,20 +25,23 @@ namespace Wotr.Client
             title.AddToClassList("setup-version-title");
             Root.Add(title);
             Root.Add(Statistics(definitionId));
+            // UI-420 (owner): the label shows the ability's title, so its tooltip holds only the text and source.
             foreach (var ability in CharacterAbilityLibrary.For(definitionId))
             {
                 var label = new Label("◇ " + ability.Title) { focusable = true, enableRichText = false,
                     name = "setup-ability-" + ability.Id,
-                    tooltip = ability.Title + "\n" + ability.Text + "\n\n" + ability.Source };
+                    tooltip = TooltipText.Lines(ability.Text, ability.Source) };
                 label.AddToClassList("setup-version-ability");
                 Root.Add(label);
             }
-            Root.tooltip = "Choose " + CharacterLibrary.Name(definitionId) + " · " + caption;
+            Root.tooltip = "Click to choose " + CharacterLibrary.Name(definitionId) + " · " + caption;
         }
 
         public void Select(bool selected)
         {
             Root.EnableInClassList("selected", selected);
+            // UI-345: the version not chosen glows as a choice.
+            ChoiceGlow.Apply(Root, !selected);
             selection.text = selected ? "✓" : "○";
         }
 

@@ -29,7 +29,8 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
-            board.ActionDie.Sync(view, ResourcePresentation.CouncilPending(draft) ? "" : draft.Payload.DieId);
+            board.ActionDie.Sync(view, ResourcePresentation.CouncilPending(draft) ? "" : draft.Payload.DieId, draft.Payload.RulerTokenId,
+                draft.WillFace);
             board.ActionDie.BindCost(view, draft);
             var eligible = ArmyActive ? ContextArmySelection.Eligible(view, board.ActionDie) : new HashSet<string>();
             var current = ArmyActive ? ArmyDraft.Current(draft) : null;
@@ -38,11 +39,13 @@ namespace Wotr.Client
             board.Hover.Panel.Eligible = id => !busy() && eligible.Contains(id);
             board.Hover.Panel.Selected = selected.Contains;
             board.Hover.Panel.Moved = moved.Contains;
+            board.Hover.Panel.Offer = _ => "";
             board.Hover.Panel.RefreshSelection();
             board.Map.ShowMarched(MarchedForces(view, moved));
             var sources = ArmyActive ? ContextArmySelection.Sources(view, board.ActionDie) : Enumerable.Empty<ArmyOption>();
             board.Map.HighlightSources(sources, view.You);
-            board.Map.SetGhost(ArmyActive ? ArmyGhost.Of(view, draft, board.ActionDie) : null);
+            // UI-403: the captions of the army's targets, or of a travelling figure's (a character, a card's flight).
+            board.Map.SetLanding(ArmyGhost.Of(view, draft, ArmyActive ? board.ActionDie : null, board.Map.Data));
         }
 
         // UI-127: figures that already marched in the current army action (the server's used ids).
@@ -50,14 +53,14 @@ namespace Wotr.Client
             view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence is { Kind: CommandKind.MoveArmies } sequence
                 ? sequence.UsedIds.ToHashSet() : new HashSet<string>();
 
-        // A force is marked on the map only when every one of its figures has marched.
+        // An army is marked on the map only when every one of its units has marched; UI-402: each character is marked on
+        // its own miniature (FigureChoices.Moved).
         private static IEnumerable<(string, Side, bool)> MarchedForces(PlayerView view, HashSet<string> moved)
         {
             if (moved.Count == 0)
                 return Enumerable.Empty<(string, Side, bool)>();
-            var figures = view.Units.Select(u => (Key: (u.Location, u.Side, u.Garrison), u.Id))
-                .Concat(view.Characters.Select(c => (Key: (c.Location, c.Side, c.Garrison), c.Id)));
-            return figures.GroupBy(f => f.Key).Where(g => g.All(f => moved.Contains(f.Id))).Select(g => g.Key).ToList();
+            return view.Units.GroupBy(u => (u.Location, u.Side, u.Garrison)).Where(g => g.All(u => moved.Contains(u.Id)))
+                .Select(g => g.Key).ToList();
         }
 
         // UI-127: an unsent selection that a click on a target would move.
@@ -122,7 +125,8 @@ namespace Wotr.Client
         private void SelectAll(string region, bool garrison) => ToggleAll(region, garrison);
 
         // UI-105: figures chosen in one region move together. An army selection keeps a Nazgûl or a character the
-        // player adds to it, and a character group chosen first joins the army as soon as a soldier is added.
+        // player adds to it, and a character group chosen first joins the army as soon as a soldier is added. UI-459: an
+        // army selection of the Balrog die left with only the Balrog becomes his move alone (BalrogSelection).
         public bool SelectFigure(string id)
         {
             if (view == null || busy())
@@ -130,7 +134,11 @@ namespace Wotr.Client
             var army = ArmyActive ? ContextArmySelection.Eligible(view, board.ActionDie) : new HashSet<string>();
             if (army.Contains(id) && Gathering(id))
             {
-                edit(() => draft.Gesture(() => ContextArmySelection.Select(draft, view, board.ActionDie, id)));
+                edit(() => draft.Gesture(() =>
+                {
+                    ContextArmySelection.Select(draft, view, board.ActionDie, id);
+                    BalrogSelection.Normalize(draft, view, board.ActionDie);
+                }));
                 return true;
             }
             if (FigureSelector?.Invoke(id) == true)
@@ -161,10 +169,9 @@ namespace Wotr.Client
         {
             board.Hover.Panel.FigureChosen -= ChooseFigure;
             board.Hover.Panel.SelectAllRequested -= SelectAll;
-            board.Hover.Panel.Eligible = _ => false;
-            board.Hover.Panel.Selected = _ => false;
-            board.Hover.Panel.Moved = _ => false;
-            board.Map.SetGhost(null);
+            board.Hover.Panel.Offer = _ => "";
+            board.Hover.Panel.Choices.Clear();
+            board.Map.SetLanding(null);
             board.Map.ShowMarched(Enumerable.Empty<(string, Side, bool)>());
             board.Hover.Close();
         }

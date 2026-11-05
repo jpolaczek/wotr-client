@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,9 +14,16 @@ namespace Wotr.Client
         public Button Status => status.Summary;
         // UI-293: the Fellowship's marker on its visible track, which hides it while hiding is legal.
         public VisualElement HideMarker => status.HideMarker;
+        // UI-431: the Fellowship's marker on the corruption track, offered while a card offers Corruption.
+        public VisualElement CorruptionMarker => status.CorruptionMarker;
         public bool HideOffered => controls.HideOffered;
         public event Action<CommandKind> ActionSelected;
         public event Action<string> PortraitSelected;
+        // UI-431: the offered corruption marker clicked (Lure of the Ring's Corruption).
+        public event Action CorruptionChosen;
+        // UI-269: a starting Guide candidate's crown while the private versions are chosen.
+        public event Action<string> GuideChosen;
+        public VersionComparison Versions { get; } = new VersionComparison();
         public event Action Opening;
         public event Action VisibilityChanged;
         // UI-290: something in the panel can be used now (a Guide's or character's skill, the Guide, a move, hiding,
@@ -23,10 +31,14 @@ namespace Wotr.Client
         public bool Usable { get; private set; }
         public event Action UsableChanged;
         public bool Docked { get; set; }
+        // The action row of Finish phase (UI-481: the Council setup's ✓ moved to the console).
+        public VisualElement ActionRow => controls.Row;
         // UI-98: a docked panel unrolls under its top-bar plaque and is held open while it hosts a decision.
         public bool Held { get; private set; }
         public bool IsOpen => view != null && (Held || hover.Visible.Length > 0);
         public bool Pinned { get; private set; }
+        // UI-490 (owner, 2026-11-04): a presentation reads the panel now, so a lost focus leaves it open for the player's return.
+        public bool Presented { get; set; }
         public FloatingWindow Window { get; set; }
         private readonly MapCanvas map;
         private readonly HoverState hover = new HoverState();
@@ -35,19 +47,26 @@ namespace Wotr.Client
         private readonly FellowshipRoster roster = new FellowshipRoster();
         private readonly Button focusButton;
         private string observedDecision = "";
+        private bool choosingVersions;
         private bool wasVisible;
         private VisualElement tray;
         private VisualElement dock;
         private PlayerView view;
+        // UI-448: the declaration is being drawn; Declare then sends it, and Declare before it brings the camera here.
+        private bool declaring;
+        private readonly Action focus;
+        public event Action DeclareConfirmed;
         private double Now => Time.realtimeSinceStartupAsDouble;
 
         public FellowshipPanel(Action focus, MapCanvas map)
         {
+            this.focus = focus;
             this.map = map;
             Root.AddToClassList("fellowship-panel");
             Root.style.display = DisplayStyle.None;
             status = new FellowshipStatus(Open);
             status.HideRequested += () => RequestHide();
+            status.CorruptionRequested += () => CorruptionChosen?.Invoke();
             status.TrackFocusRequested += focus;
             Observe(Status);
             Observe(map.FellowshipMarker.Root);
@@ -69,10 +88,47 @@ namespace Wotr.Client
             Root.Add(status.Root);
             Root.Add(roster.Root);
             Root.Add(controls.Root);
-            controls.Selected += kind => ActionSelected?.Invoke(kind);
+            controls.Selected += Controlled;
             status.MoveRequested += () => ActionSelected?.Invoke(CommandKind.MoveFellowship);
-            roster.Selected += id => PortraitSelected?.Invoke(id);
+            roster.Selected += Portrait;
+            Versions.Changed += roster.Compare;
+            roster.GuideChosen += id => GuideChosen?.Invoke(id);
             RegisterHover();
+        }
+
+        // UI-448 (owner): Declare beside Finish phase starts the declaration and brings the camera to the Fellowship; while
+        // the route is drawn it sends the declaration as the tray's ✓ does.
+        private void Controlled(CommandKind kind)
+        {
+            if (kind == CommandKind.DeclareFellowship && declaring)
+            {
+                DeclareConfirmed?.Invoke();
+                return;
+            }
+            ActionSelected?.Invoke(kind);
+            if (kind == CommandKind.DeclareFellowship)
+                focus?.Invoke();
+        }
+
+        // UI-448: the tray's ✓ can send the drafted declaration now.
+        public void DeclareReady(bool ready) => controls.DeclareReady(ready);
+
+        // UI-441: the companions with a skill usable now glow on their portraits, and why (UsableSkills).
+        public void LightSkills(IReadOnlyDictionary<string, string> lines) => roster.LightSkills(lines);
+
+        public bool SkillUsable(string id) => roster.SkillUsable(id);
+
+        public Button PortraitButton(string id) => roster.Root.Q<Button>("fellowship-portrait-" + id);
+
+        // UI-269: while the versions are chosen a portrait's click compares its two versions; otherwise it acts.
+        private void Portrait(string id)
+        {
+            if (!choosingVersions)
+            {
+                PortraitSelected?.Invoke(id);
+                return;
+            }
+            Versions.Select(id);
         }
 
         // UI-293: a click on the Fellowship's marker on its track (or its figure on the map) hides a revealed Fellowship
@@ -101,6 +157,7 @@ namespace Wotr.Client
             view = latest;
             this.data = data;
             status.Apply(view.Fellowship, data, view.Winner.HasValue);
+            roster.RegionName = id => data.Regions.TryGetValue(id, out var region) ? region.Name : id;
             focusButton.tooltip = status.Description + (view.Fellowship.MordorStep.HasValue ? "\nClick to focus the Mordor track"
                 : "\nClick to center the map on the last known position");
             roster.Apply(view);
@@ -117,6 +174,8 @@ namespace Wotr.Client
         public void Context(PlayerView latest, TurnDraft draft, ActionDieContext context, bool enabled)
         {
             var route = draft.Kind is CommandKind.DeclareFellowship or CommandKind.RevealFellowship;
+            declaring = draft.Kind == CommandKind.DeclareFellowship;
+            Root.EnableInClassList("fellowship-declaring", declaring);
             var separation = draft.Kind == CommandKind.SeparateCompanions ||
                 latest.Decision?.Kind == DecisionKind.CompanionSeparation;
             Root.EnableInClassList("fellowship-route", route);
@@ -125,8 +184,17 @@ namespace Wotr.Client
             controls.Refresh(latest, draft, context, enabled && !hunt, route || separation || hunt, Docked);
             status.OfferMove(controls.MoveOffered, controls.MoveDescription);
             status.OfferHide(controls.HideOffered, controls.HideTooltip);
-            roster.Context(latest, draft, context, enabled && !hunt);
-            var rosterVisible = !route && latest.Decision?.Presentation != "FellowshipCompanions";
+            var corruption = enabled && LureChoice.CorruptionOffered(latest);
+            status.OfferCorruption(corruption, corruption ? LureChoice.CorruptionTooltip(latest) : "");
+            var versions = CompanionSetupPresentation.Versions(latest);
+            if (!versions)
+                Versions.Reset();
+            choosingVersions = versions;
+            Root.EnableInClassList("fellowship-versions", versions);
+            Root.EnableInClassList("fellowship-homelands", CompanionSetupPresentation.Homelands(latest));
+            roster.Context(latest, draft, context, enabled && !hunt, Versions.Figure);
+            // UI-448 (owner): the members stay in view while the Fellowship's position is declared or revealed.
+            var rosterVisible = latest.Decision?.Presentation != "FellowshipCompanions";
             roster.Root.style.display = rosterVisible ? DisplayStyle.Flex : DisplayStyle.None;
             status.Compact(route || separation || draft.Kind == CommandKind.SelectGuide, latest.Hunt != null, rosterVisible && roster.ShowsGuide);
             var owns = FellowshipActions.UsesPanel(latest, draft);
@@ -138,7 +206,7 @@ namespace Wotr.Client
             else if (!owns && tray.parent == Root)
                 dock.Add(tray);
             // UI-290: the opponent's Fellowship decision lights nothing on this side.
-            SetUsable(owns && latest.Decision != null && latest.DecisionOwner == latest.You || controls.Offers || roster.Choosing);
+            SetUsable(owns && latest.Decision != null && latest.DecisionOwner == latest.You || controls.Offers || roster.Choosing || corruption);
             OpenNewDecision(latest, owns);
             RefreshVisibility();
         }
@@ -210,7 +278,7 @@ namespace Wotr.Client
 
         private void FocusChanged(bool focused)
         {
-            if (!focused && !Pinned)
+            if (!focused && !Pinned && !Presented)
                 Close();
         }
 

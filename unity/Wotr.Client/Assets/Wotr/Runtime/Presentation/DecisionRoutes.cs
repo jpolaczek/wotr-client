@@ -7,6 +7,10 @@ namespace Wotr.Client
     // (wotr-server:docs/ui/interaction-inventory.json, base_coverage); UI-245–UI-251 move more presentations onto
     // objects by changing the host here and adding the gesture there. Window is the generic list, the fallback for a
     // choice no object owns yet.
+    // UI-264: every expansion decision has a host. The dice pool takes the special-die pick and the Ruler discard; the
+    // panels the expansion UI already uses (Resources, Sovereigns) stay hosts until the expansion tasks move their
+    // decisions onto objects (UI-274, UI-276) — then they leave this list. UI-268–UI-270 moved Vilya to its ring, the
+    // Council's setup to the Fellowship panel and its token choice to the Shadow pool.
     public enum DecisionHost
     {
         None,
@@ -50,9 +54,23 @@ namespace Wotr.Client
                 DecisionKind.CombatCard or DecisionKind.BattleReroll or DecisionKind.BattleContinue or DecisionKind.BattleRetreat or
                     DecisionKind.BattleAdvance or DecisionKind.StrongholdDefense or DecisionKind.SiegeContinuation => DecisionHost.Battle,
                 DecisionKind.EffectChoice or DecisionKind.CharacterEvent or DecisionKind.Reaction => Presented(decision.Presentation),
-                _ => DecisionHost.Window
+                _ => Expansion(decision.Kind)
             };
         }
+
+        // UI-264: the hosts of the expansion decisions (Lords, Council, Kings).
+        public static DecisionHost Expansion(DecisionKind kind) => kind switch
+        {
+            DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard => DecisionHost.Dice,
+            DecisionKind.KeepActionDie => DecisionHost.Rings,
+            DecisionKind.CouncilToken => DecisionHost.Dice,
+            // UI-276 (D20): Dismay is the glowing Ruler dice in the pools.
+            DecisionKind.Dismay => DecisionHost.Dice,
+            DecisionKind.CouncilVersions => DecisionHost.Fellowship,
+            DecisionKind.CouncilHomelands => DecisionHost.Fellowship,
+            DecisionKind.CorruptionTile => DecisionHost.Characters,
+            _ => DecisionHost.Window
+        };
 
         // The host of a card's step, by the server's presentation of it.
         public static DecisionHost Presented(string presentation) => presentation switch
@@ -64,21 +82,31 @@ namespace Wotr.Client
             "Deck" => DecisionHost.Map,
             "ActionDie" or "DieAndResult" => DecisionHost.Dice,
             "ElvenRings" => DecisionHost.Rings,
-            "CharacterCardDiscard" => DecisionHost.Hand,
-            "FellowshipCompanions" or "Companion" or "CorruptionRemoval" or "SmeagolCorruption" or "InspectedCorruption" or
+            "CharacterCardDiscard" or InspectedHand.Presentation => DecisionHost.Hand,
+            "FellowshipCompanions" or "Companion" or "SmeagolCorruption" or
                 "CompanionDestination" => DecisionHost.Fellowship,
             "CombatReplacement" or "CombatEffect" or "ConvertMisses" or "LeadershipAndMiss" or "NazgulOrMinion" or
                 "LeaderOrCompanion" or "Minion" or "CharacterLeadership" or "NazgulLeadership" or "MinionLeadership" or
                 "SacrificeAndHits" => DecisionHost.Battle,
             "LureCompanion" or "CaptainOrder" or "BalrogOrder" or "FellowshipAction" or "NazgulStrike" or
-                "InspectedHand" => DecisionHost.Console,
+                "EffectTargets" or "SovereignCardBranch" => DecisionHost.Console,
+            // UI-274: the kings' portraits and tiles in the Characters panel.
+            "Sovereign" or "CorruptionRemoval" or "InspectedCorruption" => DecisionHost.Characters,
+            // UI-272: a reaction outside the Hunt and battles answers at its card (hand, table ×) or the console.
+            "CardOrDecline" => DecisionHost.Console,
+            // UI-271: a card's character move (the Balrog alone) is drawn on the map.
+            "PortraitRoute" => DecisionHost.Map,
             "Nation" => DecisionHost.Map,
             _ => DecisionHost.Window
         };
 
-        private static DecisionHost Battle(DecisionView decision) =>
-            decision.Kind is DecisionKind.EffectChoice or DecisionKind.CharacterEvent or DecisionKind.Reaction
-                ? Presented(decision.Presentation) is DecisionHost.Window ? DecisionHost.Battle : Presented(decision.Presentation)
-                : DecisionHost.Battle;
+        // A battle's reaction (CardOrDecline) and any step without an object of its own stay in the Battle window.
+        private static DecisionHost Battle(DecisionView decision)
+        {
+            if (decision.Kind is not (DecisionKind.EffectChoice or DecisionKind.CharacterEvent or DecisionKind.Reaction))
+                return DecisionHost.Battle;
+            var host = Presented(decision.Presentation);
+            return host == DecisionHost.Window || decision.Presentation == "CardOrDecline" ? DecisionHost.Battle : host;
+        }
     }
 }

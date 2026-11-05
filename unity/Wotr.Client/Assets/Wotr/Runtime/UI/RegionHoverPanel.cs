@@ -11,25 +11,33 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement { name = "region-hover" };
         public string Region { get; private set; } = "";
         public ComponentActionView Components { get; } = new ComponentActionView();
-        public Func<string, bool> Eligible { get; set; } = _ => false;
-        public Func<string, bool> Selected { get; set; } = _ => false;
+        // UI-402: the figures' choices, shared with the map's character miniatures.
+        public FigureChoices Choices { get; }
+        public Func<string, bool> Eligible { get => Choices.Eligible; set => Choices.Eligible = value; }
+        public Func<string, bool> Selected { get => Choices.Selected; set => Choices.Selected = value; }
         // UI-127: figures that already marched in this action; they cannot be chosen again.
-        public Func<string, bool> Moved { get; set; } = _ => false;
+        public Func<string, bool> Moved { get => Choices.Moved; set => Choices.Moved = value; }
+        // UI-271: what a lit figure's click does when it is not a selection (an ability used on the figure).
+        public Func<string, string> Offer { get; set; } = _ => "";
         public event Action<string> FigureChosen;
         public event Action<string> EffectInspected;
         public event Action<string> CharacterInspected;
         // UI-130/UI-135: the nation of an inspected settlement, or "" for any other region; marks its Reinforcements row.
-        public event Action<string> SettlementInspected;
+        // The shown settlement's region and nation, or two empty strings for a region without a settlement (UI-412).
+        public event Action<string, string> SettlementInspected;
         // UI-140: select or leave behind every figure of a force that can move (region, garrison).
         public event Action<string, bool> SelectAllRequested;
-        // UI-251: the card choice a force section makes now ("" when none), and its click.
+        // UI-251: the card choice a force section makes now ("" when none), and its click. UI-431: what its tooltip says.
         public Func<Side, bool, string> ForceChoice { get; set; } = (_, _) => "";
+        public Func<string, string> ForceTooltip { get; set; } = _ => "";
         public event Action<string> ForceChosen;
         private readonly List<(VisualElement Force, VisualElement Header, Side Side, bool Garrison)> forceSections =
             new List<(VisualElement, VisualElement, Side, bool)>();
         private readonly Dictionary<string, Button> figures = new Dictionary<string, Button>();
-        // UI-301: the figures a click may choose pulse in ChoiceGlow's rhythm.
+        // UI-301: the figures a click may choose pulse in ChoiceGlow's rhythm; UI-431: so do the forces a card may choose.
         private readonly ChoicePulse pulse;
+        private bool figuresGlowing;
+        private bool forcesGlowing;
         private readonly Dictionary<string, string> descriptions = new Dictionary<string, string>();
         // UI-187: a character's ability lines, after the line that names it and its state.
         private readonly Dictionary<string, string> abilities = new Dictionary<string, string>();
@@ -67,16 +75,24 @@ namespace Wotr.Client
         // UI-251: a force the current card may choose glows and its header chooses it.
         public void RefreshForces()
         {
+            forcesGlowing = false;
             foreach (var force in forceSections)
             {
                 var choice = ForceChoice(force.Side, force.Garrison);
                 ChoiceGlow.Apply(force.Force, choice.Length > 0);
-                force.Header.tooltip = choice.Length > 0 ? "Click to choose this force" : "";
+                var tooltip = choice.Length > 0 ? ForceTooltip(choice) : "";
+                force.Header.tooltip = choice.Length == 0 ? "" : tooltip.Length > 0 ? tooltip : "Click to choose this force";
+                // UI-113: a header that chooses signals it and depresses while pressed.
+                force.Header.EnableInClassList(PressFeedback.PressableClass, choice.Length > 0);
+                forcesGlowing |= choice.Length > 0;
             }
+            pulse.Run(figuresGlowing || forcesGlowing);
         }
 
-        public RegionHoverPanel()
+        public RegionHoverPanel(FigureChoices choices = null)
         {
+            Choices = choices ?? new FigureChoices();
+            Choices.Changed += ShowChoices;
             Root.AddToClassList("region-hover");
             pulse = new ChoicePulse(Root);
             Root.style.display = DisplayStyle.None;
@@ -101,7 +117,8 @@ namespace Wotr.Client
                 Build(region, control, contents);
             }
             RefreshSelection();
-            SettlementInspected?.Invoke(region.Settlement != null ? region.Nation ?? "" : "");
+            var settlement = region.Settlement != null;
+            SettlementInspected?.Invoke(settlement ? region.Id : "", settlement ? region.Nation ?? "" : "");
             RefreshActions();
             Root.style.display = DisplayStyle.Flex;
         }
@@ -119,6 +136,9 @@ namespace Wotr.Client
             Root.Add(new Label((region.Settlement ?? "Wilderness") + " · " +
                 (region.Nation == null ? "Neutral" : FigureGrid.Name(region.Nation)) + " · " +
                 (control.HasValue ? BoardScreen.SideName(control.Value) : "Uncontrolled")) { name = "hover-region-state" });
+            var points = RegionVictoryText.For(region, control);
+            if (points.Length > 0)
+                Root.Add(new Label(points) { name = "hover-region-points" });
             var forces = contents.Units.Select(u => (u.Side, u.Garrison))
                 .Concat(contents.Characters.Select(c => (c.Side, c.Garrison))).Distinct().OrderBy(f => f.Side).ThenBy(f => f.Garrison);
             foreach (var force in forces)
@@ -154,7 +174,8 @@ namespace Wotr.Client
             var rowWidth = 24 + units.Length * 36 + characters.Length * 42 +
                 units.Select(u => u.Nation).Distinct().Count() * 24;
             contentsWidth = Math.Max(contentsWidth, Math.Max(280, rowWidth));
-            var force = new VisualElement();
+            // UI-431: named by side and place, as its Select all toggle is.
+            var force = new VisualElement { name = "hover-force-" + side + (garrison ? "-garrison" : "-field") };
             force.AddToClassList("hover-force");
             force.AddToClassList(side == Side.FreePeoples ? "fp" : "sh");
             var header = BoardScreen.Row("hover-force-header");
@@ -172,10 +193,12 @@ namespace Wotr.Client
             foreach (var nation in units.GroupBy(u => u.Nation))
             {
                 var name = FigureGrid.Name(nation.Key);
-                row.Add(new Label(name.Substring(0, Math.Min(2, name.Length))) { tooltip = name });
+                // UI-420 (owner): the nation's figures as on its army marker, each figure as printed ("Rohan Elite", "Nazgûl").
+                var composition = ArmyMarkerText.Composition(nation.Key, nation.Select(u => u.Kind).ToList());
+                row.Add(new Label(name.Substring(0, Math.Min(2, name.Length))) { tooltip = composition });
                 foreach (var unit in nation.OrderBy(u => u.Kind))
                 {
-                    AddFigure(row, unit.Id, FigureGrid.Symbol(unit.Kind), FigureGrid.Name(unit.Nation) + " · " + unit.Kind, false);
+                    AddFigure(row, unit.Id, FigureGrid.Symbol(unit.Kind), TooltipText.Unit(unit.Nation, unit.Kind), false);
                     FigureArtwork.Apply(figures[unit.Id], unit);
                 }
             }
@@ -220,7 +243,10 @@ namespace Wotr.Client
             row.Add(button);
         }
 
-        public void RefreshSelection()
+        // Tells every reader of the choices, this panel's chips and the map's figures.
+        public void RefreshSelection() => Choices.Refresh();
+
+        private void ShowChoices()
         {
             foreach (var (toggle, ids) in forceToggles)
                 RefreshToggle(toggle, ids);
@@ -234,11 +260,13 @@ namespace Wotr.Client
                 entry.Value.EnableInClassList("eligible-figure", eligible);
                 entry.Value.EnableInClassList("selected", selected);
                 entry.Value.EnableInClassList(MapArmyArtwork.MovedClass, moved);
-                entry.Value.tooltip = descriptions[entry.Key] + (selected ? " · Selected · Click to leave behind" : eligible
-                    ? " · Click to select" : moved ? " · Already marched in this action" : "") +
+                var offer = eligible ? Offer(entry.Key) : "";
+                entry.Value.tooltip = descriptions[entry.Key] + (selected ? " · Selected · Click to leave behind" : offer.Length > 0
+                    ? " · " + offer : eligible ? " · Click to select" : moved ? " · Already marched in this action" : "") +
                     (abilities.TryGetValue(entry.Key, out var lines) ? lines : "");
             }
-            pulse.Run(glowing);
+            figuresGlowing = glowing;
+            pulse.Run(figuresGlowing || forcesGlowing);
         }
 
         // Shown only for a force with a figure that can move; it selects them all, or leaves all behind once they are.

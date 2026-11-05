@@ -61,6 +61,16 @@ namespace Wotr.PlayTests
                 await Task.Delay(25, token);
         }
 
+        // A test-menu scenario, opened as the owner opens it (UI-380, UI-412).
+        public static async Task OpenScenario(MountedFlowClient client, string scenario, CancellationToken token)
+        {
+            await ClickReady(client.Root, "open-test-scenarios", token);
+            client.Root.Q<TextField>("test-scenario-search").value = scenario;
+            await Task.Delay(150, token);
+            await ClickReady(client.Root, "test-scenario-" + scenario, token);
+            await Until(() => client.Board?.View != null && client.Board.Connection.text == "Live", token);
+        }
+
         public static async Task ClickReady(VisualElement root, string name, CancellationToken token)
         {
             if (name is "back-to-games" or "open-interface")

@@ -12,8 +12,9 @@ namespace Wotr.Client
                 yield break;
             var council = ResourcePresentation.CouncilPending(draft) ? draft.Payload.CouncilTokenId : "";
             var locations = view.Characters.ToDictionary(c => c.Id, c => c.Location);
+            var die = ActionDieContext.Of(view, draft);
             foreach (var option in DraftOptions.All(view, draft))
-                foreach (var item in Owners(view, draft, option))
+                foreach (var item in Owners(view, draft, option, die))
                 {
                     if (council.Length > 0)
                     {
@@ -39,31 +40,52 @@ namespace Wotr.Client
             kind == CommandKind.UseCouncilToken && item.AbilityId == token ||
             kind == CommandKind.EnterCharacter && item.Character?.CouncilTokens.Contains(token) == true;
 
-        private static IEnumerable<ComponentAction> Owners(PlayerView view, TurnDraft draft, ActionOption option)
+        // UI-385 (owner): a king owns his ability by his name ("Dáin"), never by his id ("kings.sovereign.dain").
+        internal static string OwnerName(PlayerView view, string id) =>
+            view.Sovereigns.FirstOrDefault(s => s.Id == id)?.Title.Split(' ')[0] ?? CharacterLibrary.ShortName(id);
+
+        // UI-385: the printed ability an action uses ("Dwarvenking"), when it is not the action's own title; an expansion's
+        // command names it with its prefix ("kings.dwarvenking").
+        public static string AbilityTitle(CharacterActionOption character)
+        {
+            var id = character?.AbilityId ?? "";
+            var printed = CharacterAbilityLibrary.Title(id) ?? CharacterAbilityLibrary.Title(id.Substring(id.IndexOf('.') + 1));
+            return printed == null || printed == character.Title ? "" : printed;
+        }
+
+        // UI-461 (owner, 2026-11-03): a Will die lights what it pays as itself, or as the result the face menu chose.
+        // UI-459 (owner, 2026-11-03): a die that is its ability (the Balrog die's Use Balrog) moves on the map, so its
+        // moves stand as no icon.
+        private static IEnumerable<ComponentAction> Owners(PlayerView view, TurnDraft draft, ActionOption option, ActionDieContext context)
         {
             var die = draft.Payload.DieId;
+            var implied = context.Implied ? context.AbilityId : "";
             if (CharacterDraft.UsesCharacters(option.Kind))
                 foreach (var character in option.CharacterActions)
                     yield return new ComponentAction
                     {
                         Key = "character-" + character.CharacterId + "-" + character.AbilityId,
-                        Owner = CharacterLibrary.ShortName(character.CharacterId),
+                        Owner = OwnerName(view, character.CharacterId),
                         OwnerId = character.CharacterId,
                         Symbol = CharacterSymbol(option.Kind, character.AbilityId),
-                        Picture = AbilityPictures.For(option.Kind, character.AbilityId),
-                        Detail = character.Title + " · " + character.Detail,
-                        Character = character, Enabled = character.Dice.Contains(die)
+                        Picture = CharacterPicture(view, option.Kind, character),
+                        Badge = option.Kind == CommandKind.EnterCharacter ? "" : AbilityBadges.For(option.Kind, character.AbilityId),
+                        Definition = CharacterLibrary.Version(view, character.CharacterId),
+                        Detail = TooltipText.Parts(character.Title, character.Detail),
+                        Character = character, Enabled = character.Dice.Contains(die) && context.Takes(option.Kind, character)
                     };
-            foreach (var cost in option.MovementCosts.Where(c => c.AbilityId.Length > 0 && c.DieId == die))
+            foreach (var cost in option.MovementCosts.Where(c => c.AbilityId.Length > 0 && c.DieId == die && c.AbilityId != implied))
                 yield return new ComponentAction
                 {
                     Key = option.Kind + "-" + cost.AbilityId,
                     Owner = CharacterLibrary.ShortName(cost.RequiredCharacterId.Length > 0 ? cost.RequiredCharacterId : "base.character.mouth-of-sauron"),
                     OwnerId = cost.RequiredCharacterId.Length > 0 ? cost.RequiredCharacterId : "base.character.mouth-of-sauron",
                     Symbol = option.Kind == CommandKind.AttackArmy ? "⚔" : "→",
-                    Picture = AbilityPictures.For(option.Kind, cost.AbilityId),
-                    Detail = FigureGrid.Name(cost.AbilityId) + " · " + TravelLabel(option.Kind),
-                    AbilityId = cost.AbilityId, Movement = cost, Enabled = true
+                    Picture = AbilityArt.For(cost.AbilityId),
+                    Badge = AbilityBadges.For(option.Kind, cost.AbilityId),
+                    Definition = CharacterLibrary.Version(view, cost.RequiredCharacterId.Length > 0 ? cost.RequiredCharacterId : "base.character.mouth-of-sauron"),
+                    Detail = (CharacterAbilityLibrary.Title(cost.AbilityId) ?? FigureGrid.Name(cost.AbilityId)) + " · " + TravelLabel(option.Kind),
+                    AbilityId = cost.AbilityId, Movement = cost, Enabled = !context.Will || context.Supports(cost.Face)
                 };
             if (option.RulerTravel != null && option.RulerTravel.Dice.Contains(die))
                 yield return new ComponentAction
@@ -71,8 +93,15 @@ namespace Wotr.Client
                     Key = "far-sighted-" + option.Kind, Owner = "Thranduil",
                     OwnerId = "kings.sovereign.thranduil",
                     Symbol = option.Kind == CommandKind.MoveFellowship ? "◇→" : option.Kind == CommandKind.SeparateCompanions ? "♟↗" : "♟→",
+                    // UI-276 (D18): Thranduil's ability picture, glowing with an eligible die; the standard move is not using it.
+                    Picture = AbilityArt.For(option.RulerTravel.AbilityId),
+                    Badge = AbilityBadges.For(option.Kind, option.RulerTravel.AbilityId),
+                    Definition = CharacterLibrary.Version(view, "kings.sovereign.thranduil"),
                     Detail = "Far-sighted · " + TravelLabel(option.Kind),
-                    AbilityId = option.RulerTravel.AbilityId, Enabled = true
+                    // UI-456 (owner): Move companions waits for a companion outside the Fellowship; UI-465 (owner, 2026-11-03):
+                    // meanwhile Thranduil moves with Far-sighted from his own figure (FarSightedFigure), as its reason says.
+                    AbilityId = option.RulerTravel.AbilityId, Enabled = FarSightedMoves.Offered(option),
+                    Reason = FarSightedMoves.Reason(option)
                 };
             if (option.Kind == CommandKind.UseCouncilToken)
                 foreach (var token in option.EligibleIds)
@@ -84,15 +113,16 @@ namespace Wotr.Client
             if (option.Kind == CommandKind.UseNarya)
                 yield return new ComponentAction
                 {
-                    Key = "narya", Owner = "Narya", Symbol = "○★", Detail = "Narya · Activate the nation of Gandalf’s settlement",
-                    Enabled = option.EligibleDice.Contains(die)
+                    // UI-439: Narya's own icon; its tooltip names the ring once.
+                    Key = "narya", Owner = "Narya", Symbol = "○★", Picture = AbilityArt.For(CommandKind.UseNarya),
+                    Detail = "Put the nation of Gandalf’s Settlement at war", Enabled = option.EligibleDice.Contains(die)
                 };
             if (option.Kind is CommandKind.Pass or CommandKind.DiscardDie)
                 yield return new ComponentAction
                 {
                     Key = option.Kind.ToString(), Symbol = option.Kind == CommandKind.Pass ? "⇥" : "×",
                     Icon = option.Kind == CommandKind.Pass ? "pass" : "discard",
-                    Detail = option.Kind == CommandKind.Pass ? "Pass" : "Discard the selected die without effect",
+                    Detail = option.Kind == CommandKind.Pass ? "Pass · " + ConsoleActions.PassDetail : "Discard the selected die without effect",
                     Enabled = option.Kind == CommandKind.Pass || option.EligibleDice.Contains(die)
                 };
             var card = RemovalCard(view, option.Kind);
@@ -100,8 +130,8 @@ namespace Wotr.Client
                 yield return new ComponentAction
                 {
                     Key = "remove-" + id, Owner = CardLibrary.Title(id), Symbol = "×", CardId = id,
-                    Detail = "Remove " + CardLibrary.Title(id) + " · Spend the selected die and any required Ring or cards",
-                    Enabled = option.EligibleDice.Contains(die)
+                    Detail = "Remove " + CardLibrary.Title(id) + " · Spend the selected die and any Ring or cards its removal needs",
+                    Enabled = option.EligibleDice.Contains(die) && (!context.Will || WillOfTheWestUses.Pays(option.Kind, context.WillFace))
                 };
         }
 
@@ -128,14 +158,19 @@ namespace Wotr.Client
                     p.CardId = item.CardId;
                 if (item.Kind == CommandKind.EnterCharacter && item.Character?.CouncilTokens.Contains(council) == true)
                     p.CouncilTokenId = council;
+                // UI-347 (D13): an entry that requires the only token it may use takes it; no button asks.
+                else if (item.Kind == CommandKind.EnterCharacter && item.Character is { RequiresCouncilToken: true, CouncilTokens: { Count: 1 } })
+                    p.CouncilTokenId = item.Character.CouncilTokens[0];
             });
             return true;
         }
 
         public static bool Immediate(PlayerView view, TurnDraft draft)
         {
+            // UI-450: a ruler's recruitment is sent by the click that places its last figure (a complete final click).
             if (CharacterDraft.UsesCharacters(draft.Kind))
-                return DraftOptions.For(view, draft) is { } option && CharacterDraft.Selected(draft, option) is { } choice && choice.Recruitment.Count == 0;
+                return DraftOptions.For(view, draft) is { } option && CharacterDraft.Selected(draft, option) is { } choice &&
+                    (choice.Recruitment.Count == 0 || choice.RulerRecruitment != null);
             return draft.Kind is CommandKind.Pass or CommandKind.DiscardDie or CommandKind.MoveFellowship or CommandKind.DiscardPalantir
                 or CommandKind.DiscardBaradPalantir or CommandKind.DiscardDenethor or CommandKind.DiscardLore
                 or CommandKind.DiscardGates or CommandKind.DiscardWelcome;
@@ -147,6 +182,14 @@ namespace Wotr.Client
             CommandKind.MoveFellowship => "Move the Fellowship", CommandKind.SeparateCompanions => "Separate companions",
             _ => "Move characters"
         };
+
+        // UI-286: an entry is the board pin (it enters the character, it uses no ability); UI-439: an ability's action shows
+        // the ability's own icon, on the card of the version that uses it.
+        public const string EntryPicture = "Wotr/Art/UI/characters/on-board";
+
+        private static string CharacterPicture(PlayerView view, CommandKind kind, CharacterActionOption character) =>
+            kind == CommandKind.EnterCharacter ? EntryPicture
+                : AbilityArt.For(CharacterLibrary.Version(view, character.CharacterId), character.AbilityId);
 
         private static string CharacterSymbol(CommandKind kind, string ability) => kind == CommandKind.EnterCharacter ? "↑" : ability switch
         {

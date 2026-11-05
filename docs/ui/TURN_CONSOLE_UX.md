@@ -18,7 +18,8 @@ The decisions of the user from this conversation:
    never grows (section E).
    **Since UI-210 (user decision, 2026-10-16), card decisions never open the decision window:**
    their objects are highlighted, object-less options and ✓ Confirm choice sit in the console.
-   See [CARD_CHOICES_UX](CARD_CHOICES_UX.md).
+   See [CARD_CHOICES_UX](CARD_CHOICES_UX.md). **Since UI-461 (owner, 2026-11-03)** the result a chosen
+   Will of the West die turns into is chosen in the console's small face menu ([UI-461](#ui-461)).
 
 <a id="zasady-układu-decyzja-użytkownika-z-2026-10-14"></a>
 ### Layout rules (user decision with 2026-10-14)
@@ -68,7 +69,7 @@ The console replaces the present dock and has a **fixed height** of the entire l
 <a id="strefa-statusu-nagłówek-i-podpowiedź-do-dwóch-linii"></a>
 ### Status Zone (header and hint to two lines)
 
-- `status-plaque` badge in enamel running side with a emblem and one sentence: who works and what
+- `status-plaque` badge (since UI-476 `frontend/button-free`/`button-shadow`) in enamel running side with a emblem and one sentence: who works and what
   now (YOUR ACTION · Army die · 1 of 2 moves left", "Waiting for Shadow · battle at Minas Tirith",
   "Fellowship phase · Declare, change the guide or enter Mordor", "Shadow allocates Hunt dice",
   "Game over · ...").
@@ -129,7 +130,10 @@ The console replaces the present dock and has a **fixed height** of the entire l
 - UI-214: a card's object-less options and the object-less responses of a reaction outside the Hunt and
   battles replace the hint as up to three buttons (`console-options`, 38 pt like the hint), so the console keeps
   its height. A click that completes the decision sends it. Their model is `CardConsoleOptions`
-  ([CARD_CHOICES_UX](CARD_CHOICES_UX.md)).
+  ([CARD_CHOICES_UX](CARD_CHOICES_UX.md)). UI-431 (2026-10-31): the Black Captain's orders, Lure of the Ring's, a
+  region's forces, a card army event's steps and Monsters Roused's halves have no buttons any more — their objects are
+  lit; the Black Captain's recruit keeps its button only with no Nazgûl in the reserve, and an army event's Skip maneuver
+  is the ✓ ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 - From UI-167 the badge is lit (`your-turn`) until the player starts to work, and the ribbon "YOUR
   ACTION" means the pass of action; from UI-169 the status "GAME OVER" opens the game end screen
   ([SIGNALS_UX](SIGNALS_UX.md)).
@@ -142,7 +146,10 @@ The console replaces the present dock and has a **fixed height** of the entire l
   opens the panel Hunt with a pool list ( UI-141 ) and report; the plaque is the object of dropping
   dice at the assignment. The console does not have a separate pool button – the list belongs to the
   panel (from UI-162 to the window) Hunt .
-- At the assignment of Shadow the recess is lit (`hunt-box-eligible`, section C).
+- At the assignment of Shadow the recess is lit (`hunt-box-eligible`, since UI-476 `frontend/row-selected`; section C).
+- UI-430 (owner, 2026-10-30): while an effect offers a Hunt roll (The Nazgûl Strike!) the plaque glows and pulses (the
+  shared choice glow, no filter, no size change), its tooltip says that a click starts a Hunt roll now and why, and the
+  click sends that roll instead of opening the panel ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
 
 <a id="pierścienie-w-kolumnie-zasobów-trzy-gniazda"></a>
 ### Rings in the resource column (three sockets)
@@ -172,7 +179,12 @@ The console replaces the present dock and has a **fixed height** of the entire l
   completion of march or recruitment earlier. Since UI-210 this includes every card decision:
   ✓ is "Confirm choice" and ↶ undoes its last step ([CARD_CHOICES_UX](CARD_CHOICES_UX.md)). Decision in window (battle,  Hunt, decision window)
   has approval in the window footer at its election; then ✓ and ⁇ consoles are greyed out. With the
-  server's reply interrupted ✓ acts as ‘Check result’.
+  server's reply interrupted ✓ acts as ‘Check result’. UI-430 (owner, 2026-10-30): a Finish that ends a card's event
+  (The Nazgûl Strike!, There is Another Way's Stay, Wind from the West) is this ✓ — lit while nothing else is chosen,
+  `Finish · End <card> without …` — and no longer a button ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
+- UI-455 (owner, 2026-11-03): under the four, on a line of its own, a small **Cancel** (`console-cancel`) that is always
+  shown and greyed while there is nothing to cancel; its click drops the whole unsent draft
+  ([below](#ui-455)).
 - Other action components (form capabilities, expansions chips) belong to the panels of their
   objects (Characters, Dice & tokens), not to the console.
 
@@ -304,7 +316,7 @@ The user request from 2026-10-14: "confirm the allocation of dice to the hunt we
   - Nothing waits for an answer.
 
   Ready sign lights up (`hunt-confirm-ready`) and in tooltipie says
-  „Allocate & roll · n dice · Click the plaque to allocate and roll”.
+  „Allocate & roll · Put n dice in the Hunt Box, then roll the rest” (UI-420).
 - The non-ready plaque stands at the same place, decorated (`hunt-confirm-waiting`). Its tooltip
   tells how much dice is missing. The click does not send anything and does not open the Hunt window
   at the time of the assignment.
@@ -356,7 +368,7 @@ Source: BASE p. 21, LOGIC B05. Free Peoples use the Ring and give it back to Sha
   `RingFacePicker` over the selected dice and cancels the gesture at the click in the map. Reading
   other panels (e.g. "Why unavailable?") does not interrupt the gesture. The order can be the
   opposite: the previously selected die goes straight to the walls.
-- `RingFacePicker` is a `console/picker` slop with a `picker-tail` tail and walls on the medallions
+- `RingFacePicker` is a slop (since UI-476 the board's card, `frontend/card-board`) with a `picker-tail` tail and walls on the medallions
   of the page (34 pt). It stands over the whole panel of dice, in the column of the selected dice,
   so it does not cover either dice or the panel header with the help links, and it adheres to the
   limits of board.
@@ -398,6 +410,14 @@ The choice that has the object is moved to the object (UI-164). The inventory fr
 | Broken Response (Check result) | ✓ console; at the tray in the dock also the decision window | UI-160 |
 
 The decisions of expansions (Council, Kings, Lords) remain at their panels (Dice & tokens, sovereigns, preparation) without a new project.
+UI-264 (2026-10-19) gives each of them a host in `DecisionRoutes.Expansion`: the special-die pick and the Ruler discard
+are made on the lit dice in the pool, with the console's hint saying what the click does ("Click a highlighted die to
+keep it …") and no panel, window or Back; Vilya's keep, Dismay and the Council token stay with Dice & tokens until
+UI-268, UI-276 and UI-270; Companion versions and homelands stay with the setup panel (UI-269, UI-270); a corruption
+tile and a card's choice of a sovereign belong to the sovereigns (UI-274, UI-278). Fate's Monsters branch is console
+buttons like the base cards' modes (`CardConsoleOptions`); since UI-278 (D15) the Kings cards' branches stand on their
+objects, and the console keeps only a branch without one. UI-431 (2026-10-31): Monsters Roused's halves are their lit
+regions too ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 
 <a id="wdrożenie-ui-164"></a>
 ### implementation UI-164
@@ -466,24 +486,106 @@ Results, commands and commits go to the to-do documents, this document, TESTING 
 
 In the Fellowship phase the console reads "Guide: click a glowing companion" (no Change guide button). For There Is
 Another Way it names the Fellowship's controls first: "Move: click the glowing track" or "Hide: click the glowing
-Ring", then "or Stay to finish after healing"; Stay is the console's only button for the card.
+Ring", then "or Stay to finish after healing"; Stay is the console's only button for the card. UI-430 (owner,
+2026-10-30): Stay is the console's ✓ now, and the hint ends "· ✓ finishes after healing" ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
 
 ## Payment dice light the pool — UI-248 (2026-10-17)
 
 While a payment has alternative dice, the dice pool's frame lights (`DiceDecision`) and the alternatives glow in the
 shared rhythm; the console and the decision window do not repeat them.
 
+## Lords special dice in the pool — UI-267 (2026-10-19)
+
+A Lords special die (Vilya, Nenya, Narya, the Balrog, Gothmog) is a round die in the art of its origin
+(`graphicalassets/ui/src/dice/special.svg`: a rune-studded band and enamel in the origin's colours — Vilya sapphire,
+Nenya mithril, Narya ruby, the Balrog's ember, Gothmog's Morgul green) with the face glyph, the origin emblem at its
+lower right (`dice/origins`: three rings with their stones, a flame, the moon of Minas Morgul) and, for a result
+printed with the Remove star, the star at its upper right (`dice/remove-star`). The same dice stand at the top bar's
+size among the opponent's dice. Ruler dice keep their tile until UI-273.
+
+The special-die choice (`SpecialDieChoice`, LORDS pp. 9–13, rules T24) is made in the own pool, as UI-264 routed it:
+
+1. The side that rolled more dice chooses first; on a tie the Free Peoples do. The console's headline reads
+   "Special dice" (the hint below explains the click) and the decision notice wears the required red variant.
+2. Each die the choice can keep shows its lit art; its tooltip says what the click keeps and does ("Click to keep
+   Vilya · Eye. This Eye goes to the Hunt Box and strengthens the Shadow's Hunt.") and, for a Remove star, when the
+   kept die leaves the game (at the next Recover if Gandalf the White, or for the Shadow the Witch-king, is then in
+   play). One click keeps it; there is no Confirm.
+3. An Eye among the dice forces the choice of an Eye. A die it rules out is disabled and says why; when only one die
+   is legal, it glows alone and the hint reads "An Eye must be kept: click a highlighted Eye" — since UI-279 the
+   player clicks it (nothing is sent without a click).
+4. The dice not kept stay in their slot, dimmed (`set-aside`), until the next roll, in the own pool and in the
+   opponent's top bar; their tooltip says they were not kept and that an unkept Remove star removes nothing. They are
+   not counted among the dice out of play.
+
+Tests: `SpecialDiceTests` (origins, set-aside dice, forced Eye, tooltips); `SpecialDiceNetworkTests` (a tie lets the
+Free Peoples keep first, lit dice survive a reconnect, the set-aside dice in both views, the forced Eye waiting for its
+click, layouts at 1366/1920 and 100%/125%, no generic window); `ResourcePanelNetworkTests` and
+`ExpansionDecisionNetworkTests` (both sides with two Eyes each, with the Ruler dice). Scenarios: seeder `ui267-tie`,
+`ui267-forced-eye`; test menu `lords-forced-eye`.
+
+## Named Elven Rings — UI-268 (2026-10-19)
+
+A Lords game replaces the three Elven Rings with Vilya, Nenya and Narya (LORDS pp. 15, 19–20; rules T24). They stand in
+fixed console sockets in that order, each in its own art (`graphicalassets/ui/src/console/ring-<name>.svg`): Vilya a
+gold band with a great sapphire between two wings of air, Nenya a mithril band with a white adamant glinting like a
+star, Narya a red-gold band with a ruby crowned by flame. The captured art wears an ember halo; the lit art the gold
+aura of a Keeper ability offered now (`keeper-ready`). A base game keeps its plain rings.
+
+1. Every named ring still changes a die like any Elven Ring: click the socket, then a die and its new face (UI-161).
+   The tooltip names the ring, its owner and its Keeper ability.
+2. Nenya: in the Hunt's tile step, when Galadriel can replace a drawn Eye tile, the Nenya socket glows; its click
+   removes the tile from the game and draws another, and Nenya passes to the Shadow. The Hunt window lists no Nenya
+   button; a line in it points at the ring, and the console's Pass declines (UI-291).
+3. Vilya: after a paid action Elrond can keep the action's die. The paid die glows in the pool and the Vilya socket
+   glows; a click on either keeps the die (one paid die makes the socket's click complete) and Vilya passes to the
+   Shadow. Spending the die is the console's Pass (UI-347; it was the button `action-DeclineVilya`). No panel or window
+   opens.
+4. Narya: Gandalf's activation stays on the nation's row of the Politics panel (`nation-activate-<nation>`); the
+   Narya socket's tooltip says so.
+
+Tests: `NamedRingsTests` (fixed sockets and art, the Nenya and Vilya Keeper steps, spending the die with Pass);
+`ExpansionWindowNetworkTests.NenyaTransfersOnlyItsOwnRingAndResumesTheHunt` and
+`ExpansionDecisionNetworkTests.VilyaKeepsTheResolvingDieAvailable` (socket glow, one click, reconnect, layouts, no
+window); `ExpansionDecisionNetworkTests.NaryaActivatesItsNationWithTheChosenDie` (the nation row).
+
+## Ruler dice and the steps before the first action — UI-273 (2026-10-19)
+
+- **The Ruler die** wears a gilt crown on its top edge (`dice/ruler-crown`), in the own pool and the opponent's row.
+- **The Ruler discard** after the roll is made in the pool for each side that rolled its Ruler die (Shadow first): the
+  eligible standard and Ruler dice glow and their tooltip starts "Click to discard this die · It returns at the next
+  Recover"; a Lords special die is never eligible. One click discards; since UI-279 a single eligible die also waits
+  for its click ("Click your only eligible die to discard it"). No panel or window opens.
+- **A discarded die** keeps its slot in a Kings game, dimmed and disabled, for both players, with "Discarded · Returns
+  at the next Recover"; it leaves the Out count (`RulerDice.Discarded`, `ActionPoolView.DiscardedClass`).
+- **Lords with Kings**: the console's hint numbers the step before the first action — "Step 1 of 4" special dice,
+  "Step 2 of 4" Ruler discards, "Step 3 of 4" Dismay, "Step 4 of 4" The Lore of the Elven Rings (`PreActionSteps`); a
+  step whose objects speak for themselves shows its name. The tray's hint is built by `DecisionTray.StatusHint`.
+
+Tests: `RulerDiceTests`, `UiArtKitTests`, `ResourcePanelNetworkTests.SpecialChoicesAndBothDiscards…` (both sides,
+candidates, crown, dimmed slot, step hints, four layouts).
 ## Pass also declines a reaction — UI-291 (2026-10-20)
 
 The owner's decision: the console's Pass also declines the player's own reaction window — a Guide's or character's
 skill (Gandalf the Grey's draw, the White Rider, Merry's or Pippin's separation, Gollum's reveal), a table card's or a
 hand card's response, the Ents' free Event. It lights with the shared ChoiceGlow whenever a click can use it (a legal
-Pass or a decline), keeps its size, and its tooltip names what it skips ("Pass · Skip Gandalf the Grey · Draw matching
-card"; several responses are listed) (`ReactionSkip`). The separate wide "Decline" console option and the tray's
+Pass or a decline), keeps its size, and its tooltip names what it skips ("Pass · Skip Draw matching card (Gandalf the
+Grey)" since UI-420; several responses are listed) (`ReactionSkip`). The separate wide "Decline" console option and the tray's
 "Decline"/"Skip" buttons are gone, so the console keeps its hint ("… · or Pass to skip it."), and three object-less
 responses now fit the console. The opponent's window never enables it. Tests: `CardConsoleOptionsTests`,
 `ReactionSourcesTests`, `HuntLayoutTests`, `HuntAftermathNetworkTests`, `BoardCompletionHostTests`,
 `CardPack04NetworkTests`.
+
+Expansions (owner, EXP-15, 2026-10-26; implemented by UI-347 for Lords, UI-348 for Anárion and Brand, UI-276 for Dismay, UI-278 for the kings' Keep tiles — `OptionalDecline`): D7 extends this to every optional decline of the
+expansions — Vilya's "Spend the die", Lore's "Keep results", Wind's and the Balrog card's "Finish", Orderly
+Withdrawal's "Keep the hit", We Won't Go Back's "No Corruption", "Keep card effects" (Brand, the Chieftains) and
+Dismay's "Keep tokens" become the console's Pass, its tooltip naming what it skips (UI-276, UI-277, UI-347, UI-348;
+UI-430, 2026-10-30: Wind's and the Balrog card's "Finish" end the card, so they are the console's ✓ instead — [UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430));
+UI-278 adds the kings' "Keep tiles" after an inspection or a political cleanse. UI-432 (2026-10-31, owner's rule of UI-430)
+adds the base game's battle declines — Black Breath's and Heroic Death's "Keep all", Fateful Strike's "Keep Minions",
+Andúril's "Keep misses" — and Worn with Sorrow and Toil's "Keep cards" ([UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)). D8
+keeps forced single steps (one legal region or plan) resolved by the server without a click, the result named in the
+effect trail and the log. Checks: [EXPANSIONS_DECISIONS_PLAYTEST](EXPANSIONS_DECISIONS_PLAYTEST.md).
 
 ## The status plaque lights only when its click opens something — UI-292 (2026-10-20)
 
@@ -509,7 +611,8 @@ second click on it closes the card it opened (`TurnConsoleInteraction.ToggleCard
 combat form). This is the default for every card and effect. No window, panel or tray repeats the chips
 (`DecisionTray` renders no `committed-choice`), so a decision whose only content was the trail no longer opens the
 decision window. The strip is rebuilt only when the trail changes, holds at most 45 % of the line, and its chips are
-shortened with an ellipsis (the tooltip keeps the full text). The tray's ⟵ (`decision-back`) is gone from reactions,
+shortened with an ellipsis (the tooltip keeps the full text; UI-430, 2026-10-30: without options a chip that does not fit
+stands above the console at its full text instead). The tray's ⟵ (`decision-back`) is gone from reactions,
 where it did nothing; it stays where it steps back (an action's draft, an ArmyEvent, a die-and-result or region
 choice). Tests: `GuideDrawNetworkTests` (no ⟵ and no tray chip in Gandalf's draw; the console chip opens Book of Mazarbul
 and its second click closes it), `EffectTrailTests`, `NazgulFlightDraftTests`, `CardConsoleOptionsTests`,
@@ -546,3 +649,78 @@ While the opponent's action plays ([OPPONENT_ACTIONS_UX §6.16](OPPONENT_ACTIONS
 - **The console's status** keeps the presented view's state, and the newest decision appears once, at the release
   (UI-304).
 - **Nothing to click.** The marks take no pointer, and no console control is added.
+
+## Options above the console — TEST-15 (2026-10-29)
+
+A card's options without objects stand in the status line beside its committed button. When they do not fit there at
+their full text (The Nazgûl Strike!'s three options, or any options in a Lords or Kings game at 1366×768 and 125 %, where
+the wider dice panel leaves the status a narrow column), they stand in a strip just above the console, on the bottom row's
+fixed top edge and aligned with the status column, with the committed button when that does not fit the line either. The
+choice is measured outside layout callbacks with a small hysteresis, so it never flips back and forth (`ConsoleOptionsFit`).
+UI-430 (owner, 2026-10-30): The Nazgûl Strike! has no console options any more — its table cards are red in the Effects
+panel, its Hunt roll the glowing Hunt Box and its Finish the ✓ ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)); the strip stays for other cards' options.
+Without options, a committed chip that does not fit its share of the line at its full text stands alone in the strip, so a
+card's name is never cut to "…" (UI-430; it was the UI-297 ellipsis).
+
+<a id="ui-455"></a>
+## The console's fixed Cancel — UI-455 (2026-11-03)
+
+The owner (translated): "after clicking and choosing the character to separate, a long, narrow Cancel button appears in the
+bottom panel; it must not be there. Instead there must be an additional small, default, always present Cancel among the
+console's other buttons (Back, Finish, etc.), disabled when there is nothing to cancel." This replaces UI-448's Cancel
+option (`RouteCancel`, `console-cancel-route`), which took the hint's place in the status line while a Fellowship route
+was drawn.
+
+- **Its place.** `ConsoleActions.Cancel` (`console-cancel`) stands on its own line under the 2 × 2 icons, as wide as their
+  column (80 × 22 pt, a short labelled button). It is always shown; the bottom bar keeps its 140 pt, and no other control
+  moves between states (the three lines stand centred in the action zone, so the four icons sit a few points higher than
+  before UI-455, once and for all).
+- **What it cancels** (`DraftCancel`): everything chosen since the last sent step — the die or token, the action, its
+  figures, regions, route and cost — at once, where ↶ undoes one step. A drawn Fellowship route keeps UI-298's rule
+  (`FellowshipDraft.CancelRoute`): a declaration ends, a reveal or a card's forced separation starts again. Every forced
+  step starts again too (`MandatoryDraft`, the step TurnInteraction applies to an empty draft): an action sequence's next
+  step with its spent die, losses, a reveal, a Guide.
+- **When it is enabled.** Only for the player's own decision, while the console takes input (not during a send, a hold or
+  offline), and only while its click would change the draft; otherwise it is greyed with `Cancel · Nothing chosen to
+  cancel`. Its tooltip names what it drops ("Clear the chosen companions and their route", "Clear the drawn route",
+  "Drop everything chosen since your last sent step"). It sends nothing.
+- The console's line keeps its hint while a route is drawn (no option replaces it), so the step's instruction stays in
+  view (UI-456).
+
+Tests: EditMode `DraftCancelTests` (the fifth button and its line, the whole draft dropped, a separation, a forced reveal, an
+action sequence), `WindowListsTests`; PlayMode `ConsoleCancelNetworkTests.ASeparationIsCancelledFromTheConsolesFixedCancel`
+(`fp-character-separate-companions`), `TurnConsoleLayoutTests` (Cancel shown under the four in eight layouts, every
+control in its place with and without a die), `FellowshipNetworkTests`, `CharacterNetworkTests`.
+
+<a id="ui-461"></a>
+## The Will of the West face menu — UI-461 (2026-11-03)
+
+The owner (translated): "Will of the West can turn into another die but can also be used by itself, e.g. for Gandalf's
+skill. Now we don't choose which die WotW turns into: all possible options are lit and the die is chosen from what we do.
+That's a problem because there are different possibilities, e.g. an army move with a leader can be done with more than
+one die. We need the previous small menu at the bottom (console) that let us choose the new face WotW turns into, while
+the additional effects coming directly from WotW (like deactivating the Balrog) light on the table; if the player picks
+one of them the die is spent and the player needn't choose anything." This is the owner's exception to rule 5 (choices
+stand at their objects): the result of a Will die has no object of its own.
+
+- **Its place** (`ConsoleFaceMenu`, `console-will-faces`): four fixed medallions — Character, Army, Muster, Event
+  (`will-face-character` …) — at the start of the status line, in the hint's 38 pt height; the hint keeps the rest of the
+  line and goes on saying what the die lights. Where the line cannot hold the medallions beside 120 pt of hint (Lords or
+  Kings at 1366 × 768 and 125 %), the menu stands in TEST-15's strip just above the console (`ConsoleOptionsFit`). The
+  menu stands only while a chosen Will die waits for its use (no action started), so the bottom bar never changes height.
+- **Its states** (`WillFaceChoices`): a result with no use now is disabled, never hidden; the results a click may give glow
+  until one is chosen; the chosen one stays pressed in (`will-face-chosen`). A click turns the die into that result and the
+  board lights exactly what a die of that result does (UI-389); a second click on the chosen result, or ↶, makes it Will of
+  the West itself again; a second click on the die releases it (UI-386). Nothing is sent.
+- **As itself** (`WillOfTheWestUses`): before a result is chosen the die lights only what it does as itself — Gandalf the
+  White's and Aragorn's entry, the Balrog's deactivation, the removals of Denethor's Folly, The King's Welcome, the Gates,
+  the Palantír cards and the Lore without a Ring — and what any die does (a political ability, Narya, a region's
+  protection); one click on such an object spends the die, and the console's hint says so. Once turned, the uses of Will
+  of the West itself go dark.
+- **What reaches the server**: nothing new. The chosen result is a local part of the draft (`TurnDraft.WillFace`, kept in
+  the saved draft); the command carries it as its cost — an army move's `MovementCost` (Army for two moves, Character for
+  one led move), a card's `CardCost`, or its kind — and the server pays the die as that result.
+
+Tests: EditMode `WillFaceTests`, `DieOptionsTests`, `ContextInteractionTests`, `CardActionTests`, `FellowshipDraftTests`,
+`TravelActionTests`, `PoliticalActionTests`; PlayMode `WillOfTheWestFaceNetworkTests` (`lords-fp-balrog-deactivate`: the
+menu at 1366 × 768 and 1920 × 1080, scale 1 and 1.25), `MultiUseDiceNetworkTests`, `BoardInteractionTests`.

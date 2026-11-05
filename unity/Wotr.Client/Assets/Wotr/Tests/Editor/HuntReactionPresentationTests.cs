@@ -49,6 +49,19 @@ namespace Wotr.Tests
             StringAssert.DoesNotContain("Guide:", inspection);
         }
 
+        // UI-420: the source is named once with its cost, a figure without Level or Leadership shows neither, and no
+        // ability ids follow.
+        [Test]
+        public void GollumsInspectionNamesHimOnceWithoutLevelZero()
+        {
+            var choice = new EffectChoiceView { Id = "character.gollum-reveal", SourceId = "base.character.gollum", Cost = "None",
+                Title = "Reveal · Reduce damage", Detail = "Reveal the Fellowship to reduce Hunt damage by one." };
+            var view = View(choice);
+            view.Fellowship = new FellowshipView { Guide = "base.character.gollum" };
+            Assert.AreEqual("Gollum · Use ability · No die\nReveal the Fellowship to reduce Hunt damage by one.\n" +
+                FellowshipGuideText.Ability("base.character.gollum"), HuntReactionPresentation.Inspect(view, choice));
+        }
+
         [Test]
         public void CompactReactionFooterStillShowsErrorsAndPreview()
         {

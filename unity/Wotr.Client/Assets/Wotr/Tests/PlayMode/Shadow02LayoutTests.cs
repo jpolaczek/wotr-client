@@ -48,12 +48,18 @@ namespace Wotr.PlayTests
                             }
                             if (mode == "black")
                             {
-                                // UI-245/UI-289: the figures are chosen on the Battle window; the tray keeps Keep all.
+                                // UI-245/UI-289: the figures are chosen on the Battle window. UI-432 (owner's rule, UI-430): Keep
+                                // all is the window's Skip effect, which names Black Breath; no button repeats it.
                                 FellowshipLayoutTests.Check(client.Board);
-                                var decline = client.Board.Tray.Q<Button>("effect-choice-black-breath.decline");
-                                var size = decline.MeasureTextSize(decline.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
-                                Assert.LessOrEqual(size.x, decline.contentRect.width + 1, "Keep all fits its button.");
+                                Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-black-breath.decline"));
+                                var skip = client.Board.Tray.Q<Button>("battle-skip-effect");
+                                Assert.AreEqual("Skip Black Breath · Eliminate no Leader or Companion", skip.tooltip);
+                                var size = skip.MeasureTextSize(skip.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                                Assert.LessOrEqual(size.x, skip.contentRect.width + 1, "Skip effect fits its button.");
                             }
+                            // UI-430 (owner): The Nazgûl Strike!'s options are its objects, so the console has no option strip.
+                            if (mode == "strike")
+                                CollectionAssert.IsEmpty(client.Board.Console.Status.Options.Query<Button>().ToList().Select(b => b.name));
                             if (mode is "dread" or "terrible")
                                 foreach (var id in view.Options[0].EligibleIds.Take(mode == "dread" ? 10 : 1))
                                 {
@@ -157,8 +163,8 @@ namespace Wotr.PlayTests
                 view.Decision.Presentation = "NazgulStrike";
                 foreach (var id in new[] { "base.fp.character.05", "base.fp.character.06", "base.fp.character.07", "base.fp.character.08" })
                     option.EffectChoices.Add(new EffectChoiceView { Id = id, SourceId = id, Title = CardLibrary.Title(id), Detail = "Discard this Free Peoples Character card from the table." });
-                option.EffectChoices.Add(new EffectChoiceView { Id = "nazgul-strike.hunt", Title = "Roll for the Hunt" });
-                option.EffectChoices.Add(new EffectChoiceView { Id = "nazgul-strike.decline", Title = "Finish" });
+                option.EffectChoices.Add(new EffectChoiceView { Id = NazgulStrikeChoice.HuntRoll, Title = "Roll for the Hunt" });
+                option.EffectChoices.Add(new EffectChoiceView { Id = FinishingOption.StrikeFinish, Title = "Finish" });
             }
             option.EligibleIds = option.EffectChoices.Select(c => c.Id).ToList();
             return view;

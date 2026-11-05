@@ -63,15 +63,14 @@ namespace Wotr.PlayTests
             }
         }
 
-        // UI-94: Effects shows the card text in its own panel, so reading a source opens no sub-window.
+        // UI-94: Effects shows the card text in its own panel, so reading a source opens no sub-window; UI-446 (owner): the
+        // text unrolls from the hovered tile and a click on the tile opens nothing.
         private static async Task ReadProtection(MatchTestRoom room, BoardScreen board)
         {
             if (!board.TableEffects.IsOpen)
                 PointerGestureEvents.ClickAt(board.TableEffects.Tab);
             await room.Settle();
-            PointerGestureEvents.ClickAt(board.TableEffects.Root.Q<Button>("effect-source-" + Protection));
-            await room.Settle();
-            EffectsNetworkTests.AssertCardInPanel(board, Protection);
+            await EffectsNetworkTests.Read(room, board, Protection);
             Assert.IsFalse(board.Family.Watching);
         }
 
@@ -91,7 +90,8 @@ namespace Wotr.PlayTests
         {
             var board = actor.Board;
             await ReadProtection(room, board);
-            board.Cards.Show(Protection, true, allowPlay: false, origin: board.TableEffects.Root.Q("effect-card"));
+            // UI-446: the preview's origin is the source's tile, since no details card stands beside the panel.
+            board.Cards.Show(Protection, true, allowPlay: false, origin: board.TableEffects.Root.Q<Button>("effect-source-" + Protection));
             await room.Settle();
             Assert.AreSame(board.TableEffects.Root, board.Family.OwnerOf(board.Cards.Root));
             Assert.IsNull(board.Cards.Root.Q<Button>("help-for-cards"), "UI-173: the preview has no Help link.");

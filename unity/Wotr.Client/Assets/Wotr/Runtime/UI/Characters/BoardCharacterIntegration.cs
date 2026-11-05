@@ -13,13 +13,25 @@ namespace Wotr.Client
             var characters = board.Characters;
             characters.Actions.OpenReaction = board.Notice.Open;
             stage.Add(characters.Tab);
+            // UI-436: where the panel unrolls, so the characters' and rulers' windows stand beside it at one place.
+            var slot = CharacterWindowPlace.Slot();
+            stage.Add(slot);
             stage.Add(characters.Root);
             stage.Add(characters.Inspector.Root);
+            var place = new CharacterWindowPlace(slot, characters.Tab);
+            characters.Place = place;
+            board.Sovereigns.Place = place;
+            void PlaceAgain(GeometryChangedEvent _)
+            {
+                board.Sovereigns.RequestPosition();
+                characters.Inspector.Root.schedule.Execute(characters.PositionInspector);
+            }
+            slot.RegisterCallback<GeometryChangedEvent>(PlaceAgain);
+            characters.Tab.RegisterCallback<GeometryChangedEvent>(PlaceAgain);
             characters.AddSovereigns(board.Sovereigns.Root);
             board.Sovereigns.FallbackAnchor = () => characters.Tab;
-            board.Sovereigns.ListedAsCharacter = characters.Lists;
             board.Sovereigns.Applied += () => characters.ShowSovereigns(board.Sovereigns.HasShownPortraits);
-            board.Sovereigns.Highlighted += any => characters.Tab.EnableInClassList("legal-target", any);
+            board.Sovereigns.Highlighted += characters.OfferSovereigns;
             characters.InspectorWindow = new FloatingWindow(characters.Inspector.Root, board.Windows,
                 () => characters.InspectorPinned, characters.PinInspection, characters.PositionInspector, rememberInitial: false);
             characters.IsRegionSource = element => element != null && board.Hover.Panel.Root.Contains(element);
@@ -84,6 +96,9 @@ namespace Wotr.Client
                     board.Map.Refresh();
                     board.Sovereigns.RequestPosition();
                 });
+            // A Ruler's Reserve fills its rows (or ends its arrival) after the window was placed beside it.
+            board.Reinforcements.Root.RegisterCallback<GeometryChangedEvent>(_ => characters.ObstacleChanged());
+            board.Reinforcements.Root.RegisterCallback<TransitionEndEvent>(_ => characters.ObstacleChanged());
         }
 
         private static bool Visible(VisualElement element) => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&

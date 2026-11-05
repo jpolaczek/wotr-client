@@ -5,7 +5,8 @@ namespace Wotr.Client
     // UI-160: the turn console between the dice panel and the hand: the status, a column of the board's public
     // resources (the Hunt Box above the three Elven Rings) and the permanent actions. Every zone has a fixed size;
     // a state change updates a zone's contents, never its size.
-    // Choices of a decision live at their objects or in the decision window, never here (TURN_CONSOLE_UX).
+    // Choices of a decision live at their objects or in the decision window, never here (TURN_CONSOLE_UX); the owner's
+    // exception (UI-461, 2026-11-03) is the result a chosen Will of the West die turns into (ConsoleFaceMenu).
     public sealed class TurnConsole
     {
         public VisualElement Root { get; } = new VisualElement { name = "turn-console" };

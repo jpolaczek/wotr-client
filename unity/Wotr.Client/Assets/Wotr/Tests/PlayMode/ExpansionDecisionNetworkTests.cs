@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 using static Wotr.PlayTests.KingsCardNetworkChecks;
@@ -30,19 +31,20 @@ namespace Wotr.PlayTests
                 Assert.IsEmpty(room.Sh.Board.Tray.Query<Button>().ToList());
                 await Layout(room, room.Fp, "versions", "ui09");
                 Click(room.Fp, "version-base.character.gandalf-grey");
-                Click(room.Fp, "setup-portrait-base.character.gimli");
+                Click(room.Fp, "fellowship-portrait-base.character.gimli");
                 Click(room.Fp, "version-fate.character.gimli-dwarven-lord");
                 Click(room.Fp, "starting-guide-base.character.strider");
                 await Reconnect(room, room.Fp);
                 await room.Confirm(room.Fp);
                 Assert.AreEqual(DecisionKind.CouncilHomelands, room.Fp.Board.View.Decision.Kind);
                 Assert.IsFalse(room.Sh.Board.View.Fellowship.RevealedCompanionVersions.ContainsKey("base.character.gimli"));
-                Click(room.Fp, "homeland-character-base.character.gimli");
+                // UI-270: the homelands on the Fellowship panel's portraits; a drag onto the map places one.
+                Click(room.Fp, "fellowship-portrait-base.character.gimli");
                 await room.Settle();
                 await CardGestureNetworkTests.Drop(room, room.Fp,
-                    room.Fp.Board.Tray.Q<Button>("homeland-character-base.character.gimli"),
+                    room.Fp.Board.Fellowship.Root.Q<Button>("fellowship-portrait-base.character.gimli"),
                     room.Fp.Board.Map, false, dropPoint: MapContourProbe.ReachRegion(room.Fp.Board.Map, "ered-luin"));
-                Assert.AreEqual("→ Ered Luin", room.Fp.Board.Tray.Q<Button>("homeland-character-base.character.gimli")
+                Assert.AreEqual("→ Ered Luin", room.Fp.Board.Fellowship.Root.Q<Button>("fellowship-portrait-base.character.gimli")
                     .Q<Label>("homeland-location").text);
                 await Layout(room, room.Fp, "homeland", "ui09");
                 await Reconnect(room, room.Fp);
@@ -51,7 +53,7 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DecisionKind.CouncilToken, room.Sh.Board.View.Decision.Kind);
                 await Layout(room, room.Sh, "council-token", "ui09");
                 var revision = room.Sh.Board.View.Revision;
-                Click(room.Sh, "council-token-council.advance-politics");
+                CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>("pool-council.advance-politics"));
                 await room.At(revision + 1);
                 Assert.IsTrue(room.Sh.Board.View.CouncilTokens.Any(t => t.Id == "council.advance-politics" && !t.Spent));
                 Assert.IsTrue(room.Fp.Board.View.Configuration.NewCities);
@@ -93,10 +95,9 @@ namespace Wotr.PlayTests
             using (var room = await Connect("ui09-dismay", ScenarioKind.CardPack))
             {
                 Assert.AreEqual(DecisionKind.Dismay, room.Sh.Board.View.Decision.Kind);
+                // UI-276 (D20): the Ruler die's click alone spends the first Dismay token.
                 var option = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.UseDismay);
-                CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>("ruler-token-" + option.EligibleIds[0]));
                 var id = option.EligibleDice.Last();
-                Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("ruler-token-" + option.EligibleIds[0]).ClassListContains("selected"));
                 await Layout(room, room.Sh, "dismay", "ui09");
                 await Reconnect(room, room.Sh);
                 var revision = room.Sh.Board.View.Revision;
@@ -123,6 +124,13 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(Visibility.Visible, activate.resolvedStyle.visibility);
                 Assert.IsTrue(activate.enabledInHierarchy);
                 StringAssert.Contains("transfer Narya", activate.tooltip);
+                // UI-439: the activation is Narya's, so it shows Narya's own icon.
+                Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "narya"),
+                    activate.Q("icon-glyph").style.backgroundImage.value.texture);
+                // UI-440 (owner): Narya's activation is its bare skill icon, lit while usable, no square frame.
+                SkillIconChecks.Bare(activate, AbilityArt.Folder + "narya", 22f);
+                Assert.IsTrue(activate.ClassListContains(ChoiceGlow.ClassName));
+                LayoutTests.Save(room.Fp.Viewport, "ui439-narya-activation.png");
                 Assert.AreEqual(revision, room.Fp.Board.View.Revision);
                 PointerGestureEvents.ClickAt(activate);
                 await room.At(revision + 1);
@@ -132,21 +140,42 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-268: Vilya's socket glows beside the lit paid die; Spend the die is the console's button; one click on the
+        // socket keeps the die, with no window.
         private static async Task Vilya()
         {
             using (var room = await Connect("ui09-vilya", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 Assert.AreEqual(DecisionKind.KeepActionDie, room.Fp.Board.View.Decision.Kind);
-                CardNetworkTests.Click(room.Fp.Board.Console.Rings.For("lords.ring.vilya"));
+                await room.Settle();
+                watch.OnItsObject(room.Fp);
                 var die = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.UseVilya).EligibleDice.Single();
-                await Layout(room, room.Fp, "vilya", "ui09");
+                VilyaReady(room.Fp, die);
+                await Layout(room, room.Fp, "vilya", "ui268");
                 await Reconnect(room, room.Fp);
+                VilyaReady(room.Fp, die);
                 var revision = room.Fp.Board.View.Revision;
-                Click(room.Fp, "cost-" + die);
+                CardNetworkTests.Click(room.Fp.Board.Console.Rings.For(NamedRings.Vilya));
                 await room.At(revision + 1);
+                watch.NeverOpened();
                 Assert.AreEqual(DieLocation.Available, room.Sh.Board.View.Dice.Single(d => d.Id == die).Location);
                 Assert.AreEqual(Side.Shadow, room.Sh.Board.View.Rings.Single(r => r.Id.EndsWith("vilya")).Owner);
             }
+        }
+
+        private static void VilyaReady(MountedMatchClient client, string die)
+        {
+            var socket = client.Board.Console.Rings.For(NamedRings.Vilya);
+            Assert.IsTrue(socket.ClassListContains(ConsoleRings.KeeperReadyClass), "Vilya's socket glows for its Keeper ability.");
+            Assert.IsTrue(socket.ClassListContains("ring-vilya"));
+            StringAssert.Contains("Click to keep the die that paid for this action", socket.tooltip);
+            Assert.IsTrue(client.Board.OwnDice.Q<Button>(die).ClassListContains("resource-candidate"), "The paid die glows in the pool.");
+            Assert.IsNull(client.Board.Tray.Q<Button>("cost-" + die), "No second die picker.");
+            // UI-347 (D7): spending the die is the console's Pass.
+            Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("action-DeclineVilya"));
+            Assert.IsTrue(client.Board.Console.Actions.Pass.enabledSelf);
+            Assert.AreEqual("Pass · Spend the die and keep Vilya", client.Board.Console.Actions.Pass.tooltip);
         }
 
         private static async Task Awaken()
@@ -155,12 +184,15 @@ namespace Wotr.PlayTests
             {
                 var option = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.AwakenSovereign && o.EligibleIds.Contains("kings.sovereign.dain"));
                 await ComponentGestures.Cost(room, room.Fp, option.EligibleDice[0]);
-                CardNetworkTests.Click(await BoardNavigation.Sovereign(room.Fp.Board, "kings.sovereign.dain"));
                 await Layout(room, room.Fp, "awaken", "ui09");
-                await Reconnect(room, room.Fp);
+                // UI-274: Erebor is Dáin's only destination, so the click on his lit portrait completes the awakening
+                // along his route from the Iron Hills (UI-142: a click that completes a choice sends it).
+                var portrait = await BoardNavigation.Sovereign(room.Fp.Board, "kings.sovereign.dain");
+                StringAssert.StartsWith("Click to awaken", portrait.tooltip);
                 var revision = room.Fp.Board.View.Revision;
-                FellowshipGestures.FinishRoute(room.Fp, "erebor");
+                CardNetworkTests.Click(portrait);
                 await room.At(revision + 1);
+                await Reconnect(room, room.Fp);
                 Assert.AreEqual(SovereignStatus.Awakened, room.Sh.Board.View.Sovereigns.Single(s => s.Id.EndsWith("dain")).Status);
                 Assert.AreEqual("erebor", room.Sh.Board.View.Characters.Single(c => c.Id.EndsWith("dain")).Location);
             }

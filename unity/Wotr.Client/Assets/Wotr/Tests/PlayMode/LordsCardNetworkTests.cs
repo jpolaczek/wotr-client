@@ -1,0 +1,197 @@
+using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using UnityEngine.TestTools;
+using UnityEngine.UIElements;
+using Wotr.Client;
+using Wotr.Contracts;
+using static Wotr.PlayTests.MatchTestRoom;
+using static Wotr.PlayTests.KingsCardNetworkChecks;
+
+namespace Wotr.PlayTests
+{
+    // UI-272: the Lords cards' choices on their objects: The Gates are Closed at its × on a declaration, Wind from the
+    // West and Safe Paths in the Dark at the Shadow table cards' ×, Wind's inspected Shadow hand in the drawer, and Three
+    // Rings for the Elven-Kings at the Ring sockets. No decision window opens. UI-430 (owner): the offered table cards are
+    // red and their tiles' click works as their ×; Wind's Finish is the console's ✓.
+    public class LordsCardNetworkTests
+    {
+        private const string Gates = "lords.sh.character.27";
+        private const string Lore = "lords.sh.character.26";
+
+        [UnityTest] public IEnumerator TheGatesAnswerADeclarationAtTheirCross() => Wait(GatesDeclaration());
+        [UnityTest] public IEnumerator WindDiscardsAShadowTableCardAtItsCross() => Wait(WindTable());
+        [UnityTest] public IEnumerator WindShowsTheShadowHandInTheDrawer() => Wait(WindHand());
+        [UnityTest] public IEnumerator WindsFinishIsTheConsolesConfirm() => Wait(WindFinish());
+        [UnityTest] public IEnumerator SafePathsDiscardsASmeagolCardAtItsCross() => Wait(SafePaths());
+        [UnityTest] public IEnumerator ThreeRingsRecoversRingsOnTheirSockets() => Wait(ThreeRings());
+
+        private static async Task GatesDeclaration()
+        {
+            using (var room = await Connect("ui272-gates-declaration", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
+            {
+                var client = room.Sh;
+                await room.Settle();
+                watch.OnItsObject(client);
+                // UI-291: the console's Pass declines the window; no Decline option.
+                Assert.IsTrue(client.Board.Console.Actions.Pass.enabledSelf);
+                StringAssert.Contains("The Gates are Closed", client.Board.Console.Actions.Pass.tooltip);
+                var cross = await Cross(room, client, Gates);
+                await Layout(room, client, "gates-declaration", "ui272");
+                var revision = client.Board.View.Revision;
+                CardNetworkTests.Click(cross);
+                await room.At(revision + 1);
+                Assert.IsFalse(room.Fp.Board.View.Effects.Any(e => e.SourceId == Gates), "Using the Gates discards them.");
+                watch.NeverOpened();
+            }
+        }
+
+        private static async Task WindTable()
+        {
+            using (var room = await Connect("ui272-wind-table", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
+            {
+                var client = room.Fp;
+                await room.Settle();
+                watch.OnItsObject(client);
+                // UI-430 (owner): no "Discard a table card" button; the card is red and its tile's click discards it.
+                Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("console-option-table-cards"));
+                Assert.AreEqual(TableDiscardText.Hint, client.Board.Console.Status.Hint.text);
+                var cross = await Cross(room, client, Gates);
+                Assert.AreEqual("Discard The Gates are Closed · Click to discard it because of Wind from the West", cross.tooltip);
+                var tile = client.Board.TableEffects.Root.Q<Button>("effect-source-" + Gates);
+                Assert.IsTrue(tile.ClassListContains(TableEffectsView.DiscardClass), "The card is red.");
+                Assert.AreEqual(cross.tooltip, tile.tooltip);
+                await Layout(room, client, "wind-table", "ui272");
+                var revision = client.Board.View.Revision;
+                PointerGestureEvents.ClickAt(tile);
+                await room.At(revision + 1);
+                Assert.IsFalse(room.Sh.Board.View.Effects.Any(e => e.SourceId == Gates));
+                Assert.IsTrue(room.Sh.Board.View.Effects.Any(e => e.SourceId == Lore));
+                watch.NeverOpened();
+            }
+        }
+
+        // UI-430 (owner): Wind from the West's Finish ends the card, so the console's ✓ sends it (it was the Pass, UI-347 D7),
+        // lit and naming what finishing leaves undone; the Pass declines nothing here.
+        private static async Task WindFinish()
+        {
+            using (var room = await Connect("ui347-wind-finish", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
+            {
+                var client = room.Fp;
+                await room.Settle();
+                var finish = client.Board.Console.Actions.Confirm;
+                Assert.IsTrue(finish.enabledSelf && finish.ClassListContains(ChoiceGlow.ClassName), "The ✓ finishes.");
+                Assert.AreEqual("Finish · End Wind from the West without inspecting the Shadow hand", finish.tooltip);
+                Assert.IsFalse(client.Board.Console.Actions.Pass.ClassListContains(ChoiceGlow.ClassName), "The Pass declines nothing here.");
+                var shadowHand = room.Sh.Board.View.Hand.Count;
+                var revision = client.Board.View.Revision;
+                PointerGestureEvents.ClickAt(finish);
+                await room.At(revision + 1);
+                Assert.AreNotEqual(InspectedHand.Presentation, client.Board.View.Decision?.Presentation ?? "");
+                Assert.AreEqual(shadowHand, room.Sh.Board.View.Hand.Count);
+                watch.NeverOpened();
+            }
+        }
+
+        private static async Task WindHand()
+        {
+            using (var room = await Connect("ui272-wind-hand", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
+            {
+                var client = room.Fp;
+                await room.Settle();
+                watch.OnItsObject(client);
+                // UI-430 (owner): Finish is the console's ✓, not a button (it was the Pass, UI-347 D7).
+                Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-wind.finish"));
+                Assert.AreEqual("Finish · End Wind from the West without inspecting the Shadow hand", client.Board.Console.Actions.Confirm.tooltip);
+                // UI-418 (owner): one lit button named after the card, saying what it does; no committed card beside it.
+                var option = client.Board.Console.Status.Options.Q<Button>("effect-choice-wind.inspect-hand");
+                Assert.AreEqual("Wind from the West", option.text);
+                Assert.IsTrue(option.ClassListContains(ChoiceGlow.ClassName), "It glows.");
+                StringAssert.StartsWith("Inspect Shadow hand", option.tooltip);
+                var shown = client.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList()
+                    .Where(button => button.resolvedStyle.display == DisplayStyle.Flex).ToList();
+                Assert.IsEmpty(shown, "The card's committed button leaves the trail: " +
+                    string.Join(", ", shown.Select(button => button.text + " (" + button.userData + ")")) + " · decision " + client.Board.View.Decision.SourceId);
+                await room.Direct(client, "effect-choice-wind.inspect-hand");
+                Assert.AreEqual(InspectedHand.Presentation, client.Board.View.Decision.Presentation);
+                await CardGestures.Open(client);
+                var card = client.Board.Hand.Q<Button>("base.sh.character.01");
+                Assert.IsNotNull(card, "The inspected Shadow card stands in the drawer.");
+                Assert.IsTrue(card.ClassListContains("inspected-card") && card.ClassListContains(HandCard.DiscardClass));
+                StringAssert.StartsWith("Click a Shadow card", client.Board.Console.Status.Hint.text);
+                await Layout(room, client, "wind-hand", "ui272");
+                await CardGestures.Open(client);
+                var shadowHand = room.Sh.Board.View.Hand.Count;
+                var revision = client.Board.View.Revision;
+                PointerGestureEvents.ClickAt(client.Board.Hand.Q<Button>("base.sh.character.01"));
+                await room.At(revision + 1);
+                Assert.AreEqual(shadowHand - 1, room.Sh.Board.View.Hand.Count);
+                Assert.IsFalse(room.Sh.Board.View.Hand.Contains("base.sh.character.01"));
+                Assert.IsNull(client.Board.Hand.Q<Button>("base.sh.strategy.02"), "The Shadow's other card leaves the drawer.");
+                watch.NeverOpened();
+            }
+        }
+
+        private static async Task SafePaths()
+        {
+            using (var room = await Connect("ui272-safe-paths", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
+            {
+                var client = room.Fp;
+                await room.Settle();
+                watch.OnItsObject(client);
+                var cross = await Cross(room, client, "lords.sh.special.05");
+                var revision = client.Board.View.Revision;
+                CardNetworkTests.Click(cross);
+                await room.At(revision + 1);
+                Assert.IsFalse(room.Sh.Board.View.Effects.Any(e => e.SourceId == "lords.sh.special.05"));
+                watch.NeverOpened();
+            }
+        }
+
+        // Two successes: the Ring out of play and one Ring the Shadow holds come back with two socket clicks.
+        private static async Task ThreeRings()
+        {
+            using (var room = await Connect("ui272-three-rings", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
+            {
+                var client = room.Fp;
+                await room.Settle();
+                watch.OnItsObject(client);
+                var removed = client.Board.View.Rings.Single(r => r.Owner == null).Id;
+                var held = client.Board.View.Rings.First(r => r.Owner == Side.Shadow).Id;
+                var socket = client.Board.Console.Rings.For(removed);
+                Assert.IsTrue(socket.enabledSelf && socket.ClassListContains("legal-target"));
+                StringAssert.Contains("Click to recover this Ring", socket.tooltip);
+                StringAssert.StartsWith("Click 2 glowing Rings", client.Board.Console.Status.Hint.text);
+                await Layout(room, client, "three-rings", "ui272");
+                var revision = client.Board.View.Revision;
+                CardNetworkTests.Click(socket);
+                await room.Settle();
+                Assert.AreEqual(revision, client.Board.View.Revision, "One Ring of two is no complete choice.");
+                Assert.IsTrue(socket.ClassListContains("selected"));
+                CardNetworkTests.Click(client.Board.Console.Rings.For(held));
+                await room.At(revision + 1);
+                Assert.AreEqual(Side.FreePeoples, room.Sh.Board.View.Rings.Single(r => r.Id == removed).Owner);
+                Assert.AreEqual(Side.FreePeoples, room.Sh.Board.View.Rings.Single(r => r.Id == held).Owner);
+                watch.NeverOpened();
+            }
+        }
+
+        // The table card's × in the Effects panel, lit and enabled.
+        private static async Task<Button> Cross(MatchTestRoom room, MountedMatchClient client, string card)
+        {
+            client.Board.TableEffects.Open();
+            await room.Settle();
+            var cross = client.Board.TableEffects.Root.Q<Button>("remove-table-" + card);
+            Assert.IsNotNull(cross, card + " offers its ×.");
+            await room.Until(() => cross.enabledInHierarchy && cross.worldBound.width > 0);
+            return cross;
+        }
+    }
+}

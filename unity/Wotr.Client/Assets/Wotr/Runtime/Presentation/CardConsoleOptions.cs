@@ -8,9 +8,9 @@ namespace Wotr.Client
     {
         Effect,
         Reaction,
-        OpenEffects,
         Action,
         // UI-233: after View board, the console reopens the end of the game (result, log, Save replay).
+        // UI-455 (owner, 2026-11-03): UI-448's Cancel option is the console's fixed Cancel (ConsoleActions, DraftCancel).
         OpenGameEnd
     }
 
@@ -25,45 +25,78 @@ namespace Wotr.Client
         // An Action option chooses this command (UI-216: an army event's alternatives).
         public CommandKind? Command;
         public bool Enabled = true;
+        // UI-418: the decision's only option, lit and pulsing; on its card's button (SourceId), whose committed button
+        // then leaves the trail.
+        public bool Lit;
+        public string SourceId = "";
+        // UI-431: the region a region panel's force section belongs to, kept in the payload as the region's click did.
+        public string Region = "";
     }
 
     // UI-214 (CARD_CHOICES_UX rule 4): a card's modes and options, and the object-less responses of a reaction outside
     // the Hunt and battles, are at most three buttons in the console. A choice with an object stays on it: a table
     // card in the Effects panel, a reaction card at the card in the hand. A reaction with more object-less choices
-    // than fit keeps the decision window.
+    // than fit keeps the decision window. UI-430 (owner's rule): a button stands only for an option no object draws — a
+    // red table card, the glowing Hunt Box and the console's ✓ (a Finish) take no button. UI-431: nor do a region's
+    // forces (their region panel's sections), a card army event's steps (the map and the ✓), the Black Captain's orders
+    // (the Reserve's and the map's Nazgûl), Lure of the Ring's (the companion's portrait and the corruption track),
+    // Monsters Roused's halves (their regions) and a reaction's draw from a deck (the deck).
     public static class CardConsoleOptions
     {
         public const int Limit = 3;
+        public const string TableCardsPresentation = "TableCards";
         private static readonly IReadOnlyList<ConsoleOption> None = new List<ConsoleOption>();
         private static readonly IReadOnlyDictionary<string, string> NoTableCards = new Dictionary<string, string>();
-        private static readonly HashSet<string> Modes = new HashSet<string> { "CaptainOrder", "LureCompanion", "FellowshipAction", "NazgulStrike" };
+        private static readonly HashSet<string> Modes = new HashSet<string>
+        {
+            "CaptainOrder", "LureCompanion", FellowshipCardActions.Presentation, NazgulStrikeChoice.Presentation,
+            // UI-264: the expansions' two-way card modes (Fate's Monsters, the Kings cards' branches).
+            "EffectTargets", "SovereignCardBranch",
+            // UI-271: the Balrog card's order; UI-347 (D11): on the Balrog's figure and his army, Finish is the Pass.
+            BalrogCardOrder.Presentation,
+            // UI-272: the Lore of the Elven Rings: its die and result are chosen on the pool; Keep results is a button.
+            // Wind from the West and Safe Paths in the Dark discard Shadow table cards with their × in the Effects
+            // panel; Three Rings for the Elven-Kings recovers Rings on their sockets.
+            LoreChoice.Presentation, TableCardsPresentation, RingRecovery.Presentation,
+            // UI-274: a card's choice of a king, the cleanse and the inspection of a king's tiles.
+            SovereignChoices.Sovereign, SovereignChoices.Removal, SovereignChoices.Inspection,
+            // UI-278: the Kings Nation step on the nation tokens.
+            KingsCardChoices.NationStep
+        };
 
         // The decision's choices belong to the console and their objects; the tray builds none of them.
         public static bool Owns(PlayerView view, TurnDraft draft) =>
-            Card(view, draft) && !RegionChoice(view) || Reaction(view, draft) && ReactionOptions(view).Count <= Limit;
-
-        // A region's alternatives (Dreadful Spells) are console buttons; the region itself stays a map click.
-        public static bool HostsAlternatives(PlayerView view, TurnDraft draft) => Card(view, draft) && RegionChoice(view);
+            Card(view, draft) && !RegionChoice(view) || Reaction(view, draft) && ReactionOptions(view).Count <= Limit ||
+            NamedRings.VilyaDecision(view) || SovereignAttempt.OwnAttempt(view);
 
         public static IReadOnlyList<ConsoleOption> For(PlayerView view, TurnDraft draft)
         {
+            // UI-431: a card army event's Move and Attack are its lit targets on the map, its Skip maneuver the ✓.
             if (CardArmyEvent.Active(view, draft))
-                return CardArmyEvent.Alternatives(view, draft);
+                return None;
             if (Card(view, draft))
                 return CardOptions(view, draft);
+            // UI-268: Vilya is kept on its socket; UI-347 (D7): spending the die is the console's Pass.
+            if (NamedRings.VilyaDecision(view))
+                return None;
+            // UI-274: Sequential corruption's Draw again; the tiles stand beside the king.
+            if (SovereignAttempt.OwnAttempt(view))
+                return SovereignAttempt.ConsoleOptions(view);
             return Owns(view, draft) ? ReactionOptions(view) : None;
         }
 
         private static bool RegionChoice(PlayerView view) => view.Decision.Presentation == "Region";
 
-        // The Nazgûl Strike's table cards, chosen with their × in the Effects panel: source id → tooltip.
+        // The Nazgûl Strike's (and Wind from the West's, Safe Paths in the Dark's) table cards, red in the Effects panel,
+        // where a click on the tile or its × discards them: source id → tooltip (UI-430: the effect that offers them).
         public static IReadOnlyDictionary<string, string> TableCards(PlayerView view, TurnDraft draft)
         {
             var option = Card(view, draft) ? DraftOptions.For(view, draft) : null;
-            if (option == null || view.Decision.Presentation != "NazgulStrike")
+            if (option == null || view.Decision.Presentation is not (NazgulStrikeChoice.Presentation or TableCardsPresentation))
                 return NoTableCards;
-            return option.EffectChoices.Where(TableCard).ToDictionary(c => c.Id,
-                c => "Discard " + CardLibrary.Title(c.SourceId) + " · " + c.Detail);
+            var effect = ConfirmSummary.Source(view);
+            var reason = view.Decision.Presentation == NazgulStrikeChoice.Presentation ? NazgulStrikeChoice.Reason : "";
+            return option.EffectChoices.Where(TableCard).ToDictionary(c => c.Id, c => TableDiscardText.Offered(c.SourceId, effect, reason));
         }
 
         private static bool Card(PlayerView view, TurnDraft draft) =>
@@ -78,40 +111,56 @@ namespace Wotr.Client
         private static IReadOnlyList<ConsoleOption> CardOptions(PlayerView view, TurnDraft draft)
         {
             var option = DraftOptions.For(view, draft);
-            if (option == null)
+            // UI-431: a region's two forces are its region panel's glowing sections (RegionForceChoices).
+            if (option == null || RegionChoice(view))
                 return None;
-            if (RegionChoice(view))
-                return Alternatives(view, draft, option);
-            // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring; Stay stays here.
-            var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id))
+            // UI-347 (D7): the Lore's Keep results is the console's Pass; its die and result stay on the pool. D11: the
+            // Balrog card's order stands on his figure and his army (BalrogCardOrder).
+            if (view.Decision.Presentation is LoreChoice.Presentation or RingRecovery.Presentation or BalrogCardOrder.Presentation)
+                return None;
+            // UI-274: the kings and their tiles are chosen in the Characters panel; UI-278 (D7): Keep tiles is the Pass.
+            // The Kings Nation step stands on the nation tokens.
+            if (SovereignChoices.Owns(view) || view.Decision.Presentation == KingsCardChoices.NationStep)
+                return None;
+            // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring.
+            // UI-278 (D15): a Kings card's branch on its object (a nation token, a king, the Reserve) stays there.
+            // UI-430 (owner): a table card is red in the Effects panel, The Nazgûl Strike!'s Hunt roll is the Hunt Box and a
+            // Finish (Stay) is the console's ✓, so none of them is a button.
+            var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id) &&
+                    !OptionalDecline.Declines(view, c.Id) && !KingsCardChoices.OnObject(view, c.Id) &&
+                    !NazgulStrikeChoice.OnObject(c.Id) && !FinishingOption.Finishes(c.Id) && !OnBoardObject(view, c.Id))
                 .Select(c => Effect(view, draft, option, c)).ToList();
-            if (option.EffectChoices.Any(TableCard))
-                options.Insert(0, new ConsoleOption
-                {
-                    Id = "table-cards",
-                    Name = "console-option-table-cards",
-                    Label = "Discard a table card",
-                    Tooltip = "Choose a lit table card in the Effects panel",
-                    Kind = ConsoleOptionKind.OpenEffects
-                });
+            if (options.Count == 1 && options[0].Kind == ConsoleOptionKind.Effect)
+                Single(options[0], view.Decision.SourceId);
             return options;
         }
 
-        // Dreadful Spells: a field army and a garrison in the chosen region are two buttons.
-        private static IReadOnlyList<ConsoleOption> Alternatives(PlayerView view, TurnDraft draft, ActionOption option)
+        // UI-418 (owner): a card decision with one option besides its decline (the console's Pass) is one lit, pulsing
+        // button named after the card, whose tooltip says what it does (Wind from the West · Inspect Shadow hand); two
+        // buttons, the committed card and its option, said the same.
+        private static void Single(ConsoleOption option, string source)
         {
-            var regions = option.EffectChoices.Select(c => c.TargetId).Distinct().ToList();
-            var region = draft.Payload.RegionId.Length > 0 ? draft.Payload.RegionId : regions.Count == 1 ? regions[0] : "";
-            var alternatives = option.EffectChoices.Where(c => region.Length > 0 && c.TargetId == region).ToList();
-            return alternatives.Count > 1 ? alternatives.Select(c => Effect(view, draft, option, c)).ToList() : None;
+            option.Lit = true;
+            if (!CardLibrary.Cards.ContainsKey(source))
+                return;
+            var does = option.Tooltip.Length > 0 && option.Tooltip != option.Label ? option.Label + " · " + option.Tooltip : option.Label;
+            option.Label = CardLibrary.Title(source);
+            option.Tooltip = does;
+            option.SourceId = source;
         }
+
+        // UI-431: an option a board object makes — the Black Captain's Nazgûl, Lure of the Ring's companion and corruption
+        // track, Monsters Roused's regions — has no button; one without its object (a recruit with no Nazgûl in the
+        // reserve) keeps it (R16).
+        private static bool OnBoardObject(PlayerView view, string id) =>
+            BlackCaptainOrder.OnObject(view, id) || LureChoice.OnObject(view, id) || MonstersHalves.OnObject(view, id);
 
         private static ConsoleOption Effect(PlayerView view, TurnDraft draft, ActionOption option, EffectChoiceView choice) => new ConsoleOption
         {
             Id = choice.Id,
             Name = "effect-choice-" + choice.Id,
             Label = EffectLabel(view, choice),
-            Tooltip = choice.Detail.Length > 0 ? choice.Detail : choice.Title,
+            Tooltip = choice.Detail.Length > 0 ? choice.Detail : TooltipText.Parts(ConfirmSummary.Source(view), choice.Title),
             Kind = ConsoleOptionKind.Effect,
             Enabled = EffectChoiceDraft.CanChoose(draft, option, choice.Id)
         };
@@ -124,8 +173,9 @@ namespace Wotr.Client
                 ? CharacterLibrary.ShortName(view, choice.SourceId) + " · " + title : title;
         }
 
-        // UI-247: a table card's own reaction outside a battle or the Hunt (The Balrog of Moria) is used at that card's ×
-        // in the Effects panel — the reaction discards the card: source id → tooltip.
+        // UI-247: a table card's own reaction outside a battle or the Hunt (The Balrog of Moria) is used at that card in the
+        // Effects panel — the reaction discards the card; UI-430: the card is red and a click on its tile or its × uses it:
+        // source id → tooltip.
         public static IReadOnlyDictionary<string, string> ReactionTableCards(PlayerView view)
         {
             var respond = TableReactionOption(view);
@@ -133,7 +183,7 @@ namespace Wotr.Client
                 return NoTableCards;
             return respond.EffectChoices.Where(c => respond.EligibleIds.Contains(c.Id) && view.Effects.Any(e => e.SourceId == c.SourceId))
                 .GroupBy(c => c.SourceId).Where(g => g.Count() == 1)
-                .ToDictionary(g => g.Key, g => "Discard " + CardLibrary.Title(g.Key) + " to use it · " + g.First().Detail);
+                .ToDictionary(g => g.Key, g => TableDiscardText.Reaction(g.Key, g.First().Detail));
         }
 
         // The reaction a table card's × uses, or "".
@@ -150,36 +200,31 @@ namespace Wotr.Client
         private static IReadOnlyList<ConsoleOption> ReactionOptions(PlayerView view)
         {
             var respond = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.RespondEffect);
-            // A reaction from a card in the hand is used at that card (UI-164), the Guide's on its portrait (UI-247).
+            // A reaction from a card in the hand is used at that card (UI-164), the Guide's on its portrait (UI-247), the
+            // Chief's at the Character deck and at his figure (UI-271).
+            // UI-430 (owner): a table card's response is that red card in the Effects panel, with no button of its own.
             var tableCards = ReactionTableCards(view);
+            // UI-431: a response that draws from a deck is that lit deck (ReactionDecks).
             var options = respond?.EffectChoices.Where(c => !view.Hand.Contains(c.SourceId) && !FellowshipActions.ReactionOnRoster(view, c.Id) &&
-                    !tableCards.ContainsKey(c.SourceId))
+                    !tableCards.ContainsKey(c.SourceId) && !ChiefReactionObjects.OnObject(c.Id) && !ReactionDecks.OnObject(view, c.Id))
                 .Select(Response).ToList() ??
                 new List<ConsoleOption>();
-            if (tableCards.Count > 0)
-                options.Insert(0, new ConsoleOption
-                {
-                    Id = "table-cards",
-                    Name = "console-option-table-cards",
-                    Label = "Use a table card",
-                    Tooltip = "Click the lit table card's × in the Effects panel",
-                    Kind = ConsoleOptionKind.OpenEffects
-                });
-            // UI-291: the console's Pass declines the window, so no Decline option takes the hint's place.
+            // UI-291: the console's Pass declines the window, so no Decline option takes the hint's place. UI-418: a single
+            // response is lit.
+            if (options.Count == 1 && options[0].Kind == ConsoleOptionKind.Reaction)
+                options[0].Lit = true;
             return options;
         }
 
         private static ConsoleOption Response(EffectChoiceView choice)
         {
-            var source = choice.SourceId.Length > 0 ? choice.SourceId : choice.Id;
-            var name = source.Contains(".character.") && !CardLibrary.Cards.ContainsKey(source)
-                ? CharacterLibrary.Name(source) : CardLibrary.Title(source);
+            var name = ReactionSkip.Owner(choice);
             return new ConsoleOption
             {
                 Id = choice.Id,
                 Name = "effect-choice-" + choice.Id,
                 Label = choice.Title.Length > 0 ? choice.Title : name,
-                Tooltip = choice.Detail.Length > 0 ? choice.Detail : "Use this response",
+                Tooltip = choice.Detail.Length > 0 ? choice.Detail : "Use " + name + "'s response",
                 Kind = ConsoleOptionKind.Reaction
             };
         }

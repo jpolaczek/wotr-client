@@ -77,14 +77,15 @@ namespace Wotr.Tests
             draft.Choose(CommandKind.AllocateHunt);
             Assert.AreEqual("0/2", HuntAllocationText.Count(draft, option));
             StringAssert.Contains("0 of 2 · At least 1", HuntAllocationText.Hint(draft, option));
-            Assert.AreEqual("Allocate & roll · No dice in the Hunt", HuntAllocationText.Confirm(draft));
+            Assert.AreEqual("Allocate & roll · Leave the Hunt Box empty, then roll all your dice", HuntAllocationText.Confirm(draft));
             HuntActions.ToggleDie(draft, option, "a");
             HuntActions.ToggleDie(draft, option, "c");
             Assert.AreEqual("2/2", HuntAllocationText.Count(draft, option));
             StringAssert.Contains("Limit reached", HuntAllocationText.Hint(draft, option));
-            Assert.AreEqual("Allocate & roll · 2 dice", HuntAllocationText.Confirm(draft));
-            // UI-172: the plaque confirms; ready it names the set, otherwise it says what is missing.
-            Assert.AreEqual("Allocate & roll · 2 dice · Click the plaque to allocate and roll", HuntAllocationText.Plaque(draft, option, true));
+            Assert.AreEqual("Allocate & roll · Put 2 dice in the Hunt Box, then roll the rest", HuntAllocationText.Confirm(draft));
+            // UI-172: the plaque confirms; ready it names the set, otherwise it says what is missing. UI-420: it says what
+            // its click does with the dice.
+            Assert.AreEqual(HuntAllocationText.Confirm(draft), HuntAllocationText.Plaque(draft, option, true));
             Assert.AreEqual(HuntAllocationText.Hint(draft, option), HuntAllocationText.Plaque(draft, option, false));
             StringAssert.Contains("The Hunt plaque allocates and rolls", HuntAllocationText.Hint(draft, option));
             option.Minimum = 0;
@@ -178,6 +179,44 @@ namespace Wotr.Tests
             Assert.AreEqual("2 → 6", strip.Root.Q<Button>("hunt-die-hit").Q<Label>("hunt-first-result").text);
             Assert.AreEqual(1, hunt.Dice.First().Result);
         }
+
+        // UI-423 (owner's playtest pattern, like UI-419): a Hunt die a click may still add to the reroll glows and pulses
+        // until the budget is full; a chosen die is selected instead, and a hit or a locked window lights nothing.
+        [Test]
+        public void RerollableHuntDiceGlowUntilTheBudgetIsFull()
+        {
+            var view = new PlayerView
+            {
+                You = Side.Shadow, DecisionOwner = Side.Shadow,
+                Decision = new DecisionView { Id = "reroll", Kind = DecisionKind.HuntReroll },
+                Hunt = new HuntView { Dice =
+                {
+                    new HuntDieView { Id = "miss-a", First = 2, Result = 2 }, new HuntDieView { Id = "miss-b", First = 3, Result = 3 },
+                    new HuntDieView { Id = "hit", First = 6, Result = 6, Success = true }
+                } },
+                Options = { new ActionOption { Kind = CommandKind.RerollHunt, Maximum = 1, EligibleIds = { "miss-a", "miss-b" } } }
+            };
+            var strip = new HuntDiceStrip();
+            strip.Apply(view.Hunt);
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.RerollHunt);
+            strip.Context(view, draft, true);
+            Assert.IsTrue(Glows(strip, "miss-a") && Glows(strip, "miss-b"), "Every die the reroll may take glows.");
+            Assert.IsFalse(Glows(strip, "hit"));
+
+            draft.Toggle("miss-a");
+            strip.Context(view, draft, true);
+            Assert.IsTrue(strip.Root.Q<Button>("hunt-die-miss-a").ClassListContains("selected"));
+            Assert.IsFalse(Glows(strip, "miss-a"), "A chosen die is selected, not lit.");
+            Assert.IsFalse(Glows(strip, "miss-b"), "A full budget lights no other die.");
+
+            draft.Toggle("miss-a");
+            strip.Context(view, draft, false);
+            Assert.IsFalse(Glows(strip, "miss-a") || Glows(strip, "miss-b"), "Nothing glows while the player cannot act.");
+        }
+
+        private static bool Glows(HuntDiceStrip strip, string id) =>
+            strip.Root.Q<Button>("hunt-die-" + id).ClassListContains(ChoiceGlow.ClassName);
 
         [Test]
         public void RerollBonusDoesNotOfferAChoiceAndPublicDiceKeepTheirIdentity()

@@ -27,14 +27,14 @@ namespace Wotr.Client
         {
             Root.AddToClassList("frontend-form");
             Root.AddToClassList("test-scenario-list");
-            var header = BoardScreen.Row();
-            header.Add(BoardScreen.Title("Test scenarios"));
+            // UI-415 (owner): Back stands beside the hint; the menu window's header already names the page.
+            var header = BoardScreen.Row("test-scenario-header");
             var back = IconButton.Create("back", "Back", () => Back?.Invoke());
             back.name = "close-test-scenarios";
             header.Add(back);
-            Root.Add(header);
-            Root.Add(Text("A prepared situation to test a die or an action. Play both sides with Switch side; nothing is saved.",
+            header.Add(Text("A prepared situation to test a die or an action. Play both sides with Switch side; nothing is saved.",
                 "test-scenario-hint"));
+            Root.Add(header);
             tabs.AddToClassList("test-scenario-tabs");
             Root.Add(tabs);
             var search = BoardScreen.Row("test-scenario-search-row");
@@ -75,6 +75,40 @@ namespace Wotr.Client
             scroll.scrollOffset = Vector2.zero;
         }
 
+        // UI-368: where the player left the list — its tab, search and scroll — so leaving a scenario returns there.
+        public sealed class Place
+        {
+            public string Tab = TestScenarioTabs.General;
+            public string Query = "";
+            public Vector2 Offset;
+        }
+
+        public Place Remember() => new Place { Tab = Tab, Query = query, Offset = scroll.scrollOffset };
+
+        // After Show: a tab the server no longer offers keeps the one Show chose.
+        public void Return(Place place)
+        {
+            if (TestScenarioTabs.For(catalog).Contains(place.Tab))
+                Tab = place.Tab;
+            query = place.Query ?? "";
+            Search.SetValueWithoutNotify(query);
+            RenderTabs();
+            RenderScenarios();
+            ScrollAfterLayout(place.Offset);
+        }
+
+        // The rows are laid out only once the page is shown; the offset waits for them.
+        private void ScrollAfterLayout(Vector2 offset)
+        {
+            EventCallback<GeometryChangedEvent> apply = null;
+            apply = _ =>
+            {
+                scroll.contentContainer.UnregisterCallback(apply);
+                scroll.scrollOffset = offset;
+            };
+            scroll.contentContainer.RegisterCallback(apply);
+        }
+
         // UI-295: the scenarios whose name holds every word of the query, from all tabs.
         public void Find(string value)
         {
@@ -94,7 +128,10 @@ namespace Wotr.Client
                 button.name = TestScenarioTabs.Name(tab);
                 button.AddToClassList("test-scenario-tab");
                 button.EnableInClassList("selected", tab == Tab && !TestScenarioSearch.Active(query));
+                button.EnableInClassList("test-scenario-tab-module", TestScenarioTabs.IsModule(tab));
                 button.SetEnabled(present.Contains(tab));
+                button.tooltip = present.Contains(tab) ? "" : TestScenarioTabs.IsModule(tab)
+                    ? tab + " · Not yet available on this server." : "No scenarios here.";
                 tabs.Add(button);
             }
         }
@@ -106,12 +143,12 @@ namespace Wotr.Client
             clear.SetEnabled(searching);
             var shown = catalog.Scenarios.Where(scenario => searching
                 ? TestScenarioSearch.Matches(scenario, query)
-                : TestScenarioTabs.Of(scenario.Group) == Tab).ToList();
+                : TestScenarioTabs.Of(scenario) == Tab).ToList();
             if (searching && shown.Count == 0)
                 scroll.Add(Text("No scenario's name matches “" + query.Trim() + "”.", "test-scenario-none"));
             foreach (var group in shown.GroupBy(scenario => scenario.Group))
             {
-                scroll.Add(Text(searching ? group.Key : TestScenarioTabs.GroupTitle(group.Key), "test-scenario-group"));
+                scroll.Add(Text(searching ? group.Key : TestScenarioTabs.GroupTitle(Tab, group.Key), "test-scenario-group"));
                 foreach (var scenario in group)
                     scroll.Add(Row(scenario));
             }

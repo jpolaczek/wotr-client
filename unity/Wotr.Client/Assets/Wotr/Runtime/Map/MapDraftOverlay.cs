@@ -9,10 +9,17 @@ namespace Wotr.Client
         private readonly MapCanvas map;
         public HashSet<string> Targets { get; } = new HashSet<string>();
         public HashSet<string> AttackTargets { get; } = new HashSet<string>();
+        // UI-452 (owner): the targets where a figure or a companion would be placed — a Muster die's, a card's or a ruler's
+        // recruitment, Monsters Roused's halves, the Council's homelands — lit more strongly than a move's.
+        public HashSet<string> PlacementTargets { get; } = new HashSet<string>();
         public HashSet<string> PlannedRegions { get; } = new HashSet<string>();
         // UI-323: the regions the current draft moves from (MapSourceGlow).
         public HashSet<string> SourceRegions { get; } = new HashSet<string>();
+        // UI-392: the settlement chosen for an ability's recruitment while it waits for its figure (a pulsing gold edge).
+        public HashSet<string> ChosenRegions { get; } = new HashSet<string>();
         private string endpoint = "";
+        // UI-435: the lit targets were drawn again (the battle window keeps them clear of itself).
+        public event System.Action Applied;
 
         public MapDraftOverlay(MapCanvas map) => this.map = map;
 
@@ -24,12 +31,14 @@ namespace Wotr.Client
         {
             Targets.Clear();
             AttackTargets.Clear();
+            PlacementTargets.Clear();
+            ChosenRegions.Clear();
             endpoint = "";
             RouteSteps = -1;
             if (context != null)
             {
                 if (MusterActions.Active(view, draft, context) && draft.Kind is null or CommandKind.Recruit)
-                    Targets.UnionWith(MusterActions.Targets(view, draft, context));
+                    Place(MusterActions.Targets(view, draft, context));
                 if (ContextArmySelection.Active(view, draft, context) && draft.Kind is CommandKind.MoveArmies or CommandKind.AttackArmy)
                 {
                     Targets.UnionWith(ArmyActionTargets.For(draft, view, context));
@@ -44,16 +53,37 @@ namespace Wotr.Client
                 Targets.Add(view.Battle.RegionId);
             if (context == null && draft.Kind == CommandKind.MoveArmies && draft.MoveFocus >= 0)
                 Targets.UnionWith(ArmyDraft.Targets(draft, view));
+            // UI-431: a card army event lights its other step's targets with its own, as the Army die does (UI-389), and
+            // draws every target its click attacks red (UI-403).
+            if (context == null && CardArmyEvent.Active(view, draft))
+            {
+                Targets.UnionWith(CardArmyEvent.OtherTargets(view, draft));
+                AttackTargets.UnionWith(CardArmyEvent.AttackTargets(view, draft));
+            }
             if (context == null && draft.Kind == CommandKind.Recruit)
-                Targets.UnionWith(RecruitDraft.Targets(draft, view));
+                Place(RecruitDraft.Targets(draft, view));
             if (draft.Kind == CommandKind.ChooseEffect)
-                Targets.UnionWith(EventRecruitDraft.Targets(draft, EventRecruitDraft.Option(view)));
+                Place(EventRecruitDraft.Targets(draft, EventRecruitDraft.Option(view)));
+            // UI-431: Monsters Roused lights the regions of both its halves; a region waiting for its force is marked.
+            if (draft.Kind == CommandKind.ChooseEffect)
+            {
+                Place(MonstersHalves.Regions(view, draft).Where(map.Data.Regions.ContainsKey));
+                var waiting = RegionForceChoices.Waiting(view, draft);
+                if (waiting.Length > 0 && waiting == draft.Payload.RegionId)
+                    ChosenRegions.Add(waiting);
+                // UI-432: Scouts' withdrawal into siege is the battle's own region, lit with the regions it may retreat to.
+                var shelter = ScoutsShelter.Region(view, draft);
+                if (shelter.Length > 0)
+                    Targets.Add(shelter);
+            }
             if (draft.Kind == CommandKind.ChooseEffect)
                 Targets.UnionWith(view.Options.Where(o => o.Kind == draft.Kind)
                     .SelectMany(o => o.EligibleIds.Concat(view.Decision?.Presentation is "Region" or "ArmyFigure" or "ArmyFigures"
                         ? o.EffectChoices.Select(c => view.Decision.Presentation == "Region" ? c.TargetId : EffectChoiceDraft.FigureRegion(c)) : Enumerable.Empty<string>())).Where(map.Data.Regions.ContainsKey));
             if (NazgulFlightDraft.Active(view, draft))
                 Targets.UnionWith(NazgulFlightDraft.Targets(view, draft));
+            else if (CouncilTravel.Active(view, draft))
+                Targets.UnionWith(CouncilTravel.Targets(view, draft));
             else if (TravelDraft.TargetRoute(draft.Kind))
                 Targets.UnionWith(TravelDraft.Reachable(draft, view, map.Data));
             else if (FellowshipDraft.UsesRoute(draft.Kind))
@@ -76,16 +106,43 @@ namespace Wotr.Client
             if (CharacterDraft.UsesCharacters(draft.Kind))
             {
                 var character = CharacterDraft.Selected(draft, DraftOptions.For(view, draft));
-                Targets.UnionWith(character?.RulerRecruitment != null ? CharacterRecruitDraft.Targets(draft, character)
-                    : character?.Targets ?? new List<string>());
+                if (character?.RulerRecruitment != null)
+                    Place(CharacterRecruitDraft.Targets(draft, character));
+                else
+                    Targets.UnionWith(character?.Targets ?? new List<string>());
+                if (character?.RulerRecruitment != null && Targets.Contains(draft.Payload.RegionId))
+                    ChosenRegions.Add(draft.Payload.RegionId);
             }
             if (draft.Kind == CommandKind.ChooseCouncilHomelands)
-                Targets.UnionWith(DraftOptions.For(view, draft).CharacterActions
-                    .Where(c => c.CharacterId == draft.Payload.CharacterId).SelectMany(c => c.Targets));
+                CouncilHomelands(view, draft);
             UpdatePlannedRegions(view, draft);
             UpdateSourceRegions(view, draft);
             map.ShowDraftSources(view, draft);
             map.Refresh();
+            Applied?.Invoke();
+        }
+
+        // UI-451 (owner): every homeland a companion may still start in lights at once; a placed companion's homeland and a
+        // shared homeland waiting for its companion take the gold edge.
+        private void CouncilHomelands(PlayerView view, TurnDraft draft)
+        {
+            var option = DraftOptions.For(view, draft);
+            if (option == null)
+                return;
+            Place(CouncilDraft.OpenHomelands(draft, option));
+            ChosenRegions.UnionWith(draft.Payload.Placements.Select(place => place.RegionId));
+            if (CouncilDraft.Waiting(draft).Length > 0)
+                ChosenRegions.Add(CouncilDraft.Waiting(draft));
+        }
+
+        // A target a placement takes: lit and clicked as any target, and lit more strongly (UI-452).
+        private void Place(IEnumerable<string> regions)
+        {
+            foreach (var region in regions)
+            {
+                Targets.Add(region);
+                PlacementTargets.Add(region);
+            }
         }
 
         // UI-323 (owner request): where the selected force stands — an army's march or attack, a group's journey origin, an

@@ -57,6 +57,8 @@ namespace Wotr.PlayTests
                                 var picked = root.panel.Pick(button.worldBound.center);
                                 Assert.IsTrue(picked == button || button.Contains(picked), button.name + " covered by " + picked?.name);
                                 CheckButtonEdges(button);
+                                if (button.ClassListContains(Wotr.Client.CharacterAbilityStrip.IconClass))
+                                    CheckInsideRow(button);
                                 var title = button.Q<Label>("character-roster-title");
                                 if (title != null)
                                     Check(title, button.worldBound);
@@ -79,6 +81,19 @@ namespace Wotr.PlayTests
             Assert.GreaterOrEqual(element.worldBound.yMin, bounds.yMin - 1, element.name);
             Assert.LessOrEqual(element.worldBound.xMax, bounds.xMax + 1, element.name);
             Assert.LessOrEqual(element.worldBound.yMax, bounds.yMax + 1, element.name);
+        }
+
+        // UI-408: an ability icon stays inside its row, two a line or three.
+        private static void CheckInsideRow(Button icon)
+        {
+            var row = icon.parent.GetFirstAncestorOfType<Button>();
+            Assert.IsNotNull(row, icon.name);
+            var inner = icon.worldBound;
+            var outer = row.worldBound;
+            var inside = inner.xMin >= outer.xMin - 0.5f && inner.yMin >= outer.yMin - 0.5f &&
+                inner.xMax <= outer.xMax + 0.5f && inner.yMax <= outer.yMax + 0.5f;
+            Assert.IsTrue(inside, icon.name + " " + inner + " lies outside " + row.name + " " + outer +
+                " (line " + icon.parent.worldBound + ", block " + icon.parent.parent.worldBound + ")");
         }
 
         private static void CheckButtonEdges(Button button)

@@ -19,6 +19,10 @@ namespace Wotr.Client
         private readonly Button reaction;
         private readonly Button resume;
         private List<ComponentAction> components = new List<ComponentAction>();
+        // UI-440: every action of the turn, an ability used on its own object included: the window's icons use it too.
+        private List<ComponentAction> offered = new List<ComponentAction>();
+        // UI-441: the characters with a skill usable now (UsableSkills), lit wherever the panel draws them.
+        private IReadOnlyDictionary<string, UsableSkills.Skill> skills = UsableSkills.None;
         private PlayerView view;
         private TurnDraft draft;
         private VisualElement tray, dock;
@@ -41,6 +45,7 @@ namespace Wotr.Client
                     _ => item.Owner
                 });
             actions.Selected += item => Selected?.Invoke(item);
+            panel.Inspector.Abilities.Use += item => Selected?.Invoke(item);
             reaction = BoardScreen.Button("Open decision", () => OpenReaction?.Invoke());
             reaction.name = "character-reaction-link";
             resume = BoardScreen.Button("Resume character action", OpenDecision);
@@ -55,11 +60,15 @@ namespace Wotr.Client
             dock = decisionDock;
         }
 
-        public void Apply(PlayerView latest, TurnDraft selection, IEnumerable<ComponentAction> choices, bool canEdit)
+        public void Apply(PlayerView latest, TurnDraft selection, IEnumerable<ComponentAction> choices, bool canEdit,
+            IReadOnlyDictionary<string, UsableSkills.Skill> usable = null)
         {
             view = latest;
             draft = selection;
-            components = choices.ToList();
+            skills = usable ?? UsableSkills.None;
+            // UI-271: an ability used on its own object is not repeated as an inspector button.
+            offered = choices.ToList();
+            components = offered.Where(item => !CharacterAbilityPlaces.OwnPlace(item)).ToList();
             enabled = canEdit;
             DecisionFigure = CharacterRosterActions.OwnsDecision(view, draft)
                 ? CharacterRosterActions.DecisionFigure(view, draft) : "";
@@ -80,8 +89,33 @@ namespace Wotr.Client
             panel.RefreshSelection();
         }
 
-        public bool Available(string id) => components.Any(item => item.Enabled &&
-            CharacterRosterActions.Figure(view, item.OwnerId) == id);
+        public bool Available(string id) => components.Any(item => item.Enabled && CharacterRosterActions.Row(view, item) == id);
+
+        // UI-457: an entry lights its row whichever version it shows; the figure's other actions only the version in play.
+        public bool Available(string id, bool inPlay) => components.Any(item => item.Enabled &&
+            CharacterRosterActions.Row(view, item) == id && (inPlay || item.Kind == CommandKind.EnterCharacter));
+
+        // UI-391: the actions of one roster row's version, for its ability icons; none while another action is drafted, as
+        // in the window (RefreshInspector). UI-441: an ability used on its own object (Gothmog's Reserve tokens, the
+        // Balrog's figure) lights its row's icon too, as it lights the window's.
+        public IEnumerable<ComponentAction> RowActions(string id, string definition) => view == null || draft?.Kind != null
+            ? Enumerable.Empty<ComponentAction>() : CharacterRosterActions.For(view, id, definition, offered);
+
+        // UI-441: this character's skills usable now, or null.
+        public UsableSkills.Skill Skill(string id) => skills.TryGetValue(id ?? "", out var skill) ? skill : null;
+
+        // UI-457 (owner, 2026-11-03): a row lights for a skill or an action only while it shows the version in play. A
+        // companion in the Fellowship with a next version shows that version (Gandalf the White for the Grey), which is not
+        // on the board; the skills of the version in the Fellowship light its Fellowship portrait instead.
+        public bool ShowsVersionInPlay(string id, string definition) => view != null && view.OwnCharacterRoster.Any(row =>
+            row.FigureId == id && row.CurrentDefinitionId.Length > 0 && row.CurrentDefinitionId == definition);
+
+        public bool AnySkill => skills.Count > 0;
+
+        public bool Editable => enabled;
+
+        // UI-391: a row's ability icon starts its action, as the window's Click to use does.
+        public void Use(ComponentAction item) => Selected?.Invoke(item);
 
         // UI-108: the one entry the chosen cost allows for this figure. Several versions or entries stay an explicit
         // choice in the inspector.
@@ -92,8 +126,15 @@ namespace Wotr.Client
         }
 
         private List<ComponentAction> Entries(string id) => view == null ? new List<ComponentAction>() : components
-            .Where(item => item.Enabled && item.Kind == CommandKind.EnterCharacter && CharacterRosterActions.Figure(view, item.OwnerId) == id)
+            .Where(item => item.Enabled && item.Kind == CommandKind.EnterCharacter && CharacterRosterActions.Row(view, item) == id)
             .ToList();
+
+        // UI-438: the versions of this row's character that may enter now (both Mouths of Sauron with one Muster die).
+        public IReadOnlyList<string> EntryVersions(string id) => Entries(id)
+            .Select(item => item.Character?.CharacterId ?? "").Where(version => version.Length > 0).Distinct().ToList();
+
+        // UI-438: the version whose entry waits for its region, shown on the character's one row.
+        public string EnteringVersion => EnteringFigure.Length > 0 ? draft.Payload.CharacterId : "";
 
         private string EntryLabel(ComponentAction item) => view?.OwnCharacterRoster
             .SelectMany(row => row.FutureVersions).FirstOrDefault(version => version.DefinitionId == item.Character?.CharacterId)?.Mode switch
@@ -116,16 +157,26 @@ namespace Wotr.Client
             var inspector = panel.Inspector;
             var active = DecisionFigure.Length > 0 && inspector.FigureId == DecisionFigure &&
                 inspector.DefinitionId == decisionVersion;
+            inspector.OfferVersions(enabled && draft?.Kind == null ? EntryVersions(inspector.FigureId) : Array.Empty<string>());
             panel.DecisionHost.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
             inspector.SetDecisionContext(active);
             var choices = (view == null || draft?.Kind != null ? Enumerable.Empty<ComponentAction>() :
-                CharacterRosterActions.For(view, inspector.FigureId, inspector.DefinitionId, components))
+                CharacterRosterActions.For(view, inspector.FigureId, inspector.DefinitionId, offered))
                 .Where(item => item.Kind != CommandKind.EnterCharacter || Entries(inspector.FigureId).Count > 1).ToList();
-            actions.Apply(choices, enabled);
-            Present(actions.Root, choices.Count > 0);
+            // UI-369/UI-440: an action that uses one of the card's abilities is used from its icon; only the others (an
+            // entry) keep a button, and never one used on its own object (UI-271).
+            var buttons = inspector.Abilities.Usable(choices, enabled, view)
+                .Where(item => !CharacterAbilityPlaces.OwnPlace(item)).ToList();
+            inspector.ShowSkill(CurrentVersion(inspector) ? Skill(inspector.FigureId) : null);
+            actions.Apply(buttons, enabled);
+            Present(actions.Root, buttons.Count > 0);
             Present(resume, DecisionFigure.Length > 0 && !active);
             Present(reaction, view != null && CharacterRosterActions.HasReaction(view, inspector.FigureId));
         }
+
+        // The window shows the version in play, whose skills the rule names.
+        private bool CurrentVersion(CharacterInspector inspector) => view != null && view.OwnCharacterRoster
+            .Any(row => row.FigureId == inspector.FigureId && row.CurrentDefinitionId.Length > 0 && row.CurrentDefinitionId == inspector.DefinitionId);
 
         private void Present(VisualElement element, bool visible)
         {

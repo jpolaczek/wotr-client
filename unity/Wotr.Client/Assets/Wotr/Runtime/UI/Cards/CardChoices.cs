@@ -62,7 +62,8 @@ namespace Wotr.Client
             if (view.Decision?.Presentation == "Deck")
             {
                 root.Add(new Label("Choose a highlighted deck."));
-                foreach (var choice in option.EffectChoices.Where(c => c.Id is not ("character" or "strategy")))
+                // UI-348 (D7): Palantír of Anárion's Skip extra card is the console's Pass.
+                foreach (var choice in option.EffectChoices.Where(c => c.Id is not ("character" or "strategy") && !OptionalDecline.Declines(view, c.Id)))
                     root.Add(EffectButton(option, choice));
                 return;
             }
@@ -72,28 +73,15 @@ namespace Wotr.Client
                 root.Add(reinforcements());
                 return;
             }
-            if (view.Decision?.Presentation == "InspectedCorruption")
-            {
-                refresh.Add(CorruptionInspectionChoices.Render(root, view, option, draft, edit));
-                return;
-            }
             // UI-215/UI-289: a card's figures and the King's companions are chosen in the region panel and on the map
             // (CardFigureDraft), never in the tray.
             if (view.Decision?.Presentation is "ArmyFigure" or "ArmyFigures" or "CompanionDestination")
                 return;
-            if (view.Decision?.Presentation == "RegionOrShelter")
+            if (view.Decision?.Presentation is "Region" or "ActionDie" or ScoutsShelter.Presentation)
             {
-                var shelter = option.EffectChoices.FirstOrDefault(c => c.Id == "scouts.shelter");
-                if (shelter != null)
-                    root.Add(EffectButton(option, shelter));
-                BoardChoice(root, option);
-                return;
-            }
-            if (view.Decision?.Presentation is "Region" or "ActionDie")
-            {
-                // UI-214: a card decision's alternatives in one region are buttons in the console.
-                if (view.Decision.Presentation == "Region" && !CardConsoleOptions.HostsAlternatives(view, draft))
-                    RegionAlternatives(root, option);
+                // UI-431: a region's two forces are chosen on its region panel's glowing sections (RegionForceChoices), not
+                // on buttons here or in the console. UI-432: Scouts' Withdraw into siege is the battle's own region on the
+                // map, beside the lit regions it may retreat to (ScoutsShelter).
                 BoardChoice(root, option);
                 return;
             }
@@ -106,10 +94,27 @@ namespace Wotr.Client
                 if (BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
                     continue;
-                // UI-285: a table card's Hunt response is a card object in the Hunt window's response row; UI-360: so is
-                // a Guide's response.
-                if (HuntGuideResponses.InRow(view, id) || HuntCardResponses.InRow(view, id))
+                // UI-347 (D7): an optional decline is the console's Pass; UI-348 (D17): a card's replacement is its chip.
+                if (OptionalDecline.Declines(view, id) || CombatReplacementChoice.OnChip(view, id))
                     continue;
+                // UI-432: Worn with Sorrow and Toil's table cards are red in the Effects panel and its random hand card is
+                // the opponent's red card counter.
+                if (WornDiscardChoice.OnObject(view, id))
+                    continue;
+                // UI-285: a table card's Hunt response is a card object in the Hunt window's response row; UI-360: so is
+                // every Guide's response; UI-272: so is a Lords table card's response, and We Won't Go Back's Character
+                // cards glow in the hand.
+                if (HuntGuideResponses.InRow(view, id) || HuntCardResponses.InRow(view, id) ||
+                    view.Decision?.Presentation == HuntCardResponses.Smeagol && view.Hand.Contains(id) || InspectedHand.Contains(view, id))
+                    continue;
+                // UI-268: Nenya's response is its glowing ring socket in the console.
+                if (NamedRings.OnSocket(view, id))
+                {
+                    var hint = new Label("Nenya can replace this Eye tile: click the glowing Nenya in the console.") { name = "nenya-socket-hint" };
+                    hint.AddToClassList("draft-status");
+                    root.Add(hint);
+                    continue;
+                }
                 var choice = option.EffectChoices.FirstOrDefault(c => c.Id == id) ?? new EffectChoiceView { Id = id };
                 if (row == null || choice.SelectionGroup != currentGroup)
                 {
@@ -121,20 +126,6 @@ namespace Wotr.Client
                     root.Add(row);
                 }
                 row.Add(EffectButton(option, choice));
-            }
-        }
-
-        private void RegionAlternatives(VisualElement root, ActionOption option)
-        {
-            var regions = option.EffectChoices.GroupBy(c => c.TargetId).ToList();
-            foreach (var group in regions.Where(g => g.Key.Length > 0 && g.Count() > 1))
-            {
-                var row = BoardScreen.Row();
-                foreach (var choice in group)
-                    row.Add(EffectButton(option, choice));
-                refresh.Add(() => row.style.display = regions.Count == 1 || draft.Payload.RegionId == group.Key
-                    ? DisplayStyle.Flex : DisplayStyle.None);
-                root.Add(row);
             }
         }
 
@@ -197,21 +188,21 @@ namespace Wotr.Client
                 button.tooltip = ExpansionLabels.DieDetail(die);
             if (leadership)
             {
-                button.tooltip = choice.Title + " · " + choice.Detail;
+                button.tooltip = TooltipText.Parts(choice.Title, choice.Detail);
                 button.AddToClassList("effect-companion");
             }
             if (compactCharacter)
             {
-                button.tooltip = CharacterLibrary.Name(view, id) + " · " + choice.Detail;
+                button.tooltip = TooltipText.Parts(CharacterLibrary.Name(view, id), choice.Detail);
                 button.AddToClassList("effect-companion");
             }
             if (compactUnit != null)
             {
-                button.tooltip = FigureGrid.Name(compactUnit.Nation) + " " + compactUnit.Kind + " · " + choice.Detail;
+                button.tooltip = TooltipText.Parts(TooltipText.Unit(compactUnit.Nation, compactUnit.Kind), choice.Detail);
                 button.AddToClassList("effect-companion");
             }
-            if (reaction || view.Decision?.Presentation is "NazgulStrike" or "CharacterCardDiscard" or "InspectedHand" or "TableCards" or "SmeagolCorruption")
-                InspectSource(button, choice);
+            if (reaction || view.Decision?.Presentation is "NazgulStrike" or "InspectedHand" or "TableCards" or "SmeagolCorruption")
+                InspectSource(button, choice, reaction);
             if (reaction && view.Hunt != null)
             {
                 button.AddToClassList("legal-target");
@@ -223,9 +214,18 @@ namespace Wotr.Client
             return button;
         }
 
-        private void InspectSource(Button button, EffectChoiceView choice)
+        // UI-420 (owner): a choice without the server's detail still names its owner, and a response says how it is used.
+        private static string FallbackTooltip(EffectChoiceView choice, bool reaction)
         {
-            button.tooltip = choice.Detail.Length > 0 ? choice.Detail : choice.Cost == "DiscardTableCard" ? "Discard this table card to respond" : "Use this response";
+            var owner = ReactionSkip.Owner(choice);
+            if (!reaction)
+                return TooltipText.Parts(owner, choice.Title);
+            return choice.Cost == "DiscardTableCard" ? "Discard " + owner + " to respond" : "Use " + owner + "'s response";
+        }
+
+        private void InspectSource(Button button, EffectChoiceView choice, bool reaction)
+        {
+            button.tooltip = choice.Detail.Length > 0 ? choice.Detail : FallbackTooltip(choice, reaction);
             // UI-285: a Hunt response sends with its click, so it pins no card that would read as a confirmation still
             // waiting; its tooltip says what it does and the Effects panel shows the card.
             if (!CardLibrary.Cards.ContainsKey(choice.SourceId) || view.Hunt != null && draft.Kind == CommandKind.RespondEffect)
@@ -257,8 +257,16 @@ namespace Wotr.Client
             if (view.Characters.Any(c => c.Id == id))
                 return CharacterLibrary.Name(view, id);
             var die = view.Battle?.Attacker.Dice.Concat(view.Battle.Defender.Dice).FirstOrDefault(d => d.Id == id);
-            return die != null ? die.Result + (die.ConvertedHit ? " → Hit" : "") : CardLibrary.Title(id);
+            if (die != null)
+                return die.Result + (die.ConvertedHit ? " → Hit" : "");
+            return BalrogCardOrder.ChoiceName(id) ?? CardLibrary.Title(id);
         }
+
+        // UI-417: a choice of a region, a figure, a king, a die or a card; otherwise an option of the effect itself.
+        public static bool NamesObject(PlayerView view, BoardPresentation data, string id) =>
+            data.Regions.ContainsKey(id) || view.Sovereigns.Any(s => s.Id == id) || view.Units.Any(u => u.Id == id) ||
+            view.Characters.Any(c => c.Id == id) || CardLibrary.Cards.ContainsKey(id) ||
+            view.Battle != null && view.Battle.Attacker.Dice.Concat(view.Battle.Defender.Dice).Any(d => d.Id == id);
 
         public void Refresh()
         {

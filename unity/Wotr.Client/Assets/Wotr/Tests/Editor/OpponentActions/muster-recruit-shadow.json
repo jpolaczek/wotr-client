@@ -1,0 +1,771 @@
+{
+  "scenario": "muster-recruit",
+  "viewer": "Shadow",
+  "baselineRevision": 0,
+  "baseline": {
+    "matchId": "fixture-muster-recruit",
+    "steps": [
+      {
+        "id": "9423758579aaf5b73c0323908484f69b1da2d9709e3435f86495c9589d5df57d",
+        "actionId": "9423758579aaf5b73c0323908484f69b1da2d9709e3435f86495c9589d5df57d",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 1,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "PhaseChanged",
+        "text": "Turn 1: RecoverDraw.",
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "phase": "RecoverDraw",
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "8b84a291270a0b47b77cf74afe5dd0b4329147fa6a2ece1525dc227086f95b0e",
+        "actionId": "8b84a291270a0b47b77cf74afe5dd0b4329147fa6a2ece1525dc227086f95b0e",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 2,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "FreePeoples drew a character card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "5bbc06c72c6e9cebf895d0493904993f0a66f6d2a06f6ec1dc7c7a0e15d6b974",
+        "actionId": "5bbc06c72c6e9cebf895d0493904993f0a66f6d2a06f6ec1dc7c7a0e15d6b974",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 3,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "FreePeoples drew a strategy card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "31ab8eb216c017e0f3b6d40dba636b317a6089d37fe29baaeca9c3c9280e9375",
+        "actionId": "31ab8eb216c017e0f3b6d40dba636b317a6089d37fe29baaeca9c3c9280e9375",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 4,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardDrawn",
+        "text": "Drew Morgul Wound.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.sh.character.12",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "base.sh.character.12",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "Shadow",
+              "use": "Draw",
+              "id": "base.sh.character.12",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "5c027d76df746038252fccd8a1a970fb33240f2e3bd2dcf87d39d17681222ac8",
+        "actionId": "5c027d76df746038252fccd8a1a970fb33240f2e3bd2dcf87d39d17681222ac8",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 5,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "Shadow drew a character card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "Shadow",
+              "use": "Draw",
+              "id": "",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "1363a0cfd9eb030e94fdbcd6b65cec5447a8d04cce2ea079ed4003f28dc2b4bf",
+        "actionId": "1363a0cfd9eb030e94fdbcd6b65cec5447a8d04cce2ea079ed4003f28dc2b4bf",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 6,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardDrawn",
+        "text": "Drew Many Kings to the Service of Mordor.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.sh.strategy.17",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "base.sh.strategy.17",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "Shadow",
+              "use": "Draw",
+              "id": "base.sh.strategy.17",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "c887e41ab1b2d413898e115f8b745cbebc89c8913add7860686030425ed845ef",
+        "actionId": "c887e41ab1b2d413898e115f8b745cbebc89c8913add7860686030425ed845ef",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 7,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "Shadow drew a strategy card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "Shadow",
+              "use": "Draw",
+              "id": "",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "825bef9847de7757683767362e2ada76e33b3083e06692884f745c675329f992",
+        "actionId": "825bef9847de7757683767362e2ada76e33b3083e06692884f745c675329f992",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 8,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "PhaseChanged",
+        "text": "Turn 1: Fellowship.",
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "phase": "Fellowship",
+          "rolls": []
+        },
+        "status": "Completed"
+      }
+    ],
+    "actions": [
+      {
+        "id": "9423758579aaf5b73c0323908484f69b1da2d9709e3435f86495c9589d5df57d",
+        "version": "9423758579aaf5b73c0323908484f69b1da2d9709e3435f86495c9589d5df57d",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "8b84a291270a0b47b77cf74afe5dd0b4329147fa6a2ece1525dc227086f95b0e",
+        "version": "8b84a291270a0b47b77cf74afe5dd0b4329147fa6a2ece1525dc227086f95b0e",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "5bbc06c72c6e9cebf895d0493904993f0a66f6d2a06f6ec1dc7c7a0e15d6b974",
+        "version": "5bbc06c72c6e9cebf895d0493904993f0a66f6d2a06f6ec1dc7c7a0e15d6b974",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "31ab8eb216c017e0f3b6d40dba636b317a6089d37fe29baaeca9c3c9280e9375",
+        "version": "31ab8eb216c017e0f3b6d40dba636b317a6089d37fe29baaeca9c3c9280e9375",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.sh.character.12",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "5c027d76df746038252fccd8a1a970fb33240f2e3bd2dcf87d39d17681222ac8",
+        "version": "5c027d76df746038252fccd8a1a970fb33240f2e3bd2dcf87d39d17681222ac8",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "1363a0cfd9eb030e94fdbcd6b65cec5447a8d04cce2ea079ed4003f28dc2b4bf",
+        "version": "1363a0cfd9eb030e94fdbcd6b65cec5447a8d04cce2ea079ed4003f28dc2b4bf",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.sh.strategy.17",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "c887e41ab1b2d413898e115f8b745cbebc89c8913add7860686030425ed845ef",
+        "version": "c887e41ab1b2d413898e115f8b745cbebc89c8913add7860686030425ed845ef",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "825bef9847de7757683767362e2ada76e33b3083e06692884f745c675329f992",
+        "version": "825bef9847de7757683767362e2ada76e33b3083e06692884f745c675329f992",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      }
+    ],
+    "nextCursor": "",
+    "latestCursor": "825bef9847de7757683767362e2ada76e33b3083e06692884f745c675329f992"
+  },
+  "updates": [
+    {
+      "viewRevision": 1,
+      "page": {
+        "matchId": "fixture-muster-recruit",
+        "steps": [
+          {
+            "id": "5d5b98fd28c0bcff63d85a53d239b3ba6e9c2303747616b83f6bbb6d39ae44e6",
+            "actionId": "1271469ac54feab4488c6e5e8c83d130ac5d59496bde8941fd63a5fcc64cd2be",
+            "parentStepId": "",
+            "revision": 1,
+            "order": 1,
+            "turn": 1,
+            "actor": "FreePeoples",
+            "command": "Recruit",
+            "automatic": false,
+            "legacy": false,
+            "kind": "UnitRecruited",
+            "text": "gondor Regular recruited in minas-tirith.",
+            "context": {
+              "kind": "Army",
+              "regions": [
+                "minas-tirith"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "FreePeoples.standard.1",
+                "owner": "FreePeoples",
+                "source": "standard",
+                "face": "Muster",
+                "use": "Muster",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [
+                {
+                  "before": {
+                    "id": "base.gondor.regular.10",
+                    "side": "FreePeoples",
+                    "nationId": "gondor",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "after": {
+                    "id": "base.gondor.regular.10",
+                    "side": "FreePeoples",
+                    "nationId": "gondor",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "from": "reserve",
+                  "to": "minas-tirith"
+                }
+              ],
+              "nations": [],
+              "control": [],
+              "dice": [
+                {
+                  "id": "FreePeoples.standard.1",
+                  "owner": "FreePeoples",
+                  "source": "standard",
+                  "before": "Muster",
+                  "after": "Muster",
+                  "from": "Available",
+                  "to": "Resolving",
+                  "huntOrigin": ""
+                }
+              ],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "budget": {
+                "completed": 1,
+                "remaining": 1
+              },
+              "rolls": []
+            },
+            "status": "InProgress"
+          }
+        ],
+        "actions": [
+          {
+            "id": "1271469ac54feab4488c6e5e8c83d130ac5d59496bde8941fd63a5fcc64cd2be",
+            "version": "755f6cdcfddf113e2e97d08822e0da91d84efae86f40026f94176e0b2781bd2f",
+            "initiator": "FreePeoples",
+            "command": "Recruit",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Army",
+              "regions": [
+                "minas-tirith"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "FreePeoples.standard.1",
+                "owner": "FreePeoples",
+                "source": "standard",
+                "face": "Muster",
+                "use": "Muster",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 2
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "5d5b98fd28c0bcff63d85a53d239b3ba6e9c2303747616b83f6bbb6d39ae44e6"
+      }
+    },
+    {
+      "viewRevision": 2,
+      "page": {
+        "matchId": "fixture-muster-recruit",
+        "steps": [
+          {
+            "id": "755f6cdcfddf113e2e97d08822e0da91d84efae86f40026f94176e0b2781bd2f",
+            "actionId": "1271469ac54feab4488c6e5e8c83d130ac5d59496bde8941fd63a5fcc64cd2be",
+            "parentStepId": "5d5b98fd28c0bcff63d85a53d239b3ba6e9c2303747616b83f6bbb6d39ae44e6",
+            "revision": 2,
+            "order": 1,
+            "turn": 1,
+            "actor": "FreePeoples",
+            "command": "Recruit",
+            "automatic": false,
+            "legacy": false,
+            "kind": "UnitRecruited",
+            "text": "gondor Regular recruited in pelargir.",
+            "context": {
+              "kind": "Army",
+              "regions": [
+                "pelargir"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [
+                {
+                  "before": {
+                    "id": "base.gondor.regular.11",
+                    "side": "FreePeoples",
+                    "nationId": "gondor",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "after": {
+                    "id": "base.gondor.regular.11",
+                    "side": "FreePeoples",
+                    "nationId": "gondor",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "from": "reserve",
+                  "to": "pelargir"
+                }
+              ],
+              "nations": [],
+              "control": [],
+              "dice": [
+                {
+                  "id": "FreePeoples.standard.1",
+                  "owner": "FreePeoples",
+                  "source": "standard",
+                  "before": "Muster",
+                  "after": "Muster",
+                  "from": "Resolving",
+                  "to": "Spent",
+                  "huntOrigin": ""
+                }
+              ],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "budget": {
+                "completed": 2,
+                "remaining": 0
+              },
+              "rolls": []
+            },
+            "status": "Completed"
+          }
+        ],
+        "actions": [
+          {
+            "id": "1271469ac54feab4488c6e5e8c83d130ac5d59496bde8941fd63a5fcc64cd2be",
+            "version": "755f6cdcfddf113e2e97d08822e0da91d84efae86f40026f94176e0b2781bd2f",
+            "initiator": "FreePeoples",
+            "command": "Recruit",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Army",
+              "regions": [
+                "minas-tirith"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "FreePeoples.standard.1",
+                "owner": "FreePeoples",
+                "source": "standard",
+                "face": "Muster",
+                "use": "Muster",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 2
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "755f6cdcfddf113e2e97d08822e0da91d84efae86f40026f94176e0b2781bd2f"
+      }
+    }
+  ]
+}

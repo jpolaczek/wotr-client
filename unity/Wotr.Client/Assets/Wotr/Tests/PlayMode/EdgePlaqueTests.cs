@@ -255,10 +255,10 @@ namespace Wotr.PlayTests
         private static void CheckPlaques(BoardScreen board, string label)
         {
             var bar = board.TopBar.Root;
-            Assert.That(bar.resolvedStyle.height, Is.EqualTo(44).Within(.5f), "The bar is slimmer than UI-86 · " + label);
+            Assert.That(bar.resolvedStyle.height, Is.EqualTo(36).Within(.5f), "UI-479: the slim bar · " + label);
             var corner = board.Edges.Corner;
             Assert.IsTrue(Visible(corner), label);
-            Assert.AreEqual("panel", Texture(corner), "The corner tab wears the panels' gilt frame · " + label);
+            Assert.AreEqual("card-board", Texture(corner), "The corner tab wears the panels' thin card · " + label);
             Assert.That(corner.worldBound.yMin - bar.worldBound.yMax, Is.InRange(-1f, 2f), "The tab hangs from the bar · " + label);
             Assert.That(board.Root.worldBound.xMax - corner.worldBound.xMax, Is.InRange(-.5f, 1f), "In the map's top right corner · " + label);
             Assert.LessOrEqual(corner.worldBound.height, 48, "A small basic tab · " + label);
@@ -323,7 +323,7 @@ namespace Wotr.PlayTests
                 Assert.LessOrEqual(notices.worldBound.xMax, panel.worldBound.xMin + 1, "The notification bar ends before the panel · " + label);
             Assert.That(board.Root.worldBound.xMax - panel.worldBound.xMax, Is.InRange(-.5f, 4f), "At the right edge · " + label);
             Assert.LessOrEqual(panel.worldBound.yMax, board.Root.worldBound.yMax + 1, "On screen · " + label);
-            Assert.AreEqual("panel", Texture(panel), label);
+            Assert.AreEqual("card-board", Texture(panel), label);
         }
 
         private static Dictionary<string, PlayerView> Fixture()

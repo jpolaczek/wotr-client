@@ -54,15 +54,29 @@ namespace Wotr.Client
                 : hunt.Healing > 0 ? "Heal " + hunt.Healing : damageLabel + hunt.Damage;
             reveal.style.display = hunt.Reveal ? DisplayStyle.Flex : DisplayStyle.None;
             stop.style.display = hunt.Stop ? DisplayStyle.Flex : DisplayStyle.None;
-            Root.tooltip = (hunt.Face == null ? "" : HuntTileText.Tooltip(hunt.Face) + "\n\n") + "Drawn tile · " + damage.text +
-                (hunt.DamagePending ? "\nResolve replacement before determining damage." : "") +
-                (hunt.TileDie.HasValue ? "\nTile die: " + hunt.TileDie : "") +
-                (hunt.Mordor ? "\nMordor · Eye value " + hunt.EyeDamage : "") +
-                (hunt.CorruptionOnly ? "\nAll damage becomes Corruption; no damage reduction or casualty." : "") +
-                "\nReveal and Stop are independent effects." +
-                (hunt.Mordor ? "\nReveal changes hidden status; it does not create a map route." +
-                    "\nStop prevents this move. Replacing or cancelling the tile removes its effects." +
-                    "\nResolve the tile before any advance; 12 Corruption ends the game first." : "");
+            Root.tooltip = Tooltip(hunt, damage.text);
+        }
+
+        // UI-420 (owner): "Drawn tile · Standard tile · 3 Hunt damage" and its Reveal and Stop, without a blank line; the
+        // resolved value only where it differs from the printed one, and the rules notes only for the effects in play.
+        public static string Tooltip(HuntView hunt, string resolved) => TooltipText.Lines(
+            "Drawn tile · " + (hunt.Face == null ? resolved : HuntTileText.Tooltip(hunt.Face)),
+            hunt.Face != null && (hunt.SeparatesCompanions || !Printed(hunt)) ? resolved : "",
+            hunt.DamagePending ? "Resolve replacement before determining damage." : "",
+            hunt.TileDie.HasValue ? "Tile die · " + hunt.TileDie : "",
+            hunt.Mordor ? "Mordor · Eye value " + hunt.EyeDamage : "",
+            hunt.CorruptionOnly ? "All damage becomes Corruption; no damage reduction or casualty." : "",
+            hunt.Reveal && hunt.Stop ? "Reveal and Stop are independent effects." : "",
+            hunt.Mordor && hunt.Reveal ? "Reveal changes hidden status; it does not create a map route." : "",
+            hunt.Mordor && hunt.Stop ? "Stop prevents this move. Replacing or cancelling the tile removes its effects." : "",
+            hunt.Mordor ? "Resolve the tile before any advance; 12 Corruption ends the game first." : "");
+
+        // The resolved damage or healing is the tile's printed number, unchanged by an Eye, a die, a card or a Guide.
+        private static bool Printed(HuntView hunt)
+        {
+            if (hunt.DamagePending || !int.TryParse(hunt.Face.Value, out var printed))
+                return false;
+            return printed < 0 ? hunt.Healing == -printed : hunt.Healing == 0 && hunt.Damage == printed;
         }
     }
 }

@@ -1,0 +1,274 @@
+/* UI-471 (owner, 2026-11-03: "the game's interface uses the same styles and buttons as the main menu; we do not change the
+   map, characters, icons; only the tabs' backgrounds, frames and buttons"). The game's chrome takes its art and colours
+   from these tokens, so a later task swaps them here, in one place. Imported first by Wotr.uss: every later rule may
+   override what stands here, and an art button's own picture wins a tie with the states below. Never put menu-chrome on
+   the board's root: Menus.uss would repaint dice, cards and tokens. */
+
+/* USS custom properties are inherited: these two roots cover the board and the rare .action outside it (Already running,
+   the required update). UI Toolkit resolves var() for background-image, the slices and the colours in this Unity
+   (GameButtonChromeTests reads the resolved values). */
+.client-interface,
+.board-screen {
+    /* A button: the kit's frontend/button (64 x 32 points) on its 6-point slices, in texture pixels at 0.5 scale. */
+    --game-button: resource("Wotr/Art/UI/frontend/button");
+    --game-button-hover: resource("Wotr/Art/UI/frontend/button-hover");
+    --game-button-pressed: resource("Wotr/Art/UI/frontend/button-pressed");
+    --game-button-selected: resource("Wotr/Art/UI/frontend/button-selected");
+    --game-button-primary: resource("Wotr/Art/UI/frontend/button-primary");
+    --game-button-primary-hover: resource("Wotr/Art/UI/frontend/button-primary-hover");
+    --game-button-primary-pressed: resource("Wotr/Art/UI/frontend/button-primary-pressed");
+    --game-confirm-fill: rgb(226, 182, 96);
+    --game-confirm-fill-hover: rgb(244, 206, 122);
+    --game-confirm-fill-pressed: rgb(178, 136, 62);
+    --game-confirm-fill-dim: rgb(186, 142, 66);
+    --game-confirm-rim: rgb(255, 236, 178);
+    --game-confirm-rim-dim: rgb(226, 182, 96);
+    --game-confirm-check: rgb(34, 24, 8);
+    --game-button-slice: 12;
+    --game-button-slice-scale: 0.5px;
+    /* Its words, as in the menus (Menus.uss): muted parchment, a little lighter on hover, warm when chosen, grey disabled. */
+    --game-button-text: rgb(228, 216, 188);
+    --game-button-text-hover: rgb(244, 232, 204);
+    --game-button-text-focus: rgb(250, 230, 172);
+    --game-button-text-selected: rgb(248, 230, 184);
+    --game-button-text-disabled: rgb(130, 122, 104);
+    --game-button-text-selected-disabled: rgb(170, 156, 124);
+    /* Under the art of a button that stands directly on the bright parchment map: the thin line needs a nearly opaque field. */
+    --game-button-fill-over-map: rgba(19, 18, 16, 0.92);
+    /* UI-472: a panel's or window's frame: the menus' card on its 12-point slices, in texture pixels at 0.5 scale; the kit's
+       frontend/card-board is that card with a nearly opaque field and a dark hairline, for the bright parchment. */
+    --game-card: resource("Wotr/Art/UI/frontend/card-board");
+    --game-card-slice: 24;
+    --game-card-slice-scale: 0.5px;
+    /* The card's colours, for what stands flat (the tooltip, the undocked hand) and for the words and rules inside a card. */
+    --game-card-fill: rgba(21, 19, 17, 0.94);
+    --game-card-text: rgb(226, 214, 188);
+    --game-card-text-muted: rgb(176, 164, 136);
+    --game-hairline: rgb(163, 132, 75);
+    --game-hairline-quiet: rgba(163, 132, 75, 0.35);
+    /* A title over its hairline (frontend/title-rule); on parchment, ink over the same line tinted dark. */
+    --game-title-text: rgb(232, 207, 146);
+    --game-title-rule: resource("Wotr/Art/UI/frontend/title-rule");
+    --game-title-ink: rgb(58, 42, 24);
+    --game-title-rule-ink: rgb(172, 150, 135);
+    /* UI-474: a scroll bar under the board, as in the menus. */
+    --game-scroll-track: rgba(255, 244, 220, 0.04);
+    --game-scroll-thumb: rgba(163, 132, 75, 0.45);
+    --game-scroll-thumb-hover: rgba(196, 162, 98, 0.75);
+    --game-scroll-arrow: rgb(150, 124, 80);
+    --game-scroll-arrow-hover: rgb(214, 178, 108);
+    /* UI-475: a row of a panel or list: the kit's frontend/row on its 8-point slices, in texture pixels at 0.5 scale. */
+    --game-row: resource("Wotr/Art/UI/frontend/row");
+    --game-row-hover: resource("Wotr/Art/UI/frontend/row-hover");
+    --game-row-pressed: resource("Wotr/Art/UI/frontend/row-pressed");
+    --game-row-selected: resource("Wotr/Art/UI/frontend/row-selected");
+    --game-row-slice: 16;
+    --game-row-slice-scale: 0.5px;
+    /* UI-476: the same row in a side's enamel, nearly opaque: what keeps the side's colour stands on these. */
+    --game-row-free: resource("Wotr/Art/UI/frontend/row-free");
+    --game-row-free-hover: resource("Wotr/Art/UI/frontend/row-free-hover");
+    --game-row-shadow: resource("Wotr/Art/UI/frontend/row-shadow");
+    --game-row-shadow-hover: resource("Wotr/Art/UI/frontend/row-shadow-hover");
+    --game-side-band-free: resource("Wotr/Art/UI/frontend/side-band-free");
+    --game-side-band-shadow: resource("Wotr/Art/UI/frontend/side-band-shadow");
+    /* UI-476: the button in a side's enamel: the console's status plaque; the button's slices. */
+    --game-side-button-free: resource("Wotr/Art/UI/frontend/button-free");
+    --game-side-button-free-hover: resource("Wotr/Art/UI/frontend/button-free-hover");
+    --game-side-button-free-pressed: resource("Wotr/Art/UI/frontend/button-free-pressed");
+    --game-side-button-shadow: resource("Wotr/Art/UI/frontend/button-shadow");
+    --game-side-button-shadow-hover: resource("Wotr/Art/UI/frontend/button-shadow-hover");
+    --game-side-button-shadow-pressed: resource("Wotr/Art/UI/frontend/button-shadow-pressed");
+    /* UI-475: a rail tab: the thin medallion (rail/edge-tab) on a nearly opaque plate under one thin line, for the bright
+       parchment. Selected (a panel held open) is warm with a bright line; gold stays the sign of a usable tab. */
+    --game-rail-tab: resource("Wotr/Art/UI/rail/edge-tab");
+    --game-rail-tab-hover: resource("Wotr/Art/UI/rail/edge-tab-hover");
+    --game-rail-tab-pressed: resource("Wotr/Art/UI/rail/edge-tab-pressed");
+    --game-rail-tab-selected: resource("Wotr/Art/UI/rail/edge-tab-selected");
+    --game-rail-tab-available: resource("Wotr/Art/UI/rail/edge-tab-available");
+    --game-rail-tab-available-hover: resource("Wotr/Art/UI/rail/edge-tab-available-hover");
+    --game-rail-fill: rgba(21, 19, 17, 0.94);
+    --game-rail-fill-hover: rgba(34, 30, 25, 0.96);
+    --game-rail-fill-pressed: rgba(12, 11, 9, 0.96);
+    --game-rail-fill-selected: rgba(46, 37, 24, 0.96);
+    --game-rail-line: rgb(163, 132, 75);
+    --game-rail-line-hover: rgb(196, 162, 98);
+    --game-rail-line-selected: rgb(212, 178, 108);
+    /* UI-478: a decision the game waits on stays red: one thin warm line on a clear red field, dimming with its pulse. */
+    --game-warning-fill: rgb(132, 26, 20);
+    --game-warning-fill-hover: rgb(162, 38, 28);
+    --game-warning-fill-dim: rgb(92, 18, 14);
+    --game-warning-line: rgb(232, 158, 112);
+    --game-warning-line-dim: rgb(150, 92, 66);
+    --game-warning-text: rgb(255, 236, 196);
+    /* UI-479: the top bar, flat on one muted gilt rule, with quiet hairlines between what stands on it. Everything under the bar
+       reads its height from here or from the bar's place; the Menu panel opens two points below it. The fill is the card's,
+       opaque: the map's figures run under the bar and would ghost through a translucent one. */
+    --game-topbar-height: 36px;
+    --game-topbar-menu-top: 38px;
+    --game-topbar-fill: rgb(21, 19, 17);
+    --game-topbar-rule: rgb(163, 132, 75);
+    --game-topbar-hairline: rgba(163, 132, 75, 0.45);
+}
+
+/* The states of .action; its base stays in Wotr.uss at its old place in the cascade. Each has two classes, in the first
+   sheet: any art button's rule of two classes or more wins, so a die, card, figure or token never takes the chrome's art.
+   Hover lightens the line and the field; keyboard focus brightens the words only, so a clicked button does not look held;
+   chosen is the warm field with a bright line, and its old 2-point rim stays in the layout but is transparent, because a
+   gold rim means a legal target (UI-193, UI-223, UI-372, UI-384); a press darkens the field and sinks a point (UI-113,
+   Interaction.uss). Art with texture slices of its own sets them beside its picture. */
+.action:hover {
+    color: var(--game-button-text-hover);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: var(--game-button-hover);
+}
+.action:focus { color: var(--game-button-text-focus); }
+.action.selected {
+    color: var(--game-button-text-selected);
+    background-image: var(--game-button-selected);
+    border-color: rgba(0, 0, 0, 0);
+}
+.action.pressed { background-image: var(--game-button-pressed); }
+.action:disabled { color: var(--game-button-text-disabled); -unity-background-image-tint-color: rgb(150, 150, 150); }
+.action.selected:disabled { color: var(--game-button-text-selected-disabled); }
+
+/* Buttons that stand directly on the map keep the thin line readable over the bright parchment. */
+#board-screen #map-legend-toggle,
+#board-screen #map-political-toggle,
+#board-screen .game-chat-icon,
+#board-screen .cards-tab,
+#board-screen .victory-tab,
+#board-screen .notification-bar .notice-icon-button,
+#board-screen .notification-bar .decision-notice,
+#board-screen #notification-retry {
+    background-color: var(--game-button-fill-over-map);
+    border-radius: 2px;
+}
+
+/* UI-472, UI-473, UI-474 (owner, 2026-11-03: "remember to adapt elements such as the bars at the top of the windows").
+   Every panel and window of the board wears the menus' card. These rules hold only its art, in one place: each surface's
+   own sheet keeps its size, padding and a transparent background-color, so nothing moves. UI-476: the console, its options
+   strip and the small popovers join them. */
+#board-screen .edge-left-panel,
+#board-screen .board-dropdowns .edge-dropdown-panel,
+#board-screen .edge-corner-tab,
+#board-screen .board-right-panels .edge-cards,
+#board-screen .dice-panel,
+#board-screen .decision-window,
+#board-screen .regional-battle,
+#board-screen .battle-report.battle-chronicle,
+#board-screen .hunt-panel.hunt-window,
+#board-screen .hunt-panel.hunt-underway .hunt-pool,
+#board-screen .character-window,
+#board-screen .game-end-window,
+#board-screen .region-hover,
+#board-screen .board-information,
+#board-screen .expansion-inspector,
+#board-screen .action-log,
+#board-screen .notification-overflow,
+#board-screen .victory-panel,
+#board-screen #map-legend,
+#board-screen .turn-console,
+#board-screen .console-options-strip,
+#board-screen .ring-face-picker {
+    background-image: var(--game-card);
+    -unity-slice-top: var(--game-card-slice);
+    -unity-slice-right: var(--game-card-slice);
+    -unity-slice-bottom: var(--game-card-slice);
+    -unity-slice-left: var(--game-card-slice);
+    -unity-slice-scale: var(--game-card-slice-scale);
+}
+
+/* UI-475, UI-476, UI-477: every row of the board stands on one set of slices; each surface's own sheet names its picture
+   (--game-row and its side variants) and keeps its size and padding. A battle's card slot sets the same slices beside its
+   picture, because a card's back and parchment in it have slices of their own. */
+#board-screen .edge-left-panel .effect-entry,
+#board-screen .edge-left-panel .character-roster-grid .action,
+#board-screen .nation-track,
+#board-screen .console-hunt-well,
+#board-screen .turn-ribbon-band,
+#board-screen .battle-stages,
+#board-screen .battle-force,
+#board-screen .battle-garrison-shelf,
+#board-screen .battle-chronicle .battle-round-tab {
+    -unity-slice-top: var(--game-row-slice);
+    -unity-slice-right: var(--game-row-slice);
+    -unity-slice-bottom: var(--game-row-slice);
+    -unity-slice-left: var(--game-row-slice);
+    -unity-slice-scale: var(--game-row-slice-scale);
+}
+
+/* A header: no band, a hairline drawn over the row's bottom point. It is a picture, not a border, so it takes no layout:
+   each header keeps its height, its row and every child's place. A title on parchment tints the line in its own rule. */
+#board-screen .panel-header,
+#board-screen .window-header,
+#board-screen .character-window > .character-header,
+#board-screen .board-information .information-heading,
+#board-screen .card-inspector .card-header {
+    background-image: var(--game-title-rule);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position-y: bottom;
+}
+
+/* Its title: the menus' light gold, without the faux bold. Dropping the bold frees about 0.07 em per letter, which pays
+   for each sheet's wider letter-spacing, so a long title is never cut where it fitted. */
+#board-screen .panel-header > .title,
+#board-screen .window-header > .title,
+#board-screen .character-window > .character-header > .title,
+#board-screen .board-information .information-heading .title {
+    -unity-font-style: normal;
+    color: var(--game-title-text);
+}
+
+/* The legend's words, as a card's. */
+#board-screen #map-legend { color: var(--game-card-text); }
+
+/* The scroll bars under the board, as in the menus (Menus.uss): no plate, a slim muted-gold thumb and quiet arrows, 10
+   points wide instead of 13. Never put menu-chrome on the board's root for this (see above). */
+#board-screen .unity-scroller { background-color: rgba(0, 0, 0, 0); border-width: 0; }
+#board-screen .unity-scroller--vertical { width: 10px; min-width: 10px; }
+#board-screen .unity-scroller .unity-base-slider__tracker {
+    background-color: var(--game-scroll-track);
+    border-width: 0;
+    border-radius: 3px;
+}
+#board-screen .unity-scroller .unity-base-slider__dragger {
+    background-color: var(--game-scroll-thumb);
+    border-width: 0;
+    border-radius: 3px;
+}
+/* The theme's parts are 18 to 24 points wide and would stand out of a 10-point bar, over the frame beside it. */
+#board-screen .unity-scroller--vertical .unity-scroller__slider,
+#board-screen .unity-scroller--vertical .unity-base-slider__drag-container,
+#board-screen .unity-scroller--vertical .unity-base-slider__tracker {
+    width: 10px;
+    min-width: 10px;
+    left: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+#board-screen .unity-scroller--vertical .unity-scroller__slider { margin-top: 14px; margin-bottom: 14px; }
+#board-screen .unity-scroller--vertical .unity-scroller__low-button,
+#board-screen .unity-scroller--vertical .unity-scroller__high-button {
+    width: 10px;
+    min-width: 10px;
+    height: 14px;
+    min-height: 14px;
+    margin: 0;
+}
+#board-screen .unity-scroller--vertical .unity-base-slider__dragger {
+    left: 2px;
+    width: 6px;
+    min-width: 6px;
+    margin-left: 0;
+    margin-right: 0;
+}
+#board-screen .unity-scroller .unity-base-slider__dragger:hover { background-color: var(--game-scroll-thumb-hover); }
+#board-screen .unity-scroller__low-button,
+#board-screen .unity-scroller__high-button {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    -unity-background-image-tint-color: var(--game-scroll-arrow);
+}
+#board-screen .unity-scroller__low-button:hover,
+#board-screen .unity-scroller__high-button:hover { -unity-background-image-tint-color: var(--game-scroll-arrow-hover); }

@@ -41,7 +41,11 @@ namespace Wotr.PlayTests
                 Assert.IsNull(room.Sh.Board.View.Decision);
                 var unit = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.TakeEventLosses).EligibleIds[0];
                 Click(room.Fp, "loss-" + unit);
+                // UI-486 (owner, 2026-11-04): the Shadow watches Dreadful Spells' casualty leave the stack.
+                var watch = new ObservedDeltaWatch(room.Sh, "ui486-network-spells");
                 await room.Confirm(room.Fp);
+                await watch.Finish();
+                CollectionAssert.AreEqual(new[] { "−1" }, watch.Counts, "The casualty has its scene.");
                 Assert.IsFalse(room.Sh.Board.View.Units.Any(u => u.Id == unit && u.Location == "minas-tirith"));
                 Assert.IsNull(room.Sh.Board.View.EventLoss);
             }
@@ -119,12 +123,13 @@ namespace Wotr.PlayTests
             using (var room = await Connect("shadow-captain", ScenarioKind.CardPack))
             {
                 var before = room.Sh.Board.View.Units.Count(u => u.Location == "osgiliath" && u.Kind == UnitKind.Nazgul);
-                // UI-214 CC05: the Black Captain's orders are two buttons in the console.
-                AssertConsoleOptions(room.Sh, "effect-choice-captain.recruit", "effect-choice-captain.fly");
-                Click(room.Sh, "effect-choice-captain.recruit");
-                await room.Confirm(room.Sh);
+                // UI-431 (CC05; owner's rule, UI-430): the Black Captain's orders are the Reserve's and the map's Nazgûl, and the
+                // army step's Skip maneuver is the console's ✓; no console buttons.
+                AssertConsoleOptions(room.Sh);
+                await BoardDrawnOptionsTests.RecruitFromTheReserve(room);
                 Assert.AreEqual(before + 2, room.Fp.Board.View.Units.Count(u => u.Location == "osgiliath" && u.Kind == UnitKind.Nazgul));
-                await room.Direct(room.Sh, "action-FinishArmyEvent");
+                AssertConsoleOptions(room.Sh);
+                await BoardDrawnOptionsTests.FinishWithTheCheckMark(room);
                 Assert.AreEqual(1, room.Sh.Board.View.Dice.Count(d => d.Location == DieLocation.Spent));
                 Assert.AreEqual("osgiliath", room.Fp.Board.View.Characters.Single(c => c.Id == "base.character.witch-king").Location);
             }
@@ -145,7 +150,8 @@ namespace Wotr.PlayTests
                 room.Sh.Board.Map.Select("north-ithilien");
                 await room.Settle();
                 Assert.That(room.Sh.Board.Console.Status.Hint.text, Does.StartWith("Armies moved 2"));
-                AssertConsoleOptions(room.Sh, "action-AttackArmy", "action-FinishArmyEvent");
+                // UI-431: the event's Attack lights on the map with its moves; no console buttons.
+                AssertConsoleOptions(room.Sh);
                 Assert.IsTrue(room.Sh.Board.View.Units.Any(u => u.Location == "south-ithilien"));
                 await room.Confirm(room.Sh);
                 Assert.AreEqual(4, room.Fp.Board.View.Units.Count(u => u.Location == "north-ithilien" && u.Kind == UnitKind.Regular));

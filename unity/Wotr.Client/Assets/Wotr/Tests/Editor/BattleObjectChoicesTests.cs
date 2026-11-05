@@ -103,8 +103,9 @@ namespace Wotr.EditorTests
             Assert.IsEmpty(BattleObjectChoices.PointsOf(view, new[] { "witch-king", "nazgul-a" }));
         }
 
-        // UI-246: Heroic Death takes the figure in its column and the cancelled hits on the incoming hits; zero hits and
-        // Keep all stay buttons, and the amount is open only once a figure that can cancel it is chosen.
+        // UI-246: Heroic Death takes the figure in its column and the cancelled hits on the incoming hits; zero hits stays a
+        // button, and the amount is open only once a figure that can cancel it is chosen. UI-432 (owner's rule, UI-430): Keep
+        // all is the console's Pass and the battle window's Skip effect, no object and no button.
         [Test]
         public void HeroicDeathTakesTheFigureAndTheCancelledHitsOnTheirIndicators()
         {
@@ -112,16 +113,19 @@ namespace Wotr.EditorTests
             Assert.IsTrue(BattleObjectChoices.Offered(view, "gimli"));
             Assert.IsTrue(BattleObjectChoices.Offered(view, "heroic-death.hits.2"));
             Assert.IsFalse(BattleObjectChoices.Offered(view, "heroic-death.hits.0"), "Keep hits stays a button.");
-            Assert.IsFalse(BattleObjectChoices.Offered(view, "heroic-death.decline"), "Keep all stays a button.");
+            Assert.IsFalse(BattleObjectChoices.Offered(view, "heroic-death.decline"), "Keep all is no object of the window.");
+            Assert.IsTrue(OptionalDecline.Declines(view, "heroic-death.decline"), "Keep all is the Pass and Skip effect.");
             var draft = new TurnDraft();
             Assert.IsFalse(BattleObjectChoices.CanChoose(view, draft, "heroic-death.hits.1"), "The hits wait for the figure.");
 
             var root = new VisualElement();
             var context = new BattleContext(root, view.Battle, view, draft, edit => edit(), _ => { });
             context.Refresh();
-            var pips = root.Q("battle-defender").Q("battle-hit-cancels");
-            Assert.IsNotNull(pips, "The pips sit on the opponent's hits.");
-            Assert.IsNull(root.Q("battle-attacker").Q("battle-hit-cancels"));
+            // UI-458 (owner, 2026-11-03): the pips stand on the roll of the side that uses them, the player's own column.
+            var pips = root.Q("battle-attacker").Q("battle-hit-cancels");
+            Assert.IsNotNull(pips, "The pips sit on the Free Peoples' own roll.");
+            Assert.IsNull(root.Q("battle-defender").Q("battle-hit-cancels"), "Not on the opponent's hits.");
+            Assert.IsNotNull(root.Q("battle-defender").Q("battle-hit-cancels-reserved"), "Their room is kept on the other side.");
             Assert.AreEqual(2, pips.childCount);
             Assert.IsFalse(pips.Q<Button>("battle-hit-cancel-1").enabledSelf);
 
@@ -143,6 +147,41 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEquivalent(new[] { "boromir", "heroic-death.hits.1" }, draft.Payload.Ids, "Another figure replaces the first.");
             EffectChoiceDraft.Choose(draft, view.Options[0], "heroic-death.decline");
             CollectionAssert.AreEqual(new[] { "heroic-death.decline" }, draft.Payload.Ids, "Keep all clears the plan.");
+        }
+
+        // UI-347 (EXP-15 D10): Orderly Withdrawal's cancelled hit is a "−1" pip (UI-458: on its own side's roll); Keep the hit
+        // is the console's Pass, so no list repeats either.
+        [Test]
+        public void OrderlyWithdrawalCancelsItsHitOnThePipAndKeepsItThroughPass()
+        {
+            var view = BattleScreenFixture.Create(CommandKind.ContinueBattle);
+            view.You = Side.FreePeoples;
+            view.DecisionOwner = Side.FreePeoples;
+            view.Decision = new DecisionView { Id = "withdrawal", Kind = DecisionKind.EffectChoice, Presentation = "CombatEffect" };
+            var option = new ActionOption { Kind = CommandKind.ChooseEffect, Enabled = true, Minimum = 1, Maximum = 1 };
+            option.EffectChoices.Add(new EffectChoiceView { Id = BattleObjectChoices.WithdrawalCancel, Title = "Cancel hit · withdraw",
+                Detail = "Resolve both armies' remaining casualties, then end the attack or retreat if possible." });
+            option.EffectChoices.Add(new EffectChoiceView { Id = OptionalDecline.WithdrawalKeep, Title = "Keep the hit" });
+            option.EligibleIds.AddRange(option.EffectChoices.Select(c => c.Id));
+            view.Options.Clear();
+            view.Options.Add(option);
+
+            Assert.IsTrue(BattleObjectChoices.Offered(view, BattleObjectChoices.WithdrawalCancel));
+            Assert.AreEqual(OptionalDecline.WithdrawalKeep, OptionalDecline.Option(view, new TurnDraft()).Id);
+            Assert.AreEqual("Pass · Keep the hit and fight on", OptionalDecline.Option(view, new TurnDraft()).Tooltip);
+            var draft = new TurnDraft();
+            var root = new VisualElement();
+            var context = new BattleContext(root, view.Battle, view, draft, edit => edit(), _ => { });
+            context.Refresh();
+            // UI-458 (owner): the −1 stands on the Free Peoples' own column, the side that plays Orderly Withdrawal.
+            Assert.IsNull(root.Q("battle-defender").Q<Button>("battle-hit-cancel-1"), "Not on the Shadow's column.");
+            var pip = root.Q("battle-attacker").Q<Button>("battle-hit-cancel-1");
+            Assert.AreEqual("−1", pip.text);
+            Assert.IsTrue(pip.ClassListContains(ChoiceGlow.ClassName));
+            StringAssert.StartsWith("Cancel hit · withdraw", pip.tooltip);
+            BattleObjectChoices.Choose(view, draft, BattleObjectChoices.WithdrawalCancel);
+            CollectionAssert.AreEqual(new[] { BattleObjectChoices.WithdrawalCancel }, draft.Payload.Ids);
+            Assert.IsTrue(CardActions.SingleEffect(view, draft), "The pip's click completes the step, so it is sent.");
         }
 
         private static PlayerView LeadershipView(int minimum, int maximum)

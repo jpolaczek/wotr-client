@@ -6,6 +6,10 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
+    // UI-432 (owner's rule, UI-430): a character's actions (character-action-*) stay here as the fallback for the moments its
+    // Characters row and the board offer none — after Change, a choice reconciled away by a new revision, a restored draft
+    // (the rows offer actions only before a draft starts) — while the dice it pays with are its dice in the pool, so no
+    // cost button is listed.
     public sealed class CharacterChoices
     {
         private readonly List<Action> refresh = new List<Action>();
@@ -27,23 +31,24 @@ namespace Wotr.Client
                         edit(() => CharacterDraft.Select(draft, view, choice));
                 });
                 button.name = "character-action-" + choice.CharacterId + "-" + choice.AbilityId;
-                button.tooltip = choice.Title + "\n" + choice.Detail;
+                button.tooltip = Tooltip(choice);
                 portraits.Add(button);
                 refresh.Add(() => button.EnableInClassList("selected", CharacterDraft.Selected(draft, option) == choice));
             }
             if (current != null)
             {
-                if (option.CharacterActions.Count > 1 && !compact)
+                // UI-271: an entry is chosen on its row in the Characters panel, where another lit row changes it.
+                if (option.CharacterActions.Count > 1 && !compact && draft.Kind != CommandKind.EnterCharacter)
                 {
                     var change = BoardScreen.Button("Change", () => edit(() => CharacterDraft.ClearSelection(draft)));
                     change.name = "change-character-action";
                     portraits.Add(change);
                 }
-                AddCosts(portraits, view, draft, current, edit);
-                // UI-131: the figures of a ruler's muster or the Balrog's companion are chosen in Reinforcements.
+                // UI-131: the figures of a ruler's muster or the Balrog's companion are chosen in Reinforcements; UI-450: a
+                // ruler's opens it by itself, so only the Balrog's keeps the button.
                 if (current.Recruitment.Count > 0)
                 {
-                    if (reinforcements != null)
+                    if (reinforcements != null && current.RulerRecruitment == null)
                         root.Add(reinforcements());
                     return;
                 }
@@ -67,41 +72,27 @@ namespace Wotr.Client
             if (draft.Kind != CommandKind.EnterCharacter || draft.Payload.RegionId.Length > 0)
                 return "";
             var selected = CharacterDraft.Selected(draft, DraftOptions.For(view, draft));
-            return selected == null || selected.Recruitment.Count > 0 ? "" : CharacterLibrary.Name(selected.CharacterId) + " · Choose a highlighted region on the map";
+            if (selected == null || selected.Recruitment.Count > 0)
+                return "";
+            // UI-347 (D13): an entry that requires a Council token waits for its medallion.
+            if (selected.RequiresCouncilToken && draft.Payload.CouncilTokenId.Length == 0)
+                return CharacterLibrary.Name(selected.CharacterId) + " · Click a glowing Council token to pay the entry";
+            return CharacterLibrary.Name(selected.CharacterId) + " · Choose a highlighted region on the map" +
+                (selected.CouncilTokens.Count > 0 && !selected.RequiresCouncilToken && draft.Payload.CouncilTokenId.Length == 0
+                    ? " · Or click a glowing Council token to enter with it" : "");
+        }
+
+        // UI-420 (owner): what the button's click chooses, with the character whose ability it is, then its detail; the
+        // label alone is not repeated as a title line.
+        public static string Tooltip(CharacterActionOption choice)
+        {
+            var owner = CharacterLibrary.Find(choice.CharacterId) != null ? CharacterLibrary.Name(choice.CharacterId) : "";
+            var subject = TooltipText.Parts(choice.Title, owner == choice.Title ? "" : owner);
+            return TooltipText.Lines("Click to choose " + subject, choice.Detail);
         }
 
         // One die, or dice of one kind, are chosen for the player; only different dice are a choice worth a button.
         public static bool DiceChoice(PlayerView view, CharacterActionOption choice) => CharacterDraft.UniformDie(view, choice).Length == 0;
-
-        private void AddCosts(VisualElement root, PlayerView view, TurnDraft draft, CharacterActionOption choice, Action<Action> edit)
-        {
-            // UI-248: different dice are chosen in the own dice pool, where they glow (CostDice); none is listed here.
-            foreach (var id in DiceChoice(view, choice) && !CostDice.InPool(view, draft) ? choice.Dice : Enumerable.Empty<string>())
-            {
-                var die = view.Dice.Single(d => d.Id == id);
-                var button = BoardScreen.Button(ExpansionLabels.DieCost(view, draft, die) + (ExpansionLabels.Special(die) ? " · " + ExpansionLabels.DieSource(die) : ""),
-                    () => edit(() => draft.Change(p => p.DieId = id)));
-                button.name = "cost-" + id;
-                button.tooltip = ExpansionLabels.DieDetail(die);
-                root.Add(button);
-                refresh.Add(() => button.EnableInClassList("selected", draft.Payload.DieId == id));
-            }
-            if (choice.CouncilTokens.Count == 0)
-                return;
-            if (!choice.RequiresCouncilToken)
-                CouncilCost(root, draft, edit, "", "No token");
-            foreach (var id in choice.CouncilTokens)
-                CouncilCost(root, draft, edit, id, ExpansionLabels.CouncilToken(id));
-        }
-
-        private void CouncilCost(VisualElement row, TurnDraft draft, Action<Action> edit, string id, string label)
-        {
-            var button = BoardScreen.Button(label, () => edit(() => draft.Change(p => p.CouncilTokenId = id)));
-            button.name = "entry-token-" + id;
-            button.tooltip = "Entry cost · Spent with the selected die when this choice is complete";
-            row.Add(button);
-            refresh.Add(() => button.EnableInClassList("selected", draft.Payload.CouncilTokenId == id));
-        }
 
         public void Refresh()
         {

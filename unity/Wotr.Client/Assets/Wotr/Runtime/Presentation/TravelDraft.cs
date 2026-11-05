@@ -97,6 +97,20 @@ namespace Wotr.Client
         // revelation keep a route the player draws step by step.
         public static bool TargetRoute(CommandKind? kind) => FellowshipDraft.UsesRoute(kind) && !FellowshipDraft.LocationRoute(kind);
 
+        // UI-375 (owner): once the travelling figures are chosen, the console names them and asks for their region, as the
+        // Fellowship panel does; before that (or for another step) it is empty and the console asks for the figures.
+        public static string DestinationHint(PlayerView view, TurnDraft draft)
+        {
+            if (view?.Decision == null || draft.Kind is not (CommandKind.SeparateCompanions or CommandKind.MoveCompanions or CommandKind.MoveShadowCharacters))
+                return "";
+            var option = DraftOptions.For(view, draft);
+            var ids = draft.Kind == CommandKind.SeparateCompanions ? draft.Payload.Ids : Group(draft)?.Ids;
+            if (option == null || ids == null || ids.Count == 0 || Travel(draft, option) == null)
+                return "";
+            return string.Join(", ", ids.Select(id => CharacterLibrary.Name(view, id)).Distinct()) +
+                " · Click a highlighted region to move there.";
+        }
+
         // The destinations the current group can reach with its range, stops and blocked regions.
         public static HashSet<string> Reachable(TurnDraft draft, PlayerView view, BoardPresentation data)
         {
@@ -122,10 +136,8 @@ namespace Wotr.Client
                 Stay(draft, option);
                 return true;
             }
-            List<string> route;
-            if (travel.Flight)
-                route = new List<string> { travel.Origin, target };
-            else if (!Routes(travel, data).TryGetValue(target, out route))
+            var route = Path(travel, data, target);
+            if (route == null)
                 return false;
             draft.Change(_ =>
             {
@@ -133,6 +145,15 @@ namespace Wotr.Client
                 Route(draft).AddRange(route);
             });
             return true;
+        }
+
+        // The route of one figure to a target: a flight goes straight there, a walker along the shortest path within its
+        // range (UI-271: also a Shadow character moved by a card); the server checks every step.
+        public static List<string> Path(TravelOption travel, BoardPresentation data, string target)
+        {
+            if (travel.Flight)
+                return new List<string> { travel.Origin, target };
+            return data != null && Routes(travel, data).TryGetValue(target, out var route) ? route : null;
         }
 
         private static Dictionary<string, List<string>> Routes(TravelOption travel, BoardPresentation data)

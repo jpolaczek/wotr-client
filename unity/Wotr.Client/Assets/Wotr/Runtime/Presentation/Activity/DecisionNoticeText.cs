@@ -24,12 +24,13 @@ namespace Wotr.Client
                 DecisionKind.CorruptionTile => "Choose a Corruption tile",
                 DecisionKind.RemoveExcess => "Return " + choice.RequiredCount + " excess units",
                 DecisionKind.EffectChoice => choice.Presentation == "CorruptionRemoval" ? "Return a Corruption tile?"
+                    : choice.Presentation == DeckChoice.Presentation ? DeckChoice.Title(view)
                     : choice.SourceId.Length > 0 ? "Resolve " + ActionCardText.Source(choice.SourceId) : "Resolve the Event choice",
                 DecisionKind.FellowshipRoute => "Choose the Fellowship route",
                 DecisionKind.Guide => "Choose the next Guide",
                 DecisionKind.CompanionSeparation => "Place separated Companions",
-                DecisionKind.HuntReroll => "Choose Hunt re-rolls",
-                DecisionKind.BattleReroll => "Choose Leader re-rolls",
+                DecisionKind.HuntReroll => "Choose Hunt rerolls",
+                DecisionKind.BattleReroll => "Choose Leader rerolls",
                 DecisionKind.BattleContinue => "Continue or stop the attack",
                 DecisionKind.BattleRetreat => "Retreat or hold",
                 DecisionKind.BattleAdvance => "Advance or stay",
@@ -42,7 +43,7 @@ namespace Wotr.Client
                 DecisionKind.CouncilHomelands => "Place Companions in homelands",
                 DecisionKind.CouncilToken => "Choose a Council token",
                 DecisionKind.RulerDiscard => "Discard a die after the roll",
-                DecisionKind.Dismay => "Choose a Ruler re-roll",
+                DecisionKind.Dismay => "Dismay · Re-roll a Ruler die?",
                 _ => throw new ArgumentOutOfRangeException(nameof(choice.Kind))
             };
         }

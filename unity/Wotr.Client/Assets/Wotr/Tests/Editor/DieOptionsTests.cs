@@ -21,14 +21,19 @@ namespace Wotr.EditorTests
             Assert.IsFalse(options.Characters);
         }
 
+        // UI-461 (owner, 2026-11-03): Will of the West itself brings in the listed character; turned into a Character result
+        // it moves the Fellowship, and into an Army result it moves armies.
         [Test]
         public void WillOfTheWestLightsTheFellowshipMoveAndACharacterEntry()
         {
             var view = Fixture();
             var options = DieOptions.For(view, new TurnDraft(), Die(view, "will"));
-            Assert.IsTrue(options.Fellowship, "Will of the West can move the Fellowship.");
             Assert.IsTrue(options.Characters, "Will of the West can bring in the listed character.");
-            Assert.IsTrue(options.Armies);
+            Assert.IsFalse(options.Fellowship, "Will of the West itself does not move the Fellowship.");
+            Assert.IsFalse(options.Armies);
+            Assert.IsTrue(DieOptions.For(view, new TurnDraft(), Die(view, "will", DieFace.Character)).Fellowship,
+                "Will of the West turned into a Character result can move the Fellowship.");
+            Assert.IsTrue(DieOptions.For(view, new TurnDraft(), Die(view, "will", DieFace.Army)).Armies);
             var army = DieOptions.For(view, new TurnDraft(), Die(view, "army"));
             Assert.IsFalse(army.Fellowship, "An Army die cannot move the Fellowship.");
             Assert.IsFalse(army.Characters);
@@ -86,10 +91,10 @@ namespace Wotr.EditorTests
             return view;
         }
 
-        private static ActionDieContext Die(PlayerView view, string id)
+        private static ActionDieContext Die(PlayerView view, string id, DieFace? willFace = null)
         {
             var context = new ActionDieContext();
-            context.Sync(view, id);
+            context.Sync(view, id, "", willFace);
             return context;
         }
     }

@@ -8,6 +8,31 @@ namespace Wotr.EditorTests
 {
     public sealed class ComponentActionTests
     {
+        // UI-385 (owner): a king's ability names him and the printed ability it uses, never his id.
+        [Test]
+        public void AKingsAbilityNamesTheKingAndThePrintedAbility()
+        {
+            var view = new PlayerView
+            {
+                MatchId = "m", You = Side.FreePeoples, DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "action", Kind = DecisionKind.Action }
+            };
+            view.Sovereigns.Add(new SovereignView { Id = "kings.sovereign.dain", Title = "Dáin II Ironfoot", Status = SovereignStatus.Awakened });
+            view.Dice.Add(new DieView { Id = "muster", Owner = Side.FreePeoples, Face = DieFace.Muster, Location = DieLocation.Available });
+            var option = new ActionOption { Kind = CommandKind.UseCharacterAbility, Enabled = true, EligibleDice = { "muster" } };
+            option.CharacterActions.Add(new CharacterActionOption
+            {
+                CharacterId = "kings.sovereign.dain", AbilityId = "kings.dwarvenking", Title = "Upgrade a Regular",
+                Detail = "Return one Regular from this army to the reserves and recruit an Elite.", Dice = { "muster" }
+            });
+            view.Options.Add(option);
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = "muster");
+            var action = ComponentActions.For(view, draft).Single(a => a.OwnerId == "kings.sovereign.dain");
+            Assert.AreEqual("Dáin", action.Owner);
+            Assert.AreEqual("Dwarvenking", ComponentActions.AbilityTitle(action.Character));
+        }
+
         [Test]
         public void AbilityIsAnchoredAtItsOwnerAndCannotSubstituteAnUnselectedCost()
         {
@@ -76,11 +101,24 @@ namespace Wotr.EditorTests
                 Assert.AreEqual("", button.text, "A picture, not a text button.");
                 Assert.IsFalse(button.enabledSelf, "Without its die the ability cannot be used.");
                 Assert.IsFalse(button.ClassListContains(ChoiceGlow.ClassName), "It glows only while a click can use it.");
-                StringAssert.StartsWith("Saruman · ", button.tooltip);
-                StringAssert.EndsWith("Select an eligible die to use it", button.tooltip);
+                // UI-440 (owner): the skill's formatted description: its name and variant first, its owner, its text.
+                var plain = SkillTooltip.Plain(button.tooltip);
+                StringAssert.StartsWith(CharacterAbilityLibrary.Title("muster-each-isengard-settlement-or-upgrade-two") +
+                    (button == recruit ? " · Recruit · Saruman\n" : " · Upgrade · Saruman\n"), plain);
+                Assert.IsTrue(button.ClassListContains(RuntimeTooltip.FormattedClass));
+                StringAssert.EndsWith("\nSelect an eligible die to use it", plain);
             }
-            Assert.AreEqual(Picture(AbilityPictures.Muster), recruit.Q("icon-glyph").style.backgroundImage.value.texture);
-            Assert.AreEqual(Picture(AbilityPictures.Upgrade), upgrade.Q("icon-glyph").style.backgroundImage.value.texture);
+            // UI-439: both show the Voice's own icon; a badge tells the recruit from the upgrade.
+            var voice = Picture(AbilityArt.Folder + "muster-each-isengard-settlement-or-upgrade-two");
+            Assert.IsNotNull(voice);
+            foreach (var button in new[] { recruit, upgrade })
+            {
+                Assert.AreEqual(voice, button.Q("icon-glyph").style.backgroundImage.value.texture, button.name);
+                // UI-440 (owner): the bare skill icon, no frame; the badge stays.
+                SkillIconChecks.Bare(button, AbilityArt.Folder + "muster-each-isengard-settlement-or-upgrade-two");
+            }
+            Assert.AreEqual(Picture(AbilityBadges.Muster), recruit.Q(className: IconButton.BadgeClass).style.backgroundImage.value.texture);
+            Assert.AreEqual(Picture(AbilityBadges.Upgrade), upgrade.Q(className: IconButton.BadgeClass).style.backgroundImage.value.texture);
 
             draft.Change(p => p.DieId = "muster");
             buttons.Apply(ComponentActions.For(view, draft), true);
@@ -89,27 +127,77 @@ namespace Wotr.EditorTests
             {
                 Assert.IsTrue(button.enabledSelf, button.name);
                 Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), button.name);
-                StringAssert.EndsWith("Click to use", button.tooltip);
+                StringAssert.Contains("\nClick to use · Voice · voice-", SkillTooltip.Plain(button.tooltip));
             }
             buttons.Apply(ComponentActions.For(view, draft), false);
             Assert.IsFalse(recruit.ClassListContains(ChoiceGlow.ClassName), "A busy board invites no click.");
         }
 
+        // UI-439: every component button that uses an ability shows the ability's own icon (AbilityArt) — a character's
+        // action, the Mouth of Sauron's movement cost, the Balrog's — with a badge where one ability has several commands;
+        // an entry keeps the board pin, and Narya shows Narya's icon.
         [Test]
-        public void AbilityPicturesShowWhatTheAbilityDoes()
+        public void AbilityButtonsShowTheAbilitysOwnIcon()
         {
-            Assert.AreEqual(AbilityPictures.Politics, AbilityPictures.For(CommandKind.UseCharacterAbility, "politics-dwarves-at-erebor"));
-            Assert.AreEqual(AbilityPictures.Move, AbilityPictures.For(CommandKind.MoveArmies, "muster-as-army-once-per-turn"));
-            Assert.AreEqual(AbilityPictures.Attack, AbilityPictures.For(CommandKind.AttackArmy, "muster-as-army-once-per-turn"));
-            Assert.AreEqual(AbilityPictures.Entry, AbilityPictures.For(CommandKind.EnterCharacter, ""));
-            Assert.AreEqual(AbilityPictures.Ability, AbilityPictures.For(CommandKind.UseCharacterAbility, "activate-balrog"));
-            foreach (var picture in new[] { AbilityPictures.Muster, AbilityPictures.Upgrade, AbilityPictures.Politics,
-                         AbilityPictures.Move, AbilityPictures.Attack, AbilityPictures.Entry, AbilityPictures.Ability })
-                Assert.IsNotNull(Picture(picture), picture);
+            var view = View();
+            view.Characters.Add(new CharacterView { Id = "base.character.mouth-of-sauron", Location = "barad-dur", Side = Side.Shadow });
+            view.Characters.Add(new CharacterView { Id = "balrog", DefinitionId = "lords.character.balrog", Location = "moria", Side = Side.Shadow });
+            foreach (var kind in new[] { CommandKind.MoveArmies, CommandKind.AttackArmy })
+            {
+                var move = new ActionOption { Kind = kind, EligibleDice = { "muster" } };
+                move.MovementCosts.Add(new MovementCostOption { DieId = "muster", Face = DieFace.Army, AbilityId = "muster-as-army-once-per-turn" });
+                view.Options.Add(move);
+            }
+            var ability = new ActionOption { Kind = CommandKind.UseCharacterAbility, EligibleDice = { "muster" } };
+            ability.CharacterActions.Add(new CharacterActionOption { CharacterId = "balrog", AbilityId = "activate-balrog", Title = "Activate", Dice = { "muster" } });
+            view.Options.Add(ability);
+            var entry = new ActionOption { Kind = CommandKind.EnterCharacter, EligibleDice = { "muster" } };
+            entry.CharacterActions.Add(new CharacterActionOption { CharacterId = "lords.character.gothmog", Title = "Gothmog", Dice = { "muster" } });
+            view.Options.Add(entry);
+            view.Options.Add(new ActionOption { Kind = CommandKind.UseNarya, EligibleDice = { "muster" } });
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = "muster");
+            var actions = ComponentActions.For(view, draft).ToDictionary(a => a.Key);
+            var mouth = AbilityArt.Folder + "muster-as-army-once-per-turn";
+            Assert.AreEqual(mouth, actions["MoveArmies-muster-as-army-once-per-turn"].Picture);
+            Assert.AreEqual(AbilityBadges.Move, actions["MoveArmies-muster-as-army-once-per-turn"].Badge);
+            Assert.AreEqual(mouth, actions["AttackArmy-muster-as-army-once-per-turn"].Picture);
+            Assert.AreEqual(AbilityBadges.Attack, actions["AttackArmy-muster-as-army-once-per-turn"].Badge);
+            var balrog = actions["character-balrog-activate-balrog"];
+            Assert.AreEqual(AbilityArt.Folder + "balrog-activation", balrog.Picture, "The Balrog's command names his printed ability.");
+            Assert.AreEqual("", balrog.Badge, "One command of its ability at a time needs no badge.");
+            Assert.AreEqual(ComponentActions.EntryPicture, actions["character-lords.character.gothmog-"].Picture, "An entry uses no ability.");
+            Assert.AreEqual(AbilityArt.Folder + "narya", actions["narya"].Picture);
+            // UI-440 (owner): Narya's formatted description names the ring once, first, and ends with what a click does.
+            var narya = SkillTooltip.Plain(TooltipOf(actions["narya"]));
+            StringAssert.StartsWith("Narya\n", narya);
+            StringAssert.EndsWith("\nClick to use · Put the nation of Gandalf’s Settlement at war", narya);
+            var buttons = new ComponentActionView();
+            buttons.Apply(actions.Values, true);
+            foreach (var item in actions.Values)
+            {
+                var button = buttons.Root.Q<Button>("component-" + item.Key);
+                Assert.AreEqual(Picture(item.Picture), button.Q("icon-glyph").style.backgroundImage.value.texture, item.Key);
+                Assert.AreEqual(item.Badge.Length > 0, button.Q(className: IconButton.BadgeClass) != null, item.Key);
+                // UI-440 (owner): a button that uses an ability is the bare skill icon; an entry keeps its framed pin.
+                if (item.Picture == ComponentActions.EntryPicture)
+                    Assert.IsTrue(button.ClassListContains(IconButton.ClassName) && !button.ClassListContains(SkillIcon.ClassName), item.Key);
+                else
+                    SkillIconChecks.Bare(button, item.Picture);
+            }
+        }
+
+        private static string TooltipOf(ComponentAction item)
+        {
+            var buttons = new ComponentActionView();
+            buttons.Apply(new[] { item }, true);
+            return buttons.Root.Q<Button>("component-" + item.Key).tooltip;
         }
 
         private static UnityEngine.Texture2D Picture(string resource) => UnityEngine.Resources.Load<UnityEngine.Texture2D>(resource);
 
+        // UI-459 (owner, 2026-11-03): the Balrog die is its Use Balrog ability: no icon chooses it, and the map moves him
+        // alone with it while the Nazgûl stays unavailable.
         [Test]
         public void SpecialTravelBindsItsSymbolAndKeepsUnrelatedFiguresUnavailable()
         {
@@ -123,11 +211,14 @@ namespace Wotr.EditorTests
             view.Options.Add(option);
             var draft = new TurnDraft();
             draft.Change(p => p.DieId = "cost");
-            Assert.IsTrue(ComponentActions.Select(view, draft, ComponentActions.For(view, draft).Single()));
+            Assert.IsEmpty(ComponentActions.For(view, draft), "The Balrog's moves stand as no icon.");
             var context = new ActionDieContext();
             context.Sync(view, draft.Payload.DieId);
             context.BindCost(view, draft);
+            Assert.IsTrue(context.Implied);
+            Assert.AreEqual("use-balrog", context.AbilityId);
             Assert.AreEqual(DieFace.Character, context.Face);
+            Assert.IsFalse(DieOptions.For(view, draft, context).Characters, "The Balrog moves on the map, not from the Characters tab.");
             Assert.IsFalse(TravelActions.CanSelect(view, draft, context, "nazgul"));
             Assert.IsTrue(TravelActions.Select(view, draft, context, "balrog"));
             Assert.AreEqual("use-balrog", draft.Payload.AbilityId);
@@ -183,6 +274,104 @@ namespace Wotr.EditorTests
             Assert.AreEqual("token", draft.Payload.RulerTokenId);
             Assert.AreEqual("far-sighted", draft.Payload.AbilityId);
             CollectionAssert.AreEqual(new[] { "legolas" }, draft.Payload.Ids);
+        }
+
+        // UI-276 (EXP-15 D18): Far-sighted is Thranduil's ability picture, offered with an eligible die; there is no mode chip.
+        [Test]
+        public void FarSightedIsThranduilsPicture()
+        {
+            var view = View();
+            view.You = Side.FreePeoples;
+            view.DecisionOwner = Side.FreePeoples;
+            view.Options.Add(new ActionOption
+            {
+                Kind = CommandKind.MoveCompanions, Enabled = true, EligibleDice = { "ruler" },
+                RulerTravel = new RulerTravelOption { AbilityId = "kings.far-sighted", Dice = { "ruler" } }
+            });
+            var draft = new TurnDraft();
+            Assert.IsEmpty(ComponentActions.For(view, draft).Where(c => c.Key.StartsWith("far-sighted")), "No die, no picture.");
+            draft.Change(p => p.DieId = "ruler");
+            var picture = ComponentActions.For(view, draft).Single(c => c.Key == "far-sighted-MoveCompanions");
+            Assert.AreEqual(AbilityArt.Folder + "far-sighted", picture.Picture, "UI-439: Far-sighted's own icon, prefix dropped.");
+            // UI-440 (owner): Far-sighted's three moves are badged apart (the Fellowship, companions, a separation).
+            Assert.AreEqual(AbilityBadges.Companions, picture.Badge);
+            Assert.AreEqual("kings.sovereign.thranduil", picture.OwnerId);
+        }
+
+        // UI-456 (owner, 2026-11-03, kings-far-sighted): Far-sighted's Move companions waits for a companion outside the
+        // Fellowship. Thranduil alone, the king who uses it, is none: the variant is greyed in its slot and says why, so its
+        // click no longer starts a move whose only lit objects are the Fellowship's portraits (their click separates).
+        [Test]
+        public void FarSightedMoveCompanionsWaitsForACompanionOutsideTheFellowship()
+        {
+            const string thranduil = FarSightedMoves.Owner;
+            var view = View();
+            view.You = Side.FreePeoples;
+            view.DecisionOwner = Side.FreePeoples;
+            var option = new ActionOption
+            {
+                Kind = CommandKind.MoveCompanions, Enabled = true, EligibleIds = { thranduil }, EligibleDice = { "ruler" },
+                Travel = { new TravelOption { Id = thranduil, Origin = "woodland-realm", Range = 2 } },
+                RulerTravel = new RulerTravelOption
+                {
+                    AbilityId = "kings.far-sighted", Dice = { "ruler" }, RangeBonus = 1,
+                    Travel = { new TravelOption { Id = thranduil, Origin = "woodland-realm", Range = 3 } }
+                }
+            };
+            view.Options.Add(option);
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = "ruler");
+            var move = ComponentActions.For(view, draft).Single(c => c.Key == "far-sighted-MoveCompanions");
+            Assert.IsFalse(move.Enabled, "Only Thranduil stands outside the Fellowship.");
+            Assert.AreEqual(FarSightedMoves.NoCompanion, move.Reason);
+            Assert.IsFalse(ComponentActions.Select(view, draft, move), "Its click starts nothing.");
+            Assert.IsNull(draft.Kind);
+            var actions = new ComponentActionView();
+            actions.Apply(new[] { move }, true);
+            var button = actions.Root.Q<Button>("component-far-sighted-MoveCompanions");
+            Assert.IsFalse(button.enabledSelf, "Greyed in the region's window.");
+            StringAssert.EndsWith(FarSightedMoves.NoCompanion, SkillTooltip.Plain(button.tooltip), "Its tooltip says why.");
+            var chips = new CharacterAbilityChips();
+            chips.Apply("kings.character.thranduil.awakened");
+            chips.Usable(new[] { move }, true, view);
+            var icon = chips.Icons.Single(b => b.name.EndsWith("-" + CommandKind.MoveCompanions));
+            Assert.IsTrue(icon.ClassListContains(CharacterAbilityChips.IdleClass), "Dimmed in Thranduil's window.");
+            StringAssert.EndsWith(FarSightedMoves.NoCompanion, SkillTooltip.Plain(icon.tooltip));
+
+            const string legolas = "base.character.legolas";
+            option.EligibleIds.Add(legolas);
+            option.RulerTravel.Travel.Add(new TravelOption { Id = legolas, Origin = "lorien", Range = 4 });
+            move = ComponentActions.For(view, draft).Single(c => c.Key == "far-sighted-MoveCompanions");
+            Assert.IsTrue(move.Enabled, "Legolas has left the Fellowship.");
+            Assert.AreEqual("", move.Reason);
+            Assert.IsTrue(ComponentActions.For(view, draft).Single(c => c.Key == "far-sighted-MoveCompanions").Enabled);
+        }
+
+        // UI-443 (owner, reversing UI-440's decision 7): before any die is chosen an ability is not selected, even when one
+        // die alone could pay for it; with that die chosen it is.
+        [Test]
+        public void AnAbilityIsNotSelectedBeforeItsDieEvenWhenOneDieCouldPay()
+        {
+            var view = View();
+            view.Dice.Add(new DieView { Id = "muster", Owner = Side.Shadow, Face = DieFace.Muster, Source = "standard", Location = DieLocation.Available });
+            view.Characters.Add(new CharacterView { Id = "base.character.saruman", Location = "orthanc", Side = Side.Shadow });
+            var option = new ActionOption { Kind = CommandKind.UseCharacterAbility, Enabled = true, EligibleDice = { "muster" } };
+            option.CharacterActions.Add(new CharacterActionOption
+            {
+                CharacterId = "base.character.saruman", AbilityId = "voice-upgrade", Title = "Voice", Dice = { "muster" },
+                Targets = { "orthanc" }, TargetCount = 1
+            });
+            view.Options.Add(option);
+            var draft = new TurnDraft();
+            var waiting = ComponentActions.For(view, draft).Single();
+            Assert.IsFalse(waiting.Enabled, "No die is chosen yet.");
+            Assert.IsFalse(ComponentActions.Select(view, draft, waiting), "The one die that could pay is not taken.");
+            Assert.AreEqual("", draft.Payload.DieId);
+            draft.Change(p => p.DieId = "muster");
+            var paid = ComponentActions.For(view, draft).Single();
+            Assert.IsTrue(paid.Enabled);
+            Assert.IsTrue(ComponentActions.Select(view, draft, paid));
+            Assert.AreEqual("voice-upgrade", draft.Payload.AbilityId);
         }
 
         private static PlayerView View() => new PlayerView

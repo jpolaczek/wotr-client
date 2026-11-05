@@ -41,10 +41,11 @@ namespace Wotr.PlayTests
                                 yield return null;
                             if (entry.Key == "shadow-ringwraiths")
                             {
-                                // UI-216: two planned armies, the event's alternatives in the console.
+                                // UI-216: two planned armies; UI-431: the event's Attack is lit on the map and its Skip
+                                // maneuver is the ✓, so the console holds no option buttons.
                                 Assert.That(client.Board.Console.Status.Hint.text, Does.StartWith("Armies moved 2"));
-                                Assert.IsNotNull(MatchTestRoom.TrayOrConsole(client, "action-AttackArmy"));
-                                Assert.IsNotNull(MatchTestRoom.TrayOrConsole(client, "action-FinishArmyEvent"));
+                                Assert.IsNull(MatchTestRoom.TrayOrConsole(client, "action-AttackArmy"));
+                                Assert.IsNull(MatchTestRoom.TrayOrConsole(client, "action-FinishArmyEvent"));
                             }
                             foreach (var commander in client.Board.Tray.Query<Button>(className: "required-commander").ToList())
                                 Assert.LessOrEqual(commander.MeasureTextSize(commander.text, 0, VisualElement.MeasureMode.Undefined,

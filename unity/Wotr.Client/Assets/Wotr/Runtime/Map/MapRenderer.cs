@@ -31,12 +31,18 @@ namespace Wotr.Client
         private MapPoliticalView political;
         // UI-224: the pulsing edge glow of enterable (green) and attackable (red) regions, and its reused buffers.
         private MapTargetGlow targetGlow;
+        // UI-453/UI-468: every target region's breathing fill (the enterable and attackable sets below).
+        private MapTargetPulse targetPulse;
         private readonly List<string> enterable = new List<string>();
         private readonly List<string> attackable = new List<string>();
+        private readonly List<string> chosen = new List<string>();
         // UI-323: the steady gold edge of the regions the player's own draft moves from, and its reused buffer.
         private MapSourceGlow sourceGlow;
         private readonly List<string> sourceable = new List<string>();
         public bool TargetsGlowing => targetGlow?.Glowing == true;
+        public bool TargetsPulsing => targetPulse?.Pulsing == true;
+        public bool TargetPulses(string region) => targetPulse?.Pulses(region) == true;
+        public int TargetPulseRepaints => targetPulse?.Layer.Repaints ?? 0;
         // UI-323: the regions with the steady gold source edge.
         public IReadOnlyCollection<string> SourceGlowRegions => sourceGlow?.Regions ?? (IReadOnlyCollection<string>)new string[0];
         public int TargetGlowRepaints => targetGlow?.Layer.Repaints ?? 0;
@@ -84,6 +90,8 @@ namespace Wotr.Client
                 regions.Add(shape.Id, region);
                 Add(region.Layer);
             }
+            targetPulse = new MapTargetPulse(geometry, size);
+            Add(targetPulse.Layer);
             targetGlow = new MapTargetGlow(geometry, size);
             Add(targetGlow.Layer);
             sourceGlow = new MapSourceGlow(geometry, size);
@@ -120,6 +128,8 @@ namespace Wotr.Client
         {
             if (geometry == null)
                 return;
+            if (terrain.Use(data.Modules))
+                terrainLayer.MarkDirtyRepaint();
             foreach (var border in borders)
                 border.Update(data.Regions);
             political.Update(data);
@@ -136,7 +146,8 @@ namespace Wotr.Client
         }
 
         public void Update(BoardPresentation data, CameraState camera, string selected,
-            HashSet<string> sources, HashSet<string> owners, MapDraftOverlay draft, string hovered = "", string pressed = "")
+            HashSet<string> sources, HashSet<string> owners, MapDraftOverlay draft, string hovered = "", string pressed = "",
+            string carried = "")
         {
             var started = Stopwatch.GetTimestamp();
             Prepare(data);
@@ -145,18 +156,22 @@ namespace Wotr.Client
             enterable.Clear();
             attackable.Clear();
             sourceable.Clear();
+            chosen.Clear();
             foreach (var entry in regions)
             {
-                var emphasis = Emphasis(entry.Key, selected, sources, owners, draft, data, hovered, pressed);
+                var emphasis = Emphasis(entry.Key, selected, sources, owners, draft, data, hovered, pressed, carried);
                 entry.Value.Update(emphasis);
                 if (draft?.AttackTargets.Contains(entry.Key) == true)
                     attackable.Add(entry.Key);
+                else if (draft?.ChosenRegions.Contains(entry.Key) == true)
+                    chosen.Add(entry.Key);
                 else if (draft?.Targets.Contains(entry.Key) == true)
                     enterable.Add(entry.Key);
                 if (draft?.SourceRegions.Contains(entry.Key) == true)
                     sourceable.Add(entry.Key);
             }
-            targetGlow.Update(enterable, attackable);
+            targetGlow.Update(enterable, attackable, chosen);
+            targetPulse.Update(enterable, attackable);
             sourceGlow.Update(sourceable);
             LastUpdateMilliseconds = (Stopwatch.GetTimestamp() - started) * 1000d / Stopwatch.Frequency;
         }
@@ -165,14 +180,21 @@ namespace Wotr.Client
             regions.TryGetValue(id, out var region) ? region.Emphasis : MapRegionEmphasis.None;
 
         private static MapRegionEmphasis Emphasis(string id, string selected, HashSet<string> sources,
-            HashSet<string> owners, MapDraftOverlay draft, BoardPresentation data, string hovered, string pressed)
+            HashSet<string> owners, MapDraftOverlay draft, BoardPresentation data, string hovered, string pressed, string carried)
         {
             if (id == pressed)
                 return MapRegionEmphasis.Pressed;
+            // UI-405: the legal target under a carried figure lights more strongly in its own colour.
+            if (id == carried && draft?.AttackTargets.Contains(id) == true)
+                return MapRegionEmphasis.CarriedAttack;
+            if (id == carried && draft?.Targets.Contains(id) == true)
+                return MapRegionEmphasis.CarriedTarget;
             if (draft?.AttackTargets.Contains(id) == true)
                 return MapRegionEmphasis.Attack;
-            if (draft?.PlannedRegions.Contains(id) == true)
+            if (draft?.PlannedRegions.Contains(id) == true || draft?.ChosenRegions.Contains(id) == true)
                 return MapRegionEmphasis.Selected;
+            if (draft?.PlacementTargets.Contains(id) == true)
+                return MapRegionEmphasis.PlacementTarget;
             if (draft?.Targets.Contains(id) == true)
                 return MapRegionEmphasis.Target;
             if (draft?.SourceRegions.Contains(id) == true)
@@ -181,7 +203,7 @@ namespace Wotr.Client
                 return MapRegionEmphasis.Selected;
             if (sources.Contains(id) || owners.Contains(id))
                 return MapRegionEmphasis.Source;
-            if (id == hovered)
+            if (id == hovered || id == carried)
                 return MapRegionEmphasis.Hover;
             return data.ProtectedRegions.Contains(id) ? MapRegionEmphasis.Protection : MapRegionEmphasis.None;
         }
@@ -276,6 +298,7 @@ namespace Wotr.Client
             terrainLayer = null;
             political = null;
             targetGlow = null;
+            targetPulse = null;
         }
     }
 }

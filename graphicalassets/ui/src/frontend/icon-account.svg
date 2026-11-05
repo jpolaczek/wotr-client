@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- UI-470 (owner, 2026-11-03): the line icon inside the sign-in's account name field (a bust). -->
+  <g fill="none" style="stroke: var(--fe-rule)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="8" cy="5.4" r="2.7"/>
+    <path d="M2.8 14 C3.2 10.9 5.3 9.3 8 9.3 C10.7 9.3 12.8 10.9 13.2 14"/>
+  </g>
+</svg>

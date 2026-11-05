@@ -25,16 +25,39 @@ namespace Wotr.Client
         public event Action Opening;
         public event Action Inspecting;
         public Func<VisualElement, bool> IsRegionSource { get; set; }
+        public CharacterWindowPlace Place { get; set; }
         public Func<IEnumerable<Rect>> Occlusions { get; set; }
         public Func<IEnumerable<Rect>> FixedOcclusions { get; set; }
         private readonly DrawerHover hover;
         private readonly BoardPresentation data;
+        // UI-449: brings the camera to a region (the map's focus).
+        private readonly Action<string> locate;
         private readonly Dictionary<string, CharacterRosterRow> rows = new Dictionary<string, CharacterRosterRow>();
         private readonly Dictionary<CharacterRosterSection, VisualElement> sections = new Dictionary<CharacterRosterSection, VisualElement>();
         private readonly Foldout removed = new Foldout { text = "Removed", value = false, name = "characters-removed" };
         private readonly Label empty = new Label("No named characters in this view") { name = "characters-empty" };
         private VisualElement sovereigns;
         private readonly ChoicePulse pulse;
+        private bool rosterOffered;
+        private bool sovereignsOffered;
+        // UI-391: a row's ability icon glows.
+        private bool abilitiesOffered;
+        // UI-441: a character's skill can be used now.
+        private bool skillsOffered;
+        private bool rosterAvailable;
+        // UI-408: two rows a line unless the roster is too tall for the board in that form; decided per roster size and room.
+        // UI-445: a roster too tall even compact takes one more column (DenseClass), the panel one row wider.
+        public const string WideClass = "roster-wide";
+        public const string CompactClass = "roster-compact";
+        public const string DenseClass = "roster-dense";
+        private enum RosterForm
+        {
+            Wide,
+            Compact,
+            Dense
+        }
+        private RosterForm form = RosterForm.Wide;
+        private string fitted = "";
         private PlayerView view;
         private VisualElement source;
         private bool visible;
@@ -42,11 +65,14 @@ namespace Wotr.Client
         public CharacterRosterPanel(VisualElement surface, BoardPresentation data, Action<string> focus)
         {
             this.data = data;
+            locate = focus;
             Tab = BoardScreen.Button("Characters", Open);
             Tab.name = "characters-tab";
             Tab.AddToClassList("characters-tab");
             Tab.AddToClassList(RuntimeTooltip.RichHoverClass);
             Root.AddToClassList("characters-panel");
+            Root.AddToClassList(WideClass);
+            Root.RegisterCallback<GeometryChangedEvent>(_ => FitRows());
             Root.style.display = DisplayStyle.None;
             pulse = new ChoicePulse(Root);
             Inspector = new CharacterInspector(data, focus, CloseInspection, PinInspection);
@@ -134,8 +160,10 @@ namespace Wotr.Client
                 var id = entry.FigureId;
                 // UI-105: a row only inspects; figures are selected in their region's panel on the map.
                 row = new CharacterRosterRow(id);
+                row.Wide(Wide);
                 rows.Add(id, row);
                 ObserveRow(row.Root, id);
+                ObserveAbilities(row, id);
             }
             var grid = sections[CharacterRosterPresentation.Section(entry)];
             if (row.Root.parent != grid)
@@ -151,17 +179,58 @@ namespace Wotr.Client
         public void RefreshSelection()
         {
             var offered = false;
+            var available = false;
+            var abilities = false;
+            var skills = false;
             foreach (var row in rows)
             {
                 var chosen = row.Key == Actions.EnteringFigure;
                 var entry = Enterable(row.Key) && !chosen;
-                offered |= entry;
-                row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
+                // UI-438: several versions that may enter now are chosen in the character's window.
+                var versions = !entry && !chosen && Actions.EntryVersions(row.Key).Count > 1;
+                offered |= entry || versions;
+                row.Value.ShowVersion(OfferedVersion(row.Key, chosen, entry));
+                // UI-457: a row lights for its skills and a figure's actions only while it shows the version in play.
+                var inPlay = Actions.ShowsVersionInPlay(row.Key, row.Value.Definition);
+                var usable = Actions.Available(row.Key, inPlay);
+                available |= usable;
+                row.Value.Root.EnableInClassList("legal-target", usable);
+                row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die));
+                abilities |= row.Value.Abilities.Offered;
+                row.Value.ShowSkill(inPlay ? Actions.Skill(row.Key) : null);
+                skills |= row.Value.SkillLit;
                 row.Value.Root.EnableInClassList(EntryClass, entry);
-                row.Value.Offer(entry);
+                row.Value.Offer(entry, versions);
                 row.Value.Choose(chosen);
             }
-            pulse.Run(offered);
+            rosterOffered = offered;
+            rosterAvailable = available;
+            abilitiesOffered = abilities;
+            skillsOffered = skills;
+            RunPulse();
+            RefreshTab();
+        }
+
+        private void RunPulse() => pulse.Run(rosterOffered || sovereignsOffered || abilitiesOffered || skillsOffered);
+
+        // UI-438: the version a row shows while its entry is chosen or offered; empty for the row's own choice.
+        private string OfferedVersion(string figure, bool chosen, bool entry)
+        {
+            if (chosen)
+                return Actions.EnteringVersion;
+            return entry ? Actions.Entry(figure)?.Character?.CharacterId ?? "" : "";
+        }
+
+        // UI-380 (owner): the Characters tab glows while the roster offers something — an entry, an action on a row, a
+        // king's decision — so the way to it is lit before the panel opens; UI-441: a character's skill usable now too.
+        private void RefreshTab() => Tab.EnableInClassList("legal-target", rosterOffered || rosterAvailable || sovereignsOffered || skillsOffered);
+
+        // UI-345: a lit sovereign's portrait, attempt or tile pulses with the roster, in its one rhythm.
+        public void OfferSovereigns(bool any)
+        {
+            sovereignsOffered = any;
+            RunPulse();
+            RefreshTab();
         }
 
         public void Attach(VisualElement tray, VisualElement dock) => Actions.Attach(tray, dock);
@@ -220,14 +289,20 @@ namespace Wotr.Client
             Window?.Refresh();
         }
 
+        // UI-436 (owner): a window opened from the Characters tab, its panel or a ruler stands at the one place beside the
+        // tab (CharacterWindowPlace); one opened from a region's window stands beside that window, its own panel. UI-440:
+        // a click on an ability no longer changes the window's content (UI-371's kept place is gone with the unrolled text).
         public void PositionInspector()
         {
             if (Inspector.Root.style.display.value == DisplayStyle.None || Inspector.Root.parent == null || InspectorWindow?.Restore() == true || source == null)
                 return;
+            if (Place != null && IsRegionSource?.Invoke(source) != true && Place.Apply(Inspector.Root, SovereignPanel.WindowSize))
+                return;
             var viewport = Inspector.Root.parent;
-            var point = viewport.WorldToLocal(source.worldBound.center);
             var size = Inspector.Root.layout.size;
-            if (size.x <= 0 || float.IsNaN(size.x))
+            var measured = size.x > 0 && !float.IsNaN(size.x);
+            var point = viewport.WorldToLocal(source.worldBound.center);
+            if (!measured)
                 size = new Vector2(420, 280);
             var obstacles = (Occlusions?.Invoke() ?? new[] { source.worldBound })
                 .Select(r => new Rect(viewport.WorldToLocal(r.position), r.size));
@@ -244,7 +319,63 @@ namespace Wotr.Client
                 Inspector.Root.style.top = rectangle.y;
         }
 
+        // UI-408 (owner): two characters a line give each its larger icons; a roster that would then reach past the board
+        // area keeps three a line (four on a short viewport). UI-445: one that still reaches past it takes one more column.
+        // A new roster size or a new room tries two a line again, so the form never flips back and forth while both stay
+        // the same.
+        private void FitRows()
+        {
+            if (Root.panel == null || Root.parent == null || Root.resolvedStyle.display == DisplayStyle.None)
+                return;
+            var key = rows.Count + "/" + Mathf.RoundToInt(Root.parent.worldBound.height);
+            if (key != fitted)
+            {
+                fitted = key;
+                if (form != RosterForm.Wide)
+                {
+                    SetForm(RosterForm.Wide);
+                    return;
+                }
+            }
+            if (form != RosterForm.Dense && Root.worldBound.yMax > Root.parent.worldBound.yMax + 0.5f)
+                SetForm(form + 1);
+        }
+
+        private void SetForm(RosterForm next)
+        {
+            form = next;
+            Root.EnableInClassList(WideClass, next == RosterForm.Wide);
+            Root.EnableInClassList(CompactClass, next != RosterForm.Wide);
+            Root.EnableInClassList(DenseClass, next == RosterForm.Dense);
+            // UI-436: the window stands beside the panel, so its slot takes the panel's width.
+            Place?.Widen(next == RosterForm.Dense);
+            foreach (var row in rows.Values)
+                row.Wide(next == RosterForm.Wide);
+        }
+
+        public bool Wide => form == RosterForm.Wide;
+
+        // UI-445: one more column than compact.
+        public bool Dense => form == RosterForm.Dense;
+
+        // UI-391: a usable ability's icon starts it, as the window's icon does; another opens the window at that ability (UI-440:
+        // its icon takes the focus, so its formatted description shows).
+        private void ObserveAbilities(CharacterRosterRow row, string id)
+        {
+            row.Abilities.Used += item => Actions.Use(item);
+            row.Abilities.Opened += ability =>
+            {
+                Show(id, true, row.Root);
+                Inspector.Abilities.Present(ability);
+            };
+        }
+
+        // UI-460 (owner, 2026-11-03): this character's window is open, so the row's next click closes it.
+        public bool ShowsWindowOf(string id) => InspectorPinned && Inspector.Root.style.display.value != DisplayStyle.None &&
+            Inspector.FigureId == id;
+
         // A single click inspects, except when the row can be entered: its double-click must not flash the window.
+        // UI-460: a second click on the row of the open window closes it.
         private void ObserveRow(Button row, string id)
         {
             row.AddToClassList(RuntimeTooltip.RichHoverClass);
@@ -255,8 +386,13 @@ namespace Wotr.Client
                     return;
                 if (Enterable(id))
                     EntryRequested?.Invoke(id);
+                else if (ShowsWindowOf(id))
+                    CloseInspection();
                 else
+                {
                     Show(id, true, row);
+                    LocateOnBoard(id);
+                }
             };
             row.RegisterCallback<NavigationSubmitEvent>(e =>
             {
@@ -265,6 +401,16 @@ namespace Wotr.Client
                 EntryRequested?.Invoke(id);
                 e.StopImmediatePropagation();
             }, TrickleDown.TrickleDown);
+        }
+
+        // UI-449 (owner): a row's click on a character in play also brings the camera to its figure; one off the board
+        // moves nothing (an inspection opened any other way never moves the camera).
+        private void LocateOnBoard(string id)
+        {
+            var entry = view?.OwnCharacterRoster.FirstOrDefault(row => row.FigureId == id);
+            var region = entry == null ? "" : PlacePresentation.CameraRegion(view, entry, data.Regions);
+            if (region.Length > 0)
+                locate(region);
         }
 
         public void Observe(VisualElement element, string id)
@@ -281,11 +427,11 @@ namespace Wotr.Client
 
         private void BindInspection(VisualElement surface)
         {
-            Root.RegisterCallback<GeometryChangedEvent>(_ => PositionInspector());
+            Root.RegisterCallback<GeometryChangedEvent>(_ => PlaceInspectorAgain());
             Root.RegisterCallback<TransitionEndEvent>(evt =>
             {
                 if (evt.target == Root)
-                    PositionInspector();
+                    PlaceInspectorAgain();
             });
             Inspector.Root.RegisterCallback<GeometryChangedEvent>(e =>
             {
@@ -294,8 +440,31 @@ namespace Wotr.Client
                 if (PopoverPlacement.SizeChanged(e.oldRect, e.newRect))
                     PositionInspector();
             });
+            // UI-371: a new board size or interface scale changes what the window must avoid, so it is placed again.
+            Inspector.Root.RegisterCallback<AttachToPanelEvent>(_ =>
+                Inspector.Root.parent?.RegisterCallback<GeometryChangedEvent>(BoardResized));
             Root.RegisterCallback<AttachToPanelEvent>(_ => Application.focusChanged += FocusChanged);
             Root.RegisterCallback<DetachFromPanelEvent>(_ => { Application.focusChanged -= FocusChanged; Close(); });
+        }
+
+        // A panel beside the window grew or finished appearing over it (a Ruler's Reserve filling its rows after the
+        // window was placed): the window moves clear of it again, as when it opened.
+        public void ObstacleChanged()
+        {
+            if (Inspector.Root.style.display.value == DisplayStyle.None || Occlusions == null)
+                return;
+            var bounds = Inspector.Root.worldBound;
+            if (Occlusions().Any(obstacle => obstacle.Overlaps(bounds)))
+                PlaceInspectorAgain();
+        }
+
+        // The roster's own move (unrolling, closing) changes what the window must avoid, so it is placed again.
+        private void PlaceInspectorAgain() => PositionInspector();
+
+        private void BoardResized(GeometryChangedEvent change)
+        {
+            if (PopoverPlacement.SizeChanged(change.oldRect, change.newRect))
+                PlaceInspectorAgain();
         }
 
         private void FocusChanged(bool focused) { if (!focused) CloseTransient(); }

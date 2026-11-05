@@ -100,6 +100,9 @@ namespace Wotr.PlayTests
 
         internal static void ResourcesFit(BoardScreen board)
         {
+            // UI-467 (owner): the own dice panel stays compact — the dice column and at most a narrow token column — so
+            // the console beside it keeps a wide hint line.
+            Assert.LessOrEqual(board.OwnDice.layout.width, 337, "The own dice panel stays compact");
             foreach (var pool in new[] { board.OwnDice, board.OpponentDice })
             {
                 var buttons = pool.Query<Button>().ToList().Where(b => b.worldBound.width > 0 && b.resolvedStyle.display != DisplayStyle.None).ToList();
@@ -158,7 +161,7 @@ namespace Wotr.PlayTests
 
         private static void ProjectedSovereigns(BoardScreen board)
         {
-            var portraits = board.Sovereigns.Root.Query<Button>().ToList();
+            var portraits = board.Sovereigns.Root.Query<Button>(className: "sovereign-portrait").ToList();
             Assert.AreEqual(board.View.Sovereigns.Count, portraits.Count);
             if (board.View.Configuration.Fate)
                 Assert.IsFalse(portraits.Any(b => b.name.EndsWith("dain") || b.name.EndsWith("brand")));

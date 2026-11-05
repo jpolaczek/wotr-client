@@ -22,6 +22,31 @@ namespace Wotr.PlayTests
         [UnityTest]
         public IEnumerator TheWhiteRiderMarksGandalfsBattlePortraitOnTheShadowsBoard() => Wait(WhiteRider());
 
+        // UI-493 (owner, 2026-11-04): Voice of Saruman's die names only its ability, which is Saruman's printed one.
+        [UnityTest]
+        public IEnumerator VoiceOfSarumanNamesItsSourceOnTheWatchingBoard() => Wait(Voice());
+
+        private static async Task Voice()
+        {
+            using var room = await Connect("ability-voice-recruit-full", ScenarioKind.BaseAcceptance, openPanels: false);
+            var view = room.Sh.Board.View;
+            var choice = view.Options.Single(o => o.Kind == CommandKind.UseCharacterAbility).CharacterActions.Single(c => c.AbilityId == "voice-recruit");
+            var payload = new CommandPayload
+            {
+                CharacterId = choice.CharacterId, AbilityId = choice.AbilityId, Ids = choice.Targets.ToList(),
+                DieId = view.Dice.Single(d => d.Owner == Side.Shadow && d.Face == DieFace.Muster).Id
+            };
+            var receipt = await room.Sh.Api.Post<CommandReceipt>("api/matches/" + view.MatchId + "/commands",
+                T22NetworkActions.Command(view, CommandKind.UseCharacterAbility, payload), room.Token);
+            Assert.IsTrue(receipt.Accepted, receipt.Error);
+            await Seen(room, () => room.Fp.Playback.Holding && Moment(room.Fp) == CharacterLibrary.Name(choice.CharacterId),
+                "Saruman's moment stands on the watching board.");
+            await Task.Delay(250);
+            LayoutTests.Save(room.Fp.Viewport, "ui493-voice-of-saruman.png");
+            await Seen(room, () => room.Fp.Board.Map.Q("observed-delta") != null, "Then the recruits land.");
+            await room.Until(() => !room.Fp.Playback.Holding);
+        }
+
         private static async Task Entries()
         {
             using (var room = await Connect("entry", ScenarioKind.Character))
@@ -80,7 +105,7 @@ namespace Wotr.PlayTests
 
 
         private static int Characters(MountedMatchClient client, string region, Side side) =>
-            client.Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == side).Sum(a => a.Characters);
+            client.Board.Presentation.Characters.Count(c => c.RegionId == region && c.Side == side);
 
         private static async Task Seen(MatchTestRoom room, Func<bool> condition, string what)
         {

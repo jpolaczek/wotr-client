@@ -2,7 +2,7 @@ using UnityEngine.UIElements;
 
 namespace Wotr.Client
 {
-    // Composes the illustrated top bar from existing board controls; Styles/TopBar.uss supplies the artwork.
+    // Composes the top bar from existing board controls; Styles/TopBar.uss supplies its look (UI-479: flat, 36 points).
     public sealed class TopBarView
     {
         // Narrower bars tighten their spacing and hide the dice owner label; icons, values and tooltips remain.
@@ -11,22 +11,26 @@ namespace Wotr.Client
         public const float CompactBelow = 1340f;
         public const string CompactClass = "topbar-compact";
         public VisualElement Root { get; } = new VisualElement { name = "topbar" };
+        // Carries the bar's gilt rule, out of its flow; never takes the pointer.
         public VisualElement Frame { get; } = new VisualElement { name = "topbar-frame", pickingMode = PickingMode.Ignore };
         // Cast onto the top of the map area, beneath every docked panel; never takes the pointer.
         public VisualElement Shadow { get; } = new VisualElement { name = "topbar-shadow", pickingMode = PickingMode.Ignore };
         public OpponentSummary Opponent { get; } = new OpponentSummary();
+        // UI-263: the game's expansion crests after the phase, the variants in their tooltip.
+        public VisualElement Crests { get; } = ExpansionCrests.Row("topbar-crests");
 
         public TopBarView(Label phase, VisualElement opponentDice, Label connection, Button menu)
         {
             Root.AddToClassList("topbar");
-            // UI-98: at 44 points the whole bar lies in the 26-point edge-pan band, so like the other HUD
-            // edges it pans only on the outer rim (MapEdgePan) and reading it never moves the map.
+            // UI-98: the slim bar lies in the 26-point edge-pan band, so like the other HUD edges it pans
+            // only on the outer rim (MapEdgePan) and reading it never moves the map.
             Root.AddToClassList("map-edge-control");
             Frame.AddToClassList("topbar-frame");
             Shadow.AddToClassList("topbar-shadow");
             Root.Add(Frame);
             phase.AddToClassList("phase");
             Root.Add(phase);
+            Root.Add(Crests);
             Root.Add(Divider());
             opponentDice.AddToClassList("row");
             Root.Add(opponentDice);

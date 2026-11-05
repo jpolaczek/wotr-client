@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="9" viewBox="0 0 18 9">
-  <!-- UI-159: tail of the result popover; it overlaps the popover's lower border and points down at the die. -->
-  <path d="M0.5 0 L9 8 L17.5 0 Z" style="fill: var(--plate-bottom)"/>
-  <path d="M1.4 0.6 L9 7.6 L16.6 0.6" fill="none" stroke="url(#gilt)" stroke-width="1.1" stroke-linejoin="round"/>
+  <!-- UI-476: the tail of the small popover (an Elven Ring's results, the Council token's travel), thin like the board's
+       card it hangs from: the card's field under its muted-gilt rule, with the same dark hairline outside it for the
+       bright parchment. It points down at the die. -->
+  <path d="M0.4 0 L9 8.6 L17.6 0 Z" style="fill: var(--fe-card)"/>
+  <path d="M0.4 0 L9 8.6 L17.6 0" fill="none" style="stroke: var(--ink)" stroke-width="1" stroke-opacity="0.85"/>
+  <path d="M2 0 L9 7 L16 0" fill="none" style="stroke: var(--fe-rule)" stroke-width="1"/>
 </svg>

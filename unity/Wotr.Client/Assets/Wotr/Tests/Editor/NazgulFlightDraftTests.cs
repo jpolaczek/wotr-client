@@ -24,7 +24,7 @@ namespace Wotr.EditorTests
                 new UnitView { Id = "nazgul-2", Nation = "sauron", Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = "mordor" },
                 new UnitView { Id = "nazgul-3", Nation = "sauron", Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = "moria" }
             },
-            Characters = { new CharacterView { Id = "witch-king", Side = Side.Shadow, Location = "mordor" } },
+            Characters = { new CharacterView { Id = "witch-king", DefinitionId = "base.character.witch-king", Side = Side.Shadow, Location = "mordor" } },
             Options =
             {
                 new ActionOption
@@ -41,6 +41,46 @@ namespace Wotr.EditorTests
             var draft = new TurnDraft();
             draft.Choose(CommandKind.MoveShadowCharacters);
             return draft;
+        }
+
+        // UI-416 (owner): the console names the figures that move by what they are, and a planned character keeps its own
+        // figure on the map; the Balrog's move was named and drawn as a Nazgûl's.
+        // UI-423 (owner's playtest pattern, like UI-416): the empty move's hint names the figures a card moves — the Balrog
+        // for A Balrog is Come! — and speaks of Nazgûl only while it moves nothing else.
+        [Test]
+        public void TheEmptyMovesHintNamesTheFiguresTheCardMoves()
+        {
+            var view = View();
+            var draft = Draft();
+            Assert.AreEqual("Move any Nazgûl or confirm without moving.", FellowshipDraft.Hint(draft, view), "The Witch-king is a Nazgûl.");
+            view.Characters.Add(new CharacterView { Id = "balrog", DefinitionId = "lords.character.balrog", Side = Side.Shadow, Location = "moria" });
+            var option = view.Options.Single();
+            option.EligibleIds = new System.Collections.Generic.List<string> { "balrog" };
+            option.Travel = new System.Collections.Generic.List<TravelOption> { new TravelOption { Id = "balrog", Origin = "moria", Range = 3, Targets = Targets.ToList() } };
+            Assert.AreEqual("Move the Balrog or confirm without moving.", FellowshipDraft.Hint(draft, view));
+            option.Travel.Add(Flight("nazgul-3", "moria"));
+            Assert.AreEqual("Move any of the Balrog and a Nazgûl or confirm without moving.", FellowshipDraft.Hint(draft, view));
+        }
+
+        [Test]
+        public void TheSummaryAndTheGhostShowTheFiguresThatMove()
+        {
+            var view = View();
+            var draft = Draft();
+            var data = BoardPresentation.Load();
+            StringAssert.StartsWith("Keep the Witch-king and 3 Nazgûl in place ·", FellowshipSummary.Describe(draft, view, new ActionPreview(), data));
+            Assert.IsTrue(NazgulFlightDraft.Arm(view, draft, "mordor"));
+            Assert.IsTrue(NazgulFlightDraft.Fly(view, draft, "moria"));
+            StringAssert.StartsWith("Move a Nazgûl ·", FellowshipSummary.Describe(draft, view, new ActionPreview(), data));
+            Assert.IsTrue(NazgulFlightDraft.Arm(view, draft, "witch-king"));
+            Assert.IsTrue(NazgulFlightDraft.Fly(view, draft, "angmar"));
+            StringAssert.StartsWith("Move the Witch-king and a Nazgûl ·", FellowshipSummary.Describe(draft, view, new ActionPreview(), data));
+            var map = new MapCanvas(data);
+            map.PlannedFlights.Apply(NazgulFlightDraft.Planned(view, draft), Side.Shadow, false);
+            var witchKing = map.Q<Button>("planned-flight-angmar").Query<Image>().ToList().First(image => image.sprite != null);
+            StringAssert.Contains("witch-king", witchKing.sprite.name, "The Witch-king's planned move shows his own figure.");
+            var nazgul = map.Q<Button>("planned-flight-moria").Query<Image>().ToList().First(image => image.sprite != null);
+            StringAssert.Contains("nazgul", nazgul.sprite.name);
         }
 
         [Test]
@@ -88,6 +128,45 @@ namespace Wotr.EditorTests
             Assert.IsTrue(NazgulFlightDraft.Arm(view, draft, "mordor"), "Arming the armed region releases it.");
             Assert.AreEqual("", draft.ArmedSource);
             Assert.IsFalse(NazgulFlightDraft.Arm(view, draft, "rohan"), "A region without an unmoved Nazgûl is no source.");
+        }
+
+        // UI-271: a Shadow character a card moves (the Balrog alone) uses the flight gesture; a walker goes along its
+        // shortest path in range, alone in its group, and its ghost is its own figure.
+        [Test]
+        public void AWalkingCharacterMovesAlongItsPathWithTheSameGesture()
+        {
+            var data = BoardPresentation.Load();
+            var near = data.Regions["moria"].Neighbors.OrderBy(id => id, System.StringComparer.Ordinal).First();
+            var far = data.Regions[near].Neighbors.First(id => id != "moria" && !data.Regions["moria"].Neighbors.Contains(id));
+            var view = new PlayerView
+            {
+                You = Side.Shadow,
+                DecisionOwner = Side.Shadow,
+                Decision = new DecisionView { Id = "balrog", Kind = DecisionKind.CharacterEvent, SourceId = "lords.sh.character.17" },
+                Characters = { new CharacterView { Id = "lords.character.balrog", DefinitionId = "lords.character.balrog", Side = Side.Shadow, Location = "moria", Level = 2 } },
+                Options =
+                {
+                    new ActionOption
+                    {
+                        Kind = CommandKind.MoveShadowCharacters, Enabled = true, AllowEmptySelection = true,
+                        EligibleIds = { "lords.character.balrog" },
+                        Travel = { new TravelOption { Id = "lords.character.balrog", Origin = "moria", Range = 2, Targets = { "moria", near, far } } }
+                    }
+                }
+            };
+            var draft = Draft();
+            Assert.That(NazgulFlightDraft.Hint(view, draft), Does.StartWith("Click a lit figure, then where it moves"));
+            Assert.IsTrue(NazgulFlightDraft.Arm(view, draft, "moria"));
+            Assert.AreEqual("lords.character.balrog", draft.ArmedSource, "A region holding only a character arms it.");
+            Assert.That(NazgulFlightDraft.Hint(view, draft), Does.StartWith("Click a lit region to move the armed Balrog"));
+            Assert.IsFalse(NazgulFlightDraft.Fly(view, draft, far), "A walker needs the map to find its path.");
+            Assert.IsTrue(NazgulFlightDraft.Fly(view, draft, far, data));
+            CollectionAssert.AreEqual(new[] { "moria", near, far }, draft.Payload.CompanionMoves.Single().Route);
+            var planned = NazgulFlightDraft.Planned(view, draft).Single();
+            Assert.AreEqual("lords.character.balrog", planned.CharacterId);
+            Assert.AreEqual(far, planned.RegionId);
+            Assert.That(NazgulFlightDraft.Hint(view, draft), Does.StartWith("Every figure has moved"));
+            Assert.AreEqual("Figures moved 1", CardDecisions.Progress(view, draft));
         }
 
         [Test]

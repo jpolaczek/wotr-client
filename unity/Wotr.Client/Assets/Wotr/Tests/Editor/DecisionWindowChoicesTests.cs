@@ -69,6 +69,40 @@ namespace Wotr.EditorTests
             Assert.IsTrue(CharacterChoices.DiceChoice(view, choice), "Different dice stay a choice.");
         }
 
+        // UI-271: with several characters that can enter (both Mouths), the chosen one waits for its region with no
+        // Change button: another lit row of the Characters panel changes the choice.
+        [Test]
+        public void OneOfSeveralEntriesWaitingForItsRegionOffersNothingInTheWindow()
+        {
+            var lieutenant = new CharacterActionOption
+            {
+                CharacterId = "base.character.mouth-of-sauron", Title = "The Mouth of Sauron", Dice = { "m" }, Targets = { "barad-dur", "dol-guldur" }, TargetCount = 1
+            };
+            var numenorean = new CharacterActionOption
+            {
+                CharacterId = "lords.character.mouth-of-sauron", Title = "The Mouth of Sauron", Dice = { "m" }, Targets = { "barad-dur", "dol-guldur" }, TargetCount = 1
+            };
+            var view = new PlayerView
+            {
+                You = Side.Shadow,
+                DecisionOwner = Side.Shadow,
+                Decision = new DecisionView { Id = "entry", Kind = DecisionKind.Action },
+                Options =
+                {
+                    new ActionOption { Kind = CommandKind.EnterCharacter, Enabled = true, EligibleDice = { "m" }, CharacterActions = { lieutenant, numenorean } }
+                },
+                Dice = { new DieView { Id = "m", Face = DieFace.Muster, Source = "standard", Owner = Side.Shadow, Location = DieLocation.Available } }
+            };
+            var draft = new TurnDraft();
+            DraftGesture.Choose(draft, view, CommandKind.EnterCharacter);
+            CharacterDraft.Select(draft, view, numenorean);
+            var root = new VisualElement();
+            var tray = new DecisionTray(root);
+            tray.Render(view, draft, false, false);
+            Assert.IsNull(root.Q<Button>("change-character-action"));
+            Assert.IsFalse(tray.HasChoices);
+        }
+
         // UI-211: dice clicked in the pool with a Confirm (The Lidless Eye) keep the window closed; ✓ is in the console.
         [Test]
         public void ACardChoiceOnTheBoardWithAConfirmOffersNothingInTheWindow()

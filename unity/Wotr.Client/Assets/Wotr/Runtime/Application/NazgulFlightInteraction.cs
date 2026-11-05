@@ -16,6 +16,8 @@ namespace Wotr.Client
         private readonly Func<bool> busy;
         private PlayerView view;
         private TurnDraft draft;
+        // UI-434: the decision whose lit Nazgûl the view was brought to.
+        private string revealed = "";
 
         public bool Active => view != null && NazgulFlightDraft.Active(view, draft);
 
@@ -40,6 +42,18 @@ namespace Wotr.Client
             board.Map.HighlightSources(NazgulFlightDraft.Sources(view, draft), view.You);
             board.Map.MarkArmed(NazgulFlightDraft.Armed(view, draft), view.You);
             board.Map.PlannedFlights.Apply(NazgulFlightDraft.Planned(view, draft), view.You, false);
+            RevealSources();
+        }
+
+        // UI-434 (owner, after UI-433): "Click a lit Nazgûl, then where it flies" — the lit Nazgûl may stand off the map's
+        // view (Barad-dûr beyond a small window's edge) or under the console: the view moves to them once for the decision,
+        // as to the Black Captain's (UI-431).
+        private void RevealSources()
+        {
+            if (busy() || revealed == view.Decision?.Id || board.Map.contentRect.width <= 0)
+                return;
+            revealed = view.Decision.Id;
+            board.Map.Reveal(NazgulFlightDraft.Sources(view, draft).Select(source => source.RegionId).ToList());
         }
 
         // The region panel lights every movable Nazgûl and marks the armed one.
@@ -71,7 +85,9 @@ namespace Wotr.Client
             }
             if (NazgulFlightDraft.Targets(view, draft).Contains(region))
             {
-                edit(() => NazgulFlightDraft.Fly(view, draft, region), false);
+                // UI-417 (owner): a card that moves one figure (the Balrog alone) sends the move with its destination; with
+                // several, ✓ sends them once every one is planned.
+                edit(() => NazgulFlightDraft.Fly(view, draft, region, board.Presentation), NazgulFlightDraft.Offered(view, draft).Count() == 1);
                 return true;
             }
             if (!NazgulFlightDraft.IsSource(view, draft, region))

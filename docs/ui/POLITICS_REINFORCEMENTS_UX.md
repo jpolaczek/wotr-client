@@ -17,7 +17,7 @@ User application from 2026-10-15 (Politics panel discharge):
 
 - Politics (`PoliticalPanel`, `NationTrackRow`): The line is a name, four steps and a hidden
   “Activate” button (78 pt reserved also when it is not there). The steps are `.action` buttons with
-  `frames/button` frame, so they look like a row of buttons. The small 9-slice frame looks like a
+  the shared button frame (`frontend/button` since UI-471), so they look like a row of buttons. The small 9-slice frame looks like a
   stacked one. The step forward shows “→” in the next step.
 - Meals (`ReinforcementsPanel`, UI-130–UI-135): separate window `FloatingWindow` opened alone at its
   own dice Muster or recruitment plan. Nation line: coat of arms, name, mini-tor of politics
@@ -136,9 +136,9 @@ User applications: "change the reinforcements to reserve, improve the design of 
 
 User application (UI-181 bookmarkshot): "Delete these ribbons added to each icon and correct the titles, now they are terribly crooked, remove all this frame around".
 
-- `rail/edge-tab` is only an enameled medallion in a pearly ring: without a tile, carved frame with
-  a pin, filigree and ribbons under the signature. The state shows the border of the medallion: red
-  lake at the selected green glow at the legal goal, brighter gold at the landing.
+- `rail/edge-tab` is only an enameled medallion in a pearly ring (since UI-475 a dark disc in one thin ring): without a tile, carved frame with
+  a pin, filigree and ribbons under the signature. The state shows the border of the medallion: since UI-475 a warm bright line
+  at the selected, a gold glow at the legal goal, brighter gold at the landing.
 - The signature is a simple label 13 pt (without thickening), one line, centered under the
   medallion, with a strong shadow, because there is a map underneath it. `LeftRailLayoutTests`
   checks that it fits in the tab.
@@ -208,6 +208,12 @@ yet; it should open no window and light only the tabs where something can be don
   settlement click, no route from the console plaque, and the tray's hint is the political one. The Politics tab keeps its
   die light and legal target. `MusterActions.Active` is unchanged, so the political step works as before.
 - With Recruit enabled nothing changes: the tab lights and the panel unrolls only on the player's gesture (UI-181).
+- Expansions (Lords, EXP-14 merge): the die also backs the Reserve while it pays Gothmog's "fling into the fray", whose
+  Regular and Elite tokens stand in his Reserve row (UI-271). `MusterActions.BacksReserve` is `CanRecruit` or an enabled
+  Gothmog ability for the chosen die; it gates the panel, the console route and the tray's hint. A die that can neither
+  recruit nor pay Gothmog still lights only Politics. Tests: EditMode
+  `MusterActionTests.AMusterDieThatPaysGothmogBacksTheReserveWithoutARecruit`; PlayMode
+  `ExpansionAbilityNetworkTests.Gothmog*`.
 - Tests: EditMode `MusterActionTests.TheMusterDieCanRecruitOnlyWithAnEnabledRecruitOrAnOpenSequence`; PlayMode
   `BoardInteractionTests.UI317AMusterDieThatCannotRecruitLightsOnlyPolitics` (no window, no Reserve light, Politics lit,
   no console route, a settlement click brings no Reserve).

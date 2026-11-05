@@ -97,6 +97,14 @@
         "Wotr/Audio/defeat-1"
       ],
       "longestSeconds": 1.0
+    },
+    "PoliticsMoved": {
+      "channel": "Effects",
+      "clips": [
+        "Wotr/Audio/politics-moved-1",
+        "Wotr/Audio/politics-moved-2"
+      ],
+      "longestSeconds": 1.7
     }
   }
 }

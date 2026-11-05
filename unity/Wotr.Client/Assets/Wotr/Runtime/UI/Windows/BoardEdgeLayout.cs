@@ -52,7 +52,6 @@ namespace Wotr.Client
             AddTab(board.Nations.Root, "Politics", "politics");
             AddTab(board.Reinforcements.Tab, "Reserve", "reinforcements");
             AddTab(board.Characters.Tab, "Characters", "characters");
-            AddTab(board.CompanionSetup.Tab, "Setup", "characters");
             AddTab(board.TableEffects.Tab, "Effects", "effects");
             DockLeft(board.Nations.Drawer, "politics");
             DockLeft(board.Reinforcements.Root, "reinforcements");
@@ -64,6 +63,7 @@ namespace Wotr.Client
             AlignWithTab(board.TableEffects.Tab, board.TableEffects.Root);
             AlignWithTab(board.Characters.Tab, board.Characters.Root);
             board.TableEffects.Docked = true;
+            board.TableEffects.Rail = Left;
             board.Nations.Opening += () => SelectLeft(board.Nations.Drawer);
             board.Reinforcements.Opening += () => SelectLeft(board.Reinforcements.Root);
             board.TableEffects.Opening += () => SelectLeft(board.TableEffects.Root);

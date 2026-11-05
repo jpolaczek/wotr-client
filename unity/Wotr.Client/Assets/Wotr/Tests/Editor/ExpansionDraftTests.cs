@@ -107,10 +107,15 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void DismayTokenCanBeDroppedWithoutChoosingBetweenTheTwoRulerDice()
+        // UI-276 (EXP-15 D20): a Dismay token is picked by the Ruler die's click, so the token itself neither selects nor
+        // drops; each Ruler die of either side spends the first token offered.
+        public void ADismayTokenIsPickedByTheRulerDiesClick()
         {
             var view = View(CommandKind.UseDismay);
             view.You = Side.Shadow;
+            view.DecisionOwner = Side.Shadow;
+            view.Decision.Kind = DecisionKind.Dismay;
+            view.Options[0].Enabled = true;
             view.Options[0].EligibleIds.Add("dismay");
             foreach (var side in new[] { Side.FreePeoples, Side.Shadow })
             {
@@ -119,11 +124,10 @@ namespace Wotr.EditorTests
                 view.Options[0].EligibleDice.Add(id);
             }
             var draft = new TurnDraft();
-            Assert.IsTrue(DraftGesture.Drop(draft, view, new DraftToken(DraftObject.RulerToken, "dismay"), new DraftToken(DraftObject.Tray)));
-            Assert.AreEqual(CommandKind.UseDismay, draft.Kind);
-            CollectionAssert.AreEqual(new[] { "dismay" }, draft.Payload.Ids);
-            Assert.IsEmpty(draft.Payload.DieId, "Ruler dice of different sides are never equivalent costs.");
-            Assert.IsEmpty(draft.Payload.RulerTokenId);
+            Assert.IsFalse(DraftGesture.Drop(draft, view, new DraftToken(DraftObject.RulerToken, "dismay"), new DraftToken(DraftObject.Tray)));
+            Assert.IsNull(draft.Kind);
+            Assert.AreEqual("dismay", DismayChoice.Token(view, Side.FreePeoples.ToString()));
+            Assert.AreEqual("dismay", DismayChoice.Token(view, Side.Shadow.ToString()));
         }
 
         [Test]

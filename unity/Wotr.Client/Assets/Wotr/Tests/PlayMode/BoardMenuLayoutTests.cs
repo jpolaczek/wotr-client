@@ -31,6 +31,8 @@ namespace Wotr.PlayTests
                     var menu = client.Board.Menu;
                     Assert.IsTrue(menu.IsOpen);
                     Check(client.Board.Menu.Panel, client.Board.Root);
+                    // UI-479: the panel follows the bar's height: it opens just under the bar, over no part of it.
+                    Assert.That(menu.Panel.worldBound.yMin - client.Board.TopBar.Root.worldBound.yMax, Is.InRange(0f, 4f), $"{width} {scale:0.00}");
                     Assert.IsEmpty(menu.Panel.Query<ScrollView>().ToList());
                     foreach (var button in menu.Panel.Query<Button>().ToList().Where(b => b.resolvedStyle.display != DisplayStyle.None))
                     {

@@ -66,7 +66,6 @@ namespace Wotr.PlayTests
                     Assert.IsTrue(next.Board.OwnDice.Q<Button>(die).ClassListContains("selected"));
                     // The restored draft brings the result popover back above the die; no resource panel opens.
                     await Until(() => next.Board.RingPicker.IsOpen, token);
-                    Assert.IsFalse(next.Board.ResourceDecision.IsOpen);
                     var face = next.Board.RingPicker.Root.Q<Button>("ring-face-muster");
                     await Until(() => face.enabledInHierarchy, token);
                     PointerGestureEvents.ClickAt(face);

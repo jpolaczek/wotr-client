@@ -24,7 +24,7 @@ namespace Wotr.Client
             }
             var option = choices.Count == 1 ? choices[0] : Sovereigns(choices);
             if (option.RulerTravel != null && draft.Payload.AbilityId == option.RulerTravel.AbilityId)
-                return Travel(option, option.RulerTravel.Dice, option.RulerTravel.Travel);
+                return WithRulerTravel(option);
             if (option.Kind == CommandKind.AwakenSovereign)
                 return Travel(option, option.EligibleDice, option.Travel.Where(t => t.Id == draft.Payload.CharacterId).ToList());
             return option;
@@ -43,7 +43,7 @@ namespace Wotr.Client
             Maximum = choices[0].Maximum
         };
 
-        private static ActionOption Council(ActionOption source) => new ActionOption
+        internal static ActionOption Council(ActionOption source) => new ActionOption
         {
             Kind = source.Kind,
             Enabled = source.Enabled,
@@ -52,6 +52,10 @@ namespace Wotr.Client
             Travel = source.Travel,
             Reason = source.Reason
         };
+
+        // The option as its king's ability moves it (Far-sighted): the ability's dice and travel.
+        public static ActionOption WithRulerTravel(ActionOption option) =>
+            Travel(option, option.RulerTravel.Dice, option.RulerTravel.Travel);
 
         private static ActionOption Travel(ActionOption source, List<string> dice, List<TravelOption> travel) => new ActionOption
         {
@@ -69,24 +73,19 @@ namespace Wotr.Client
             AllowEmptySelection = source.AllowEmptySelection
         };
 
-        public static bool CanSelectToken(PlayerView view, string id) => view.RulerTokenActions.Any(o => o.TokenId == id) ||
-            view.Options.Any(o => o.Enabled && o.Kind == CommandKind.UseDismay && o.EligibleIds.Contains(id));
+        // UI-276 (D20): a Dismay token is picked by the Ruler die's click, so only the Free Peoples' Ruler tokens select.
+        public static bool CanSelectToken(PlayerView view, string id) => view.RulerTokenActions.Any(o => o.TokenId == id);
+
+        // The own dice a Ruler token's actions can be paid with (its Ruler die).
+        public static IReadOnlyList<string> TokenDice(PlayerView view, string id) => id.Length == 0 ? new List<string>()
+            : view.RulerTokenActions.Where(o => o.TokenId == id && o.Action.Enabled).SelectMany(o => o.Action.EligibleDice)
+                .Where(die => view.Dice.Any(d => d.Id == die && d.Owner == view.You && d.Location == DieLocation.Available))
+                .Distinct().ToList();
 
         public static void SelectToken(TurnDraft draft, PlayerView view, string id)
         {
             if (id.Length > 0 && !CanSelectToken(view, id))
                 return;
-            if (view.You == Side.Shadow && id.Length > 0)
-            {
-                if (draft.Kind != CommandKind.UseDismay)
-                    DraftGesture.Choose(draft, view, CommandKind.UseDismay);
-                draft.Change(p =>
-                {
-                    p.Ids.Clear();
-                    p.Ids.Add(id);
-                });
-                return;
-            }
             draft.Clear();
             draft.Change(p => p.RulerTokenId = id);
         }

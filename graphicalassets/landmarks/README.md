@@ -22,3 +22,11 @@ user's key from the environment. [Prompts](v1/prompts.json), [generation script]
 [manifest](v1/manifest.json). `build.py --check` verifies outputs against the manifest.
 
 Replacement artwork, not taken from the original game's components.
+
+## Shadow-held Erebor — ART-05 (2026-10-19)
+
+`erebor-shadow`: the same mountain gate taken by the enemy (broken gate barred with spiked timbers, smoke from the
+vents, ragged banners, a crude watch platform), generated with `v1/generate.py` and built by `build.py` into
+`Resources/Wotr/Art/map-landmarks/erebor-shadow.png`. Fate of Erebor starts with Erebor in Shadow hands; UI-265 draws
+this variant in Erebor's place when the game uses Fate.
+

@@ -46,6 +46,7 @@ namespace Wotr.Client
             screen.ChatHost.Add(chatPanel.Root);
             chat = new RoomChatController(api, chatPanel, screen.Status, room.Id);
             screen.Ready += Ready;
+            screen.Configure += Configure;
             screen.Invite += Invite;
             screen.Start += Start;
             screen.Demo += Demo;
@@ -59,6 +60,10 @@ namespace Wotr.Client
         private string Path => "api/rooms/" + screen.Room.Id;
         private void Ready(bool value) => Run(async () => screen.Update(await api.Put<RoomView>(Path + "/ready",
             new RoomReadyRequest { ExpectedVersion = screen.Room.Version, Ready = value }, token)));
+        // UI-263: the host's rules; the server resets both players' Ready and answers with the room.
+        private void Configure(MatchConfiguration configuration) => Run(async () => screen.Update(await api.Put<RoomView>(
+            Path + "/configuration", new ConfigureRoomRequest { ExpectedVersion = screen.Room.Version, Configuration = configuration },
+            token)));
         private void Invite() => Run(async () => screen.Update(await api.Post<RoomView>(Path + "/invitation", null, token)));
         private void Start() => Run(async () =>
         {
@@ -207,6 +212,8 @@ namespace Wotr.Client
             if (error is ApiException apiError)
             {
                 if (apiError.Message == "StaleConfiguration") return "The room changed. Refresh and choose Ready again.";
+                if (apiError.Message == "ExpansionsUnavailable") return "This server does not offer that expansion yet.";
+                if (apiError.Message == "InvalidConfiguration") return "That combination of rules is not allowed.";
                 if (apiError.Message == "ConfirmationRequired") return "Both players must be ready before starting.";
                 if (apiError.Message == "HostRequired") return "Only the host can do this.";
                 if (apiError.Message == "MatchAlreadyStarted") return "The game in this room has started. Open it from your games.";
@@ -227,6 +234,7 @@ namespace Wotr.Client
             if (disposed) return;
             disposed = true;
             screen.Ready -= Ready;
+            screen.Configure -= Configure;
             screen.Invite -= Invite;
             screen.Start -= Start;
             screen.Demo -= Demo;

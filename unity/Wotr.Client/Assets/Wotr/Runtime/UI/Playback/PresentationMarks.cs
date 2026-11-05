@@ -6,8 +6,9 @@ using UnityEngine.UIElements;
 namespace Wotr.Client
 {
     // Where a plate stands by its target: inside its top right corner (a battle column has room there), under it, or
-    // before it on the same line (the top bar's open middle).
-    public enum PlateSide { Inside, Under, Before }
+    // before it on the same line (the top bar's open middle); UI-493: after it on the same line (the left rail's tabs);
+    // UI-492: in its middle (a card's roll with no region, on the map).
+    public enum PlateSide { Inside, Under, Before, After, Middle }
 
     // UI-311/UI-312: a beat's marks on HUD objects — the objects' own glow (UI-314) and small plates — placed once the
     // objects are laid out (content a beat has just staged has no size before the next layout pass). A newer placement or
@@ -76,6 +77,14 @@ namespace Wotr.Client
                 case PlateSide.Before:
                     plate.style.right = layer.Root.contentRect.width - bounds.xMin + 6;
                     plate.style.top = bounds.yMin;
+                    break;
+                case PlateSide.After:
+                    plate.style.left = bounds.xMax + 6;
+                    plate.style.top = bounds.yMin;
+                    break;
+                case PlateSide.Middle:
+                    plate.style.left = bounds.center.x;
+                    plate.style.top = bounds.center.y;
                     break;
                 default:
                     plate.style.right = layer.Root.contentRect.width - bounds.xMax + 4;

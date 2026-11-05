@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
@@ -7,17 +8,25 @@ namespace Wotr.Client
 {
     public sealed class ResourceContextInteraction : IDisposable
     {
+        // UI-270: a Council medallion's slot in the pool is named after its token.
+        private const string CouncilSlotPrefix = "pool-council.";
         private readonly BoardScreen board;
         private readonly Action<Action, bool> edit;
         private readonly Func<bool> busy;
+        private readonly Action<ComponentAction> select;
+        // UI-345 (D6): a usable Council medallion no hint asks for keeps its lit art and pulses it.
+        private readonly ChoicePulse litArt;
         private PlayerView view;
         private TurnDraft draft;
 
-        public ResourceContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
+        // select: a component's own path (UI-347: a Council token's printed use, started on its medallion).
+        public ResourceContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy, Action<ComponentAction> select)
         {
             this.board = board;
             this.edit = edit;
             this.busy = busy;
+            this.select = select;
+            litArt = new ChoicePulse(board.OwnDice, ChoiceGlow.LitArtPulseClass);
             board.Sovereigns.Activate = Sovereign;
             board.CouncilTokenSelected += Council;
         }
@@ -26,7 +35,6 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
-            board.ResourceDecision.Context(view, draft);
             board.Sovereigns.Context(view, draft);
             board.Root.EnableInClassList("sovereign-context", board.Sovereigns.DecisionTarget.Length > 0);
             HighlightCandidates();
@@ -35,32 +43,94 @@ namespace Wotr.Client
 
         private void HighlightCandidates()
         {
+            HighlightCouncilTokens();
+            // UI-433, UI-434 (owner's reports): the lit art alone reads as unlit — at 29 points in the top bar, and beside
+            // the plain dice of the own pool — so every die a resource decision offers wears the shared gold glow and
+            // pulses with its pool.
+            var offered = OfferedDice();
+            board.OwnDiceChoices.Offer(this, HighlightDice(board.OwnDice, offered));
+            board.OpponentDiceChoices.Offer(this, HighlightDice(board.OpponentDice, offered));
+        }
+
+        // The dice the open resource decision offers: a Council entry's, or the pool decision's and Lore's.
+        private HashSet<string> OfferedDice()
+        {
+            var offered = ResourcePresentation.CouncilDice(view, draft).ToHashSet();
             var option = DraftOptions.For(view, draft);
-            var choosing = ResourcePresentation.OwnsDecision(view, draft) && option?.Enabled == true;
-            var councilDice = ResourcePresentation.CouncilDice(view, draft).ToHashSet();
-            var councilToken = draft.Kind == CommandKind.UseCouncilToken ? draft.Payload.AbilityId : draft.Payload.CouncilTokenId;
-            foreach (var pool in new[] { board.OwnDice, board.OpponentDice })
-                foreach (var button in pool.Query<Button>().ToList())
-                {
-                    if (button.name.StartsWith("pool-council."))
-                    {
-                        button.EnableInClassList("selected", button.name == "pool-" + councilToken);
-                        continue;
-                    }
-                    if (button.userData is not DraftToken token || token.Object != DraftObject.Die)
-                        continue;
-                    var eligible = councilDice.Contains(token.Id) || choosing && (option.EligibleDice.Contains(token.Id) ||
-                        view.Decision.Presentation == "DieAndResult" && option.EligibleIds.Contains(token.Id));
-                    button.EnableInClassList("resource-candidate", eligible);
-                    if (eligible && view.Decision.Kind == DecisionKind.KeepActionDie)
-                        button.SetEnabled(true);
-                }
+            if (!(ResourcePresentation.PoolDecision(view) || LoreChoice.Active(view)) || option?.Enabled != true)
+                return offered;
+            offered.UnionWith(option.EligibleDice);
+            if (view.Decision.Presentation == "DieAndResult")
+                offered.UnionWith(option.EligibleIds);
+            return offered;
+        }
+
+        // The pool's offered dice: each is marked and enabled, and its id returned.
+        private List<string> HighlightDice(VisualElement pool, HashSet<string> offeredDice)
+        {
+            var offered = new List<string>();
+            foreach (var button in pool.Query<Button>().ToList())
+            {
+                if (button.userData is not DraftToken token || token.Object != DraftObject.Die)
+                    continue;
+                var eligible = offeredDice.Contains(token.Id);
+                button.EnableInClassList("resource-candidate", eligible);
+                if (eligible)
+                    offered.Add(token.Id);
+                if (pool == board.OpponentDice)
+                    DismayTooltip(button, token.Id);
+                if (eligible && view.Decision.Kind == DecisionKind.KeepActionDie)
+                    button.SetEnabled(true);
+                SpecialCandidate(button, token.Id, eligible);
+            }
+            return offered;
+        }
+
+        // UI-276 (D20): the opponent's Ruler die says what the Shadow's click on it does; every other die keeps the pool's
+        // own tooltip (a Lords die set aside says so).
+        private void DismayTooltip(Button button, string id)
+        {
+            if (view.Dice.FirstOrDefault(d => d.Id == id) is { } die && DismayChoice.Token(view, die.Id).Length > 0)
+                button.tooltip = DieDescriptions.Tooltip(die) + "\n" + DismayChoice.Offer(view, die.Id);
+        }
+
+        // UI-270, UI-347: the Council medallions. UI-434: the one a hint asks for — the Council's offer, a Chieftain's
+        // entry cost — wears the gold glow and pulses with the pool; any other usable one keeps its lit art's own pulse
+        // (UI-345, D6).
+        private void HighlightCouncilTokens()
+        {
+            var marked = draft.Kind == CommandKind.UseCouncilToken ? draft.Payload.AbilityId : draft.Payload.CouncilTokenId;
+            var litArtOnly = false;
+            foreach (var button in board.OwnDice.Query<Button>().ToList().Where(b => b.name.StartsWith(CouncilSlotPrefix)))
+            {
+                var id = button.name.Substring("pool-".Length);
+                var asked = ResourcePresentation.CouncilAsked(view, draft, id);
+                button.EnableInClassList("selected", id == marked);
+                ChoiceGlow.Apply(button, asked);
+                litArtOnly |= !asked && button.ClassListContains("legal-target");
+            }
+            litArt.Run(litArtOnly);
+        }
+
+        // UI-267: during the special-die choice a die an Eye rules out is disabled (its tooltip, DieHints, says why).
+        private void SpecialCandidate(Button button, string id, bool eligible)
+        {
+            var die = view.Dice.FirstOrDefault(d => d.Id == id);
+            if (die != null && SpecialDice.Candidate(view, die))
+                button.SetEnabled(eligible);
         }
 
         public bool Die(string id)
         {
             if (view?.Decision == null || busy())
                 return false;
+            // UI-276 (D20): a glowing Ruler die's click spends a Dismay token picked for it and re-rolls the die.
+            var dismay = DismayChoice.Token(view, id);
+            if (dismay.Length > 0)
+            {
+                edit(() => DismayChoice.Choose(draft, id, dismay), true);
+                return true;
+            }
             if (ResourcePresentation.CouncilPending(draft) ||
                 draft.Kind == CommandKind.EnterCharacter && draft.Payload.CouncilTokenId.Length > 0)
             {
@@ -88,14 +158,34 @@ namespace Wotr.Client
             var next = draft.Fork();
             if (!ExpansionActions.SelectSovereign(view, next, id))
                 return false;
-            edit(() => draft.Adopt(next), ExpansionActions.Immediate(next.Kind));
+            // UI-274: an awakening with one legal destination (most kings wake at home) is complete with the click.
+            var single = next.Kind == CommandKind.AwakenSovereign && AwakeningTarget(next) is { Length: > 0 } target &&
+                TravelDraft.RouteTo(next, view, board.Presentation, target);
+            edit(() => draft.Adopt(next), single || ExpansionActions.Immediate(next.Kind));
             return true;
+        }
+
+        private string AwakeningTarget(TurnDraft selection)
+        {
+            var travel = DraftOptions.For(view, selection)?.Travel.FirstOrDefault();
+            return travel?.Targets.Count == 1 ? travel.Targets[0] : "";
         }
 
         public bool Ring(string id)
         {
             if (view?.Decision == null || busy())
                 return false;
+            // UI-268: the glowing Nenya socket answers the Hunt's tile step with its Keeper ability.
+            if (id == NamedRings.Nenya && NamedRings.NenyaResponse(view) != null)
+            {
+                edit(() =>
+                {
+                    if (draft.Kind != CommandKind.RespondEffect)
+                        draft.Choose(CommandKind.RespondEffect);
+                    draft.Change(p => p.ReactionId = NamedRings.NenyaReaction);
+                }, true);
+                return true;
+            }
             var next = draft.Fork();
             if (!ExpansionActions.Ring(view, next, id))
                 return false;
@@ -105,8 +195,50 @@ namespace Wotr.Client
 
         private void Council(string id)
         {
-            if (view == null || busy() || !ResourcePresentation.CanSelectCouncil(view, id))
+            // UI-270: the Council's token choice is made on the offered token in the pool, sent at once.
+            if (view != null && !busy() && CouncilTokenSlots.Offered(view, id))
+            {
+                edit(() =>
+                {
+                    if (draft.Kind != CommandKind.ChooseCouncilToken)
+                        draft.Choose(CommandKind.ChooseCouncilToken);
+                    draft.Change(p => p.Ids = new System.Collections.Generic.List<string> { id });
+                }, true);
                 return;
+            }
+            if (view == null || busy())
+                return;
+            // UI-347 (D13): a medallion's click starts its printed use at once. When a Kings Chieftain can enter with the
+            // token, the first click marks it and lights his Characters row instead; a click on the marked token starts its
+            // printed use.
+            switch (ResourcePresentation.Clicked(view, draft, id))
+            {
+                case CouncilClick.EntryCost:
+                    EntryCost(id);
+                    break;
+                case CouncilClick.Mark:
+                    Mark(id);
+                    break;
+                case CouncilClick.Use:
+                    select(ResourcePresentation.CouncilUse(view, draft, id));
+                    break;
+                case CouncilClick.Release:
+                    edit(() => draft.Clear(), false);
+                    break;
+            }
+        }
+
+        // UI-347 (D13): during a Chieftain's entry the token is his entry cost: its click adds it, and takes it back when
+        // the entry does not require it.
+        private void EntryCost(string id)
+        {
+            var entry = CharacterDraft.Selected(draft, DraftOptions.For(view, draft));
+            var remove = draft.Payload.CouncilTokenId == id && !entry.RequiresCouncilToken;
+            edit(() => draft.Change(p => p.CouncilTokenId = remove ? "" : id), false);
+        }
+
+        private void Mark(string id)
+        {
             var die = draft.Payload.DieId;
             edit(() =>
             {
@@ -118,7 +250,6 @@ namespace Wotr.Client
                         p.DieId = die;
                 });
             }, false);
-            board.ResourceDecision.Open();
         }
 
         public bool Drop(DraftToken source, DraftToken target)
@@ -134,17 +265,10 @@ namespace Wotr.Client
             }
             else if (source.Object == DraftObject.RulerToken && target.Object == DraftObject.Die)
             {
-                if (ExpansionActions.RulerToken(view, next, source.Id, target.Id))
-                {
-                    edit(() => draft.Adopt(next), false);
-                    return true;
-                }
-                var option = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.UseDismay &&
-                    o.EligibleIds.Contains(source.Id) && o.EligibleDice.Contains(target.Id));
-                if (option == null)
+                if (!ExpansionActions.RulerToken(view, next, source.Id, target.Id))
                     return false;
-                next.Choose(CommandKind.UseDismay, target.Id);
-                next.Change(p => p.Ids.Add(source.Id));
+                edit(() => draft.Adopt(next), false);
+                return true;
             }
             else if (source.Object == DraftObject.Die && target.Object == DraftObject.Sovereign)
             {

@@ -3,7 +3,8 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    public enum DraftObject { Die, Ring, Card, Action, Deck, Tray, Army, Region, Reserve, RulerToken, Figure, Nation, PoliticalSlot, Fellowship, FellowshipPortrait, Sovereign, CouncilPortrait, HuntEye, HuntTile, HuntResponse, Character }
+    // UI-402: Miniature is a character's own figure on the map (its id, its region in Region).
+    public enum DraftObject { Die, Ring, Card, Action, Deck, Tray, Army, Region, Reserve, RulerToken, Figure, Nation, PoliticalSlot, Fellowship, FellowshipPortrait, Sovereign, CouncilPortrait, HuntEye, HuntTile, HuntResponse, Character, Miniature }
 
     public sealed class DraftToken
     {
@@ -12,14 +13,36 @@ namespace Wotr.Client
         public CommandKind? Action { get; }
         public Side? Side { get; }
         public bool Garrison { get; }
-        public DraftToken(DraftObject item, string id = "", CommandKind? action = null, Side? side = null, bool garrison = false)
+        // UI-402: the region a map object stands in when its id is not the region's (a character's miniature).
+        public string Region { get; }
+        // The region a map object (a region, an army marker, a miniature) belongs to.
+        public string RegionId => Region.Length > 0 ? Region : Id;
+        public DraftToken(DraftObject item, string id = "", CommandKind? action = null, Side? side = null, bool garrison = false,
+            string region = "")
         {
             Object = item;
             Id = id;
             Action = action;
             Side = side;
             Garrison = garrison;
+            Region = region ?? "";
         }
+
+        // UI-428: the region a map object stands in — a region's terrain, an army marker, a character's miniature, the
+        // Fellowship's figure or a king's marker (their Region) — and "" for anything else (a portrait, a die, a card).
+        public string StandsIn => Object switch
+        {
+            DraftObject.Region or DraftObject.Army or DraftObject.Miniature => RegionId,
+            DraftObject.Fellowship or DraftObject.Sovereign => Region,
+            _ => ""
+        };
+
+        // UI-402: a character's miniature counts as its region where a region is the target (a drop, an enemy's figure).
+        // UI-428: so does the Fellowship's figure, which takes no drop of its own. A king's marker keeps its own (a die
+        // dropped on it chooses the king, UI-274).
+        public DraftToken AsRegion() => Object is DraftObject.Miniature or DraftObject.Fellowship && StandsIn.Length > 0
+            ? new DraftToken(DraftObject.Region, StandsIn)
+            : this;
     }
 
     public static class DraftGesture
@@ -62,6 +85,7 @@ namespace Wotr.Client
         {
             if (source == null || target == null || view.Decision == null)
                 return false;
+            // UI-270: a companion's portrait on the Fellowship panel dropped on its homeland.
             if (source.Object == DraftObject.CouncilPortrait && target.Object == DraftObject.Region && draft.Kind == CommandKind.ChooseCouncilHomelands)
             {
                 var choice = DraftOptions.For(view, draft)?.CharacterActions.FirstOrDefault(c => c.CharacterId == source.Id);
@@ -70,6 +94,9 @@ namespace Wotr.Client
                 CouncilDraft.Homeland(draft, source.Id, target.Id);
                 return true;
             }
+            // UI-393: a reserve figure dropped on a settlement's army marker is dropped on that settlement.
+            if (source.Object == DraftObject.Reserve && target.Object == DraftObject.Army)
+                target = new DraftToken(DraftObject.Region, target.Id);
             if (source.Object == DraftObject.RulerToken && target.Object == DraftObject.Tray && DraftOptions.CanSelectToken(view, source.Id))
             {
                 DraftOptions.SelectToken(draft, view, source.Id);

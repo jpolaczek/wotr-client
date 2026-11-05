@@ -216,6 +216,8 @@ acceptance UI-27: a pre-register error, the same test after the correction **1/1
 
 One click Army/Muster or Will: simultaneous sources of army, recruitment pallet and policy chips. Select figure, then target: pallet does not capture traffic. Separate parties check recruitment and two clicks on the track. Will also provides selection, travel, Fellowship and card. The saved march does not allow you to go to recruitment/politics; the selection of another object before sending retains the exact die. The restored policy draft immediately provides the target without re-election of the symbol. The previous requirement to wait for the category in UI-27 is replaced by the order UI-28.
 
+Since UI-461 (owner, 2026-11-03) Will of the West no longer lights every use at once: as itself it lights only what it does as itself (Gandalf the White's or Aragorn's entry, the Balrog's deactivation, a removal paid with Will of the West, any-die uses), and the console's face menu turns it into Character, Army, Muster or Event before the board lights that result's uses. MultiUseDiceNetworkTests turns the Will die into the result of each use first (march: Army; recruit, politics and Wisdom of Elrond's other payment: Muster; card and draw: Event; travel: Character); Army/Muster keeps UI-28 unchanged ([TURN_CONSOLE_UX](TURN_CONSOLE_UX.md#ui-461)).
+
 MultiUseDiceNetworkTests uses separate server states Army/Muster and Will. PointerGestureEvents.ClickAt selects the control through the panel.Pick and checks the lack of a veil. Narya also uses this path. Tests do not grant activation to the normal Muster; the passive nation remains unattainable to enter the war. Results: UI-28.
 
 <a id="d15--schowana-ręka-i-bezpośrednie-play-ui-29"></a>

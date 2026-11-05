@@ -17,6 +17,19 @@ namespace Wotr.Client
         public HuntResponse? HuntChoice { get; internal set; }
         // UI-212: what a distribution arms locally (a region or a figure), never sent with the command.
         public string ArmedSource { get; internal set; } = "";
+        // UI-461 (owner, 2026-11-03): the result the player turned the chosen Will of the West die into in the console's
+        // face menu, never sent; it belongs to that die, so choosing another die drops it. Null: the die as itself.
+        private string willDie = "";
+        private DieFace? willFace;
+        public DieFace? WillFace => willDie.Length > 0 && willDie == Payload.DieId ? willFace : null;
+
+        public void TurnWill(DieFace? face)
+        {
+            Remember();
+            willDie = face.HasValue ? Payload.DieId : "";
+            willFace = face;
+        }
+
         public void Choose(CommandKind kind, string dieId = "")
         {
             Remember();
@@ -37,6 +50,8 @@ namespace Wotr.Client
             CompanionFocus = -1;
             HuntChoice = null;
             ArmedSource = "";
+            willDie = "";
+            willFace = null;
             history.Clear();
         }
         public void Toggle(string id)
@@ -68,6 +83,8 @@ namespace Wotr.Client
             CompanionFocus = previous.CompanionFocus;
             HuntChoice = previous.HuntChoice;
             ArmedSource = previous.ArmedSource;
+            willDie = previous.willDie;
+            willFace = previous.willFace;
         }
 
         // UI-127: one gesture of the player is one undo step, however many edits it makes to the draft.
@@ -102,7 +119,9 @@ namespace Wotr.Client
             ReserveId = ReserveId,
             CompanionFocus = CompanionFocus,
             HuntChoice = HuntChoice,
-            ArmedSource = ArmedSource
+            ArmedSource = ArmedSource,
+            willDie = willDie,
+            willFace = willFace
         };
 
         public void Adopt(TurnDraft other)
@@ -115,6 +134,32 @@ namespace Wotr.Client
             CompanionFocus = other.CompanionFocus;
             HuntChoice = other.HuntChoice;
             ArmedSource = other.ArmedSource;
+            willDie = other.willDie;
+            willFace = other.willFace;
+        }
+
+        // UI-405: the draft as it is, with its undo history, so a gesture that ends without a step puts back exactly that.
+        public TurnDraft Checkpoint()
+        {
+            var checkpoint = Fork();
+            checkpoint.history.AddRange(history.Select(entry => entry.Fork()));
+            return checkpoint;
+        }
+
+        // UI-405: back to a checkpoint, its undo history included; nothing is remembered, as nothing happened.
+        public void Rewind(TurnDraft checkpoint)
+        {
+            Kind = checkpoint.Kind;
+            Payload = Copy(checkpoint.Payload);
+            MoveFocus = checkpoint.MoveFocus;
+            ReserveId = checkpoint.ReserveId;
+            CompanionFocus = checkpoint.CompanionFocus;
+            HuntChoice = checkpoint.HuntChoice;
+            ArmedSource = checkpoint.ArmedSource;
+            willDie = checkpoint.willDie;
+            willFace = checkpoint.willFace;
+            history.Clear();
+            history.AddRange(checkpoint.history.Select(entry => entry.Fork()));
         }
 
         public DraftSnapshot Snapshot() => new DraftSnapshot
@@ -125,7 +170,8 @@ namespace Wotr.Client
             ReserveId = ReserveId,
             CompanionFocus = CompanionFocus,
             HuntChoice = HuntChoice,
-            ArmedSource = ArmedSource
+            ArmedSource = ArmedSource,
+            WillFace = WillFace
         };
 
         public void Restore(DraftSnapshot saved)
@@ -138,6 +184,8 @@ namespace Wotr.Client
             CompanionFocus = saved.CompanionFocus;
             HuntChoice = saved.HuntChoice;
             ArmedSource = saved.ArmedSource ?? "";
+            willDie = saved.WillFace.HasValue ? Payload.DieId : "";
+            willFace = saved.WillFace;
         }
 
         private static CommandPayload Copy(CommandPayload payload) => new CommandPayload

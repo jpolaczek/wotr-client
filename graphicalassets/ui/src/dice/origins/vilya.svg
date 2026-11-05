@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- UI-267: origin emblem of Vilya, Elrond's Ring of Air (gold, sapphire): a ring set with its stone, on an ink disc in a gilt rim. -->
+  <defs>
+    <linearGradient id="vilya-metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0b8"/>
+      <stop offset="1" stop-color="#b8892f"/>
+    </linearGradient>
+    <radialGradient id="vilya-stone" cx="0.38" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#cfe3ff"/>
+      <stop offset="0.6" stop-color="#3d7bea"/>
+      <stop offset="1" stop-color="#11307a"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#lift)">
+    <circle cx="8" cy="8" r="7.4" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.45"/>
+    <circle cx="8" cy="8" r="6.1" style="fill: var(--ink)"/>
+    <ellipse cx="8" cy="9.6" rx="3.9" ry="2.6" fill="none" stroke="url(#vilya-metal)" stroke-width="1.35"/>
+    <path d="M5.9 6.9 L8 4.1 L10.1 6.9 Z" fill="url(#vilya-metal)" stroke="#2a1d08" stroke-width="0.3" stroke-linejoin="round"/>
+    <circle cx="8" cy="5.55" r="1.85" fill="url(#vilya-stone)" stroke="#120c04" stroke-width="0.35"/>
+    <circle cx="7.4" cy="5.0" r="0.45" fill="#ffffff" opacity="0.85"/>
+  </g>
+</svg>

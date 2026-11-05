@@ -24,15 +24,17 @@ namespace Wotr.PlayTests
                     var choice = board.View.Options.Single().CharacterActions.Single();
                     CollectionAssert.AreEquivalent(new[] { "iron-hills", "ered-luin" }, choice.Targets);
                     CollectionAssert.DoesNotContain(choice.Targets, "erebor");
-                    Assert.AreEqual("—", Portrait(board, Gimli).Q<Label>("homeland-nation").text);
+                    // UI-270: the portrait's tooltip names the homelands and that this version activates no nation.
                     StringAssert.Contains("No nation icon", Portrait(board, Gimli).tooltip);
                     var politics = JsonConvert.SerializeObject(board.View.Nations);
                     var shadow = JsonConvert.SerializeObject(room.Sh.Board.View);
                     await Place(room, Gimli, "iron-hills", false);
                     await Place(room, Gimli, "ered-luin", true);
-                    await Press(room, board, "homeland-stay");
-                    Assert.AreEqual("Fellowship", Portrait(board, Gimli).Q<Label>("homeland-location").text);
-                    Assert.AreEqual("No tokens", Effect(board));
+                    // UI-347 (D14): a second click on the placed companion keeps it with the Fellowship.
+                    StringAssert.StartsWith("Click Gimli again to keep this companion", board.Console.Status.Hint.text);
+                    await Press(room, board, "fellowship-portrait-" + Gimli);
+                    Assert.AreEqual("", Portrait(board, Gimli).Q<Label>("homeland-location").text);
+                    StringAssert.DoesNotContain("Council token", Effect(board));
                     await Place(room, Gimli, destination, destination == "ered-luin");
                     Assert.AreEqual(0, room.Boundary.Commands);
                     Assert.AreEqual(shadow, JsonConvert.SerializeObject(await room.Sh.Api.Get<PlayerView>(

@@ -51,18 +51,14 @@ namespace Wotr.PlayTests
                 var pan = board.Map.Camera.Pan;
                 PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(die.Id));
                 await room.Settle();
-                PointerGestureEvents.ClickAt(await BoardNavigation.Sovereign(board, Dain));
-                await room.Settle();
-                Assert.AreSame(board.Sovereigns.DecisionHost, board.Tray.parent);
-                StringAssert.Contains("Garrison", board.Sovereigns.Inspector.Q<Label>("sovereign-state").text);
+                // UI-274: the besieged home is Dáin's only destination, so the lit portrait's click awakens him there.
+                var portrait = await BoardNavigation.Sovereign(board, Dain);
+                Assert.IsTrue(portrait.ClassListContains("legal-target"));
+                StringAssert.Contains("Garrison", portrait.tooltip);
                 Assert.AreEqual(pan, board.Map.Camera.Pan);
                 Assert.AreEqual(0, room.Boundary.Commands);
-                Assert.IsNull(board.Tray.Q<Button>("confirm-decision"));
-                var stay = board.Tray.Q<Button>("travel-stay");
-                Assert.IsNotNull(stay);
-                await room.Until(() => stay.enabledInHierarchy);
                 LayoutTests.Save(room.Fp.Viewport, "ui63-siege-" + source + "-before.png");
-                PointerGestureEvents.ClickAt(stay);
+                PointerGestureEvents.ClickAt(portrait);
                 await room.At(before.Revision + 1);
                 Assert.AreEqual(1, room.Boundary.Commands);
                 var sent = room.Boundary.LastCommand;
@@ -115,9 +111,7 @@ namespace Wotr.PlayTests
             Assert.IsFalse(portrait.ClassListContains("legal-target"));
             PointerGestureEvents.ClickAt(portrait);
             await room.Settle();
-            Assert.IsTrue(board.Sovereigns.IsOpen);
-            Assert.AreEqual(DisplayStyle.None, board.Sovereigns.DecisionHost.style.display.value);
-            Assert.IsNull(board.Sovereigns.DecisionHost.Q<Button>("travel-stay"));
+            Assert.IsTrue(board.Sovereigns.IsOpen, "An unlit portrait's click only informs.");
             Assert.AreEqual(0, room.Boundary.Commands);
             LayoutTests.Save(room.Fp.Viewport, "ui63-siege-outside.png");
             var command = new GameCommand

@@ -14,7 +14,8 @@ namespace Wotr.Client
             (action.Initiator.HasValue ? Actor(action.Initiator) + " · " : "") + Words(action.Command?.ToString() ?? action.Context.Kind.ToString());
         public static string Status(ActionLogSummary action) => action.Legacy || action.Status == ActionLogStatus.Unknown ? "Incomplete history"
             : action.Status == ActionLogStatus.InProgress ? "In progress" : "Completed";
-        public static string Region(string id, BoardPresentation data) => data.Regions.TryGetValue(id, out var region) ? region.Name : FigureGrid.Name(id);
+        public static string Region(string id, BoardPresentation data) =>
+            data != null && data.Regions.TryGetValue(id, out var region) ? region.Name : FigureGrid.Name(id);
         public static string Face(DieFace? face) => face.HasValue ? Words(face.Value.ToString()) : "Unrecorded face";
 
         public static string Cost(ActionCost cost)

@@ -1,5 +1,5 @@
 /* UI-169: the end of the game — a full overlay that darkens the board, with a window in the frame of the battle
-   window (frames/panel): the scene of the reason (end/scene-*), the winner's emblem beside the title plate
+   window (the thin card of GameChrome.uss since UI-473): the scene of the reason (end/scene-*), the winner's emblem beside the title plate
    (end/title-victory or end/title-defeat from the player's view), who won and why, four lines of the game and three
    buttons in fixed places. 9-slice values are texture pixels (2× points). */
 #board-screen .game-end {
@@ -17,12 +17,6 @@
     max-width: 94%;
     padding: 12px 18px 16px 18px;
     align-items: center;
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 /* UI-233: a painting of the result from the viewer's side (Art/end-scenes/<side>-<victory|defeat>, graphicalassets/end). */
 #board-screen .game-end-scene {

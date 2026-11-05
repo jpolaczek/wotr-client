@@ -20,12 +20,15 @@ namespace Wotr.Client
         public Button Activation { get; private set; }
         public NationView Nation { get; private set; }
         public bool Own { get; private set; }
+        // UI-423: the token wears the shared ChoiceGlow, so the panel's ticker pulses it; UI-440: so does Narya's icon.
+        public bool Glowing => Token.ClassListContains(ChoiceGlow.ClassName) || Activation.ClassListContains(ChoiceGlow.ClassName);
         private const float GlowScale = 1.45f;
         private readonly Label label = new Label();
         private readonly VisualElement glow;
         private readonly Button[] slots = new Button[4];
         private readonly Action<string> advance;
         private bool highlighted;
+        private string advanceHint = "";
         private bool advancing;
         private bool activating;
 
@@ -66,7 +69,8 @@ namespace Wotr.Client
             Advance.name = "nation-advance-" + id;
             Advance.AddToClassList("nation-advance");
             column.Add(Advance);
-            Activation = IconButton.Create("confirm", "Activate", () => { if (activating) activate(id); });
+            // UI-439: the activation is Narya's, so it shows Narya's icon (AbilityArt); UI-440: the bare skill icon.
+            Activation = SkillIcon.Create(AbilityArt.For(CommandKind.UseNarya), "Activate", () => { if (activating) activate(id); });
             Activation.name = "nation-activate-" + id;
             Activation.AddToClassList("nation-activate");
             Activation.userData = id;
@@ -157,11 +161,16 @@ namespace Wotr.Client
         {
             highlighted = actions.Highlighted;
             advancing = actions.CanAdvance;
+            advanceHint = actions.AdvanceHint;
             activating = actions.CanActivate;
             Token.EnableInClassList("selected", highlighted);
-            Token.EnableInClassList("legal-target", advancing || actions.CardTarget);
+            var offered = advancing || actions.CardTarget;
+            Token.EnableInClassList("legal-target", offered);
+            // UI-423 (owner's playtest pattern, like UI-411): the token a click moves or chooses glows and pulses with the
+            // panel's other choices, as the hints say; no station glows (UI-410).
+            ChoiceGlow.Apply(Token, offered && !highlighted);
             Root.EnableInClassList("selected-nation", highlighted);
-            Token.tooltip = PoliticalActions.Describe(Nation) + "\n" + TokenHint(actions.CardTarget);
+            Token.tooltip = PoliticalActions.Describe(Nation) + "\n" + TokenHint(actions);
             if (Own && !Nation.Active)
                 Token.tooltip += "\n" + PoliticalActions.ActivationSources;
             RefreshArrow(actions);
@@ -176,35 +185,40 @@ namespace Wotr.Client
             Advance.style.visibility = actions.ActivationOffered ? Visibility.Hidden : Visibility.Visible;
             Advance.SetEnabled(advancing);
             Advance.EnableInClassList("legal-target", advancing);
-            Advance.tooltip = advancing ? "Move " + FigureGrid.Name(Nation.Id) + " one step toward war" : ArrowHint();
+            Advance.tooltip = !advancing ? ArrowHint() : advanceHint.Length > 0 ? advanceHint
+                : PoliticalActions.AdvanceTooltip(actions.Advancement, Nation.Id);
             Activation.style.visibility = actions.ActivationOffered ? Visibility.Visible : Visibility.Hidden;
             Activation.SetEnabled(activating);
             Activation.EnableInClassList("legal-target", activating);
+            ChoiceGlow.Apply(Activation, activating);
             Activation.tooltip = actions.ActivationHint;
         }
 
         private string ArrowHint() =>
             !Own ? "Opponent nation · Read-only" :
-            Nation.StepsToWar == 0 ? "This nation is already At War." :
+            Nation.StepsToWar == 0 ? "This nation is already at war." :
             !Nation.Active && Nation.StepsToWar == 1 ? "Activate this nation before it can enter war." :
             "Select a legal Muster result to advance this nation.";
 
-        private string TokenHint(bool cardTarget) =>
-            cardTarget ? "Choose this nation for the card." :
-            advancing ? "Click this token, its arrow or the lit station to move it one step toward war. Dragging also moves it." :
+        private string TokenHint(NationRowActions actions) =>
+            actions.CardTarget ? (actions.CardHint.Length > 0 ? actions.CardHint : "Choose this nation for the card.") :
+            advancing && advanceHint.Length > 0 ? advanceHint :
+            advancing ? "Click this token or its arrow to move it one step toward war. Dragging it one station on also moves it." :
             ArrowHint();
 
+        // UI-410 (owner): no station glows — a lit circle on the track misled; the nation's token (and its arrow) shows the
+        // step. The next station stays the drop target of a dragged token, marked only while the drag points at it.
         private void RefreshSlot(int step)
         {
             var next = advancing && step == Nation.StepsToWar - 1;
             var current = step == Nation.StepsToWar;
             var slot = slots[step];
-            slot.EnableInClassList("legal-target", next);
             slot.EnableInClassList("destination-selected", next && highlighted);
             slot.EnableInClassList("passed-station", step > Nation.StepsToWar);
             slot.SetEnabled(next);
             slot.userData = next ? new DraftToken(DraftObject.PoliticalSlot, Nation.Id) : null;
-            slot.tooltip = (step == 0 ? "At War" : step + " steps to war") + (current ? " · Current position" :
+            // UI-420 (owner): "At war" as the track's caption reads, and "1 step to war".
+            slot.tooltip = PoliticalActions.Distance(step) + (current ? " · Current position" :
                 next ? " · Advance this nation" :
                 step == 0 && !Nation.Active ? " · Activation required" : "");
         }

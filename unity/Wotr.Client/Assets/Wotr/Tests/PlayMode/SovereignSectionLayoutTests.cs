@@ -59,7 +59,7 @@ namespace Wotr.PlayTests
             var section = board.Characters.Root.Q("characters-section-Sovereigns");
             Assert.IsTrue(Visible(section), label);
             Assert.AreEqual("Sovereigns", section.Q<Label>().text, label);
-            var portraits = board.Sovereigns.Root.Query<Button>().ToList();
+            var portraits = board.Sovereigns.Root.Query<Button>(className: "sovereign-portrait").ToList();
             Assert.AreEqual(board.View.Sovereigns.Count, portraits.Count, label);
             Inside(board.Characters.Root.worldBound, board.Root.worldBound, label);
             foreach (var portrait in portraits)
@@ -84,20 +84,24 @@ namespace Wotr.PlayTests
             Assert.IsTrue(board.Characters.Tab.ClassListContains("legal-target"), "The rolled-up tab tells that a sovereign is a target.");
             var portrait = await BoardNavigation.Sovereign(board, Dain);
             Assert.IsTrue(portrait.ClassListContains("legal-target"));
-            PointerGestureEvents.ClickAt(portrait);
-            await room.Settle();
-            Assert.IsTrue(board.Sovereigns.IsOpen);
-            Assert.AreSame(board.Sovereigns.DecisionHost, board.Tray.parent);
-            Assert.AreNotEqual(DisplayStyle.None, board.Characters.Root.resolvedStyle.display,
-                "The panel stays unrolled while the sovereign it opened is inspected.");
+            // UI-274: the lit portrait's click awakens Dáin at home at once (SovereignPanelNetworkTests); the inspector
+            // only informs and stands beside the Characters tab.
+            StringAssert.Contains("Dáin", portrait.tooltip);
             board.Characters.Close();
+            board.Sovereigns.Show(Dain);
             board.Sovereigns.Position();
             await room.Settle();
             var inspector = board.Sovereigns.Inspector.worldBound;
             var tab = board.Characters.Tab.worldBound;
             Inside(inspector, board.Root.worldBound, "inspector");
             Assert.IsFalse(inspector.Overlaps(tab), "The inspector leaves the tab readable.");
-            Assert.Less(Mathf.Max(0, inspector.xMin - tab.xMax), 160, "The inspector stands beside the Characters tab.");
+            // UI-436: at the one place of the rulers' windows, beside where the Characters panel unrolls, level with its tab.
+            var slot = board.Root.Q("characters-panel-slot").worldBound;
+            Assert.That(inspector.xMin, Is.InRange(slot.xMax, slot.xMax + 10), "The inspector stands beside the Characters panel's place.");
+            var stage = board.Sovereigns.Inspector.parent.worldBound;
+            var raised = inspector.yMin < tab.yMin && stage.yMax - inspector.yMax <= CharacterWindowPlace.BottomMargin + 2;
+            Assert.IsTrue(Mathf.Abs(inspector.yMin - tab.yMin) <= 1 || raised,
+                "The inspector stands level with the Characters tab, raised only to stay above the bottom: " + inspector + " / " + tab);
         }
 
         private static bool Visible(VisualElement element)

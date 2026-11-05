@@ -68,7 +68,6 @@ namespace Wotr.Client
 
         public void Attach()
         {
-            Add(board.CompanionSetup.Root, board.CompanionSetup.Close, board.CompanionSetup.Tab);
             Add(board.Characters.Inspector.Root, board.Characters.Close, board.Characters.Tab);
             Add(board.Characters.Root, board.Characters.Close, board.Characters.Tab);
             Add(board.Log.Popup, board.Log.CloseCard, board.Log.Toggle);
@@ -79,7 +78,6 @@ namespace Wotr.Client
             Add(board.Hunt.Root, board.Hunt.Close, board.Hunt.Tab);
             Add(board.TableEffects.Root, board.TableEffects.Close, board.TableEffects.Tab);
             Add(board.Victory.Root, board.Victory.Close, board.Menu.Toggle);
-            Add(board.ResourceDecision.Root, board.ResourceDecision.Close, board.ResourceDecision.Tab);
             Add(board.Reinforcements.Root, board.Reinforcements.Close, board.Reinforcements.Tab);
             Add(board.Sovereigns.Inspector, board.Sovereigns.Close, board.Characters.Tab);
             Add(board.Information.Root, board.Information.Close, board.Root);

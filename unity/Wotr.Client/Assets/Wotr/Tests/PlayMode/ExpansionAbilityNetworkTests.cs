@@ -34,23 +34,36 @@ namespace Wotr.PlayTests
                 var nation = dain ? "dwarves" : "north";
                 var local = choice.RulerRecruitment.LocalRegion;
                 var remote = choice.RulerRecruitment.Settlements.First(r => r != local);
-                foreach (var placement in dain
+                // UI-450 (owner): the Reserve is open at once; each figure stands with its click and the last one sends the
+                // recruitment without a ✓. The layout and a reconnect are checked with the last figure still to place.
+                Assert.IsTrue(client.Board.Reinforcements.IsOpen, "The ability's click opens the Reserve.");
+                var placements = dain
                     ? new[] { (local, UnitKind.Elite), (remote, UnitKind.Leader) }
-                    : new[] { (local, UnitKind.Regular), (remote, UnitKind.Leader), (local, UnitKind.Regular) })
-                {
-                    client.Board.Map.Select(placement.Item1);
-                    Click(client, "character-reserve-" + nation + "-" + placement.Item2);
-                }
+                    : new[] { (local, UnitKind.Regular), (remote, UnitKind.Leader), (local, UnitKind.Regular) };
                 var before = client.Board.View.Units.Count(u => u.Nation == nation && u.Location == "reserve");
-                Assert.IsNull(client.Board.Tray.Q<Button>("cost-" + choice.Dice.Single()), "UI-239: the only die is taken for the player.");
-                await Layout(room, client, dain ? "dain" : "brand", "t34");
-                await Reconnect(room, client);
-                await room.Confirm(client);
+                var start = client.Board.View.Revision;
+                for (var index = 0; index < placements.Length; index++)
+                {
+                    if (index == placements.Length - 1)
+                    {
+                        Assert.IsNull(client.Board.Tray.Q<Button>("cost-" + choice.Dice.Single()), "UI-239: the only die is taken for the player.");
+                        await Layout(room, client, dain ? "dain" : "brand", "t34");
+                        await Reconnect(room, client);
+                    }
+                    var revision = client.Board.View.Revision;
+                    client.Board.Map.Select(placements[index].Item1);
+                    Click(client, "character-reserve-" + nation + "-" + placements[index].Item2);
+                    if (index < placements.Length - 1)
+                        Assert.AreEqual(revision, client.Board.View.Revision, "A figure before the last is only placed.");
+                }
+                await room.At(start + 1);
                 Assert.AreEqual(before - (dain ? 2 : 3), room.Sh.Board.View.Units.Count(u => u.Nation == nation && u.Location == "reserve"));
                 Assert.AreEqual(DieLocation.Spent, room.Sh.Board.View.Dice.Single(d => d.Id == choice.Dice.Single()).Location);
             }
         }
 
+        // UI-271: with the paying die selected the Balrog's figure glows in his region's panel, says what its click does,
+        // and its click (de)activates him at once; the panel lists no ability button.
         private static async Task Balrog(bool activate)
         {
             using (var room = await Connect(activate ? "t34-balrog-activate" : "t34-balrog-deactivate", ScenarioKind.CardPack))
@@ -58,11 +71,36 @@ namespace Wotr.PlayTests
                 var client = activate ? room.Sh : room.Fp;
                 var choice = client.Board.View.Options.Single(o => o.Kind == CommandKind.UseCharacterAbility)
                     .CharacterActions.Single(c => c.AbilityId == (activate ? "activate-balrog" : "deactivate-balrog"));
-                await Ability(room, client, choice, activate ? "balrog-activate" : "balrog-deactivate");
+                var region = client.Board.View.Characters.Single(c => c.Id == choice.CharacterId).Location;
+                await ComponentGestures.Cost(room, client, choice.Dice[0]);
+                var figure = await BalrogFigure(room, client, choice, region, activate);
+                await Layout(room, client, activate ? "balrog-activate" : "balrog-deactivate", "ui271");
+                await Reconnect(room, client);
+                figure = await BalrogFigure(room, client, choice, region, activate);
+                var revision = client.Board.View.Revision;
+                CardNetworkTests.Click(figure);
+                await room.At(revision + 1);
+                Assert.AreEqual(DieLocation.Spent, room.Fp.Board.View.Dice.Single(d => d.Id == choice.Dice[0]).Location);
                 Assert.AreEqual(activate ? 2 : 0, room.Fp.Board.View.Characters.Single(c => c.Id == choice.CharacterId).Level);
             }
         }
 
+        private static async Task<Button> BalrogFigure(MatchTestRoom room, MountedMatchClient client, CharacterActionOption choice,
+            string region, bool activate)
+        {
+            client.Board.Hover.Open(region);
+            await room.Settle();
+            var panel = client.Board.Hover.Panel;
+            Assert.IsNull(panel.Components.Root.Q<Button>("component-" + ComponentGestures.Character(choice)),
+                "UI-271: the Balrog's ability is used on his figure, not a button.");
+            var figure = panel.Root.Q<Button>("hover-figure-" + choice.CharacterId);
+            Assert.IsTrue(figure.ClassListContains("eligible-figure"));
+            StringAssert.Contains(activate ? "Click to activate the Balrog" : "Click to deactivate the Balrog", figure.tooltip);
+            return figure;
+        }
+
+        // UI-271: with a Muster die selected Gothmog's row in the Reserve panel offers a Regular (recruit) and an Elite
+        // (upgrade); the token's click uses the ability at once.
         private static async Task Gothmog(bool upgrade)
         {
             using (var room = await Connect(upgrade ? "t34-gothmog-upgrade" : "t34-gothmog-recruit", ScenarioKind.CardPack))
@@ -71,21 +109,37 @@ namespace Wotr.PlayTests
                 var before = client.Board.View.Units.Count(u => u.Location == "minas-morgul" && u.Kind == UnitKind.Regular);
                 var choice = client.Board.View.Options.Single(o => o.Kind == CommandKind.UseCharacterAbility)
                     .CharacterActions.Single(c => c.AbilityId == (upgrade ? "gothmog-upgrade" : "gothmog-recruit"));
-                await Ability(room, client, choice, upgrade ? "gothmog-upgrade" : "gothmog-recruit");
+                await ComponentGestures.Cost(room, client, choice.Dice[0]);
+                var token = await GothmogToken(room, client, upgrade);
+                client.Board.Hover.Open("minas-morgul");
+                await room.Settle();
+                Assert.IsNull(client.Board.Hover.Panel.Components.Root.Q<Button>("component-" + ComponentGestures.Character(choice)),
+                    "UI-271: Gothmog's ability stands in the Reserve panel, not the region panel.");
+                await Layout(room, client, upgrade ? "gothmog-upgrade" : "gothmog-recruit", "ui271");
+                await Reconnect(room, client);
+                token = await GothmogToken(room, client, upgrade);
+                var revision = client.Board.View.Revision;
+                CardNetworkTests.Click(token);
+                await room.At(revision + 1);
+                Assert.AreEqual(DieLocation.Spent, room.Fp.Board.View.Dice.Single(d => d.Id == choice.Dice[0]).Location);
                 Assert.AreEqual(before + (upgrade ? -1 : 1), room.Fp.Board.View.Units.Count(u => u.Location == "minas-morgul" && u.Kind == UnitKind.Regular));
             }
         }
 
-        private static async Task Ability(MatchTestRoom room, MountedMatchClient client, CharacterActionOption choice, string name)
+        private static async Task<Button> GothmogToken(MatchTestRoom room, MountedMatchClient client, bool upgrade)
         {
-            await ComponentGestures.Cost(room, client, choice.Dice[0]);
-            await ComponentGestures.Show(client, ComponentGestures.Character(choice));
-            await Layout(room, client, name, "t34");
-            await Reconnect(room, client);
-            var revision = client.Board.View.Revision;
-            await ComponentGestures.Select(client, ComponentGestures.Character(choice));
-            await room.At(revision + 1);
-            Assert.AreEqual(DieLocation.Spent, room.Fp.Board.View.Dice.Single(d => d.Id == choice.Dice[0]).Location);
+            client.Board.Reinforcements.Open();
+            await room.Settle();
+            var row = client.Board.Reinforcements.Root.Q("reinforcement-gothmog");
+            Assert.IsNotNull(row, "Gothmog's row stands in the Reserve panel.");
+            StringAssert.StartsWith("Gothmog · Minas Morgul", row.Q<Label>("reinforcement-name").text);
+            var token = row.Q<Button>("reserve-token-gothmog-" + (upgrade ? UnitKind.Elite : UnitKind.Regular));
+            Assert.IsTrue(token.enabledSelf && token.ClassListContains("eligible-token"));
+            // UI-420 (owner, TOOLTIP_AUDIT rule 4): the figure as printed, its nation first, then the reserve.
+            StringAssert.StartsWith(upgrade ? "Sauron Elite · " : "Sauron Regular · ", token.tooltip);
+            StringAssert.Contains(upgrade ? "Click to replace a Sauron Regular in Minas Morgul" : "Click to recruit a Sauron Regular in Minas Morgul",
+                token.tooltip);
+            return token;
         }
 
         private static async Task Travel(Side side)

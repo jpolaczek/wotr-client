@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+  <!-- UI-470 (owner, 2026-11-03): a checkbox of the menus (a variant chip, an expansion's caption, a Settings toggle):
+       a small dark box edged with one muted-gold line; selected lights the line and draws a gold tick. -->
+  <rect x="1.5" y="1.5" width="11" height="11" rx="1.5" style="fill: var(--fe-row-fill); stroke: var(--fe-line)"
+    stroke-width="1"/>
+  <path d="M4.1 7.3 L6.1 9.3 L10 4.9" fill="none" style="stroke: var(--fe-rule-bright); opacity: var(--fe-tick-opacity)"
+    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

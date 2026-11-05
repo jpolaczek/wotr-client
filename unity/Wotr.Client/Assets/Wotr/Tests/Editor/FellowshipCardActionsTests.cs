@@ -6,11 +6,11 @@ using Wotr.Contracts;
 namespace Wotr.EditorTests
 {
     // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring with one click, without
-    // another die; Stay (finish after healing) keeps its console button.
+    // another die; UI-430 (owner): Stay (finish after healing) is the console's ✓, not a button.
     public sealed class FellowshipCardActionsTests
     {
         [Test]
-        public void AnotherWayHidesOnTheRingMovesOnTheTrackAndKeepsStayInTheConsole()
+        public void AnotherWayHidesOnTheRingMovesOnTheTrackAndFinishesWithTheConsolesConfirm()
         {
             var view = View(hidden: false);
             Assert.AreEqual(FellowshipCardActions.Hide, FellowshipCardActions.Choice(view, CommandKind.HideFellowship));
@@ -19,9 +19,12 @@ namespace Wotr.EditorTests
             controls.Refresh(view, Draft(view), new ActionDieContext(), true, false);
             Assert.IsTrue(controls.HideOffered, "The Ring glows for the card's Hide.");
             StringAssert.Contains("There Is Another Way", controls.HideTooltip);
-            CollectionAssert.AreEqual(new[] { "fellowship.stay" }, CardConsoleOptions.For(view, Draft(view)).Select(o => o.Id).ToArray(),
-                "Only Stay stays a console button.");
-            StringAssert.StartsWith("Hide: click the Fellowship's glowing marker on its track", FellowshipCardActions.Guidance(view));
+            Assert.IsEmpty(CardConsoleOptions.For(view, Draft(view)), "No console button: Stay is the ✓.");
+            var stay = FinishingOption.Option(view, Draft(view));
+            Assert.AreEqual(FinishingOption.AnotherWayStay, stay.Id);
+            Assert.IsTrue(stay.Enabled);
+            Assert.AreEqual("Hide: click the Fellowship's glowing marker on its track · ✓ finishes after healing",
+                FellowshipCardActions.Guidance(view));
             var draft = new TurnDraft();
             FellowshipCardActions.Choose(view, draft, FellowshipCardActions.Hide);
             Assert.AreEqual(CommandKind.ChooseEffect, draft.Kind);
@@ -52,7 +55,8 @@ namespace Wotr.EditorTests
                 You = Side.FreePeoples,
                 DecisionOwner = Side.FreePeoples,
                 Phase = GamePhase.ActionResolution,
-                Decision = new DecisionView { Id = "another-way", Kind = DecisionKind.EffectChoice, Presentation = FellowshipCardActions.Presentation },
+                Decision = new DecisionView { Id = "another-way", Kind = DecisionKind.EffectChoice, Presentation = FellowshipCardActions.Presentation,
+                    SourceId = "base.fp.character.10" },
                 Fellowship = new FellowshipView { RegionId = "rivendell", Hidden = hidden, Guide = "base.character.gollum" },
                 Options =
                 {

@@ -71,7 +71,7 @@ PASS: 8 geometries tests, 7 borders, 4 assembles and 6 validator measurements. E
 <a id="granice-pomiaru-i-platform"></a>
 ## Measurement and platform boundaries
 
-The new profile has 9 workloads × 4 layouts. The data layer comes from the safe projection of the real engine, including the state after the approved movement; the profiling process has no account or network connection. The real TurnInteraction refreshes the tray and contexts. Only MatchId/Revision have a monotonous replay envelope to ensure that the repeated snapshots pass a production order control; the game/options data remain unchanged. The `scripts/test-client.sh` tests use separate HTTP/WS/PostgreSQL clients on 5088. The separate TLS/WSS dragons with 13:48:12Z have been credited with two Python clients by isolated proxys with local verification of CA and localhost. This is not a test of the TLS stack of the Unity client and does not change the server implemented.
+The new profile has 9 workloads × 4 layouts (since UI-407, 11: see "Drag with edge pan" below). The data layer comes from the safe projection of the real engine, including the state after the approved movement; the profiling process has no account or network connection. The real TurnInteraction refreshes the tray and contexts. Only MatchId/Revision have a monotonous replay envelope to ensure that the repeated snapshots pass a production order control; the game/options data remain unchanged. The `scripts/test-client.sh` tests use separate HTTP/WS/PostgreSQL clients on 5088. The separate TLS/WSS dragons with 13:48:12Z have been credited with two Python clients by isolated proxys with local verification of CA and localhost. This is not a test of the TLS stack of the Unity client and does not change the server implemented.
 
 Texture has a measurement of native Unity bytes. Geometry has a measurement of the managed memory of the first data/index charging and the calculated payoad coordinates. Mesh Memory counter and the respect of the driver are global for the Player; we do not assign the whole to the map. Public API does not isolate native UIR buffers only of this layer. P99 does not replace the maximum condition of local feedback 100 ms. FPS without limit/vsync describes rendering performance, not screen frequency, nor display delay.
 
@@ -185,3 +185,34 @@ The files are in `.artifacts/map17-player`, and the full names are in the JSON r
 Fit does not cut east or south. The 1632×1338 multi-gym corresponds to a proportion of approximately 619×508 px in whole-1920-1.25; all 105 anchors are located in the atlas. The contours occupy [20,20]–[1612,1318], with an equal margin of 20 units. The flat edge of the eastern is part of the source viewBox. Gorgoroth, Khand, Far Harad and East Rhûn and Umbar/Near Harad are inside the full frame; the wide free sides result from the map height matching.
 
 The clear limits of the covers: with 125% fixed Fellowship HUD partially obscures the northeast/Iron Hills; you allow to reveal this passage. In the dense frame of the region, the hiver covers the text of the attached Phial, although its 23 figure and holder/Close card remain clear. We do not consider these frames as a simultaneous full visibility of both windows. The retained limit of the hand-held batch, physical smooth, Windows runtime, Intel and external host is not replaced by this profile.
+
+<a id="drag-with-edge-pan-ui-407"></a>
+## Drag with edge pan (UI-407)
+
+Since UI-407 (2026-10-30) `map-profile-2` has 11 workloads × 4 layouts = 44 results and 50 pictures: the nine above and
+`drag-edge-fp` and `drag-edge-sh`. Each carries its side's own largest army that can march — chosen with its Army die and
+picked up by a press that crosses the drag threshold — to an edge of the map, where it rests so the edge pan runs; when the
+map can pan no further, it goes to the opposite edge (`Runtime/Diagnostics/MapDragProfile.cs`). Measuring starts once the
+army is carried and the pan has moved the map; nothing is sent. The workloads use real projections of each side's own
+decision, recorded by the PlayMode `TabletopAcceptanceMatrixTests` from the server's `fp-army-move` and `sh-army-move`
+scenes into `.artifacts/ui407-map-drag.json` (projections only).
+
+```sh
+bash scripts/test-client.sh -testFilter Wotr.PlayTests.TabletopAcceptanceMatrixTests   # writes ui407-map-drag.json
+python3 scripts/review-map-client.py --input .artifacts/map17-profile.json \
+  --drag-input .artifacts/ui407-map-drag.json --output .artifacts/map17-player-ui407
+python3 scripts/test_map_profile.py
+```
+
+`review-map-client.py` passes the drag input to the Player (`--wotr-map-drag`) and rejects a report whose drag workload
+was not carried in every measured frame, whose edge pan did not move the map, or that carried the other side's army
+(`test_map_profile.py`, 14 cases). A Development profile run sizes its own window: the saved window mode is not applied
+(MENU-12 starts Fullscreen, a maximized window on macOS, which the profile's resolution requests could not leave). The
+stress workloads centre Helm's Deep in the side of the map the pinned card leaves clear, since the card now covers the left
+third at 125 %.
+
+Result (2026-10-30, Apple M1 Pro, heavily loaded machine): the drag workloads meet MC17's thresholds at every layout (lowest
+1080p FPS 455.3 and 495.9, p99 at most 6.04 ms, longest input-to-render 8.13 ms); `projection` and the two override
+workloads did not (up to 192.8 ms to render, 52.3 FPS at 1080p × 125 %), and the idle map ran at about a quarter of MC17's
+rate, so MC17 needs a rerun on an idle machine. Details: [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "Acceptance (UI-407)",
+and [profiles/ui407-map17-macos.json](profiles/ui407-map17-macos.json).

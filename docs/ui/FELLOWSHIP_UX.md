@@ -65,7 +65,7 @@ The legal subsequent regions and the selected end are highlighted, without arrow
 
 Portrait of Guide has a `Guide` badge, name and access to the ability. Since UI-249 there is no `Change guide` mode: in the Fellowship phase the legal candidates glow at once and their tooltip reads `Click to make … the Guide · This ends the Fellowship phase` before the click; one click on the portrait makes the decision. `Finish phase` leaves the current legal Guide. The mandatory selection after re-synthesis has its own context and continuity. The server solves the forced single kandydat/Golluma. In the Hunt the Guide's own response (Merry's or Pippin's separation, Gollum's reveal) is not used on this portrait but on the Guide's portrait in the Hunt window's response row (UI-360, HUNT_UX).
 
-`Separate companions` leads through portraits → common route → `Separate here`. The selected group, range and effects are visible before the final click. Information `Separated companions cannot rejoin` explains the decision durability. The change of the group converts the legality of draft according to options; it does not select alternate characters. The usual action requires a specific dice, the forced effect retains its own cost and returns to the overriding decision.
+`Separate companions` leads through portraits → common route → `Separate here`. The selected group, range and effects are visible before the final click. Information `Separated companions cannot rejoin` explains the decision durability (UI-456, owner 2026-11-03: in the ✓'s summary only, no longer a line of the panel; the panel states where the move stands and the console gives every instruction — [UX_SPEC](UX_SPEC.md#far-sighted-moves-only-companions-outside--ui-456)). The change of the group converts the legality of draft according to options; it does not select alternate characters. The usual action requires a specific dice, the forced effect retains its own cost and returns to the overriding decision.
 
 In siege, with special capacity and Mordor, the presentation is based on options/preview server. Removing from the game is not shown as a move on the map. Once separated, the self-traveling uses the existing UI-21; the project does not rebuild this separate flow.
 
@@ -145,8 +145,8 @@ The user's application with 2026-10-14: "Let's plan a graphical representation, 
 <a id="drużyna-na-torze"></a>
 ### Fellowship on track
 
-- At `MordorStep`, the Fellowship figure stands on the disc of the current step with the cliff ⁇
-  Hidden / ◆ Revealed; it does not disappear from the map.
+- At `MordorStep`, the Fellowship figure stands on the disc of the current step with the symbol ◇
+  Hidden / ◆ Revealed (since UI-427 on the plaque on its base, [below](#ui-427)); it does not disappear from the map.
 - After changing the step, it moves along the path (approx. 400 ms, like figures moves); at Stop it
   stays with a short "Stop" sign at the disc.
 - At the figure: a small counter Corruption ‘x/12’ and, when `MordorAttemptedThisTurn == false`, a
@@ -339,7 +339,7 @@ DecisionHostNavigation leads to an existing Fellowship, Hunt tray or separate ve
 <a id="początkowe-ojczyzny-council--ui-69"></a>
 ## The initial homeland of the Council — UI-69
 
-The choice of homelands remains a separate decision of the first Fellowship Phase, after the preparation of the version and Recovery. It is not an ordinary move or disconnect behind die Homelands uses the same private host, but new ID context; one ✓ also includes an empty set. Fellowship in the panel only removes the unsent allocation of the selected figure.
+The choice of homelands remains a separate decision of the first Fellowship Phase, after the preparation of the version and Recovery. It is not an ordinary move or disconnect behind die Homelands uses the same private host, but new ID context; one ✓ also includes an empty set. Fellowship in the panel only removes the unsent allocation of the selected figure. Since UI-482 the client answers the step itself, after a short random pause, when no companion can be placed; see the Homelands item under the Council of Rivendell below.
 
 Only the public map, Characters and Fellowship are agreed to the approval. At one departure, the next step is the Shadow and its resources; the client resumes not choosing token for it. Sources and results: UI-69.
 
@@ -388,7 +388,10 @@ The Fellowship panel has no Declare position or Enter Mordor button. In the Fell
   click starts the route on the map (`MapFellowshipMarker.DeclareRequested`);
 - the glowing gate (or step 0) of the Mordor track enters Mordor (UI-155);
 - the console names both: "Declare: click the Fellowship figure · Enter Mordor: click the glowing gate · … or continue
-  to the Hunt." (`TurnConsoleState`).
+  to the Hunt." (`TurnConsoleState`). Since UI-434 (2026-10-31,
+  [UX_SPEC](UX_SPEC.md#every-object-a-hint-asks-to-click-visibly-glows--ui-434)) the offered gate wears the gold
+  ChoiceGlow on the map, and the hint names the map's gate in one clause with the declaration: "Declare or enter Mordor:
+  click the glowing figure or gate on the map · or continue to the Hunt."
 
 Finish phase stays in the panel; the Guide is chosen on its portrait (UI-249). Tests: `TurnConsoleStateTests.FellowshipPhaseNamesTheFigureAndTheGate`,
 the PlayMode gestures `FellowshipGestures.Declare` and `FellowshipGestures.EnterMordor`.
@@ -487,12 +490,80 @@ eligible companion starts a group and companions from the same place join it; a 
 companion once the current group has its route, starts the next group; clicking a member of another planned group
 selects that group for editing (its portrait stays in the roster, dimmed with a blue rim); a group whose last member
 is clicked away disappears. "Group 2 / 3" in the route row shows the plan's progress and its tooltip lists every
-group with its destination. Stay all remains the explicit legal no-move choice, the shared Back undoes the last
+group with its destination. Stay all remains the explicit legal no-move choice (UI-432, 2026-10-31: the ✓ with an empty
+plan is that choice now, [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)), the shared Back undoes the last
 gesture, and the plan keeps its one confirmation. Required groups stay locked. A companion picked on the map for an
 ordinary Character-die move starts over from that source, as before. Test:
 `CompanionGroupGestureTests`, `TravelActionTests`;
 `Strategy01NetworkTests` (Book of Mazarbul).
 
+## Private versions and the starting Guide on the portraits — UI-269 (2026-10-19)
+
+In a Lords game the Free Peoples choose, before the first turn and in private, the version of each companion that
+has two (Gandalf the Grey or the Keeper of Narya, required; with the Council of Rivendell and Fate of Erebor the
+other alternatives) and the starting Guide (Gandalf or Strider) — wotr-server rules L02/L03 (docs/rules/EXPANSIONS.md, T25–T26). The choice is made on the
+Fellowship panel, which unrolls and holds the decision (DecisionRoutes: Fellowship); the old Setup tab and window
+remain only for the Council's homelands (UI-270).
+
+1. Each companion with two versions shows a two-faces badge at its portrait's upper left
+   (`graphicalassets/ui/src/fellowship/versions.svg`); the required version glows until it is chosen. The portrait
+   shows the drafted version's art and name, and its tooltip says what its click does and which version is chosen.
+2. A click on such a portrait compares its two version cards side by side under the portraits (Original and
+   Alternate: level, movement, leadership, nation and abilities, each ability readable on focus); a click on a card
+   chooses that version. The panel widens for the two cards while the versions are chosen.
+3. Each starting Guide candidate wears a crown just above its portrait (`fellowship/guide-crown`, lit on the
+   chosen Guide); its click makes the starting Guide and its tooltip gives the Guide ability.
+4. The ✓ sends the whole choice once the required version and the Guide are chosen; until then a line says what is
+   missing. The draft survives a reconnect and a restart of the client.
+5. The Shadow sees none of it — no badge, crown or card — and its console reads "FREE PEOPLES PREPARE THE FELLOWSHIP".
+
+Tests: `CompanionSetupPanelTests` (cards, readiness, the portraits' badges and crowns, privacy);
+`CompanionSetupPanelNetworkTests` (every configuration, reconnect, keyboard, layouts at 1366/1920 and 100%/125%,
+the restart recovery); `BoardCompletionLayoutTests`, `BoardMenuDraftTests`, `BoardProfileDriverTests`.
+
+## The Council of Rivendell on its objects — UI-270 (2026-10-19)
+
+The rest of the Council of Rivendell (wotr-server rules L03, docs/rules/T26-COUNCIL.md) is played on its objects; no
+Council decision opens the generic window, and the separate Setup window and its rail tab are retired.
+
+1. **Homelands.** After the versions, the Fellowship panel holds the private homelands. Each companion who may start
+   in its homeland glows; a click selects it and lights its homelands on the map, and a click on one places it (a drag
+   of the portrait onto the region is a shortcut). The portrait then shows where it starts ("→ Ered Luin"), and its
+   tooltip names the homelands and the version's nation ("Leaving activates the Elves", or that a version without a
+   nation icon activates none). A second click on the selected companion already placed keeps it with the Fellowship
+   (UI-347, D14; the "Keep with the Fellowship" button is gone): its tooltip and the console's hint say so whenever
+   that click is available ("Click Gimli again to keep this companion with the Fellowship …"). UI-482 (owner,
+   2026-11-04): the panel keeps no instruction or token line; the console's hint names the Council Action Tokens the Shadow
+   will receive ("Shadow chooses one Council token", "Shadow receives both Council tokens") and its tooltip what each does.
+   The console's ✓ sends, an empty choice included; with no companion to place, the client sends the empty choice itself
+   after a short random pause ([UX_SPEC](UX_SPEC.md#the-homelands-answer-themselves-with-no-companion-to-place--ui-482)), because
+   the server keeps the step open to hide the versions. Escape passes the held panel by.
+2. **Council Action Tokens.** In a Council game the Shadow's pool has two fixed token slots, Politics (a war banner
+   stepping forward) and Travel (the wings of a fell beast) — `graphicalassets/ui/src/tokens/council-*.svg`. A token
+   not received or spent is greyed; a ready one shows plain; while the Council's choice offers both (one companion
+   left) they glow and a click takes one at once; during an action a usable token glows and its click starts its
+   printed use at once, with no Dice & tokens panel step (UI-347, D13). When a Kings Chieftain can enter with the
+   token, its first click marks it and lights his Characters row instead, and a click on the marked token starts its
+   printed use; the console's hint names both. During the Chieftain's entry the medallion is its cost: its click adds
+   the token and takes it back when the entry does not require it; a required single token is taken at once. No "No
+   token" or token-name button remains.
+3. **The alternate Guides' responses.** In the Hunt's Guide window the alternates' responses — Boromir, Gimli and
+   Legolas separate and reduce the damage; both alternate Hobbits cancel the tile; Fate's Gimli, Dwarven Lord, leaves
+   as the Guide — stand as response objects in the Hunt window's response row (portrait, name, what it does); a click
+   uses one, the console's Pass declines (UI-291). Since UI-360 the base Guides' responses (Merry, Pippin, Gollum) stand in the same row.
+4. **Art of Disappearing.** A Hobbit alternate eliminated in a battle chooses its adjacent region on the map, as every
+   region step (also during the battle).
+5. **The Fellowship Box.** In a Council game the Free Peoples' pool counts the dice in the Fellowship Box (Strider,
+   Dúnadan) as a fourth counter beside Spent, Hunt and Out (`icons/fellowship-box`).
+6. **Alternate versions.** An alternate keeps its base portrait; only its owner sees the alternate mark
+   (`fellowship/alternate`: the two faces with the alternate lit) on its Fellowship portrait and Characters row, and
+   its tooltip says so.
+
+Tests: `CouncilHomelandPanelTests`, `CouncilObjectsTests`, `CompanionSetupPanelTests`, `DecisionRoutesTests`;
+`CouncilHomelandPanelNetworkTests` (empty, stay, one token each, two and five departures, Fate homelands, layouts,
+restarts), `ExpansionDecisionNetworkTests`, `CompanionSetupPanelNetworkTests`, `BoardCompletionLayoutTests`,
+`BoardCompletionContextNetworkTests`, `BoardProfileDriverTests`, `ExpansionTokenNetworkTests`,
+`CharacterRosterActionNetworkTests`, `FateGimliNetworkTests`.
 <a id="ui-280"></a>
 ## The Fellowship's figure hides it on the map — UI-280 (2026-10-19)
 
@@ -551,7 +622,8 @@ Foes!, Gwaihir the Windlord, We Prove the Swifter, and a Shadow's journey alike)
 painted portraits with their short names under them, as on the Fellowship panel, instead of name buttons; a Nazgûl shows
 its figure. A portrait that can still be chosen glows with the shared ChoiceGlow, pulsing its rim and plate only (the
 row fills its width, so it does not swell); a chosen one shows its selection. Destinations stay region clicks on the
-map, and "Stay all" and "Stay here" stay (approved exceptions, UI-250). Tests:
+map, and "Stay all" and "Stay here" stay (approved exceptions, UI-250; UI-432, 2026-10-31: both are gone — Stay here is
+the lit origin region's click, Stay all the console's ✓ with an empty plan, [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)). Tests:
 `CompanionJourneyPortraitTests.TheJourneysCompanionsArePortraitsThatGlowUntilChosen`,
 `Strategy01NetworkTests.BookMovesIndependentGroupsAndSurvivesReconnect`,
 `Strategy01LayoutTests.ProtectionBookAndScoutsFitWithoutScrolling`.
@@ -580,7 +652,8 @@ Test: `FellowshipPanelNetworkTests` (both cases).
 
 The owner changed the Ring's concept (after UI-232): the control is the icon on the track — the Fellowship's marker on
 the progress track, or on the Mordor track in Mordor. While hiding is legal with the chosen die it glows and pulses
-(ChoiceGlow), presses in, says "Click the Fellowship's marker on its track to hide it…", and a click hides
+(ChoiceGlow), presses in, says "Click to hide the Fellowship · No progress; this die does not enter the Hunt" (UI-420: one wording for the marker,
+the map figure and the console), and a click hides
 (`FellowshipTrackRow.OfferMarker`); otherwise it is a picture that takes no pointer. The Ring on the plaque and in the
 panel's header is purely informational now: a picture of the condition whose click reaches its host (the plaque
 opens the panel, the header row locates the Fellowship); the plaque's click no longer hides. The figure on the map still
@@ -640,7 +713,9 @@ The owner's decision, after the inventory of the panel's buttons (UI-297):
   without a drawn route has nothing to clear.
 
 Undo step and Cancel of a drawn route, Stay, the ruler's travel modes, the more-than-three reaction buttons, Locate and
-× stay. Tests: `FellowshipPanelControlsTests`, `CharacterNetworkTests` (the forced separation's Cancel is disabled),
+× stay (UI-432, 2026-10-31: Stay and the ruler's travel modes are gone — the origin region's click and Thranduil's
+Far-sighted picture, as UI-276 D18 decided; Undo step and Cancel stay, as the console's ↶ is off in the panel —
+[UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)). Tests: `FellowshipPanelControlsTests`, `CharacterNetworkTests` (the forced separation's Cancel is disabled),
 `BoardCompletionHostTests`, and the Fellowship recovery flows (`FellowshipPanelNetworkTests`, `FellowshipGuideNetworkTests`,
 `MordorNetworkTests`, `FellowshipRoutesNetworkTests`) through `PendingRecovery`.
 
@@ -681,7 +756,8 @@ The watching board shows the Fellowship's recorded changes on their own objects,
     one.
   - Hiding or revealing in place marks the plaque's Ring.
   - Entering Mordor puts the figure on the Mordor track and traces the panel's Mordor row. The camera stays.
-- **The roster.** A casualty is marked on its portrait and then leaves the roster. A new Guide takes the badge.
+- **The roster.** A casualty is marked on its portrait and then leaves the roster. A new Guide takes the badge; one who
+  is no Companion yet (Sméagol) first flies from his Hunt tile into the roster (UI-462, [UX_SPEC](UX_SPEC.md#ui-462)).
 - **Once.** The released view does not stage the tracks again (AUDIO-06's two stages run only when no presentation
   showed them). Skip shows the latest tracks at once.
 - **Privacy.** A hidden move shows no route, region or trace on the map.
@@ -692,3 +768,58 @@ The watching board shows the Fellowship's recorded changes on their own objects,
 In the opponent's presentation the panel opened read-only settles for 0.4 s. The plaque's state (Hidden, Revealed) lights
 up before it turns, and each track stage lights its row before the token moves, sounding its cue as it moves; each change
 then holds lit for 0.8 s ([OPPONENT_ACTIONS_UX §6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315)).
+
+<a id="council-setup-defaults--ui-370-2026-10-27"></a>
+## The Council's setup starts complete — UI-370 (2026-10-27)
+
+Owner request: the default Guide is Gandalf, so Confirm can be clicked at once, and Confirm stands in the row of Finish
+phase. The setup's draft starts with Gandalf the Grey crowned as Guide (when he may be) and every required companion
+in its printed version (`CouncilDraft.Defaults`); the crowns and the version cards still change both, and nothing is
+sent until the click. During the Council's setup (versions and homelands) the console's ✓ stands in the Fellowship
+panel's action row beside Finish phase (`FellowshipPanel.ActionRow`; since UI-481, owner 2026-11-04, the console's ✓ confirms instead). Tests:
+`CompanionSetupPanelNetworkTests` (ready at once, the ✓'s place, `ui370-council-setup-*.png`),
+`CouncilHomelandPanelNetworkTests`.
+
+<a id="ui-406"></a>
+## The Fellowship's figure stands on a base — UI-406 (2026-10-30)
+
+The tabletop figures' design ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), decision 4, "As built (UI-406)"): the
+Fellowship's figure on the map is a miniature like the characters'. It stands on their round Free Peoples stand (16 board
+units wide, the blue enamel with a gilt edge) with a contact shadow down and right, its feet on the middle of the
+stand's top face — on its region's Fellowship place and on the Mordor track's step alike. The blue underline of the
+panels' figure tiles is gone: the stand is the side's colour. On the track the figure keeps UI-283's size (80 points
+tall zoomed in, 64 on the whole map) with the base below it. Its flight (UI-404) leaves its shadow on the ground. Its
+clicks, its glow (UI-236, UI-280, UI-282) and its tooltip are unchanged. Tests: `TabletopObjectsTests` (on a region and
+on the track), `MordorLayoutTests` (the base on its step), `MapVisibilityTests`, `FellowshipMotionNetworkTests`.
+
+<a id="ui-427"></a>
+## The Fellowship's figure shows ◇ Hidden or ◆ Revealed — UI-427 (2026-10-30)
+
+UI-407's acceptance matrix found that the figure's state had not been visible since the figure became a miniature:
+`MapFellowshipMarker.Apply` wrote ◇/◆ as the button's text, which the base, the shadow and the figure, drawn after it,
+covered. "Fellowship on track" (F07a) asks for the symbol on the figure, so the figure now carries it on its base, on its
+region and on the Mordor track alike ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-427)"):
+
+- **The plaque** (`FellowshipStateBadge`): a code-drawn plaque hanging on the front of the base, as an army's plaque hangs
+  on its stand — the Free Peoples' blue enamel with a gilt rim (Styles/Armies.uss), 24 × 16 of the figure's design points
+  from its feet line down, inside its 64 × 80 box, drawn last so nothing of the figure covers it. The diamond is painted
+  in ivory: outlined (◇) while the Fellowship is hidden, filled (◆) once it is revealed. It repaints only when the state
+  changes; the button has no text any more.
+- **Readable at both levels.** It scales with the figure (zoomed in on a region 13–18 points wide, on the track 21–27).
+  Far out, where a region's figure is drawn at 0.45 of its design size, the plaque never shrinks below its size at 0.62:
+  it grows round the middle of its top edge (a scale written only when the zoom changes it), so it stays clear of the
+  figure's feet. The flight (UI-404) draws the same plaque.
+- **No click of its own.** It takes no pointer: the figure's click stays the move, the declaration or the hide (UI-236,
+  UI-280, UI-282), and its ChoiceGlow is unchanged. The tooltips already name the state ("Fellowship · Hidden · …",
+  "Fellowship · Revealed · Mordor step 3 of 5").
+- **Tests.** EditMode `FellowshipFigureHideTests.ThePlaqueOnTheBaseShowsHiddenOrRevealed` (a region and the track: the
+  plaque is the figure's last child, takes no pointer and switches with `Hidden`) and `FarOutThePlaqueKeepsAReadableSize`;
+  PlayMode `TabletopObjectsTests` (on its region in four layouts, zoomed in and, while it offers a click, on the whole
+  map; on the track zoomed in and on the whole map; each frame hidden, revealed and hidden again: the plaque shown below the feet on the base's front, at least
+  9.5 points tall, uncovered, and the diamond read from the frame — an ivory middle for ◆, a blue middle inside an ivory
+  outline for ◇; pictures `ui427-near-*`, `ui427-far-*`, `ui427-track-*`), `MordorLayoutTests` (the acceptance screens of
+  both sides at steps 0, 3 and 5 hidden and revealed, and the track in four layouts at both levels),
+  `OpponentHuntPresentationTests` (the revealed and the re-hidden figure).
+
+A figure carried onto the Fellowship's figure is dropped on the region the Fellowship stands in, as a click there would
+be (UI-428, [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md), "Carrying a figure — UI-405").

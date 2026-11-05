@@ -1,4 +1,4 @@
-/* UI-97: the player's dice panel at the bottom left, in the gilt and enamel of the board.
+/* UI-97: the player's dice panel at the bottom left, since UI-472 in the thin card of GameChrome.uss.
    Medallions take the enamel of their side (dice/medallion-free|shadow) and carry a face glyph
    from dice/faces; 9-slice values are texture pixels. Layout widths stay in Wotr.uss, so the
    short-viewport, planning and sovereign variants keep their arrangement. */
@@ -11,42 +11,34 @@
     border-top-width: 0;
 }
 
+/* UI-494 (owner, 2026-11-04): it stands on the screen's bottom and left edges, as the top bar and the cards do. */
 #board-screen .dice-panel {
-    margin: 4px 0 0 4px;
+    margin: 8px 0 0 0;
     padding: 4px 8px 5px 8px;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 
-/* Header band in red lacquer with the side name. */
+/* The header with the side name. UI-484 (owner, 2026-11-04: "this bar looks out of place"): no framed bar; the side's
+   colour melts into the card from the left edge, over a fading hairline, under the same quiet title as every panel. */
 #board-screen .dice-panel .dice-header {
     height: 24px;
     min-height: 24px;
     margin: 0 0 3px 0;
-    padding: 0 2px 0 17px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
+    padding: 0 2px 0 8px;
+    background-image: var(--game-side-band-shadow);
 }
+/* UI-466 (owner): the Free Peoples' band is blue; the Shadow's red. */
+#board-screen .dice-panel .dice-header.dice-header-free { background-image: var(--game-side-band-free); }
 #board-screen .dice-panel .dice-header > .title {
     margin: 0;
     padding: 0;
     flex-shrink: 1;
     overflow: hidden;
     font-size: 13px;
-    letter-spacing: 0.8px;
-    -unity-font-style: bold;
-    color: rgb(241, 223, 166);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+    letter-spacing: 1.2px;
+    -unity-font-style: normal;
+    color: var(--game-title-text);
 }
 #board-screen .dice-panel .dice-header Button {
     height: 20px;
@@ -54,19 +46,9 @@
     margin: 0 0 0 3px;
     padding: 0 3px;
     font-size: 12px;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
 }
-#board-screen .dice-panel .dice-header Button:hover,
-#board-screen .dice-panel .dice-header Button:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
 
 /* Medallions. Three classes beat the older two-class die rules; the later planning rules still compact them. */
 .dice-panel .available-dice .die.die-free,
@@ -134,7 +116,58 @@
 .dice-panel .die.special-die .die-origin { color: rgb(241, 223, 166); font-size: 9px; height: 11px; bottom: 2px; }
 .dice-panel .die .die-badge { color: rgb(255, 214, 120); }
 
-/* Counters: icon and count on a gilt-edged button; a click still opens both pools. */
+/* UI-267: a Lords special die is the round die in its origin's art (dice/special-<origin>) with the origin emblem at its
+   lower right and, for a Remove result, the star at its upper right. It is lit while the special-die choice can keep
+   it and dimmed in its slot when not kept this turn. The lit art carries the glow, so the generic candidate border
+   stays off. */
+.dice-panel .available-dice .die.lords-die { width: 36px; min-width: 36px; border-radius: 18px; }
+.dice-panel .available-dice .die.lords-die.resource-candidate { border-color: rgba(0, 0, 0, 0); }
+.dice-panel .die.lords-die-vilya { background-image: resource("Wotr/Art/UI/dice/special-vilya"); }
+.dice-panel .die.lords-die-vilya:hover, .dice-panel .die.lords-die-vilya:focus { background-image: resource("Wotr/Art/UI/dice/special-vilya-hover"); }
+.dice-panel .die.lords-die-vilya.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-vilya-lit"); }
+.dice-panel .die.lords-die-vilya:active { background-image: resource("Wotr/Art/UI/dice/special-vilya-pressed"); }
+.dice-panel .die.lords-die-nenya { background-image: resource("Wotr/Art/UI/dice/special-nenya"); }
+.dice-panel .die.lords-die-nenya:hover, .dice-panel .die.lords-die-nenya:focus { background-image: resource("Wotr/Art/UI/dice/special-nenya-hover"); }
+.dice-panel .die.lords-die-nenya.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-nenya-lit"); }
+.dice-panel .die.lords-die-nenya:active { background-image: resource("Wotr/Art/UI/dice/special-nenya-pressed"); }
+.dice-panel .die.lords-die-narya { background-image: resource("Wotr/Art/UI/dice/special-narya"); }
+.dice-panel .die.lords-die-narya:hover, .dice-panel .die.lords-die-narya:focus { background-image: resource("Wotr/Art/UI/dice/special-narya-hover"); }
+.dice-panel .die.lords-die-narya.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-narya-lit"); }
+.dice-panel .die.lords-die-narya:active { background-image: resource("Wotr/Art/UI/dice/special-narya-pressed"); }
+.dice-panel .die.lords-die-balrog { background-image: resource("Wotr/Art/UI/dice/special-balrog"); }
+.dice-panel .die.lords-die-balrog:hover, .dice-panel .die.lords-die-balrog:focus { background-image: resource("Wotr/Art/UI/dice/special-balrog-hover"); }
+.dice-panel .die.lords-die-balrog.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-balrog-lit"); }
+.dice-panel .die.lords-die-balrog:active { background-image: resource("Wotr/Art/UI/dice/special-balrog-pressed"); }
+.dice-panel .die.lords-die-gothmog { background-image: resource("Wotr/Art/UI/dice/special-gothmog"); }
+.dice-panel .die.lords-die-gothmog:hover, .dice-panel .die.lords-die-gothmog:focus { background-image: resource("Wotr/Art/UI/dice/special-gothmog-hover"); }
+.dice-panel .die.lords-die-gothmog.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-gothmog-lit"); }
+.dice-panel .die.lords-die-gothmog:active { background-image: resource("Wotr/Art/UI/dice/special-gothmog-pressed"); }
+.die.lords-die .die-origin-emblem {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 15px;
+    height: 15px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.die.lords-die .die-remove-star {
+    position: absolute;
+    right: -4px;
+    top: -4px;
+    width: 13px;
+    height: 13px;
+    background-image: resource("Wotr/Art/UI/dice/remove-star");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.die-origin-vilya { background-image: resource("Wotr/Art/UI/dice/origins/vilya"); }
+.die-origin-nenya { background-image: resource("Wotr/Art/UI/dice/origins/nenya"); }
+.die-origin-narya { background-image: resource("Wotr/Art/UI/dice/origins/narya"); }
+.die-origin-balrog { background-image: resource("Wotr/Art/UI/dice/origins/balrog"); }
+.die-origin-gothmog { background-image: resource("Wotr/Art/UI/dice/origins/gothmog"); }
+.die.lords-die.set-aside { opacity: 0.5; -unity-background-image-tint-color: rgb(140, 140, 140); }
+.die.lords-die.set-aside > * { -unity-background-image-tint-color: rgb(150, 150, 150); }
+
+/* Counters: icon and count on a thin button (UI-471); a click still opens both pools. */
 #board-screen .dice-panel .resource-locations { margin: 2px 0 0 0; }
 #board-screen .dice-panel .resource-locations .action {
     flex-grow: 1;
@@ -148,19 +181,9 @@
     font-size: 14px;
     -unity-font-style: bold;
     -unity-text-align: middle-left;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button");
-    -unity-slice-top: 24;
-    -unity-slice-right: 24;
-    -unity-slice-bottom: 24;
-    -unity-slice-left: 24;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
 }
-#board-screen .dice-panel .resource-locations .action:hover,
-#board-screen .dice-panel .resource-locations .action:focus { background-image: resource("Wotr/Art/UI/frames/button-hover"); }
 #board-screen .dice-panel .resource-locations .action:last-child { margin-right: 0; }
 /* UI-230: the location counts are information only, pictures with a number rather than buttons. */
 #board-screen .dice-panel .resource-locations .action.read-only,
@@ -170,6 +193,7 @@
 .pool-count-spent #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/spent"); }
 .pool-count-hunt #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/hunt"); }
 .pool-count-discarded #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/out"); }
+.pool-count-fellowshipbox #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/fellowship-box"); }
 
 /* Elven Rings as ring icons; a selected ring keeps the gold outline. */
 #board-screen .dice-panel .pool-tokens { margin: 2px 0 0 0; }
@@ -188,6 +212,32 @@
 }
 #board-screen .dice-panel .pool-tokens .pool-ring.selected { border-color: rgb(245, 212, 133); }
 
+
+/* UI-270: the Shadow's Council of Rivendell tokens in two fixed slots: lit while offered or usable now, dim when not
+   received or spent; the medallion shows the state, never a button plate. */
+#board-screen .dice-panel .pool-tokens .council-token {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    min-height: 30px;
+    margin: 0 3px 0 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+}
+#board-screen .dice-panel .pool-tokens .council-token:disabled { opacity: 1; }
+#board-screen .dice-panel .pool-tokens .council-token-politics { background-image: resource("Wotr/Art/UI/tokens/council-politics-council"); }
+#board-screen .dice-panel .pool-tokens .council-token-politics:hover:enabled { background-image: resource("Wotr/Art/UI/tokens/council-politics-council-hover"); background-color: rgba(0, 0, 0, 0); }
+#board-screen .dice-panel .pool-tokens .council-token-politics.legal-target, #board-screen .dice-panel .pool-tokens .council-token-politics.selected { background-image: resource("Wotr/Art/UI/tokens/council-politics-council-lit"); }
+#board-screen .dice-panel .pool-tokens .council-token-politics.council-spent { background-image: resource("Wotr/Art/UI/tokens/council-politics-council-spent"); }
+#board-screen .dice-panel .pool-tokens .council-token-travel { background-image: resource("Wotr/Art/UI/tokens/council-travel-council"); }
+#board-screen .dice-panel .pool-tokens .council-token-travel:hover:enabled { background-image: resource("Wotr/Art/UI/tokens/council-travel-council-hover"); background-color: rgba(0, 0, 0, 0); }
+#board-screen .dice-panel .pool-tokens .council-token-travel.legal-target, #board-screen .dice-panel .pool-tokens .council-token-travel.selected { background-image: resource("Wotr/Art/UI/tokens/council-travel-council-lit"); }
+#board-screen .dice-panel .pool-tokens .council-token-travel.council-spent { background-image: resource("Wotr/Art/UI/tokens/council-travel-council-spent"); }
+#board-screen .dice-panel .pool-tokens .council-token:active { scale: 0.92 0.92; }
+
 /* UI-183: while the player's decision takes dice from the pool (the Hunt allocation, an armed Elven Ring, a card that
    waits for its die) the pool's frame glows gold, with the padding narrowed so no die moves; each die the Hunt can
    take glows green and each die already allocated to it wears a gold ring. */
@@ -198,7 +248,7 @@
     background-color: rgba(231, 193, 107, 0.1);
     padding: 1px 6px 1px 6px;
 }
-#board-screen .dice-panel .die.hunt-candidate { border-width: 2px; border-color: rgb(144, 203, 172); border-radius: 18px; }
+#board-screen .dice-panel .die.hunt-candidate { border-width: 2px; border-color: rgb(255, 214, 112); border-radius: 18px; }
 /* UI-204: with motion on, the dice the Hunt can still take pulse together, so adding them is the evident next step. */
 .motion-enabled #board-screen .dice-panel .die.hunt-candidate {
     transition-property: border-color, background-color;
@@ -207,22 +257,82 @@
 }
 .motion-enabled #board-screen .dice-panel.hunt-candidates-bright .die.hunt-candidate {
     border-color: rgb(196, 240, 214);
-    background-color: rgba(144, 203, 172, 0.28);
+    background-color: rgba(255, 214, 112, 0.28);
 }
 /* UI-205: before any die is in the allocation the candidates call loudest — a thicker, lighter ring and a fill, and
    with motion on they swell a little on the beat; after the first die the gentler pulse of UI-204 remains. */
 #board-screen .dice-panel.hunt-choose-dice .die.hunt-candidate {
     border-width: 3px;
     border-color: rgb(176, 232, 200);
-    background-color: rgba(144, 203, 172, 0.22);
+    background-color: rgba(255, 214, 112, 0.22);
 }
 .motion-enabled #board-screen .dice-panel.hunt-choose-dice .die.hunt-candidate {
     transition-property: border-color, background-color, scale;
 }
 .motion-enabled #board-screen .dice-panel.hunt-choose-dice.hunt-candidates-bright .die.hunt-candidate {
     border-color: rgb(226, 255, 238);
-    background-color: rgba(144, 203, 172, 0.46);
+    background-color: rgba(255, 214, 112, 0.46);
     scale: 1.1;
 }
 #board-screen .dice-panel .die.hunt-allocated { border-width: 2px; border-color: rgb(247, 213, 120); border-radius: 18px; }
+
+
+/* UI-273: the Kings Ruler die wears its crown on its top edge; a die discarded after the roll keeps its slot, dimmed. */
+.die.ruler-die { overflow: visible; }
+.die.ruler-die > .ruler-crown {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    translate: -9px 0;
+    width: 18px;
+    height: 12px;
+    background-image: resource("Wotr/Art/UI/dice/ruler-crown");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.dice-panel .die.ruler-discarded { opacity: 0.45; }
+/* ART-07: the Ruler die is the round die in its side's royal art (dice/special-ruler-<free|shadow>) with its crown on
+   the top edge; lit while a choice can take it (the Ruler discard, Dismay). The lit art carries the glow, so the
+   generic candidate border stays off. */
+.dice-panel .available-dice .die.ruler-die { width: 36px; min-width: 36px; border-radius: 18px; }
+.dice-panel .available-dice .die.ruler-die.resource-candidate { border-color: rgba(0, 0, 0, 0); }
+.dice-panel .die.ruler-die.die-free { background-image: resource("Wotr/Art/UI/dice/special-ruler-free"); }
+.dice-panel .die.ruler-die.die-free:hover { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-hover"); }
+.dice-panel .die.ruler-die.die-free:focus { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-hover"); }
+.dice-panel .die.ruler-die.die-free.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-lit"); }
+.dice-panel .die.ruler-die.die-free:active { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-pressed"); }
+.dice-panel .die.ruler-die.die-shadow { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow"); }
+.dice-panel .die.ruler-die.die-shadow:hover { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-hover"); }
+.dice-panel .die.ruler-die.die-shadow:focus { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-hover"); }
+.dice-panel .die.ruler-die.die-shadow.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-lit"); }
+.dice-panel .die.ruler-die.die-shadow:active { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-pressed"); }
+
+/* UI-276 (EXP-15 D19): the Ruler tokens are crowned coins with their king's nation emblem over the lower half — blue while
+   the Free Peoples hold them (lit while a die can use one), red for the Shadow's Dismay tokens (information: a Ruler die's
+   click spends one, D20). */
+#board-screen .dice-panel .pool-tokens .ruler-token {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    min-height: 30px;
+    margin: 0 3px 0 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+}
+#board-screen .dice-panel .pool-tokens .ruler-token-free { background-image: resource("Wotr/Art/UI/tokens/ruler-token-free"); }
+#board-screen .dice-panel .pool-tokens .ruler-token-free.ruler-token-lit,
+#board-screen .dice-panel .pool-tokens .ruler-token-free.selected { background-image: resource("Wotr/Art/UI/tokens/ruler-token-free-lit"); }
+#board-screen .dice-panel .pool-tokens .ruler-token-dismay { background-image: resource("Wotr/Art/UI/tokens/ruler-token-shadow"); }
+#board-screen .dice-panel .pool-tokens .ruler-token:active { scale: 0.92 0.92; }
+#board-screen .dice-panel .pool-tokens .ruler-token-dismay:active { scale: 1 1; }
+#board-screen .dice-panel .pool-tokens .ruler-token-emblem {
+    position: absolute;
+    left: 9px;
+    right: 9px;
+    top: 14px;
+    bottom: 5px;
+    -unity-background-scale-mode: scale-to-fit;
+}
 

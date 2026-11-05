@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- UI-270: the Shadow's Council of Rivendell token "Advance Politics": a Shadow-enamel medallion with a war banner
+       on a pole that steps forward. Variants: lit (offered or usable now, gold glow), hover, spent (used or not received, greyed). -->
+  <circle cx="16" cy="16" r="15.2" fill="none" style="stroke: var(--gilt-highlight); opacity: var(--glow-opacity)" stroke-width="2.4" filter="url(#glow)"/>
+  <g filter="url(#lift)">
+    <circle cx="16" cy="16" r="14" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <circle cx="16" cy="16" r="12.2" fill="url(#gilt-bevel)"/>
+    <circle cx="16" cy="16" r="11.3" style="fill: var(--ink)"/>
+    <circle cx="16" cy="16" r="10.8" fill="url(#enamel-dome)"/>
+    <path d="M11.2 23.8 L11.2 7.4" style="stroke: var(--ivory)" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M11.8 8.2 C14.6 7.2 16.6 9.4 20.4 8.4 L22.2 12.0 C18.6 13.0 16.2 10.9 11.8 12.2 Z"
+          style="fill: var(--ivory); stroke: var(--ink)" stroke-width="0.5" stroke-linejoin="round"/>
+    <path d="M14.4 19.6 L19.4 19.6 L19.4 17.6 L23.2 21.0 L19.4 24.4 L19.4 22.4 L14.4 22.4 Z"
+          style="fill: var(--gilt-light); stroke: var(--gilt-edge)" stroke-width="0.45" stroke-linejoin="round"/>
+  </g>
+</svg>

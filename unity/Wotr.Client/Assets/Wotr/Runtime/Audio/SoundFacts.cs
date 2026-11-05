@@ -11,7 +11,7 @@ namespace Wotr.Client
     //   count, so a hidden combat card declaration has no sound).
     // AUDIO-06: a new battle (by its id) and a single track change; both tracks at once are TrackSequence's pair,
     // played by GameSounds. AUDIO-07: the decision passing to the player (TurnSignal.Passes) and the game ending, once,
-    // in the player's own perspective.
+    // in the player's own perspective. AUDIO-12: a nation's political step or activation, once per projection.
     public static class SoundFacts
     {
         public static List<SoundRequest> Between(PlayerView before, PlayerView after)
@@ -21,6 +21,7 @@ namespace Wotr.Client
             Decision(before, after, requests);
             Battle(before, after, requests);
             Tracks(before, after, requests);
+            Politics(before, after, requests);
             ActionDice(before, after, requests);
             BattleDice(before, after, requests);
             HuntDice(before, after, requests);
@@ -57,6 +58,14 @@ namespace Wotr.Client
                 requests.Add(new SoundRequest(SoundCue.FellowshipAdvanced, "track/fellowship/" + after.Revision));
             if (ring)
                 requests.Add(new SoundRequest(SoundCue.CorruptionChanged, "track/corruption/" + after.Revision));
+        }
+
+        // A nation already shown that steps on its track or becomes active; nations first shown (a new game) add nothing.
+        private static void Politics(PlayerView before, PlayerView after, List<SoundRequest> requests)
+        {
+            var earlier = before.Nations.ToDictionary(n => n.Id);
+            if (after.Nations.Any(n => earlier.TryGetValue(n.Id, out var was) && (was.Active != n.Active || was.StepsToWar != n.StepsToWar)))
+                requests.Add(new SoundRequest(SoundCue.PoliticsMoved, "track/politics/" + after.Revision));
         }
 
         private static void ActionDice(PlayerView before, PlayerView after, List<SoundRequest> requests)

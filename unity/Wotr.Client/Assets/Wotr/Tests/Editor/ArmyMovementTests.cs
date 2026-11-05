@@ -6,7 +6,8 @@ using Wotr.Fixtures;
 
 namespace Wotr.EditorTests
 {
-    // UI-127: whole-army selection, the target ghost and its captions, blocking figures and one undo per gesture.
+    // UI-127: whole-army selection, the targets' captions, blocking figures and one undo per gesture. UI-403: the captions
+    // hang above the lifted figure (no ghost is drawn), the attacks make the landing mark red, and travellers have captions.
     public sealed class ArmyMovementTests
     {
         [Test]
@@ -52,15 +53,56 @@ namespace Wotr.EditorTests
             });
             var context = Context(view);
             var draft = new TurnDraft();
-            Assert.IsNull(ArmyGhost.Of(view, draft, context), "No selection, no ghost.");
+            Assert.IsNull(ArmyGhost.Of(view, draft, context), "No selection, no captions.");
             Assert.IsTrue(ContextArmySelection.SelectAll(draft, view, context, "minas-tirith", false));
             var ghost = ArmyGhost.Of(view, draft, context);
             Assert.NotNull(ghost);
-            Assert.AreEqual(everyone.Count, ghost.Army.Total);
             Assert.AreEqual("Move " + everyone.Count + " figures", ghost.Captions["osgiliath"]);
             Assert.AreEqual("Attack · Siege", ghost.Captions["minas-morgul"]);
+            // UI-403: the landing mark is red where the click attacks.
+            CollectionAssert.AreEquivalent(new[] { "minas-morgul" }, ghost.Attacks);
             CollectionAssert.IsSubsetOf(ghost.Captions.Keys, ArmyActionTargets.For(draft, view, context).ToList(),
-                "The ghost never shows where the server offers no target.");
+                "No caption where the server offers no target.");
+            Assert.IsNull(ArmyGhost.Of(view, draft, null), "Without the army context the army's targets have no captions.");
+            ContextArmySelection.Target(draft, view, context, "osgiliath");
+            Assert.IsNull(ArmyGhost.Of(view, draft, context), "A move given its destination has no captions left.");
+        }
+
+        // UI-403: a travelling figure's targets have captions too — a card's flight names the armed figure, a companion's
+        // travel names him — from the same destinations the map lights.
+        [Test]
+        public void TravellingFiguresHaveCaptionsOnTheirDestinations()
+        {
+            var view = new PlayerView
+            {
+                You = Side.Shadow, DecisionOwner = Side.Shadow,
+                Decision = new DecisionView { Id = "search", Kind = DecisionKind.CharacterEvent, SourceId = "base.sh.character.09" },
+                Units = { new UnitView { Id = "nazgul-1", Nation = "sauron", Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = "mordor" } },
+                Characters = { new CharacterView { Id = "witch-king", DefinitionId = "base.character.witch-king", Side = Side.Shadow, Location = "mordor" } },
+                Options =
+                {
+                    new ActionOption
+                    {
+                        Kind = CommandKind.MoveShadowCharacters, Enabled = true, AllowEmptySelection = true,
+                        EligibleIds = { "nazgul-1", "witch-king" },
+                        Travel =
+                        {
+                            new TravelOption { Id = "nazgul-1", Origin = "mordor", Flight = true, Targets = { "moria", "rohan" } },
+                            new TravelOption { Id = "witch-king", Origin = "mordor", Flight = true, Targets = { "moria", "rohan" } }
+                        }
+                    }
+                }
+            };
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.MoveShadowCharacters);
+            Assert.IsNull(ArmyGhost.Of(view, draft, null), "Nothing armed, no captions.");
+            Assert.IsTrue(NazgulFlightDraft.Arm(view, draft, "mordor"));
+            var flight = ArmyGhost.Of(view, draft, null);
+            Assert.AreEqual("Fly a Nazgûl", flight.Captions["moria"]);
+            CollectionAssert.AreEquivalent(new[] { "moria", "rohan" }, flight.Captions.Keys);
+            Assert.IsEmpty(flight.Attacks);
+            Assert.IsTrue(NazgulFlightDraft.Arm(view, draft, "witch-king"));
+            Assert.AreEqual("Fly the Witch-king", ArmyGhost.Of(view, draft, null).Captions["rohan"]);
         }
 
         [Test]

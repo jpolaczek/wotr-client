@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">
+  <!-- UI-274: the Shadow's corruption attempt on a king: the lidless Eye over a crown, on an ink medallion. -->
+  <g filter="url(#lift)">
+    <circle cx="11" cy="11" r="10.2" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <circle cx="11" cy="11" r="8.6" style="fill: var(--ink)"/>
+    <path d="M6.2 16.2 L5.7 11.8 L8.3 13.6 L11 10.4 L13.7 13.6 L16.3 11.8 L15.8 16.2 Z" style="fill: var(--crown-dark); stroke: var(--gilt-dim)" stroke-width="0.45" stroke-linejoin="round"/>
+    <path d="M4.6 8.2 Q11 2.4 17.4 8.2 Q11 13.2 4.6 8.2 Z" style="fill: var(--ember-light); stroke: var(--ember-dark)" stroke-width="0.7" stroke-linejoin="round"/>
+    <path d="M11 4.9 Q12.3 8.1 11 11.3 Q9.7 8.1 11 4.9 Z" style="fill: var(--ink)"/>
+  </g>
+</svg>

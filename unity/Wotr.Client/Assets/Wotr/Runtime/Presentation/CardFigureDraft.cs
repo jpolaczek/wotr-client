@@ -69,13 +69,57 @@ namespace Wotr.Client
         public static bool CompletesOnClick(PlayerView view, TurnDraft draft) =>
             DraftOptions.For(view, draft)?.Maximum == 1 && view.Decision.Presentation != "CompanionDestination";
 
+        // UI-423 (owner's playtest pattern, like UI-375's TravelDraft.DestinationHint): once figures are chosen the hint names
+        // them and asks for what is left — the Dead Men's destination, more figures or ✓ — instead of repeating the start.
         public static string Hint(PlayerView view, TurnDraft draft)
         {
             if (view.Decision.Presentation == "CompanionDestination")
-                return "Click the lit companions who travel, then a lit destination · ✓ confirms.";
-            return CompletesOnClick(view, draft) ? "Click a lit region, then its lit figure."
-                : "Click a lit region, then its lit figures · ✓ confirms.";
+                return JourneyHint(view, draft);
+            if (CompletesOnClick(view, draft))
+                return "Click a lit region, then its lit figure.";
+            var chosen = Chosen(view, draft).ToList();
+            if (chosen.Count == 0)
+                return "Click a lit region, then its lit figures · ✓ confirms.";
+            return Names(view, chosen) + Remaining(view, draft, chosen);
         }
+
+        // What is left once figures are chosen: more of them, ✓, or either.
+        private static string Remaining(PlayerView view, TurnDraft draft, IReadOnlyCollection<string> chosen)
+        {
+            if (!draft.Ready(DraftOptions.For(view, draft)))
+                return " · Click another lit figure.";
+            return Eligible(view, draft).Any(id => !chosen.Contains(id)) ? " · ✓ confirms, or click another lit figure." : " · ✓ confirms.";
+        }
+
+        // The Dead Men's journey: the companions who travel, then their destination.
+        private static string JourneyHint(PlayerView view, TurnDraft draft)
+        {
+            var chosen = Chosen(view, draft).ToList();
+            var destination = Destination(view, draft);
+            if (chosen.Count == 0)
+                return destination ? "Click the lit companions who travel · ✓ confirms."
+                    : "Click the lit companions who travel, then a lit destination · ✓ confirms.";
+            return Names(view, chosen) + (destination ? " · ✓ confirms, or click another lit destination." : " · Click a lit destination.");
+        }
+
+        // The offered figures chosen so far.
+        private static IEnumerable<string> Chosen(PlayerView view, TurnDraft draft) =>
+            Offered(view, draft).Where(draft.Payload.Ids.Contains);
+
+        private static bool Destination(PlayerView view, TurnDraft draft) => DraftOptions.For(view, draft)?.EffectChoices
+            .Any(choice => choice.SelectionGroup == "destination" && draft.Payload.Ids.Contains(choice.Id)) == true;
+
+        // "Gimli and Legolas", "Sauron Regular ×2": characters by name, units by nation and kind.
+        private static string Names(PlayerView view, IEnumerable<string> ids)
+        {
+            var names = ids.Select(id => Name(view, id)).GroupBy(name => name)
+                .Select(group => group.Count() > 1 ? group.Key + " ×" + group.Count() : group.Key).ToList();
+            return names.Count <= 1 ? names.FirstOrDefault() ?? ""
+                : string.Join(", ", names.Take(names.Count - 1)) + " and " + names[names.Count - 1];
+        }
+
+        private static string Name(PlayerView view, string id) => view.Units.FirstOrDefault(u => u.Id == id) is { } unit
+            ? TooltipText.Unit(unit.Nation, unit.Kind) : CharacterLibrary.Name(view, id);
 
         private static string Location(PlayerView view, string id) =>
             view.Units.FirstOrDefault(u => u.Id == id)?.Location ?? view.Characters.FirstOrDefault(c => c.Id == id)?.Location ?? "";

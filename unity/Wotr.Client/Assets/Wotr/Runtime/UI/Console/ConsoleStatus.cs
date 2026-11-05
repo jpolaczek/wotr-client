@@ -19,6 +19,8 @@ namespace Wotr.Client
         // UI-297: the current effect's committed steps ("✓ Book of Mazarbul"), recalled here only; a click shows the card
         // and the next click closes it.
         public VisualElement Trail { get; } = new VisualElement { name = "console-trail" };
+        // UI-461 (owner, 2026-11-03): the Will of the West face menu at the start of the hint's line.
+        public ConsoleFaceMenu Faces { get; } = new ConsoleFaceMenu();
         private readonly VisualElement line = new VisualElement { name = "console-line" };
         private string trailKey = "";
         private Button presented;
@@ -29,11 +31,15 @@ namespace Wotr.Client
         public const string MustActClass = "must-act";
         public bool MustAct => Plaque.ClassListContains(MustActClass);
         private readonly ChoicePulse pulse;
+        // UI-418: the lit option's pulse, and the source whose committed button its card button replaces.
+        private readonly ChoicePulse optionsPulse;
+        private string merged = "";
         public int Flashes { get; private set; }
         private readonly VisualElement emblem = new VisualElement { name = "console-emblem", pickingMode = PickingMode.Ignore };
         private readonly VisualElement glow = new VisualElement { name = "console-status-glow", pickingMode = PickingMode.Ignore };
         private IVisualElementScheduledItem flash;
         private string optionsKey = "";
+        private readonly ConsoleOptionsFit fit;
 
         public ConsoleStatus()
         {
@@ -53,12 +59,18 @@ namespace Wotr.Client
             Trail.AddToClassList("console-trail");
             Trail.style.display = DisplayStyle.None;
             line.Add(Trail);
+            line.Add(Faces.Root);
             Hint.AddToClassList("console-hint");
             line.Add(Hint);
             Options.AddToClassList("console-options");
+            optionsPulse = new ChoicePulse(Options);
             Options.style.display = DisplayStyle.None;
             line.Add(Options);
+            fit = new ConsoleOptionsFit(line, Trail, Options, Faces.Root);
         }
+
+        // TEST-15: options too wide for the line stand above the console; the board hosts that strip.
+        public VisualElement RaisedOptions => fit.Strip;
 
         public void Apply(TurnConsoleState state, string opens)
         {
@@ -101,7 +113,20 @@ namespace Wotr.Client
                 EffectTrailChoices.Render(Trail, view, data, inspect);
             if (presented != null)
                 Trail.Add(presented);
-            Trail.style.display = Trail.childCount == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            HideMerged();
+        }
+
+        // UI-418: a card's committed button leaves the trail while its one option stands on the card's own button.
+        private void HideMerged()
+        {
+            var shown = 0;
+            foreach (var step in Trail.Query<Button>(className: "committed-choice").ToList())
+            {
+                var hidden = merged.Length > 0 && step.userData as string == merged;
+                step.style.display = hidden ? DisplayStyle.None : DisplayStyle.Flex;
+                shown += hidden ? 0 : 1;
+            }
+            Trail.style.display = shown == 0 ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
         // UI-308: the opponent's card a presentation docked here ("✓ Orcs Multiplying Again"): the compact source of the
@@ -113,7 +138,7 @@ namespace Wotr.Client
             presented.name = "console-presented-source";
             presented.AddToClassList("committed-choice");
             presented.AddToClassList("presented-source");
-            presented.tooltip = "Played card · Inspect";
+            presented.tooltip = "Played card · Click to inspect";
             Trail.Add(presented);
             Trail.style.display = DisplayStyle.Flex;
             return presented;
@@ -147,10 +172,17 @@ namespace Wotr.Client
                 button.userData = options[i];
                 button.tooltip = options[i].Tooltip;
                 button.SetEnabled(enabled && options[i].Enabled);
+                ChoiceGlow.Apply(button, enabled && options[i].Enabled && options[i].Lit);
             }
+            optionsPulse.Run(enabled && options.Any(o => o.Lit && o.Enabled));
+            merged = options.FirstOrDefault(o => o.Lit && o.SourceId.Length > 0)?.SourceId ?? "";
+            HideMerged();
             var shown = options.Count > 0;
             Options.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;
+            // The hint gives its place to the options wherever they stand, so the line's content — and the console's
+            // width — never depends on where they stand (ConsoleOptionsFit measures that width).
             Hint.style.display = shown ? DisplayStyle.None : DisplayStyle.Flex;
+            fit.Refit();
         }
 
         private Button OptionButton(ConsoleOption option)
@@ -164,6 +196,15 @@ namespace Wotr.Client
             button.name = option.Name;
             button.AddToClassList("console-option");
             return button;
+        }
+
+        // UI-461: the face menu's slots; the menu stands in the line, or above the console when the line is too narrow.
+        public void SetFaces(IReadOnlyList<WillFaceSlot> faces, bool enabled)
+        {
+            var shown = Faces.Shown;
+            Faces.Apply(faces, enabled);
+            if (shown != Faces.Shown)
+                fit.Refit();
         }
 
         public void SetHint(string text, string detail = "")

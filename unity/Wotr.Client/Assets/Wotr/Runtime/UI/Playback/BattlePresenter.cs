@@ -20,6 +20,9 @@ namespace Wotr.Client
     //   out, an Elite downgraded becomes a Regular whose stack lights. A leader or character lost with its army is
     //   ringed on its portrait; a siege extension's figure change is a delta plate.
     // - Later rounds stay in the same window; a retreat, an advance and a capture return to the map (their presenters).
+    // - UI-491 (owner, 2026-11-04): a quiet decision (Holds, Stops, No card…) stands as one short caption on its side's column
+    //   before the ribbon steps.
+    // - UI-493 (owner, 2026-11-04): the hand count steps as a card is committed, not seconds later at the release.
     public sealed class BattlePresenter : ICuePresenter
     {
         // UI-315: the window the presentation opened settles before its round plays.
@@ -31,6 +34,7 @@ namespace Wotr.Client
         public const double StrikeSeconds = .35;
         public const double SettleSeconds = .45;
         public const double LiftMilliseconds = 250;
+        public const double ChoiceSeconds = PresentationPace.HoldSeconds;
         public const string RollClass = "presented-roll";
         public const string LiftClass = "presented-roll-lift";
         public const string CardMarkClass = "presented-card-mark";
@@ -75,6 +79,8 @@ namespace Wotr.Client
                 PresentationCueKind.Attack when cue.Battle != null => Opened(cue.Battle, now),
                 PresentationCueKind.Battle when cue.Battle != null => State(cue, now),
                 PresentationCueKind.Card when cue.Card?.Use == ActionCardUse.CombatReveal => Reveal(cue, now),
+                PresentationCueKind.Card when cue.Card?.Use == ActionCardUse.CombatCommit => Committed(cue.Card),
+                PresentationCueKind.BattleChoice => Caption(cue, now),
                 PresentationCueKind.Losses => Losses(cue, now),
                 PresentationCueKind.Removal or PresentationCueKind.Recruit or PresentationCueKind.Upgrade => Figures(cue, now),
                 _ => null
@@ -118,6 +124,33 @@ namespace Wotr.Client
                 return new TimedBeat(now, StateSeconds);
             }
             return BattleFingerprint.Of(previous) == BattleFingerprint.Of(battle) ? null : new TimedBeat(now, StateSeconds);
+        }
+
+        // UI-493: only the count changes, and a commit takes no time of its own. The public count already holds a table
+        // card that may be played (BattleTableCards.PublicHandCount), so it drops by one wherever the card came from.
+        private IPresentationBeat Committed(ActionCardFact card)
+        {
+            staged.Hand(card.Owner, -card.Count, card.Deck);
+            board.StageHand(card.Owner, staged.View);
+            return null;
+        }
+
+        private IPresentationBeat Caption(PresentationCue cue, double now)
+        {
+            if (shown == null || !Window.IsOpen || !cue.Actor.HasValue)
+                return null;
+            var battle = shown;
+            var side = cue.Actor.Value;
+            var text = BattleChoiceCaption.Of(cue.Command);
+            Mark(() => marks.Plate(Column(battle, side), CaptionPlate(text)));
+            return new TimedBeat(now, ChoiceSeconds);
+        }
+
+        private static Label CaptionPlate(string text)
+        {
+            var plate = new Label(text);
+            plate.AddToClassList(PoliticsPresenter.CaptionName);
+            return plate;
         }
 
         // Both cards of a round turn face up together: the next reveal of this battle is applied with this one.

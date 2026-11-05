@@ -135,7 +135,7 @@ namespace Wotr.PlayTests
 
         private static Button RecoveryButton(MountedMatchClient client) => client.Board.Tray.Query<Button>().ToList().FirstOrDefault(b => b.text == "Check result");
 
-        // UI-105: the force is selected on the map and moves on the click of its destination; it is never dragged.
+        // UI-105: the force is selected on the map and moves on the click of its destination (UI-405: a drop there is the same step).
         private static async Task Move(MountedMatchClient client, string from, string to, CancellationToken token)
         {
             var board = client.Board;

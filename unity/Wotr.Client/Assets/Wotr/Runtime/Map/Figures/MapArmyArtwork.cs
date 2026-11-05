@@ -9,9 +9,17 @@ namespace Wotr.Client
 {
     // UI-126: an army on the map is a token on the whole map, or up to three figures standing on a base when
     // zoomed in. The base or token picture follows the side, garrison, level and state classes of the button
-    // (Styles/Armies.uss); this class only places the silhouettes, emblems and the count. UI-185: everything is
-    // about 30% larger than in UI-126, and a dark copy behind each silhouette sets it off light terrain. UI-192: about
-    // 15% larger again.
+    // (Styles/Armies.uss); this class places the figures, emblems and the count. UI-185/UI-192: about 50% larger than
+    // UI-126. UI-400 (TABLETOP_FIGURES_UX): the figures are miniatures — they stand on a painted oval base (a crenellated
+    // one for a garrison) with a contact shadow on the table, their feet on one line, two or three staggered in depth
+    // with the farther one behind, each as tall as its painted stature; the state is a rim round the base, the nation
+    // emblems and the count a plaque on its front, and only the base and the figures take a click (MiniatureButton).
+    // UI-401 (TABLETOP_FIGURES_UX, "Scale"): the miniature is designed in board units (StandFootprint.Army) — its stand is
+    // the 40 × 16 unit base and an elite stands 40 units tall, as tall as the base is wide — at DesignUnit points per
+    // unit; the map stands its feet on the region's place and scales it (MapStand, MapStandScale). UI-406
+    // (TABLETOP_FIGURES_UX, decision 3): far out the army is a token that lies on the table too — a painted enamel puck
+    // (top face, side band, rim; a garrison's is walled with battlements) over the same contact shadow, its nation emblem
+    // and count on it, and the state as a rim drawn round the puck instead of one whole picture per state.
     public sealed class MapArmyArtwork
     {
         public const string FiguresClass = "army-figures";
@@ -31,18 +39,52 @@ namespace Wotr.Client
         // Unused parts are hidden by class, so the level rules of Styles/Armies.uss can still hide the rest.
         public const string UnusedClass = "army-part-unused";
         public const int MaximumEmblems = 2;
-        private const float FigureWidth = 50;
-        private const float FigureStep = 26;
-        private const float BaseWidth = 116;
-        private const float ShadowOffset = 1.5f;
-        private static readonly Color ShadowTint = new Color(.07f, .05f, .03f, .6f);
+        // Design points per board unit: an elite stands 54 points tall at the design size, as since UI-192.
+        public const float DesignUnit = 1.35f;
+        // The army's base (40 units) and the room beside it for the state rim and the halo.
+        private const float BaseWidth = 54;
+        private const float Room = 6;
+        private const float BoxWidth = BaseWidth + 2 * Room;
+        private const float BoxHeight = 86;
+        // The point under the feet, the place: the middle of the stand's top face.
+        private static readonly Vector2 StandFeet = new Vector2(BoxWidth / 2, 64);
+        // The painted stands at this width (112 × 44 and 112 × 48 pictures); the feet line lies on their top face.
+        private const float FieldStand = 21;
+        private const float GarrisonStand = 23;
+        private const float FeetOnTopFace = .46f;
+        // The nearer figures stand a little in front of the middle of the top face.
+        private const float FrontFeet = 2;
+        // An elite's height (40 units); the painted cells carry each figure's own stature (FigureStature).
+        private const float FigureHeight = 54;
+        // A figure may overhang the stand's rim this much; a wider cell is drawn smaller, its feet on the line.
+        private const float Overhang = 4;
+        // UI-406: the token's box; the puck (40 × 32 art drawn 44 wide) lies in it with room for its shadow and count. A
+        // garrison's walled puck has the same size.
+        private static readonly Vector2 TokenSize = new Vector2(44, 44);
+        // UI-425: the puck's lower edge in its box (Styles/Armies.uss: 2 points from the top, 35.2 tall), and the middle of
+        // its top face above the side band (the painted puck's face fills its upper 27.5 points).
+        private const float PuckBottom = 37.2f;
+        private const float TopFaceMiddle = 16;
+        // The holder a marker stands in (MapStand): room for either level.
+        public static readonly Vector2 HolderSize = new Vector2(BoxWidth, BoxHeight);
+        // Two or three figures stand staggered: the first farther back (higher, a little smaller), the others in front.
+        private static readonly Slot[][] Slots =
+        {
+            new[] { new Slot(0, 0, 1) },
+            new[] { new Slot(-9, -4, .94f), new Slot(9, 0, 1) },
+            new[] { new Slot(0, -6, .9f), new Slot(-13, 0, 1), new Slot(13, 0, 1) }
+        };
 
         public VisualElement Root { get; } = Ignored("army-artwork");
         private readonly Image[] silhouettes = new Image[3];
-        private readonly Image[] shadows = new Image[3];
+        private readonly float[] statures = new float[3];
         private readonly VisualElement[] emblems = new VisualElement[MaximumEmblems];
         private readonly Label more = new Label("+") { name = "army-more-nations", pickingMode = PickingMode.Ignore };
         private readonly Label count = new Label { name = "army-count", pickingMode = PickingMode.Ignore };
+        // UI-274: the crown over a force led by an Initial king.
+        private readonly VisualElement crown = Ignored("army-crown");
+        // UI-400: the nation emblems and the count on the stand's front; UI-401: it hangs below the stand's rim.
+        private readonly VisualElement plaque = Ignored("army-plaque");
         private readonly Button button;
         // UI-322: the flare joins the marker only while it shows and leaves once it has faded, so a resting marker carries
         // nothing of it.
@@ -62,21 +104,20 @@ namespace Wotr.Client
             button.AddToClassList("illustrated-army");
             // UI-301: the ChoiceGlow halo of an army a click may choose, behind the artwork (Armies.uss).
             button.Add(Ignored("army-choice-glow"));
-            Root.Add(Ignored("army-plinth"));
-            // Every shadow goes first, so no shadow falls on the figure beside it.
-            for (var i = 0; i < shadows.Length; i++)
-            {
-                shadows[i] = FigureArtwork.Image(FigureAppearance.FreeRegular);
-                shadows[i].AddToClassList("army-silhouette-shadow");
-                shadows[i].tintColor = ShadowTint;
-                Root.Add(shadows[i]);
-            }
+            // UI-400: the table under the miniature — its contact shadow, the painted stand and the state rim round it.
+            // UI-406: the token's puck and its state rim lie over the same shadow.
+            Root.Add(Ignored("army-contact-shadow"));
+            Root.Add(Ignored("army-puck"));
+            Root.Add(Ignored("army-token-rim"));
+            Root.Add(Ignored("army-stand"));
+            Root.Add(Ignored("army-rim"));
             for (var i = 0; i < silhouettes.Length; i++)
             {
                 silhouettes[i] = FigureArtwork.Image(FigureAppearance.FreeRegular);
                 silhouettes[i].AddToClassList("army-silhouette");
                 Root.Add(silhouettes[i]);
             }
+            Root.Add(plaque);
             var row = Ignored("army-emblems");
             for (var i = 0; i < emblems.Length; i++)
             {
@@ -89,13 +130,27 @@ namespace Wotr.Client
             Root.Add(row);
             count.AddToClassList("army-count");
             Root.Add(count);
+            Root.Add(crown);
             Root.Add(Ignored("army-moved"));
             button.Add(Root);
+            if (button is MiniatureButton miniature)
+                miniature.Shape = Contains;
         }
 
-        public static Vector2 Size(bool garrison, bool figures) => figures
-            ? new Vector2(BaseWidth, garrison ? 90 : 84)
-            : new Vector2(44, garrison ? 48 : 44);
+        public static Vector2 Size(bool garrison, bool figures) => figures ? HolderSize : TokenSize;
+
+        // UI-401: the design point a level stands on its place: the stand's top face, or the token's middle. UI-425: a field
+        // force's token stands on the lower edge of its puck, as its figures stand on their feet, so it rises above the place
+        // and the settlement's gem below the place stays in view; a garrison's walled token lies with the middle of its top
+        // face on its gate, since the gate is on the fortress drawing and a raised puck would reach over the stone above some
+        // of them (Moria, Minas Morgul).
+        public static Vector2 Feet(bool garrison, bool figures) =>
+            figures ? StandFeet : new Vector2(TokenSize.x / 2, garrison ? TopFaceMiddle : PuckBottom);
+
+        // UI-401: what a level shows, in design points: the stand with its figures and plaque, or the whole token.
+        public static Rect Visible(bool garrison, bool figures) => figures
+            ? Rect.MinMaxRect(Room, StandFeet.y + FrontFeet - FigureHeight - 2, BoxWidth - Room, BoxHeight - 1)
+            : new Rect(Vector2.zero, Size(garrison, false));
 
         public void Apply(ArmyMarker army)
         {
@@ -104,21 +159,19 @@ namespace Wotr.Client
             for (var i = 0; i < shown; i++)
             {
                 silhouettes[i].sprite = FigureArtwork.Sprite(appearances[i]);
-                shadows[i].sprite = silhouettes[i].sprite;
+                statures[i] = FigureStature.Of(appearances[i]);
             }
             for (var i = 0; i < silhouettes.Length; i++)
-            {
                 silhouettes[i].EnableInClassList(UnusedClass, i >= shown);
-                shadows[i].EnableInClassList(UnusedClass, i >= shown);
-            }
             PlaceSilhouettes();
             for (var i = 0; i < emblems.Length; i++)
                 ShowEmblem(emblems[i], i < army.Nations.Count ? army.Nations[i].Nation : null);
             more.EnableInClassList(UnusedClass, army.Nations.Count <= emblems.Length);
             if (emergingCount != null)
-                emergingCount = army.Total.ToString();
+                emergingCount = army.FigureCount.ToString();
             else
-                count.text = army.Total.ToString();
+                count.text = army.FigureCount.ToString();
+            crown.EnableInClassList(UnusedClass, army.CrownedTitles.Count == 0);
             button.EnableInClassList(FieldClass, !army.Garrison);
         }
 
@@ -190,16 +243,76 @@ namespace Wotr.Client
             button.EnableInClassList(TokenClass, !figures);
         }
 
-        // Up to three silhouettes overlap and stand centred on the base.
+        // UI-400: each figure's box is its painted cell's shape, so its feet are the box's bottom edge; they stand on the
+        // base's top face, the farther figure higher and a little smaller, drawn behind the nearer ones. UI-401: the group
+        // keeps within the stand and a little overhang, so it stays on the army's footprint.
         private void PlaceSilhouettes()
         {
-            var width = FigureWidth + Math.Max(0, shown - 1) * FigureStep;
-            var left = (BaseWidth - width) / 2;
+            if (shown == 0)
+                return;
+            var slots = Slots[shown - 1];
             for (var i = 0; i < shown; i++)
             {
-                silhouettes[i].style.left = left + i * FigureStep;
-                shadows[i].style.left = left + i * FigureStep + ShadowOffset;
+                var size = FigureSize(statures[i] * slots[i].Scale, Aspect(silhouettes[i].sprite));
+                var x = Mathf.Clamp(slots[i].X, -Reach(size.x), Reach(size.x));
+                silhouettes[i].style.width = size.x;
+                silhouettes[i].style.height = size.y;
+                silhouettes[i].style.left = StandFeet.x + x - size.x / 2;
+                silhouettes[i].style.top = StandFeet.y + FrontFeet + slots[i].Feet - size.y;
             }
+        }
+
+        // UI-454 (owner, 2026-11-03): where a lone figure's box stands on its base, in the holder's design points — what a
+        // recruit flying from its Reserve slot matches to the slot's own picture of it.
+        public static Rect LoneFigure(FigureArt appearance)
+        {
+            var size = FigureSize(FigureStature.Of(appearance), Aspect(FigureArtwork.Sprite(appearance)));
+            return new Rect(StandFeet.x - size.x / 2, StandFeet.y + FrontFeet - size.y, size.x, size.y);
+        }
+
+        // A figure's box at its stature; a cell wider than the stand and its overhang is drawn smaller.
+        private static Vector2 FigureSize(float stature, float aspect)
+        {
+            var height = FigureHeight * stature;
+            var width = Mathf.Min(height * aspect, BaseWidth + 2 * Overhang);
+            return new Vector2(width, width / aspect);
+        }
+
+        // How far from the middle a figure of this width may stand and keep within the stand and its overhang.
+        private static float Reach(float width) => Mathf.Max(0, BaseWidth / 2 + Overhang - width / 2);
+
+        private static float Aspect(Sprite sprite) =>
+            sprite == null || sprite.rect.height <= 0 ? .8f : sprite.rect.width / sprite.rect.height;
+
+        // UI-400: only the miniature takes a press — the stand's ellipse, the figures' boxes and the plaque; a token takes
+        // its disc.
+        private bool Contains(Vector2 local)
+        {
+            if (!button.ClassListContains(FiguresClass))
+                return true;
+            if (plaque.layout.Contains(local))
+                return true;
+            for (var i = 0; i < shown; i++)
+                if (silhouettes[i].layout.Contains(local))
+                    return true;
+            var stand = button.ClassListContains("garrison") ? GarrisonStand : FieldStand;
+            var centre = new Vector2(StandFeet.x, StandFeet.y - stand * FeetOnTopFace + stand / 2);
+            var offset = new Vector2((local.x - centre.x) / (BaseWidth / 2), (local.y - centre.y) / (stand / 2));
+            return offset.sqrMagnitude <= 1;
+        }
+
+        private readonly struct Slot
+        {
+            public Slot(float x, float feet, float scale)
+            {
+                X = x;
+                Feet = feet;
+                Scale = scale;
+            }
+
+            public float X { get; }
+            public float Feet { get; }
+            public float Scale { get; }
         }
 
         private static void ShowEmblem(VisualElement emblem, string nation)
@@ -229,15 +342,18 @@ namespace Wotr.Client
             return element;
         }
 
-        // ART-01: each figure is of the nation with the most figures of its kind (Nations come largest first).
+        // ART-01: each figure is of the nation with the most figures of its kind (Nations come largest first). UI-402: a
+        // ghost's carried characters stand first, each its own figure (one beside units, up to three alone); a board army
+        // carries none.
         private static List<FigureArt> Appearances(ArmyMarker army)
         {
             var result = new List<FigureArt>(3);
-            if (army.Characters > 0)
-                result.Add(army.CharacterAppearance);
-            if (army.Elite > 0)
+            var characters = army.Total > 0 ? 1 : 3;
+            foreach (var character in army.Carried.Take(characters))
+                result.Add(character.Art);
+            if (army.Elite > 0 && result.Count < 3)
                 result.Add(Of(army, UnitKind.Elite, n => n.Elite));
-            if (army.Regular > 0)
+            if (army.Regular > 0 && result.Count < 3)
                 result.Add(Of(army, UnitKind.Regular, n => n.Regular));
             if (army.Leaders > 0 && result.Count < 3)
                 result.Add(army.Nazgul > 0 ? Of(army, UnitKind.Nazgul, n => n.Nazgul)

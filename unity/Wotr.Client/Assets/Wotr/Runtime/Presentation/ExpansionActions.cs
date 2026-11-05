@@ -14,18 +14,29 @@ namespace Wotr.Client
         // What a ring click means now: the cost of the selected card, Vilya on a kept die, or changing a die.
         public static CommandKind RingKind(PlayerView view, TurnDraft draft) =>
             draft.Kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardLore
-                ? draft.Kind.Value : view.Decision?.Kind == DecisionKind.KeepActionDie ? CommandKind.UseVilya : CommandKind.UseRing;
+                ? draft.Kind.Value : view.Decision?.Kind == DecisionKind.KeepActionDie ? CommandKind.UseVilya
+                : RingRecovery.Active(view) ? CommandKind.ChooseEffect : CommandKind.UseRing;
 
         public static bool Ring(PlayerView view, TurnDraft draft, string id)
         {
             var kind = RingKind(view, draft);
+            // A card's Ring choice (Three Rings) is a selection, not a ring use; TurnInteraction makes it.
+            if (kind == CommandKind.ChooseEffect)
+                return false;
             var option = DraftOptions.For(view, draft, kind);
             if (option?.Enabled != true || !option.EligibleIds.Contains(id))
                 return false;
-            var die = option.EligibleDice.Contains(draft.Payload.DieId) ? draft.Payload.DieId : "";
+            // UI-268: Vilya keeps the action's die; with one such die the socket's click is the whole answer.
+            var die = option.EligibleDice.Contains(draft.Payload.DieId) ? draft.Payload.DieId
+                : kind == CommandKind.UseVilya && option.EligibleDice.Count == 1 ? option.EligibleDice[0] : "";
             if (draft.Kind != kind)
                 draft.Choose(kind, die);
-            draft.Change(p => p.RingId = id);
+            draft.Change(p =>
+            {
+                p.RingId = id;
+                if (die.Length > 0)
+                    p.DieId = die;
+            });
             return true;
         }
 

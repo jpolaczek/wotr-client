@@ -103,6 +103,44 @@
   --tab-glow: #ffd06a;
   --tab-glow-opacity: 0;
 
+  /* UI-267: the origin band of a Lords special die (dice/special); its variants give each origin its metal. */
+  --special-band-light: #e9c977;
+  --special-band-dark: #7a5822;
+
+  /* UI-268: the named Elven Rings' gold aura while a Keeper ability is offered, and their ember halo once captured. */
+  --keeper-aura-opacity: 0;
+  --captured-halo-opacity: 0;
+
+  /* UI-269: the starting Guide's crown, dim until chosen (variants crown-on, crown-hover). */
+  --crown-light: #b7a682;
+  --crown-dark: #5e4d2c;
+  --crown-stone: #5a2a22;
+
+  /* UI-400: a miniature base's state rim (rim-eligible, rim-selected, rim-pressed, rim-ability) and the veil of a base
+     that already moved (rim-moved); UI-403: the landing mark of a lifted figure (landing-move, landing-attack). */
+  --rim-color: #ffd06a;
+  --rim-opacity: 0;
+  --rim-veil-opacity: 0;
+
   /* Hover glow, hidden unless a variant enables it. */
   --glow-opacity: 0;
+
+  /* UI-470 (owner, 2026-11-03): the menus' thin-line chrome (src/frontend): a translucent charcoal card under one
+     muted-gilt rule, dark fields and buttons edged with a single muted-gold line, a warm-gold primary. The variants
+     hover, pressed, selected, primary, primary-hover, primary-pressed and the modules' *-on override these. */
+  --fe-card: #151311;
+  --fe-card-opacity: 0.9;
+  --fe-rule: #a3844b;
+  --fe-rule-bright: #dcbd78;
+  --fe-field-top: #1d1b18;
+  --fe-field-bottom: #131210;
+  --fe-field-opacity: 0.86;
+  --fe-line: #7d6440;
+  --fe-sheen-opacity: 0.05;
+  --fe-row-fill: #100f0d;
+  --fe-row-opacity: 0.62;
+  --fe-row-line: #5e4c31;
+  --fe-tick-opacity: 0;
+  --fe-glow: #e9c977;
+  --fe-glow-opacity: 0;
 }
