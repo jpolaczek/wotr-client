@@ -23,6 +23,8 @@ namespace Wotr.Client
         private readonly VisualElement titlePlate = new VisualElement { name = "game-end-title-plate", pickingMode = PickingMode.Ignore };
         private readonly Label title = new Label { name = "game-end-title", pickingMode = PickingMode.Ignore };
         private readonly Label subtitle = new Label { name = "game-end-subtitle", pickingMode = PickingMode.Ignore };
+        // UI-502: only a ranked game's window holds this line; another's is as it always was.
+        private readonly Label rating = new Label { name = "game-end-rating", pickingMode = PickingMode.Ignore };
         private readonly Label[] summary = new Label[4];
         private readonly Button viewBoard;
         private readonly Button saveReplay;
@@ -41,6 +43,7 @@ namespace Wotr.Client
             window.Add(Heading());
             subtitle.AddToClassList("game-end-subtitle");
             window.Add(subtitle);
+            rating.AddToClassList("game-end-rating");
             window.Add(Summary());
             viewBoard = Button("game-end-view-board", "View board", Close);
             saveReplay = Button("game-end-save-replay", "Save replay", RequestSave);
@@ -153,6 +156,13 @@ namespace Wotr.Client
                 return;
             shownFor = view.MatchId;
             Open();
+        }
+
+        public void ShowRating(RankedResultView result)
+        {
+            rating.text = GameEndState.RatingLine(result);
+            if (rating.parent == null)
+                subtitle.parent.Insert(subtitle.parent.IndexOf(subtitle) + 1, rating);
         }
 
         public void Open()

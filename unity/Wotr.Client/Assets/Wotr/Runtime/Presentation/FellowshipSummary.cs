@@ -108,6 +108,8 @@ namespace Wotr.Client
             VictoryCondition.RingDestroyed => "The One Ring is destroyed.",
             VictoryCondition.ShadowMilitary => "Shadow reaches its military victory threshold.",
             VictoryCondition.FreePeoplesMilitary => "Free Peoples reach their military victory threshold.",
+            VictoryCondition.Conceded => "A player conceded.",
+            VictoryCondition.TimedOut => "A player ran out of time.",
             _ => ""
         };
     }

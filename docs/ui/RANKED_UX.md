@@ -1,6 +1,6 @@
 # Ranked play — interface
 
-Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game, the search, the clock, the pause and leaving (UI-497–UI-501) stand. The rules of the mode (compatibility,
+Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game, the search, the clock, the pause, leaving and the end screen (UI-497–UI-502) stand. The rules of the mode (compatibility,
 pairing, clocks, pause, reconnecting, rating) are in `wotr-server:docs/RANKED_PLAY.md`; this document describes only
 how the client shows them. The implementation tasks are UI-497–UI-504.
 
@@ -100,7 +100,10 @@ A window in the family of Host game. It has no name, visibility or variant contr
 ## End screen (UI-502)
 
 - Reasons: You conceded, Your opponent conceded, You ran out of time, Your opponent ran out of time.
-- A rating line, only for ranked games: `Rating 1532 → 1547 (+15)`, rounded so that the sum holds.
+- A rating line, only for ranked games: `Rating 1532 → 1547 (+15)`, rounded so that the sum holds. A normal game's screen
+  has no line and no gap for one.
+- Someone reading a replay reads the side instead: The Shadow conceded, The Free Peoples ran out of time. My games lists the
+  player's own words.
 
 ## Leaderboards (UI-503)
 

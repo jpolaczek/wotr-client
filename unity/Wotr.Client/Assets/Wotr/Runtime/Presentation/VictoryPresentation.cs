@@ -36,6 +36,8 @@ namespace Wotr.Client
             VictoryCondition.RingCorrupted => "Ring-bearers corrupted",
             VictoryCondition.RingDestroyed => "Ring destroyed",
             VictoryCondition.ShadowMilitary or VictoryCondition.FreePeoplesMilitary => "Military victory",
+            VictoryCondition.Conceded => "Conceded",
+            VictoryCondition.TimedOut => "Out of time",
             _ => "Game finished"
         };
 

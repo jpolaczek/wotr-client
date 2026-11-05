@@ -25,6 +25,8 @@ namespace Wotr.Client
         private readonly string matchId;
         // UI-501: the same id for every attempt, so a concession that did arrive answers its retry with its first receipt.
         private readonly string concession = Guid.NewGuid().ToString("N");
+        private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
+        private bool ratingAsked;
         private bool disposed;
         public BoardExit Exit { get; }
         public bool Expired { get; private set; }
@@ -70,6 +72,8 @@ namespace Wotr.Client
             if (disposed)
                 return;
             board.Apply(view);
+            if (view.Winner.HasValue && !ratingAsked)
+                _ = LoadRating();
             turns.Update(view);
             sounds?.Update(view);
             history.Update(view);
@@ -78,6 +82,25 @@ namespace Wotr.Client
                 if (!disposed && board.Root.panel != null)
                     seen.Displayed(view.Revision);
             });
+        }
+
+        // UI-502: how the game moved the player's rating. A normal game has none (404), and a failed read is tried again with
+        // the next view.
+        private async Task LoadRating()
+        {
+            ratingAsked = true;
+            try
+            {
+                var result = await api.Get<RankedResultView>("api/matches/" + Uri.EscapeDataString(matchId) + "/rating", lifetime.Token);
+                if (!disposed)
+                    board.GameEnd.ShowRating(result);
+            }
+            catch (ApiException error) when (error.Status == 404) { }
+            catch (OperationCanceledException) when (disposed) { }
+            catch (Exception error) when (error is ApiException or System.Net.Http.HttpRequestException or OperationCanceledException)
+            {
+                ratingAsked = false;
+            }
         }
 
         private void ConnectionChanged(string state)
@@ -131,6 +154,8 @@ namespace Wotr.Client
             if (disposed)
                 return;
             disposed = true;
+            lifetime.Cancel();
+            lifetime.Dispose();
             connection.Updated -= playback.Receive;
             presenters.Dispose();
             playback.Dispose();

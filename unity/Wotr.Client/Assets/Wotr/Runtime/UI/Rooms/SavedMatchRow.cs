@@ -49,7 +49,7 @@ namespace Wotr.Client
         }
 
         public static string Status(MatchSummary match) => match.Status == MatchStatus.Finished
-            ? (match.Winner == match.You ? "Victory" : "Defeat") + " · " + Victory(match.Victory)
+            ? (match.Winner == match.You ? "Victory" : "Defeat") + " · " + (GameEndState.Personal(match.Victory, match.Winner == match.You) ?? Victory(match.Victory))
             : match.Status == MatchStatus.Waiting ? "Waiting for opponent"
             : "Your decision · " + Decision(match.YourDecision);
 

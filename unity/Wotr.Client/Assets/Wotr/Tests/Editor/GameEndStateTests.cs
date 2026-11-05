@@ -7,6 +7,31 @@ namespace Wotr.Client.Tests
     // UI-169 (SIGNALS_UX D, GE01–GE03): the end of the game from each player's view and the screen's own rules.
     public sealed class GameEndStateTests
     {
+        // UI-502: each player reads their own ranked ending; an observer or a replay names the side.
+        [TestCase(VictoryCondition.Conceded, Side.FreePeoples, Side.FreePeoples, "Your opponent conceded")]
+        [TestCase(VictoryCondition.Conceded, Side.Shadow, Side.FreePeoples, "You conceded")]
+        [TestCase(VictoryCondition.TimedOut, Side.Shadow, Side.Shadow, "Your opponent ran out of time")]
+        [TestCase(VictoryCondition.TimedOut, Side.FreePeoples, Side.Shadow, "You ran out of time")]
+        public void ARankedEndingReadsAsThePlayersOwn(VictoryCondition ending, Side you, Side winner, string words)
+        {
+            StringAssert.EndsWith(words, GameEndState.For(Ended(you, winner, ending)).Subtitle);
+        }
+
+        [Test]
+        public void SomeoneWhoWatchedReadsTheSideThatGaveUp()
+        {
+            StringAssert.EndsWith("The Shadow conceded", GameEndState.For(Ended(Side.FreePeoples, Side.FreePeoples, VictoryCondition.Conceded), true).Subtitle);
+            StringAssert.EndsWith("The Free Peoples ran out of time", GameEndState.For(Ended(Side.Shadow, Side.Shadow, VictoryCondition.TimedOut), true).Subtitle);
+        }
+
+        [Test]
+        public void TheRatingLineReadsTheServersNumbers()
+        {
+            Assert.AreEqual("Rating 1532 → 1547 (+15)", GameEndState.RatingLine(new RankedResultView { RatingBefore = 1532, RatingAfter = 1547, Change = 15 }));
+            Assert.AreEqual("Rating 1500 → 1338 (-162)", GameEndState.RatingLine(new RankedResultView { RatingBefore = 1500, RatingAfter = 1338, Change = -162 }));
+            Assert.AreEqual("Rating 1500 → 1500 (+0)", GameEndState.RatingLine(new RankedResultView { RatingBefore = 1500, RatingAfter = 1500, Change = 0 }));
+        }
+
         [Test]
         public void TheTitleIsThePlayersOwnResultAndTheSubtitleNamesWinnerAndReason()
         {
