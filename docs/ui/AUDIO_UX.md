@@ -287,7 +287,9 @@ One gesture gives one sound, not separately in the controller, parent and inspec
     priority), for the second throw;
   - a track pair with decision or end: both stages, then one signal (`GameSounds.Trailing`), without
     waiting the interface.
-- No reminders, no system notifications, no catch-up after the focus comes back.
+- No reminders, no system notifications, no catch-up after the focus comes back. One exception (R35, owner
+  2026-11-05): in a ranked game the move clock's `ClockWarning` sounds once per decision to its owner, 10 s before the
+  limit, also in the background ([RANKED_UX](RANKED_UX.md)).
 
 <a id="odbiór--audio-08-2026-10-15"></a>
 ## acceptance — AUDIO-08 (2026-10-15)

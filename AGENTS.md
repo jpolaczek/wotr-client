@@ -156,5 +156,7 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
 - A scope or dependency change requires a ROADMAP update and a graph check. Do
   not remove dependencies merely to start blocked work.
 - Do not deploy or publish without authorization in the request. Do not add
-  notifications outside the app, public matchmaking, AI or Warriors of Middle-earth
-  features. User-approved exception (R32): a simple CPU exclusively in demo mode.
+  notifications outside the app, AI or Warriors of Middle-earth features.
+  User-approved exceptions: a simple CPU exclusively in demo mode (R32); ranked
+  matchmaking and ratings (owner, 2026-11-05, R35, docs/ui/RANKED_UX.md). Other
+  matchmaking stays out of scope.

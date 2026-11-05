@@ -1,0 +1,99 @@
+# Ranked play — interface
+
+Owner's decision of 2026-11-05 (R35). Status: planned, not implemented. The rules of the mode (compatibility,
+pairing, clocks, pause, reconnecting, rating) are in `wotr-server:docs/RANKED_PLAY.md`; this document describes only
+how the client shows them. The implementation tasks are UI-497–UI-504.
+
+Every rule of [UX_SPEC](UX_SPEC.md) and `AGENTS.md` applies: every control is clicked, tooltips are noninteractive,
+nothing opens on hover alone, unavailable controls are disabled rather than hidden, and every control keeps a stable
+place.
+
+## Main menu
+
+The action column gains **Find game** and **Leaderboards**. Host game, Join by code and the Open games list are
+unchanged: they stay correspondence tables without matchmaking.
+
+## Find game window (UI-497)
+
+A window in the family of Host game. It has no name, visibility or variant controls.
+
+| Row | Controls |
+|---|---|
+| Each released expansion | Its name and three segments: Off, Allow, Enforce. Default Allow. |
+| Faction | Two faction cards, none selected. A click on the selected card releases it. Below them two segments, Allow and Enforce, disabled while no faction is selected. |
+| Each time preset | Its name, its two limits (for example `3:00 / 0:30`) and three segments: Off, Allow, Enforce. Default Standard Allow, the others Off. |
+
+- Enforcing a time preset lowers another enforced preset to Allow, and the last preset that is not Off cannot be
+  turned off: its Off segment is disabled, with a tooltip saying why.
+- Every segment's tooltip says what it means for the match, for example "Kings must be in the game".
+- The player's rating stands in the window.
+- The primary **Find ranked game** button has a fixed place. The window always opens in the defaults: the faction
+  is never remembered.
+- No numeric entry and no scrolling, in all four standard layouts.
+
+## Searching (UI-498)
+
+- Find ranked game starts the search. A moving indicator and the elapsed time stand beside the button, whose text
+  becomes **Cancel search** in the same place.
+- Every selection and the menu's other actions are disabled, not hidden, while the search runs. Only Cancel search
+  responds, and a cancel restores every control.
+- On a match the decision alert sounds, since the window may be in the background and the clock starts at once, and
+  the board opens with no screen between.
+- A lost connection during the search is shown and the client keeps trying. If the search lapsed meanwhile, the window
+  says it stopped and restores the controls. If a pairing happened meanwhile, the board opens.
+- The indicator uses art and opacity only, never a CSS filter, and honours reduced motion.
+
+## The clock (UI-499)
+
+- A fixed-width clock in the top bar, present only in ranked games: `You 0:27` or `Opponent 2:41`. Normal games keep
+  the top bar exactly as it is, since no space is reserved for what usually stands empty.
+- It counts locally from the server's remaining time, in real time, and re-syncs on every view without jumping up by
+  more than the sync error.
+- 10 s before the limit it turns red with a slight pulse, and its owner hears the `ClockWarning` sound once per
+  decision, also with the window in the background. Mute silences the sound but not the colour; reduced motion drops
+  the pulse but not the colour.
+
+## Pause (UI-500)
+
+- A small **Pause** button beside the clock. Its tooltip names the pauses left; at zero it is disabled.
+- While paused, both clients show a banner naming who paused, with **Resume** for both players. The board's decisions
+  are dimmed and inert, the clock is frozen, and chat works. The banner does not cover the chat.
+
+## Leaving and returning (UI-501)
+
+- In a ranked game the board menu's Exit match becomes **Concede**, and Quit game warns that it concedes. Both ask for
+  a confirmation with Cancel focused, then send the concession before anything else. A concession that cannot reach
+  the server says so and leaves the player in the game.
+- Signing in with an active ranked match opens it directly. The update restart is not offered while one is active.
+- My games marks ranked rows. A finished ranked game stands in the Finished tab and opens its end screen.
+- Normal, test, replay and observer boards keep their menus unchanged.
+
+## Reconnecting (UI-504)
+
+- In a ranked game the connection uses the ranked policy of RANKED_PLAY: a heartbeat every 2 s, a dead socket noticed
+  within 8 s, a retry every second.
+- While disconnected, the clock keeps counting from the last known deadline and reads `Reconnecting…` in the same place
+  and at the same width; the warning still sounds. The map, cards and the unsent draft stay usable, and commit is
+  disabled, as in [UI-12-RETURN](UI-12-RETURN.md).
+- On return an uncertain commit recovers first, then the view applies quietly, without presenting the opponent's
+  missed steps; the action log lists them. A game that ended meanwhile opens its end screen.
+- The opponent's clock reads `Opponent reconnecting…` while their seat is offline.
+
+## End screen (UI-502)
+
+- Reasons: You conceded, Your opponent conceded, You ran out of time, Your opponent ran out of time.
+- A rating line, only for ranked games: `Rating 1532 → 1547 (+15)`, rounded so that the sum holds.
+
+## Leaderboards (UI-503)
+
+- A page with a table: rank, name, rating, games, wins, losses. The player's own row is marked if listed, and their
+  rank and rating stand below the table.
+- Loading and error states follow My games: a failed read keeps what was shown and offers Refresh.
+- Rows are not clickable. Before any ranked game, an empty message says how to get on the board.
+
+## Statements this mode changes
+
+- [MAIN_MENU_UX](MAIN_MENU_UX.md): open games stay without matchmaking; Find game is a separate search; a ranked game
+  is live and is left only by conceding.
+- [WAITING_ROOM_UX](WAITING_ROOM_UX.md): a ranked game has no table, so its rules come from the search.
+- [AUDIO_UX](AUDIO_UX.md): the clock's warning is the one reminder.

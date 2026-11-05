@@ -115,7 +115,8 @@ Both only work before the launch.
 <a id="rules-strip--ui-263-2026-10-19"></a>
 ## Rules strip — UI-263 (2026-10-19)
 
-Owner decision 2026-10-19: the rules of a table are chosen only in its waiting room. Under the seats the window
+Owner decision 2026-10-19: the rules of a table are chosen only in its waiting room. A ranked game (R35, 2026-11-05)
+has no table and no waiting room: its rules come from the search ([RANKED_UX](RANKED_UX.md)). Under the seats the window
 splits in two: the audience, the invitation and the chat keep the left part, and the rules take a fixed column of
 236 px on the right, every rule in a fixed place:
 

@@ -4808,3 +4808,12 @@ Playtest (owner's checklist):
 - [ ] Open My games. Expect: two tabs, In progress and Finished, with In progress chosen.
 - [ ] Finish a game, or have one finished while you are away. Expect: a number on the Finished tab and on My games; the tab lists the game with Victory or
   Defeat, and a click opens its end screen; afterwards the number is gone.
+
+<a id="ranked-play--rank-01-spec"></a>
+## Ranked play — R35, planned (2026-11-05)
+
+The owner adds a ranked mode: Find game searches for an opponent, the server starts the game at once, every decision
+runs a clock, a player may pause three times, leaving concedes, and the result changes a per-account rating shown on a
+Leaderboards page. It is planned, not implemented (UI-497–UI-504). The interface is in [RANKED_UX](RANKED_UX.md); the
+rules are in `wotr-server:docs/RANKED_PLAY.md`. Two exceptions to rules above: the move clock stands in the top bar only
+in ranked games, and its warning is the one sound reminder.

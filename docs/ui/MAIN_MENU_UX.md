@@ -22,18 +22,18 @@ From MENU-28 host addresses are not in git (`ServerConfiguration`, `ClientEnviro
 - In CI workflow installers save `.env` from the variable repository.
 - `PlayerPrefs` "wotr.server" is not used. Tests indicate your server by `ServerConfiguration.Use`.
 
-The menu shows open games and My games and Host a game, Join by code, Settings and Sign out; screen layout from MENU-11 describes the section “ Menu layout — MENU-11 Public means visibility for logged users of this server, without automatic matchmaking. The list refreshes every 5 s, waiting room what 2 p. Requests are cancelled when changing the screen. From MENU-09 lists contain more rows and scroll without filters All/Your decision/Waiting/Finished and without Previous/Next. Further pages API load after scrolling to the end; refresh includes the loaded part, retains rows and position. Another page without scrolling only loads the list shorter than the view, evaluated after the new rows are placed ( DIST-01 Field Game code and Join by code stand by MENU-11 in column action One list error does not hide the others. Back at 404 returns to the menu. Source of this product adjustment: user request 2026-10-12 .
+The menu shows open games and My games and Host a game, Join by code, Settings and Sign out; screen layout from MENU-11 describes the section “ Menu layout — MENU-11 Public means visibility for logged users of this server, without automatic matchmaking. Ranked play (R35, owner 2026-11-05) adds a separate search, Find game, which pairs players automatically; open games are unchanged ([RANKED_UX](RANKED_UX.md)). The list refreshes every 5 s, waiting room what 2 p. Requests are cancelled when changing the screen. From MENU-09 lists contain more rows and scroll without filters All/Your decision/Waiting/Finished and without Previous/Next. Further pages API load after scrolling to the end; refresh includes the loaded part, retains rows and position. Another page without scrolling only loads the list shorter than the view, evaluated after the new rows are placed ( DIST-01 Field Game code and Join by code stand by MENU-11 in column action One list error does not hide the others. Back at 404 returns to the menu. Source of this product adjustment: user request 2026-10-12 .
 
 Host game: name (default {username}'s game, 1–64 characters after trim, no controls), Public/Private (default Public), Free Peoples/Shadow (default Free Peoples). A new table starts as the base game with two seats; since UI-263 (2026-10-19) its host chooses the expansions and variants in the waiting room ([WAITING_ROOM_UX](WAITING_ROOM_UX.md#rules-strip--ui-263-2026-10-19)), and the server offers only the released modules (wotr-server EXP-01). Name/widocznoity/page are constant since creation. The public line opens and takes a free seat with one click.
 
 Private room does not enter the public list. Host public and private room generates/copy random code; at the same time, one code is active, generating is impotent. Joining a member repeated after losing the reply does not take second place. Upon the guest's departure, the code is invalidated; the host can generate a new one. Start/close sizing prevents new attachments. The code never goes to public DTO.
 
-Both players set/remove Ready for the current version. Only host can start a new game. Return before start: the guest slows down the place and resets both acceptances; host closes the room. The disconnect is not an exit. The join/leave/start races are settled under one room block. If the start wins, the exit retains the participants and saves. Each started game allows you to continue by correspondence and return by My games without playing the decision.
+Both players set/remove Ready for the current version. Only host can start a new game. Return before start: the guest slows down the place and resets both acceptances; host closes the room. The disconnect is not an exit. The join/leave/start races are settled under one room block. If the start wins, the exit retains the participants and saves. Each started game allows you to continue by correspondence and return by My games without playing the decision. A ranked game (R35) is the exception: it is live, a disconnect is still not an exit but its clock keeps running, and it is left only by conceding ([RANKED_UX](RANKED_UX.md)).
 
 <a id="układ-menu--menu-11-2026-10-15"></a>
 ## Menu layout — MENU-11 (2026-10-15)
 
-Source: User application from 2026-10-15 — “very simple window” with public games and information about who hosts; right-hand button “my games” with a list of games started; menu is to have design, not look like “trast tabs and buttons thrown together on poop”. User decision of that day: public games are open rooms on our server, visible to all accounts (R04), without public matchmaking.
+Source: User application from 2026-10-15 — “very simple window” with public games and information about who hosts; right-hand button “my games” with a list of games started; menu is to have design, not look like “trast tabs and buttons thrown together on poop”. User decision of that day: public games are open rooms on our server, visible to all accounts (R04), without public matchmaking. The owner's decision of 2026-11-05 (R35) adds ranked matchmaking as a separate search; open games keep this rule.
 
 The screen (`MainMenuScreen`) has three layers:
 
@@ -367,6 +367,9 @@ The wait room has a main menu layout: a window with two player places, an invita
 ## ‘Exit match’ without ‘Delete game’ — MENU-32 (2026-10-16)
 
 The user request from 2026-10-16: “we withdraw the delete game button from the game menu from the map. games are to be changed to exit match. exiting the game does not remove it, exiting the empty host of the game that has not started, removes this room”.
+
+A ranked game (R35, owner 2026-11-05) is the exception to this menu: Exit match becomes Concede and Quit game warns that
+it concedes, both after a confirmation; deleting the game is refused by the server ([RANKED_UX](RANKED_UX.md)).
 
 - The board Menu: Resume, Victory, Settings, Exit match, Quit game. “Exit match” (`back-to-games`)
   saves draft and returns to the main menu; the batch stays on the server and on the list “My
