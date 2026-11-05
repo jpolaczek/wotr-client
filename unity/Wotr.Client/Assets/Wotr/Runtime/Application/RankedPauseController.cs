@@ -16,6 +16,7 @@ namespace Wotr.Client
         private readonly MatchConnection connection;
         private readonly string route;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
+        private const string NotSent = "Not sent: no connection";
         private bool busy;
 
         public RankedPauseController(GameApi api, string matchId, BoardScreen board, MatchConnection connection)
@@ -52,8 +53,11 @@ namespace Wotr.Client
                 await connection.RefreshClock();
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { }
-            // The update loop keeps running; its next notice or reconnect reads the clock again.
-            catch (Exception error) when (error is ApiException or HttpRequestException or OperationCanceledException) { }
+            // UI-504: it says so rather than failing silently; the update loop's next notice or reconnect reads the clock again.
+            catch (Exception error) when (error is ApiException or HttpRequestException or OperationCanceledException)
+            {
+                board.TopBar.Clock.ShowProblem(NotSent);
+            }
             finally
             {
                 busy = false;

@@ -33,6 +33,9 @@ namespace Wotr.Client
         // UI-500: every view as it arrives, whatever its revision, so a ranked clock counts from the moment it was read and
         // not from when a presentation lets the view go.
         public event Action<PlayerView> ClockSeen;
+        // UI-504: the opponent's seat, as the socket's notice reports it, without reading the view.
+        public event Action<bool> OpponentSeen;
+        public ConnectionPolicy Policy => ranked ? ConnectionPolicy.Ranked : ConnectionPolicy.Standard;
         // RANK-10: a seat's socket closes after 8 s of silence; normal matches send nothing.
         private const int HeartbeatMilliseconds = 2000;
         private static readonly ArraySegment<byte> HeartbeatFrame = new ArraySegment<byte>(Encoding.UTF8.GetBytes("{}"));
@@ -56,10 +59,12 @@ namespace Wotr.Client
                 running = Run();
         }
 
-        public async Task Refresh()
+        public Task Refresh() => Refresh(lifetime.Token);
+
+        private async Task Refresh(CancellationToken token)
         {
             var ticket = generation;
-            var view = await api.Get<PlayerView>(routes.View, lifetime.Token);
+            var view = await api.Get<PlayerView>(routes.View, token);
             if (disposed || ticket != generation)
                 return;
             Seen(view);
@@ -197,7 +202,8 @@ namespace Wotr.Client
                 try
                 {
                     SetStatus(Revision < 0 ? "Connecting" : "Reconnecting");
-                    await Refresh();
+                    using (var attempt = Policy.Attempt(lifetime.Token))
+                        await Refresh(attempt.Token);
                     using (socket = new ClientWebSocket())
                     {
                         socket.Options.SetRequestHeader("Authorization", "Bearer " + api.Token);
@@ -206,7 +212,8 @@ namespace Wotr.Client
                             api.Identity.ProtocolVersion.ToString(CultureInfo.InvariantCulture));
                         var address = new UriBuilder(new Uri(api.Address, routes.Updates));
                         address.Scheme = address.Scheme == "https" ? "wss" : "ws";
-                        await socket.ConnectAsync(address.Uri, lifetime.Token);
+                        using (var attempt = Policy.Attempt(lifetime.Token))
+                            await socket.ConnectAsync(address.Uri, attempt.Token);
                         SetStatus(failedView.Length > 0 ? DisplayError : "Connected");
                         delay = 1;
                         await ReceiveWithHeartbeat(socket);
@@ -235,7 +242,7 @@ namespace Wotr.Client
                     // QUAL-02/05: 429 and 503 name their own wait; it replaces the backoff for this round.
                     Diagnostics.Report(DiagnosticCategory.Transport, matchId, Revision, error);
                     SetStatus("Reconnecting");
-                    delay = Math.Max(delay, (int)Math.Ceiling(Math.Min(60, error.RetryAfter.Value.TotalSeconds)));
+                    delay = Math.Max(delay, (int)Math.Ceiling(Math.Min(Policy.RetryAfterCapSeconds, error.RetryAfter.Value.TotalSeconds)));
                 }
                 catch (Exception error)
                 {
@@ -252,7 +259,7 @@ namespace Wotr.Client
                     await Task.Delay(TimeSpan.FromSeconds(delay * (0.8 + 0.4 * jitter.NextDouble())), lifetime.Token);
                 }
                 catch (OperationCanceledException) { return; }
-                delay = Math.Min(15, delay * 2);
+                delay = Math.Min(Policy.LongestDelaySeconds, delay * 2);
             }
         }
 
@@ -298,7 +305,9 @@ namespace Wotr.Client
             var buffer = new byte[1024];
             while (!lifetime.IsCancellationRequested && activeSocket.State == WebSocketState.Open)
             {
-                var message = await activeSocket.ReceiveAsync(new ArraySegment<byte>(buffer), lifetime.Token);
+                WebSocketReceiveResult message;
+                using (var listening = Policy.Listening(lifetime.Token))
+                    message = await activeSocket.ReceiveAsync(new ArraySegment<byte>(buffer), listening.Token);
                 if (message.MessageType == WebSocketMessageType.Close)
                     return;
                 if (!message.EndOfMessage || message.MessageType != WebSocketMessageType.Text)
@@ -306,6 +315,8 @@ namespace Wotr.Client
                 var notice = JsonConvert.DeserializeObject<RevisionNotice>(Encoding.UTF8.GetString(buffer, 0, message.Count));
                 if (notice == null || notice.MatchId != matchId)
                     continue;
+                if (notice.OpponentOnline.HasValue)
+                    OpponentSeen?.Invoke(notice.OpponentOnline.Value);
                 if (version.IsAhead(notice.Revision, notice.PrivateVersion))
                     await Refresh();
                 else if (notice.ClockVersion != clockVersion)
@@ -335,6 +346,7 @@ namespace Wotr.Client
             public long Revision { get; set; }
             public long PrivateVersion { get; set; }
             public long ClockVersion { get; set; }
+            public bool? OpponentOnline { get; set; }
         }
     }
 }

@@ -61,6 +61,7 @@ namespace Wotr.Client
             board.TopBar.Clock.Warning += WarnClock;
             pause = new RankedPauseController(api, matchId, board, connection);
             connection.ClockSeen += ShowClock;
+            connection.OpponentSeen += board.TopBar.Clock.ShowOpponent;
             if (replays != null)
                 saver = new ReplaySaver(api, "api/matches/" + Uri.EscapeDataString(matchId) + "/replay", replays, board.GameEnd);
             connection.Start();
@@ -109,6 +110,8 @@ namespace Wotr.Client
                 return;
             Expired = state == "SessionExpired";
             Connected = state == "Connected";
+            board.TopBar.Clock.ShowConnected(Connected);
+            board.Pause.ShowConnected(Connected);
             board.SetConnection(state);
             sounds?.SetConnection(state);
             turns.SetConnection(state);
@@ -162,6 +165,7 @@ namespace Wotr.Client
             connection.StatusChanged -= ConnectionChanged;
             board.TopBar.Clock.Warning -= WarnClock;
             connection.ClockSeen -= ShowClock;
+            connection.OpponentSeen -= board.TopBar.Clock.ShowOpponent;
             pause.Dispose();
             sounds?.Dispose();
             saver?.Dispose();

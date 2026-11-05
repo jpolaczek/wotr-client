@@ -278,17 +278,32 @@
 #opponent-dice .die.ruler-discarded { opacity: 0.45; }
 
 /* UI-499: the ranked game's clock. A fixed width, so a change of owner or digit moves nothing in the bar. */
-.topbar > .move-clock {
+.topbar > .move-clock-box {
     flex-shrink: 0;
-    width: 104px;
+    width: 118px;
+    height: 34px;
     margin: 0 6px 0 2px;
+    justify-content: center;
+    align-items: center;
+}
+.move-clock-box > .move-clock {
+    margin: 0;
     padding: 0;
     white-space: nowrap;
     font-size: 14px;
     color: rgb(236, 220, 174);
     -unity-text-align: middle-center;
 }
-.topbar > .move-clock.move-clock-warning { color: rgb(244, 96, 72); }
+.move-clock-box > .move-clock.move-clock-warning { color: rgb(244, 96, 72); }
+/* UI-504: under the time, only when something is wrong. */
+.move-clock-box > .move-clock-status {
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    font-size: 11px;
+    color: rgb(240, 190, 130);
+    -unity-text-align: middle-center;
+}
 
 /* UI-500: beside the clock, small; the banner and the veils of a paused game. */
 .topbar > .move-clock-pause {

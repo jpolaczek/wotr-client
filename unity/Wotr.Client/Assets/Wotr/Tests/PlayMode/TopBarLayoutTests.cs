@@ -62,6 +62,29 @@ namespace Wotr.PlayTests
                             LayoutTests.Save(target, $"ui499-topbar-{key}-{width}-{scale:0.00}.png");
                             CheckBar(client.Board, label + " with the clock");
                             CheckClock(client.Board, label);
+                            // UI-504: the words under the time move nothing else in the bar, and fit.
+                            var box = client.Board.TopBar.Clock.Box.worldBound;
+                            foreach (var words in new[] { TopBarClock.Reconnecting, TopBarClock.OpponentReconnecting })
+                            {
+                                if (words == TopBarClock.Reconnecting)
+                                    client.Board.TopBar.Clock.ShowConnected(false);
+                                else
+                                {
+                                    client.Board.TopBar.Clock.ShowConnected(true);
+                                    client.Board.TopBar.Clock.ShowOpponent(false);
+                                }
+                                for (var frame = 0; frame < 6; frame++)
+                                    yield return null;
+                                var status = client.Board.TopBar.Clock.Status;
+                                Assert.AreEqual(words, status.text, label);
+                                Assert.AreEqual(box, client.Board.TopBar.Clock.Box.worldBound, "The clock keeps its place and width. " + label);
+                                Inside(status, client.Board.TopBar.Clock.Box.worldBound, label);
+                                Inside(client.Board.TopBar.Clock.Root, client.Board.TopBar.Clock.Box.worldBound, label);
+                                var wide = status.MeasureTextSize(status.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
+                                Assert.GreaterOrEqual(client.Board.TopBar.Clock.Box.contentRect.width + 1, wide, "Its words are not cut. " + label);
+                                LayoutTests.Save(target, $"ui504-{(words == TopBarClock.Reconnecting ? "own" : "opponent")}-{key}-{width}-{scale:0.00}.png");
+                            }
+                            client.Board.TopBar.Clock.ShowOpponent(true);
                             // UI-500: the banner under the bar, Resume inside it, and the chat clear of the veil.
                             client.Board.GameChat.Available(true);
                             for (var frame = 0; frame < 6; frame++)

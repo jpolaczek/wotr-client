@@ -1,6 +1,6 @@
 # Ranked play — interface
 
-Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game, the search, the clock, the pause, leaving, the end screen and the leaderboard (UI-497–UI-503) stand. The rules of the mode (compatibility,
+Owner's decision of 2026-11-05 (R35). Status: every part stands (UI-497–UI-504); only the owner's playtest and the rollout remain (RANK-09). The rules of the mode (compatibility,
 pairing, clocks, pause, reconnecting, rating) are in `wotr-server:docs/RANKED_PLAY.md`; this document describes only
 how the client shows them. The implementation tasks are UI-497–UI-504.
 
@@ -90,8 +90,8 @@ A window in the family of Host game. It has no name, visibility or variant contr
 
 - In a ranked game the connection uses the ranked policy of RANKED_PLAY: a heartbeat every 2 s, a dead socket noticed
   within 8 s, a retry every second.
-- While disconnected, the clock keeps counting from the last known deadline and reads `Reconnecting…` in the same place
-  and at the same width; the warning still sounds. The map, cards and the unsent draft stay usable, and commit is
+- While disconnected, the clock keeps counting from the last known deadline, with `Reconnecting…` under the time in the
+  same box, so both can be read; the warning still sounds. Pause and Resume grey out and say why. The map, cards and the unsent draft stay usable, and commit is
   disabled, as in [UI-12-RETURN](UI-12-RETURN.md).
 - On return an uncertain commit recovers first, then the view applies quietly, without presenting the opponent's
   missed steps; the action log lists them. A game that ended meanwhile opens its end screen.

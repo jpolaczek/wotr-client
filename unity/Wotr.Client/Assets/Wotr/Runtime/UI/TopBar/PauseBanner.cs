@@ -39,6 +39,13 @@ namespace Wotr.Client
             stage.RegisterCallback<GeometryChangedEvent>(_ => FollowStage());
         }
 
+        // UI-504: Resume cannot be sent without a connection, and says so.
+        public void ShowConnected(bool connected)
+        {
+            Resume.SetEnabled(connected);
+            Resume.tooltip = connected ? "Resume the game: the clock goes on from the time it stood at." : "The connection is lost: Resume cannot be sent now.";
+        }
+
         public void Show(bool paused, string text)
         {
             if (paused)

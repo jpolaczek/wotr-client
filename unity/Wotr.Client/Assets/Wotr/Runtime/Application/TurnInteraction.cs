@@ -1221,7 +1221,10 @@ namespace Wotr.Client
                 board.Map.ReserveFlights.Send(command.Payload.Placements.Select(placement => placement.UnitId));
             try
             {
-                var receipt = recovering ? await sender.Recover(lifetime.Token) : await sender.Send(command, lifetime.Token);
+                // UI-504: a ranked command is bounded by its clock; an uncertain one stays pending and its receipt tells.
+                CommandReceipt receipt;
+                using (var attempt = connection.Policy.Attempt(lifetime.Token))
+                    receipt = recovering ? await sender.Recover(attempt.Token) : await sender.Send(command, attempt.Token);
                 if (lifetime.IsCancellationRequested)
                     return;
                 requiredRevision = Math.Max(requiredRevision, receipt.Revision);

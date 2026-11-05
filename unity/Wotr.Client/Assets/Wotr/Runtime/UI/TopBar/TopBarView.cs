@@ -52,14 +52,14 @@ namespace Wotr.Client
         public void ShowClock(MoveClockView clock, Side you)
         {
             Clock.Show(clock, you);
-            if (Clock.Active && Clock.Root.parent == null)
+            if (Clock.Active && Clock.Box.parent == null)
             {
-                Root.Insert(Root.IndexOf(divider), Clock.Root);
+                Root.Insert(Root.IndexOf(divider), Clock.Box);
                 Root.Insert(Root.IndexOf(divider), Clock.PauseButton);
             }
             else if (!Clock.Active)
             {
-                Clock.Root.RemoveFromHierarchy();
+                Clock.Box.RemoveFromHierarchy();
                 Clock.PauseButton.RemoveFromHierarchy();
             }
         }
