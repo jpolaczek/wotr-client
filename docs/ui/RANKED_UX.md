@@ -1,6 +1,6 @@
 # Ranked play — interface
 
-Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game (UI-497) stands. The rules of the mode (compatibility,
+Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game and the search (UI-497, UI-498) stand. The rules of the mode (compatibility,
 pairing, clocks, pause, reconnecting, rating) are in `wotr-server:docs/RANKED_PLAY.md`; this document describes only
 how the client shows them. The implementation tasks are UI-497–UI-504.
 
@@ -46,7 +46,10 @@ A window in the family of Host game. It has no name, visibility or variant contr
   UI-506), and the board opens. This fits within the 15 s the first decision gains for loading.
 - A lost connection during the search is shown and the client keeps trying. If the search lapsed meanwhile, the window
   says it stopped and restores the controls. If a pairing happened meanwhile, the board opens.
-- The indicator uses art and opacity only, never a CSS filter, and honours reduced motion.
+- The indicator uses art and opacity only, never a CSS filter, and honours reduced motion: it stands still.
+- A cancel that cannot reach the server stops trying after 8 s, when the server's ticket has lapsed, and says so; a search
+  that merely lost its connection keeps trying. Closing the client tells the server if it can, and the ticket lapses
+  within 6 s if it cannot.
 
 ## The clock (UI-499)
 

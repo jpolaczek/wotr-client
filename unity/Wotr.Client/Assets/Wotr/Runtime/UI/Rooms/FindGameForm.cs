@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
 
@@ -16,8 +17,19 @@ namespace Wotr.Client
         public const string NoSide = "Choose a side first.";
         public const string Stakes = "A ranked game is played to its end: leaving it or running out of time loses it, and your rating follows.";
 
+        public const string SearchText = "Find ranked game";
+        public const string CancelText = "Cancel search";
+        public const string SearchStopped = "Your search stopped while the connection was lost. Start it again when you are ready.";
+        public const string CancelUnconfirmed = "The server could not be reached, and your search has lapsed by now.";
+        private const string Searching = "Searching… ";
+        private const string Lost = "Connection lost, still trying… ";
+        // About 30 updates a second while the indicator turns; a quarter turn a second reads as moving, not as busy.
+        private const long TickMilliseconds = 33;
+        private const float DegreesPerSecond = 90;
+
         public VisualElement Root { get; } = new VisualElement { name = "find-game-form" };
         public event Action<RankedSearchRequest> Find;
+        public event Action CancelSearch;
         public event Action Back;
         private readonly SideChoice sides = new SideChoice("find", releasable: true);
         private readonly RankedChoiceRow lords = Expansion("find-lords", "Lords");
@@ -30,6 +42,20 @@ namespace Wotr.Client
             new RankedChoiceRow("find-side-choice", "This side", "", RankedChoice.Allow, RankedChoice.Enforce);
         private readonly Label rating = new Label { name = "find-rating", pickingMode = PickingMode.Ignore };
         private readonly Label status = new Label { name = "find-status", pickingMode = PickingMode.Ignore };
+        private readonly VisualElement columns = new VisualElement();
+        private readonly VisualElement progress = new VisualElement { name = "find-progress", pickingMode = PickingMode.Ignore };
+        private readonly VisualElement indicator = new VisualElement { name = "find-indicator", pickingMode = PickingMode.Ignore };
+        private readonly Label elapsed = new Label { name = "find-elapsed", pickingMode = PickingMode.Ignore };
+        private readonly VisualElement opponent = new VisualElement { name = "find-opponent", pickingMode = PickingMode.Ignore };
+        private readonly Label opponentName = new Label { name = "find-opponent-name", pickingMode = PickingMode.Ignore };
+        private readonly Label opponentRating = new Label { name = "find-opponent-rating", pickingMode = PickingMode.Ignore };
+        private Button back;
+        private Button submit;
+        private IVisualElementScheduledItem ticking;
+        private bool searching;
+        private bool lost;
+        private float searchStarted;
+        private float angle;
         private readonly Dictionary<string, RankedChoiceRow> expansions;
         private readonly RankedChoiceRow[] paces;
         private HashSet<string> offered = new HashSet<string>();
@@ -43,7 +69,6 @@ namespace Wotr.Client
             paces = new[] { fast, standard, longest };
             Root.AddToClassList("host-form");
             Root.AddToClassList("find-form");
-            var columns = new VisualElement();
             columns.AddToClassList("find-columns");
             columns.Add(Column(Heading("Expansions"), lords.Root, kings.Root, fate.Root, Heading("Time per move / per answer"),
                 fast.Root, standard.Root, longest.Root));
@@ -52,7 +77,10 @@ namespace Wotr.Client
             stakes.AddToClassList("find-note");
             columns.Add(Column(Heading("Your side"), sides.Root, sideChoice.Root, rating, stakes));
             Root.Add(columns);
+            Root.Add(OpponentPanel());
             Root.Add(Footer());
+            ticking = Root.schedule.Execute(Tick).Every(TickMilliseconds);
+            ticking.Pause();
             foreach (var pace in paces)
                 pace.Chosen += value => ChoosePace(pace, value);
             sides.Changed += _ => ShowSideChoice();
@@ -60,6 +88,10 @@ namespace Wotr.Client
         }
 
         public Side? Side => sides.Choice;
+
+        public bool IsSearching => searching;
+
+        public float IndicatorAngle => angle;
 
         public RankedSearchRequest Request => new RankedSearchRequest
         {
@@ -87,13 +119,115 @@ namespace Wotr.Client
             ShowPaces();
             ShowSideChoice();
             ShowRating(null);
+            ShowSearching(false);
+            opponent.style.display = DisplayStyle.None;
+            columns.style.display = DisplayStyle.Flex;
         }
 
         // The modules the server releases (GET /api/rooms/offered-modules): the others must stay Off (D1).
         public void Offer(IEnumerable<string> modules)
         {
-            offered = new HashSet<string>(modules);
+            var next = new HashSet<string>(modules);
+            // A late answer must not undo a choice, nor show rows other than those a running search asked for.
+            if (searching || next.SetEquals(offered))
+                return;
+            offered = next;
             ShowExpansions();
+        }
+
+        // UI-498: while a search runs only Cancel search responds. The choices keep their values and their own disabled
+        // states, so a cancel returns every control as it was.
+        public void ShowSearching(bool value)
+        {
+            searching = value;
+            columns.SetEnabled(!value);
+            back?.SetEnabled(!value);
+            if (submit != null)
+            {
+                submit.text = value ? CancelText : SearchText;
+                submit.SetEnabled(true);
+            }
+            progress.style.display = value ? DisplayStyle.Flex : DisplayStyle.None;
+            status.style.display = value ? DisplayStyle.None : DisplayStyle.Flex;
+            if (!value)
+            {
+                ticking?.Pause();
+                return;
+            }
+            lost = false;
+            status.text = "";
+            ShowElapsed(0);
+            ticking?.Resume();
+        }
+
+        // The server's count, between polls continued here.
+        public void ShowElapsed(int seconds)
+        {
+            searchStarted = Time.realtimeSinceStartup - seconds;
+            ShowProgress();
+        }
+
+        public void ShowConnectionLost(bool value)
+        {
+            lost = value;
+            ShowProgress();
+        }
+
+        public void ShowStatus(string text) => status.text = text;
+
+        // The opponent, for the moment before the board opens. The rows make way and nothing responds any more.
+        public void ShowOpponent(string name, int value)
+        {
+            ticking?.Pause();
+            opponentName.text = name;
+            opponentRating.text = "Rating " + value;
+            columns.style.display = DisplayStyle.None;
+            opponent.style.display = DisplayStyle.Flex;
+            // The empty status takes the progress's room, so the button keeps its place.
+            progress.style.display = DisplayStyle.None;
+            status.style.display = DisplayStyle.Flex;
+            submit.SetEnabled(false);
+        }
+
+        private void Tick()
+        {
+            ShowProgress();
+            if (ReducedMotion())
+                return;
+            angle = (angle + DegreesPerSecond * TickMilliseconds / 1000f) % 360;
+            indicator.style.rotate = new Rotate(angle);
+        }
+
+        private void ShowProgress()
+        {
+            var seconds = Mathf.Max(0, (int)(Time.realtimeSinceStartup - searchStarted));
+            var text = (lost ? Lost : Searching) + seconds / 60 + ":" + (seconds % 60).ToString("00");
+            if (elapsed.text != text)
+                elapsed.text = text;
+        }
+
+        private bool ReducedMotion()
+        {
+            for (var element = Root; element != null; element = element.parent)
+                if (element.ClassListContains("reduced-motion"))
+                    return true;
+            return false;
+        }
+
+        private VisualElement OpponentPanel()
+        {
+            opponent.AddToClassList("find-opponent");
+            opponent.style.display = DisplayStyle.None;
+            var heading = new Label("Your opponent") { pickingMode = PickingMode.Ignore };
+            heading.AddToClassList("host-label");
+            heading.AddToClassList("host-heading");
+            heading.AddToClassList("find-opponent-heading");
+            opponent.Add(heading);
+            opponentName.AddToClassList("find-opponent-name");
+            opponent.Add(opponentName);
+            opponentRating.AddToClassList("find-opponent-rating");
+            opponent.Add(opponentRating);
+            return opponent;
         }
 
         public void ShowRating(int? value) => rating.text = value.HasValue ? "Your rating: " + value.Value : "Your rating: –";
@@ -179,19 +313,36 @@ namespace Wotr.Client
         {
             var footer = new VisualElement();
             footer.AddToClassList("host-footer");
-            var back = BoardScreen.Button("Back", () => Back?.Invoke());
+            back = BoardScreen.Button("Back", () => Back?.Invoke());
             back.name = "cancel-find";
             back.AddToClassList("host-back");
             footer.Add(back);
             status.AddToClassList("host-status");
             footer.Add(status);
-            var submit = BoardScreen.Button("Find ranked game", () => Find?.Invoke(Request));
+            progress.AddToClassList("find-progress");
+            progress.style.display = DisplayStyle.None;
+            indicator.AddToClassList("menu-row-emblem");
+            indicator.AddToClassList("side-free");
+            indicator.AddToClassList("find-indicator");
+            progress.Add(indicator);
+            elapsed.AddToClassList("find-elapsed");
+            progress.Add(elapsed);
+            footer.Add(progress);
+            submit = BoardScreen.Button(SearchText, Press);
             submit.name = "submit-find";
             submit.AddToClassList("host-submit");
             submit.AddToClassList("find-submit");
             submit.tooltip = "Search for an opponent whose choices fit yours. The game starts as soon as one is found.";
             footer.Add(submit);
             return footer;
+        }
+
+        private void Press()
+        {
+            if (searching)
+                CancelSearch?.Invoke();
+            else
+                Find?.Invoke(Request);
         }
     }
 }

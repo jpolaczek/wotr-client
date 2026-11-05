@@ -19,6 +19,7 @@ namespace Wotr.Client
         private readonly Func<string, string, string, ILocalMatchStorage> localStorage;
         private readonly Action quit;
         private readonly SoundModule sounds;
+        private RankedSearchController rankedSearch;
         private MatchSession matchSession;
         // OBS-05: the live board of a game one watches; never at the same time as a player's match session.
         private ObserverSession observer;
@@ -131,6 +132,7 @@ namespace Wotr.Client
             lobby.Demo += (side, configuration) => Perform(() => StartDemo(side, configuration));
             lobby.DemoOpened += () => _ = LoadDemoModules(lobby, screenLifetime.Token);
             lobby.FindOpened += () => _ = LoadFindGame(lobby, screenLifetime.Token);
+            rankedSearch = new RankedSearchController(api, lobby, id => Perform(() => ShowMatch(id)), ErrorText, sounds);
             lobby.Join += (code, role) => Perform(async () => ShowRoom(await api.Post<RoomView>("api/rooms/join",
                 new JoinRoomRequest { Code = code, Role = role }, screenLifetime.Token)));
             lobby.JoinPublic += (id, role) => Perform(async () => ShowRoom(await api.Post<RoomView>(
@@ -631,6 +633,8 @@ namespace Wotr.Client
             screenLifetime.Dispose();
             screenLifetime = new CancellationTokenSource();
             CloseMatch();
+            rankedSearch?.Dispose();
+            rankedSearch = null;
             waitingRoom?.Dispose();
             waitingRoom = null;
             lobbyBrowser?.Dispose();
@@ -654,6 +658,7 @@ namespace Wotr.Client
             screenLifetime.Cancel();
             screenLifetime.Dispose();
             CloseMatch();
+            rankedSearch?.Dispose();
             waitingRoom?.Dispose();
             waitingRoom = null;
             lobbyBrowser?.Dispose();

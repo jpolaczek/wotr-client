@@ -94,6 +94,7 @@ namespace Wotr.Client
         public Task<T> Post<T>(string path, object body, CancellationToken cancellation) => Send<T>("POST", path, body, cancellation);
         public Task<T> Put<T>(string path, object body, CancellationToken cancellation) => Send<T>("PUT", path, body, cancellation);
         public Task Delete(string path, CancellationToken cancellation) => Send<object>("DELETE", path, null, cancellation);
+        public Task<T> Delete<T>(string path, CancellationToken cancellation) => Send<T>("DELETE", path, null, cancellation);
 
         // REPLAY-04: a file the server streams (a replay), copied into `target` as it arrives; errors as in Send.
         public async Task Download(string path, Stream target, CancellationToken cancellation)

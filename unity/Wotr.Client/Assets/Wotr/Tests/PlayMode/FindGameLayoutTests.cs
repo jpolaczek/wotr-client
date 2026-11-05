@@ -68,8 +68,69 @@ namespace Wotr.PlayTests
                     ReturnTestFixture.Click(menu.Root.Q<Button>("find-long-enforce"));
                     yield return Settle();
                     LayoutTests.Save(target, $"ui497-find-chosen-{width}-{scale:0.00}.png");
+
+                    // UI-498: the button keeps its place and the progress stands beside it.
+                    var button = menu.Root.Q<Button>("submit-find");
+                    var place = button.worldBound;
+                    menu.ShowSearching(true);
+                    menu.FindGame.ShowElapsed(754);
+                    yield return Settle();
+                    Assert.AreEqual(place, button.worldBound, "Cancel search stands where Find ranked game stood.");
+                    Assert.AreEqual(FindGameForm.CancelText, button.text);
+                    Fits(menu.Root.Q("find-indicator"), form);
+                    Fits(menu.Root.Q<Label>("find-elapsed"), form);
+                    Assert.Less(menu.Root.Q<Label>("find-elapsed").worldBound.xMax, button.worldBound.xMin + 1);
+                    TextFits(menu.Root.Q<Label>("find-elapsed"));
+                    LayoutTests.Save(target, $"ui498-searching-{width}-{scale:0.00}.png");
+                    menu.FindGame.ShowConnectionLost(true);
+                    yield return Settle();
+                    Fits(menu.Root.Q<Label>("find-elapsed"), form);
+                    TextFits(menu.Root.Q<Label>("find-elapsed"));
+                    LayoutTests.Save(target, $"ui498-searching-lost-{width}-{scale:0.00}.png");
+
+                    menu.FindGame.ShowOpponent("PlayerWithLongUsername12345678901", 2147);
+                    yield return Settle();
+                    Fits(menu.Root.Q<Label>("find-opponent-name"), form);
+                    Fits(menu.Root.Q<Label>("find-opponent-rating"), form);
+                    Assert.IsFalse(button.enabledInHierarchy, "Nothing responds while the opponent is presented.");
+                    Assert.AreEqual(place, button.worldBound, "The button keeps its place here too.");
+                    LayoutTests.Save(target, $"ui498-opponent-{width}-{scale:0.00}.png");
+
+                    menu.ShowSearching(false);
+                    menu.FindGame.ShowStatus(FindGameForm.SearchStopped);
+                    menu.FindGame.Reset();
+                    menu.FindGame.ShowStatus(FindGameForm.SearchStopped);
+                    yield return Settle();
+                    Fits(menu.Root.Q<Label>("find-status"), form);
+                    LayoutTests.Save(target, $"ui498-stopped-{width}-{scale:0.00}.png");
                     target.Release();
                 }
+            }
+        }
+
+        // UI-498: the indicator keeps moving while a search runs, and stands still under reduced motion.
+        [UnityTest]
+        public IEnumerator TheIndicatorMovesAndHonoursReducedMotion()
+        {
+            using (var client = new MountedFlowClient(null, null))
+            {
+                var menu = Mount(client);
+                yield return Settle();
+                ReturnTestFixture.Click(menu.Root.Q<Button>("find-game"));
+                yield return Settle();
+                menu.ShowSearching(true);
+                var before = menu.FindGame.IndicatorAngle;
+                yield return new WaitForSecondsRealtime(0.3f);
+                Assert.AreNotEqual(before, menu.FindGame.IndicatorAngle, "It moves.");
+                var motion = menu.Root.Q("find-indicator").style.rotate.value.angle.value;
+                Assert.Greater(motion, 0, "The picture itself turns.");
+
+                client.Interface.Preferences.SetReducedMotion(true);
+                yield return Settle();
+                before = menu.FindGame.IndicatorAngle;
+                yield return new WaitForSecondsRealtime(0.3f);
+                Assert.AreEqual(before, menu.FindGame.IndicatorAngle, "Reduced motion stops it.");
+                client.Interface.Preferences.SetReducedMotion(false);
             }
         }
 

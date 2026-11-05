@@ -346,6 +346,15 @@ namespace Wotr.Client
 
         public FindGameForm FindGame => find;
 
+        // UI-498: while a search runs, only its Cancel search responds; the menu's other actions are disabled, not hidden.
+        public void ShowSearching(bool value)
+        {
+            Root.Q("menu-actions").SetEnabled(!value);
+            Root.Q<Button>("refresh-games").SetEnabled(!value);
+            Challenge.Root.SetEnabled(!value);
+            find.ShowSearching(value);
+        }
+
         public DemoStartPage DemoPage => demo;
 
         public void ShowDemoModules(IEnumerable<string> modules) => demo.Offer(modules);
