@@ -37,8 +37,9 @@ A window in the family of Host game. It has no name, visibility or variant contr
   becomes **Cancel search** in the same place.
 - Every selection and the menu's other actions are disabled, not hidden, while the search runs. Only Cancel search
   responds, and a cancel restores every control.
-- On a match the decision alert sounds, since the window may be in the background and the clock starts at once, and
-  the board opens with no screen between.
+- On a match the decision alert sounds, since the window may be in the background and the clock starts at once. The
+  window then presents the opponent for 3 seconds: avatar, name and rating (owner, 2026-11-05; the avatar comes with
+  UI-506), and the board opens. This fits within the 15 s the first decision gains for loading.
 - A lost connection during the search is shown and the client keeps trying. If the search lapsed meanwhile, the window
   says it stopped and restores the controls. If a pairing happened meanwhile, the board opens.
 - The indicator uses art and opacity only, never a CSS filter, and honours reduced motion.
