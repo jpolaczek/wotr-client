@@ -73,10 +73,9 @@ namespace Wotr.PlayTests
                     Assert.AreSame(figure, panel.Q<Button>(figure.name));
                     yield return null;
                     Assert.AreEqual(consoleHeight, board.Console.Root.layout.height, 0.01f, "UI-160: the console keeps its height.");
-                    Assert.AreEqual(stageBefore, panel.parent.worldBound,
-                        "Choosing the first figure must not shrink the inspected region's viewport.");
-                    Assert.AreEqual(dockBefore, dock.worldBound);
-                    Assert.AreEqual(before, figure.worldBound);
+                    SameRect(stageBefore, panel.parent.worldBound, "Choosing the first figure must not shrink the inspected region's viewport.");
+                    SameRect(dockBefore, dock.worldBound, "The dock stays.");
+                    SameRect(before, figure.worldBound, "The figure stays.");
                     LayoutTests.Save(target, $"ui28-hover-{width}-{scale:0.00}.png");
                     AssertInside(panel.worldBound, board.Map.worldBound);
                     foreach (var button in Figures(panel))
@@ -98,14 +97,19 @@ namespace Wotr.PlayTests
                     var pinnedCard = fixture.View.Hand[0];
                     board.Cards.Show(pinnedCard, true);
                     yield return null;
-                    Move(board.Phase);
-                    yield return new WaitForSecondsRealtime(.22f);
-                    // A pinned card now occludes the map instead of pushing its markers away.
-                    board.Map.Camera.Pan += new Vector2(-150, 0);
-                    board.Map.Refresh();
+                    // UI-103: a click on the region whose panel is open closes it, so the click below starts from a closed panel.
+                    board.Hover.Close();
                     yield return null;
-                    CardNetworkTests.Click(marker);
-                    yield return new WaitForSecondsRealtime(.3f);
+                    // A pinned card occludes the map instead of pushing its markers away, so a player pans the marker out from under it.
+                    for (var step = 0; step < PanSteps && !Reachable(marker); step++)
+                    {
+                        board.Map.Camera.Pan += new Vector2(PanStep, 0);
+                        board.Map.Refresh();
+                        yield return null;
+                    }
+                    PointerGestureEvents.ClickAt(marker);
+                    // Read before UI-189's delay: the panel stands while a card is pinned over the map, whatever the pointer does next.
+                    yield return new WaitForSecondsRealtime(.1f);
                     Assert.AreEqual(DisplayStyle.Flex, panel.resolvedStyle.display);
                     Assert.IsTrue(board.Cards.Pinned);
                     Assert.AreEqual(pinnedCard, board.Cards.CardId);
@@ -376,6 +380,26 @@ namespace Wotr.PlayTests
 
         private static System.Collections.Generic.IEnumerable<Button> Figures(VisualElement panel) =>
             panel.Query<Button>().ToList().Where(b => b.userData is DraftToken token && token.Object == DraftObject.Figure);
+
+        // One physical pixel at 125 % is 0.8 points, and a flexible row lands on the pixel grid.
+        private const float RectTolerance = 1f;
+
+        private static void SameRect(Rect expected, Rect actual, string what)
+        {
+            Assert.AreEqual(expected.x, actual.x, RectTolerance, what);
+            Assert.AreEqual(expected.y, actual.y, RectTolerance, what);
+            Assert.AreEqual(expected.width, actual.width, RectTolerance, what);
+            Assert.AreEqual(expected.height, actual.height, RectTolerance, what);
+        }
+
+        private const int PanSteps = 16;
+        private const float PanStep = 80;
+
+        private static bool Reachable(VisualElement target)
+        {
+            var picked = target.panel.Pick(target.worldBound.center);
+            return picked == target || target.Contains(picked);
+        }
 
         private static void Move(VisualElement target)
         {

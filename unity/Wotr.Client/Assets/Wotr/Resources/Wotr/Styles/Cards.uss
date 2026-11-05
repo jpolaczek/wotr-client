@@ -108,7 +108,10 @@
     -unity-font-style: bold;
     color: rgb(59, 36, 18);
 }
-.compact-edge-board #hand-card-title { font-size: 11px; max-height: 31px; }
+.compact-edge-board #hand-card-title { font-size: 11px; }
+/* TEST-21: a compact tile gives its title more of its width, so a long word fits a line at the smallest type (Dunharrow, a full hand at 1366×768 and 125 %). */
+.compact-edge-board #hand-card-compact { padding: 0 14px 0 5px; }
+#board-screen .compact-edge-board .hand-card #hand-card-compact .action-symbol { width: 16px; height: 16px; margin: 0 3px 0 0; }
 #board-screen .hand-card .action-symbol { position: relative; left: 0; top: 0; width: 18px; height: 18px; margin: 0 6px 0 0; flex-shrink: 0; }
 
 /* Full layer: laid out at the hand's width; it fades in while the face unrolls. */

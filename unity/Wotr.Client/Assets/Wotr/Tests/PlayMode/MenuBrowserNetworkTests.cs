@@ -97,13 +97,13 @@ namespace Wotr.PlayTests
                         Assert.IsTrue(expectedMatches.All(id => client.Root.Q<Button>("resume-match-" + id) != null));
                         boundary.FailPublic = true;
                         await ClickReady(client.Root, "refresh-games", token);
-                        await Until(() => client.Root.Q<Label>("lobby-status").text.Contains("server needs a lobby update"), token);
+                        await Until(() => MenuStatus(client.Root).text.Contains("server needs a lobby update"), token);
                         Assert.IsNotNull(client.Root.Q<Button>("open-room-" + own.Id));
                         Assert.AreSame(matchRow, client.Root.Q<Button>("resume-match-" + firstMatchId));
                         Assert.IsNotNull(client.Root.Q<TextField>("table-invitation"));
                         boundary.FailPublic = false;
                         await ClickReady(client.Root, "refresh-games", token);
-                        await Until(() => client.Root.Q<Label>("lobby-status").text.Length == 0, token);
+                        await Until(() => MenuStatus(client.Root).text.Length == 0, token);
                     }
                 }
             }

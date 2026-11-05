@@ -15,7 +15,8 @@ namespace Wotr.PlayTests
         private static async Task Read()
         {
             using var boundary = new ActionNoticeBoundary();
-            using var room = await Connect("ui46-report", ScenarioKind.BaseAcceptance, fpHandler: boundary);
+            using var shadowBoundary = new ActionNoticeBoundary();
+            using var room = await Connect("ui46-report", ScenarioKind.BaseAcceptance, fpHandler: boundary, shHandler: shadowBoundary);
             var board = room.Fp.Board;
             var report = board.BattleReport;
             var revision = board.View.Revision;
@@ -30,16 +31,18 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.None, report.Root.resolvedStyle.display);
             Assert.IsNull(report.Displayed, "The late response cannot replace a closed report.");
 
-            boundary.FailBattle = true;
-            PointerGestureEvents.ClickAt(report.Open);
-            var retry = report.Root.Q<Button>("retry-battle-report");
+            // UI-112: the ⚔ hides once its round has been shown, so the failed read is the other side's own unread ⚔.
+            var shadowReport = room.Sh.Board.BattleReport;
+            shadowBoundary.FailBattle = true;
+            PointerGestureEvents.ClickAt(shadowReport.Open);
+            var retry = shadowReport.Root.Q<Button>("retry-battle-report");
             await room.Until(() => retry.resolvedStyle.display == DisplayStyle.Flex);
             await room.Settle();
-            Assert.IsNull(report.Displayed);
-            boundary.FailBattle = false;
+            Assert.IsNull(shadowReport.Displayed);
+            shadowBoundary.FailBattle = false;
             PointerGestureEvents.ClickAt(retry);
-            await room.Until(() => report.Displayed != null);
-            Assert.AreEqual(2, report.Displayed.Rounds.Count);
+            await room.Until(() => shadowReport.Displayed != null);
+            Assert.AreEqual(2, shadowReport.Displayed.Rounds.Count);
             Assert.AreEqual(revision, board.View.Revision);
             Assert.AreEqual(revision, room.Sh.Board.View.Revision);
         }

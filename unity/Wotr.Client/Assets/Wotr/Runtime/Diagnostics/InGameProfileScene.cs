@@ -185,8 +185,9 @@ namespace Wotr.Client.Diagnostics
                 visibleSources++;
                 VerifyTarget(source);
             }
-            if (visibleSources != 4)
-                throw new InvalidOperationException("Dense inspection must show the full page of four Effects sources.");
+            // UI-221: every source is in view at once; the panel has no pages.
+            if (visibleSources != effectSources.Count())
+                throw new InvalidOperationException("Dense inspection must show every Effects source.");
             VerifyTarget(board.Menu.Toggle);
             VerifyTarget(board.Characters.Tab);
             VerifyTarget(board.Hand.Query<Button>(className: "hand-card").First());
@@ -194,14 +195,17 @@ namespace Wotr.Client.Diagnostics
                 VerifyTarget(board.Fellowship.Root.Q<Button>("focus-fellowship"));
         }
 
+        // Neighbouring rail tabs share an edge when one is open; a target is covered when a player could not press it, not at its last point.
+        private const float CornerInset = 3;
+
         private static void VerifyTarget(Button button)
         {
             var bounds = button.worldBound;
-            VerifyTarget(button, bounds.min + Vector2.one);
-            VerifyTarget(button, bounds.max - Vector2.one);
+            VerifyTarget(button, bounds.min + Vector2.one * CornerInset);
+            VerifyTarget(button, bounds.max - Vector2.one * CornerInset);
             VerifyTarget(button, bounds.center);
-            VerifyTarget(button, new Vector2(bounds.xMin + 1, bounds.yMax - 1));
-            VerifyTarget(button, new Vector2(bounds.xMax - 1, bounds.yMin + 1));
+            VerifyTarget(button, new Vector2(bounds.xMin + CornerInset, bounds.yMax - CornerInset));
+            VerifyTarget(button, new Vector2(bounds.xMax - CornerInset, bounds.yMin + CornerInset));
         }
 
         private static void VerifyTarget(Button button, Vector2 point)

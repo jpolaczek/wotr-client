@@ -35,6 +35,8 @@ namespace Wotr.Client
         // UI-217: the stylesheet size of the tile title, read while no fitted size overrides it.
         private float normalTitleSize;
         private bool titleShrunk;
+        private string fittedText;
+        private float fittedWidth;
 
         public HandCard(string id, Action clicked)
         {
@@ -102,7 +104,10 @@ namespace Wotr.Client
         {
             // The compact board changes the tile and its title's stylesheet size; fit again from that size.
             if (!Mathf.Approximately(height, collapsedHeight))
+            {
+                fittedText = null;
                 ResetTitle();
+            }
             collapsedHeight = height;
             Slot.style.left = left;
             Slot.style.top = top;
@@ -146,6 +151,12 @@ namespace Wotr.Client
             var available = title.contentRect.width;
             if (title.panel == null || float.IsNaN(available) || available <= 0 || string.IsNullOrWhiteSpace(title.text))
                 return;
+            // TEST-21: one fit for a text at a width. The fit's size changes the title's geometry, which calls this again, and
+            // measuring from the new size could answer another: the loop Unity reported as a layout that would not stabilize.
+            if (title.text == fittedText && Mathf.Approximately(available, fittedWidth))
+                return;
+            fittedText = title.text;
+            fittedWidth = available;
             var current = title.resolvedStyle.fontSize;
             if (!titleShrunk)
                 normalTitleSize = current;

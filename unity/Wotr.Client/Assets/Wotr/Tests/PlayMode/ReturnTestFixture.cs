@@ -55,6 +55,9 @@ namespace Wotr.PlayTests
             await Task.Delay(80, token);
         }
 
+        // The main menu's status line; the Open games panel inside the menu has a label of the same name, always empty there.
+        public static Label MenuStatus(VisualElement root) => root.Q<Label>(className: "menu-status");
+
         // LOBBY-05: a finished game is not in My games, so it opens by its id, not from a row.
         public static async Task OpenFinished(MountedFlowClient client, string id, CancellationToken token)
         {

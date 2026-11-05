@@ -79,7 +79,7 @@ namespace Wotr.PlayTests
                 await Until(() => host.Root.Q<Button>("remove-observer-" + winnerApi.Username)?.enabledSelf == true, token);
                 await ClickReady(host.Root, "remove-observer-" + winnerApi.Username, token);
                 await Until(() => winner.Root.Q("main-menu") != null, token);
-                Assert.AreEqual("The host removed you from this room.", winner.Root.Q<Label>("lobby-status").text);
+                await Until(() => MenuStatus(winner.Root).text == "The host removed you from this room.", token);
             }
             if (Directory.Exists(storage))
                 Directory.Delete(storage, true);
