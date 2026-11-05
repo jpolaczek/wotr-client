@@ -192,7 +192,7 @@ Each task provides tests to preserve its boundary. acceptance aggregate real-wor
 
 The slide slide moves nothing. Test sound plays ActionAccepted and after 0,3 s DecisionRequired, on the current levels. When the sliders sound is switched off, the background alerts and test are greyed out at their places. The change goes immediately to `SoundPolicy.Levels`, and the turn off of the video.
 - Background: `Application.focusChanged` sets `SoundPolicy.Focused` (also when minimizing; the game
-  starts with focus). The background filter with AUDIO-02 only passes DecisionRequired, Victory and
+  starts with focus). The background filter with AUDIO-02 only passes DecisionRequired, ClockWarning (UI-499), Victory and
   Defeat, and the omitted events do not return after focus. `runInBackground` in ProjectSettings is
   already enabled, so the client can play these signals in the background.
 

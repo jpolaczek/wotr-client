@@ -276,3 +276,16 @@
 #opponent-dice .die.ruler-die.die-shadow.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-lit"); }
 #opponent-dice .die.ruler-die.die-shadow:active { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-pressed"); }
 #opponent-dice .die.ruler-discarded { opacity: 0.45; }
+
+/* UI-499: the ranked game's clock. A fixed width, so a change of owner or digit moves nothing in the bar. */
+.topbar > .move-clock {
+    flex-shrink: 0;
+    width: 104px;
+    margin: 0 6px 0 2px;
+    padding: 0;
+    white-space: nowrap;
+    font-size: 14px;
+    color: rgb(236, 220, 174);
+    -unity-text-align: middle-center;
+}
+.topbar > .move-clock.move-clock-warning { color: rgb(244, 96, 72); }

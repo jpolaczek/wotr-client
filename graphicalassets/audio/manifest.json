@@ -355,6 +355,19 @@
       "endAmplitude": 0.0,
       "dcOffset": -2e-06,
       "clippedSamples": 0
+    },
+    {
+      "cue": "ClockWarning",
+      "file": "clock-warning-1.wav",
+      "seed": 14000,
+      "seconds": 0.62,
+      "loudness": -18.0,
+      "truePeakDb": -5.9,
+      "sha256": "5712a1c88ebf7a1cb1151d200baf28eeb333117845e922e2820e56a5d5284f27",
+      "startAmplitude": 0.0,
+      "endAmplitude": 0.0,
+      "dcOffset": -2e-06,
+      "clippedSamples": 0
     }
   ]
 }

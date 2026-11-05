@@ -48,6 +48,19 @@ namespace Wotr.PlayTests
                             CheckDice(client.Board, label);
                             CheckCounters(client.Board, label);
                             CheckArtwork(client.Board, label);
+                            // UI-499: a normal game's bar holds no clock, and takes no room for one.
+                            Assert.IsNull(client.Board.TopBar.Root.Q("move-clock"), label);
+                            var normal = Bounds(client.Board);
+                            client.Apply(Ranked(views[key]));
+                            for (var frame = 0; frame < 6; frame++)
+                                yield return null;
+                            LayoutTests.Save(target, $"ui499-topbar-{key}-{width}-{scale:0.00}.png");
+                            CheckBar(client.Board, label + " with the clock");
+                            CheckClock(client.Board, label);
+                            client.Apply(views[key]);
+                            for (var frame = 0; frame < 6; frame++)
+                                yield return null;
+                            CollectionAssert.AreEqual(normal, Bounds(client.Board), "Without its clock the bar is as it was. " + label);
                         }
                     }
                     finally
@@ -58,6 +71,68 @@ namespace Wotr.PlayTests
                         Object.Destroy(target);
                     }
                 }
+        }
+
+        // UI-499: past the warning the clock is red and pulses; reduced motion drops the pulse, not the colour.
+        [UnityTest]
+        public IEnumerator TheClockPulsesPastItsWarningAndReducedMotionKeepsOnlyTheColour()
+        {
+            var config = Environment.GetEnvironmentVariable("WOTR_CLIENT_TEST_CONFIG");
+            var file = Path.Combine(Path.GetDirectoryName(config), "ui09-resources.json");
+            var views = JsonConvert.DeserializeObject<Dictionary<string, PlayerView>>(File.ReadAllText(file));
+            using var client = new MountedMatchClient("http://localhost", "topbar-clock");
+            var ranked = Ranked(views["unrolled-FreePeoples"]);
+            ranked.Clock.RemainingMilliseconds = 60000;
+            ranked.Clock.WarningMilliseconds = 60000;
+            client.Apply(ranked);
+            var clock = client.Board.TopBar.Root.Q<Label>("move-clock");
+            var lowest = 1f;
+            for (var wait = 0f; wait < 1.1f; wait += Time.unscaledDeltaTime)
+            {
+                lowest = Mathf.Min(lowest, clock.style.opacity.value);
+                yield return null;
+            }
+            Assert.Less(lowest, 0.9f, "It pulses.");
+            Assert.IsTrue(clock.ClassListContains(TopBarClock.WarningClass));
+
+            client.Interface.Preferences.SetReducedMotion(true);
+            yield return new WaitForSecondsRealtime(0.2f);
+            lowest = 1f;
+            for (var wait = 0f; wait < 1.1f; wait += Time.unscaledDeltaTime)
+            {
+                lowest = Mathf.Min(lowest, clock.style.opacity.value);
+                yield return null;
+            }
+            Assert.AreEqual(1f, lowest, "Reduced motion drops the pulse.");
+            Assert.IsTrue(clock.ClassListContains(TopBarClock.WarningClass), "It keeps the colour.");
+            client.Interface.Preferences.SetReducedMotion(false);
+        }
+
+        // The longest phase name and a clock past its warning, with the longest text it can read.
+        private static PlayerView Ranked(PlayerView view)
+        {
+            var ranked = JsonConvert.DeserializeObject<PlayerView>(JsonConvert.SerializeObject(view));
+            ranked.Phase = Enum.GetValues(typeof(GamePhase)).Cast<GamePhase>().OrderByDescending(phase => BoardScreen.PhaseName(phase).Length).First();
+            ranked.Clock = new MoveClockView
+            {
+                DecisionId = "layout", Owner = TurnFlowOther(view.You), RemainingMilliseconds = 8000, LimitMilliseconds = 300000, WarningMilliseconds = 10000
+            };
+            return ranked;
+        }
+
+        private static Side TurnFlowOther(Side side) => side == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
+
+        private static List<Rect> Bounds(BoardScreen board) =>
+            board.TopBar.Root.Children().Where(Visible).Select(child => child.worldBound).ToList();
+
+        private static void CheckClock(BoardScreen board, string label)
+        {
+            var clock = board.TopBar.Root.Q<Label>("move-clock");
+            Assert.IsNotNull(clock, label);
+            StringAssert.StartsWith("Opponent 0:0", clock.text, label);
+            var needed = clock.MeasureTextSize("Opponent 0:00", 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
+            Assert.GreaterOrEqual(clock.contentRect.width + 1, needed, "The clock's text is not cut. " + label);
+            Assert.IsTrue(clock.ClassListContains(TopBarClock.WarningClass), "Red past the warning, whoever hears the sound. " + label);
         }
 
         private static void CheckBar(BoardScreen board, string label)

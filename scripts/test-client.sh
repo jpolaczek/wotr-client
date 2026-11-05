@@ -25,6 +25,8 @@ export WOTR_LIMIT_SOCKETS="${WOTR_LIMIT_SOCKETS:-64}"
 export WOTR_LIMIT_SIGNINS="${WOTR_LIMIT_SIGNINS:-10000}"
 # AUTH-02: registrations count against the email limit (5 per IP address in 10 minutes); tests register many accounts.
 export Wotr__Email__PermitsPerAddress="${Wotr__Email__PermitsPerAddress:-10000}"
+# UI-499: ranked clocks run at a tenth here, so a test can watch one run out.
+export Wotr__Ranked__ClockScalePercent="${Wotr__Ranked__ClockScalePercent:-10}"
 export WOTR_CLIENT_TEST_REPOSITORY="$wotr_root"
 wotr_test_results="${WOTR_CLIENT_TEST_RESULTS:-.artifacts/client-play.xml}"
 wotr_test_directory="$(dirname "$wotr_test_results")"

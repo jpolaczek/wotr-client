@@ -61,6 +61,13 @@ namespace Wotr.Client
             sounds.Request(request);
         }
 
+        // UI-499: the move clock's warning. It comes from the clock, not from a view; the key sounds it once per decision.
+        public void ClockWarning(string decisionId)
+        {
+            if (personal)
+                sounds.Request(new SoundRequest(SoundCue.ClockWarning, "clock/" + decisionId));
+        }
+
         // UI-490 (owner, 2026-11-04): a presentation waiting for the player's return must not hold back the alert that brings
         // them back. The decision passing to them or the game's end sounds as it arrives, and not again at the release.
         public void Away(PlayerView view)

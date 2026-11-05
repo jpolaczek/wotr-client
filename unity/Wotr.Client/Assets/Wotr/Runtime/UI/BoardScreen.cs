@@ -167,7 +167,7 @@ namespace Wotr.Client
             Escape = new BoardEscape(this);
             Root.RegisterCallback<GeometryChangedEvent>(e =>
                 Root.EnableInClassList("short-viewport", e.newRect.height > 0 && e.newRect.height < 700));
-            TopBar = new TopBarView(Phase, OpponentDice, Connection, Menu.Toggle);
+            TopBar = new TopBarView(Phase, OpponentDice, Connection, Menu.Toggle, ReducedMotion);
             var top = TopBar.Root;
             Menu.SettingsRequested += () => InterfaceRequested?.Invoke();
             var stage = new VisualElement { name = "board-stage", pickingMode = PickingMode.Ignore };
@@ -650,6 +650,7 @@ namespace Wotr.Client
             var previous = presentedFellowship ?? (View?.MatchId == view.MatchId ? View.Fellowship : null);
             presentedFellowship = null;
             View = view;
+            TopBar.ShowClock(view.Clock, view.You);
             loading.style.display = DisplayStyle.None;
             Tracks.style.display = DisplayStyle.None;
             Log.Toggle.SetEnabled(true);

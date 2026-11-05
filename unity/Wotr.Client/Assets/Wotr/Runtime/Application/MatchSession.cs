@@ -45,6 +45,7 @@ namespace Wotr.Client
             connection.StatusChanged += ConnectionChanged;
             this.sounds = sounds == null ? null : new GameSounds(sounds, board, turns);
             presenters.Sounds.Target = this.sounds;
+            board.TopBar.Clock.Warning += WarnClock;
             if (replays != null)
                 saver = new ReplaySaver(api, "api/matches/" + Uri.EscapeDataString(matchId) + "/replay", replays, board.GameEnd);
             connection.Start();
@@ -81,6 +82,8 @@ namespace Wotr.Client
 
         public void Reconnect() => connection.Reconnect();
 
+        private void WarnClock(string decisionId) => sounds?.ClockWarning(decisionId);
+
         public void Dispose() => Dispose(true);
 
         public void Dispose(bool saveDraft)
@@ -92,6 +95,7 @@ namespace Wotr.Client
             presenters.Dispose();
             playback.Dispose();
             connection.StatusChanged -= ConnectionChanged;
+            board.TopBar.Clock.Warning -= WarnClock;
             sounds?.Dispose();
             saver?.Dispose();
             turns.Dispose(saveDraft);

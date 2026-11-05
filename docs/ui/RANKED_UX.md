@@ -1,6 +1,6 @@
 # Ranked play — interface
 
-Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game and the search (UI-497, UI-498) stand. The rules of the mode (compatibility,
+Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game, the search and the clock (UI-497–UI-499) stand. The rules of the mode (compatibility,
 pairing, clocks, pause, reconnecting, rating) are in `wotr-server:docs/RANKED_PLAY.md`; this document describes only
 how the client shows them. The implementation tasks are UI-497–UI-504.
 
@@ -56,7 +56,9 @@ A window in the family of Host game. It has no name, visibility or variant contr
 - A fixed-width clock in the top bar, present only in ranked games: `You 0:27` or `Opponent 2:41`. Normal games keep
   the top bar exactly as it is, since no space is reserved for what usually stands empty.
 - It counts locally from the server's remaining time, in real time, and re-syncs on every view without jumping up by
-  more than the sync error.
+  more than the sync error. A view is always late, so the earliest estimate of the deadline stands; only a change over 5 s
+  moves it up, as after a restart gave back its downtime.
+- A normal game's bar never holds it, so that bar is unchanged, and a finished game's clock leaves the bar at once.
 - 10 s before the limit it turns red with a slight pulse, and its owner hears the `ClockWarning` sound once per
   decision, also with the window in the background. Mute silences the sound but not the colour; reduced motion drops
   the pulse but not the colour.

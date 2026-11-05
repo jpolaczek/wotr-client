@@ -205,6 +205,16 @@ def decision_required(rng, variant):
     return finish(room(x, rng, tail=0.22, wet=0.1, brightness=3000), -19, fade_out=0.12)
 
 
+def clock_warning(rng, variant):
+    """Three quick, even notes of a small bell: your time is running out (UI-499). Plainly not a new decision's chime."""
+    duration = 0.62
+    x = silence(duration)
+    for at in (0.0, 0.17, 0.34):
+        place(x, chime(rng, 587.3, 0.26, 0.09), at)
+    x = lowpass(x, 3400, order=4)
+    return finish(room(x, rng, tail=0.14, wet=0.08, brightness=3000), -18, fade_out=0.1)
+
+
 def action_failed(rng, variant):
     """Two soft, muted notes falling a minor third: that did not work."""
     duration = 0.26
@@ -287,6 +297,7 @@ CATALOGUE = [
     ("Defeat", "Alerts", "defeat", 1, 1.0, defeat),
     # Last, so the earlier cues keep their seeds (and files).
     ("PoliticsMoved", "Effects", "politics-moved", 2, 1.7, politics_moved),
+    ("ClockWarning", "Alerts", "clock-warning", 1, 0.7, clock_warning),
 ]
 
 
