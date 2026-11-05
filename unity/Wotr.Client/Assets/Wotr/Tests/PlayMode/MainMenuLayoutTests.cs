@@ -219,6 +219,25 @@ namespace Wotr.PlayTests
                     Assert.AreEqual(size, window.worldBound.size);
                     Fits(menu.Root.Q<Button>("resume-match-match0"), window);
                     LayoutTests.Save(target, $"menu11-mine-{width}-{scale:0.00}.png");
+                    // UI-496 (owner): finished games stand in My games' own tab, which counts the results not yet seen.
+                    Assert.AreEqual(DisplayStyle.None, menu.Root.Q<Label>("my-games-finished-new").resolvedStyle.display);
+                    menu.ShowFinished(new MatchListView { Matches = { new MatchSummary { MatchId = "finished0", Name = "Finished game", Opponent = "AnotherPlayer",
+                        You = Side.FreePeoples, Status = MatchStatus.Finished, Winner = Side.Shadow, Victory = VictoryCondition.RingCorrupted, Revision = 9, LastSeenRevision = 4,
+                        HasUnseenChanges = true } } });
+                    yield return Settle();
+                    Assert.AreEqual("1", menu.Root.Q<Label>("my-games-finished-new").text);
+                    Assert.AreEqual(DisplayStyle.None, menu.Root.Q<ScrollView>("finished-games-scroll").resolvedStyle.display, "In progress stays the first tab.");
+                    ReturnTestFixture.Click(menu.Root.Q<Button>("my-games-finished"));
+                    yield return Settle();
+                    Assert.AreEqual(DisplayStyle.None, menu.Root.Q<ScrollView>("my-games-scroll").resolvedStyle.display);
+                    Assert.AreEqual(size, window.worldBound.size);
+                    var finishedRow = menu.Root.Q<Button>("resume-match-finished0");
+                    Fits(finishedRow, window);
+                    Assert.IsTrue(finishedRow.Query<Label>().ToList().Any(label => label.text.Contains("Defeat")), "The row names the result.");
+                    LayoutTests.Save(target, $"ui496-finished-{width}-{scale:0.00}.png");
+                    ReturnTestFixture.Click(menu.Root.Q<Button>("my-games-active"));
+                    yield return Settle();
+                    Assert.Greater(menu.Root.Q<ScrollView>("my-games-scroll").worldBound.height, 0, "The first tab comes back.");
                     ReturnTestFixture.Click(menu.Root.Q<Button>("host-game"));
                     yield return Settle();
                     // MENU-30: every control of Host a game in its place inside the window, nothing overlapping.

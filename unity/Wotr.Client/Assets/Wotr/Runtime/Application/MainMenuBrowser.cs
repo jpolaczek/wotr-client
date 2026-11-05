@@ -14,6 +14,7 @@ namespace Wotr.Client
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private readonly MenuPageLoader<PublicRoomSummary> publicRooms;
         private readonly MenuPageLoader<MatchSummary> matches;
+        private readonly MenuPageLoader<MatchSummary> finished;
         private CancellationTokenSource request;
         private int generation;
         private bool loading;
@@ -25,8 +26,10 @@ namespace Wotr.Client
             this.screen = screen;
             publicRooms = new MenuPageLoader<PublicRoomSummary>(PublicPage, room => room.Id);
             matches = new MenuPageLoader<MatchSummary>(MatchPage, match => match.MatchId);
+            finished = new MenuPageLoader<MatchSummary>(FinishedPage, match => match.MatchId);
             screen.MorePublic += MorePublic;
             screen.MoreMatches += MoreMatches;
+            screen.MoreFinished += MoreFinished;
             screen.Refresh += Refresh;
             _ = Poll();
         }
@@ -41,6 +44,11 @@ namespace Wotr.Client
             if (matches.NextCursor.Length > 0) More(LoadMatches);
         }
 
+        private void MoreFinished()
+        {
+            if (finished.NextCursor.Length > 0) More(LoadFinished);
+        }
+
         private async Task<MenuPage<PublicRoomSummary>> PublicPage(string cursor, CancellationToken token)
         {
             var page = await api.Get<PublicRoomListView>("api/rooms/public?cursor=" + Uri.EscapeDataString(cursor), token);
@@ -50,6 +58,13 @@ namespace Wotr.Client
         private async Task<MenuPage<MatchSummary>> MatchPage(string cursor, CancellationToken token)
         {
             var page = await api.Get<MatchListView>("api/matches?cursor=" + Uri.EscapeDataString(cursor), token);
+            return new MenuPage<MatchSummary> { Items = page.Matches, NextCursor = page.NextCursor };
+        }
+
+        // UI-496: LOBBY-05 keeps finished games out of the default list; they have their own tab.
+        private async Task<MenuPage<MatchSummary>> FinishedPage(string cursor, CancellationToken token)
+        {
+            var page = await api.Get<MatchListView>("api/matches?status=Finished&cursor=" + Uri.EscapeDataString(cursor), token);
             return new MenuPage<MatchSummary> { Items = page.Matches, NextCursor = page.NextCursor };
         }
 
@@ -76,7 +91,8 @@ namespace Wotr.Client
                 var errors = await Task.WhenAll(
                     Section(() => LoadRooms(token), token),
                     Section(() => LoadPublic(false, token), token),
-                    Section(() => LoadMatches(false, token), token));
+                    Section(() => LoadMatches(false, token), token),
+                    Section(() => LoadFinished(false, token), token));
                 if (!token.IsCancellationRequested && version == generation)
                     screen.Status.text = string.Join(" ", errors.Prepend(Notice).Where(error => error.Length > 0).Distinct());
             }
@@ -158,6 +174,13 @@ namespace Wotr.Client
             catch (OperationCanceledException) when (lifetime.IsCancellationRequested) { }
         }
 
+        private async Task LoadFinished(bool more, CancellationToken token)
+        {
+            if (more) await finished.More(token);
+            else await finished.Refresh(token);
+            screen.ShowFinished(new MatchListView { Matches = finished.Items });
+        }
+
         private static string Error(Exception error)
         {
             if (error is ApiException apiError)
@@ -173,6 +196,7 @@ namespace Wotr.Client
         {
             screen.MorePublic -= MorePublic;
             screen.MoreMatches -= MoreMatches;
+            screen.MoreFinished -= MoreFinished;
             screen.Refresh -= Refresh;
             lifetime.Cancel();
             request?.Cancel();

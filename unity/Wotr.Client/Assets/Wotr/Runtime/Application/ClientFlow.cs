@@ -408,9 +408,6 @@ namespace Wotr.Client
                 await ShowLobby();
         }
 
-        // LOBBY-05: My games lists the games still going, so a finished game has no row; this reopens one by its id.
-        public Task OpenMatch(string matchId) => ShowMatch(matchId);
-
         private Task ShowMatch(string matchId) =>
             OpenBoard(matchId, api, board =>
             {

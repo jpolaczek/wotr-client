@@ -20,6 +20,17 @@ namespace Wotr.Client
         private readonly VisualElement rooms = new VisualElement();
         private readonly Label empty = new Label("No started games yet. Join an open game or host one.");
         private readonly Dictionary<string, SavedMatchRow> rows = new Dictionary<string, SavedMatchRow>();
+        // UI-496 (owner): My games' second tab, the finished games; the first keeps the games still going.
+        private readonly VisualElement finished = new VisualElement();
+        private readonly Label emptyFinished = new Label("No finished games yet.");
+        private readonly Dictionary<string, SavedMatchRow> finishedRows = new Dictionary<string, SavedMatchRow>();
+        private readonly ScrollView finishedScroll = new ScrollView { name = "finished-games-scroll" };
+        private readonly Label newResults = new Label { name = "my-games-finished-new", pickingMode = PickingMode.Ignore };
+        private Button activeTab;
+        private Button finishedTab;
+        private bool finishedShown;
+        private int yourTurns;
+        private int unseenResults;
         private readonly HostGameForm host;
         private readonly DemoStartPage demo = new DemoStartPage();
         private readonly VisualElement lists = new VisualElement();
@@ -43,6 +54,7 @@ namespace Wotr.Client
         public event Action<string, RoomRole> JoinPublic;
         public event Action MorePublic;
         public event Action MoreMatches;
+        public event Action MoreFinished;
         public event Action<string, RoomRole> Join;
         public event Action<RoomView> Open;
         public event Action<MatchSummary> OpenMatch;
@@ -156,9 +168,18 @@ namespace Wotr.Client
             matchScroll.Add(rooms);
             matchScroll.Add(matches);
             empty.AddToClassList("menu-empty");
+            emptyFinished.AddToClassList("menu-empty");
+            finishedScroll.AddToClassList("saved-games-scroll");
+            finishedScroll.AddToClassList("menu-scroll");
+            finishedScroll.Add(finished);
+            games.Add(GameTabs());
             games.Add(empty);
+            games.Add(emptyFinished);
             games.Add(matchScroll);
+            games.Add(finishedScroll);
             matchScroll.verticalScroller.valueChanged += value => RequestMore(matchScroll, value, MoreMatches);
+            finishedScroll.verticalScroller.valueChanged += value => RequestMore(finishedScroll, value, MoreFinished);
+            ShowFinishedTab(false);
             foreach (var list in new[] { tables, games })
             {
                 list.AddToClassList("menu-list-page");
@@ -223,6 +244,39 @@ namespace Wotr.Client
             line.Add(observe);
             box.Add(line);
             return box;
+        }
+
+        private VisualElement GameTabs()
+        {
+            var tabs = BoardScreen.Row("my-games-tabs");
+            tabs.AddToClassList("menu-tabs");
+            activeTab = GameTab("my-games-active", "In progress", false);
+            finishedTab = GameTab("my-games-finished", "Finished", true);
+            newResults.AddToClassList("menu-action-badge");
+            newResults.style.display = DisplayStyle.None;
+            finishedTab.Add(newResults);
+            tabs.Add(activeTab);
+            tabs.Add(finishedTab);
+            return tabs;
+        }
+
+        private Button GameTab(string name, string text, bool showsFinished)
+        {
+            var tab = BoardScreen.Button(text, () => ShowFinishedTab(showsFinished));
+            tab.name = name;
+            tab.AddToClassList("menu-tab");
+            return tab;
+        }
+
+        private void ShowFinishedTab(bool shown)
+        {
+            finishedShown = shown;
+            activeTab.EnableInClassList("selected", !shown);
+            finishedTab.EnableInClassList("selected", shown);
+            matchScroll.style.display = shown ? DisplayStyle.None : DisplayStyle.Flex;
+            finishedScroll.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;
+            UpdateEmpty();
+            RequestMoreIfNeeded();
         }
 
         private static Button Action(string name, string text, Action click)
@@ -298,6 +352,8 @@ namespace Wotr.Client
                 MorePublic?.Invoke();
             if (ReachesEnd(matchScroll))
                 MoreMatches?.Invoke();
+            if (ReachesEnd(finishedScroll))
+                MoreFinished?.Invoke();
         }
 
         private static bool ReachesEnd(ScrollView scroll)
@@ -307,31 +363,49 @@ namespace Wotr.Client
 
         public void ShowMatches(MatchListView page)
         {
+            PlaceRows(page, rows, matches);
+            yourTurns = page.Matches.Count(match => match.Status == MatchStatus.YourDecision);
+            ShowTurns(yourTurns);
+            UpdateEmpty();
+        }
+
+        public void ShowFinished(MatchListView page)
+        {
+            PlaceRows(page, finishedRows, finished);
+            unseenResults = page.Matches.Count(match => match.HasUnseenChanges);
+            newResults.text = unseenResults.ToString();
+            newResults.style.display = unseenResults > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            finishedTab.tooltip = unseenResults == 0 ? "Your finished games" : unseenResults == 1 ? "1 new result" : unseenResults + " new results";
+            ShowTurns(yourTurns);
+            UpdateEmpty();
+        }
+
+        private void PlaceRows(MatchListView page, Dictionary<string, SavedMatchRow> shown, VisualElement list)
+        {
             var ids = new HashSet<string>(page.Matches.Select(m => m.MatchId));
-            foreach (var id in rows.Keys.Where(id => !ids.Contains(id)).ToArray())
+            foreach (var id in shown.Keys.Where(id => !ids.Contains(id)).ToArray())
             {
-                rows[id].Root.RemoveFromHierarchy();
-                rows.Remove(id);
+                shown[id].Root.RemoveFromHierarchy();
+                shown.Remove(id);
             }
             for (var index = 0; index < page.Matches.Count; index++)
             {
                 var match = page.Matches[index];
-                if (!rows.TryGetValue(match.MatchId, out var row))
+                if (!shown.TryGetValue(match.MatchId, out var row))
                 {
                     row = new SavedMatchRow(match, selected => OpenMatch?.Invoke(selected));
-                    rows.Add(match.MatchId, row);
+                    shown.Add(match.MatchId, row);
                 }
                 row.Apply(match);
-                if (index >= matches.childCount || matches[index] != row.Root)
-                    matches.Insert(index, row.Root);
+                if (index >= list.childCount || list[index] != row.Root)
+                    list.Insert(index, row.Root);
             }
-            ShowTurns(page.Matches.Count(match => match.Status == MatchStatus.YourDecision));
-            UpdateEmpty();
         }
 
-        // The My games action names how many loaded games wait for your decision.
-        private void ShowTurns(int count)
+        // The My games action names how many loaded games wait for your decision, and how many results you have not seen (UI-496).
+        private void ShowTurns(int turns)
         {
+            var count = turns + unseenResults;
             myTurns.text = count.ToString();
             myTurns.style.display = count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             showMine.tooltip = count == 0 ? "Your started games" : count == 1 ? "1 game waits for your decision" : count + " games wait for your decision";
@@ -428,7 +502,10 @@ namespace Wotr.Client
             return string.IsNullOrEmpty(room.FreePeoples) || string.IsNullOrEmpty(room.Shadow) ? "Waiting for opponent" : "Prepare game";
         }
 
-        private void UpdateEmpty() => empty.style.display = rows.Count == 0 && ownRows.Count == 0
-            ? DisplayStyle.Flex : DisplayStyle.None;
+        private void UpdateEmpty()
+        {
+            empty.style.display = !finishedShown && rows.Count == 0 && ownRows.Count == 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            emptyFinished.style.display = finishedShown && finishedRows.Count == 0 ? DisplayStyle.Flex : DisplayStyle.None;
+        }
     }
 }

@@ -4798,3 +4798,13 @@ Playtest (owner's checklist):
 
 Tests: PlayMode `CardInteractionTests`, `MapContourRenderingTests`, `T23FullGameNetworkTests`, `T36DesktopGameTests`,
 `OpponentExpansionPresentationNetworkTests`; server `KingsDismayTests.ARerolledRulerDieIsRecordedEvenOnItsOldFace`.
+
+<a id="finished-games-tab--ui-496-spec"></a>
+## Finished games have a tab — UI-496 (2026-11-05)
+
+The owner: finished games go into a separate tab in My games. Details: [MAIN_MENU_UX](MAIN_MENU_UX.md#finished-games-tab--ui-496).
+
+Playtest (owner's checklist):
+- [ ] Open My games. Expect: two tabs, In progress and Finished, with In progress chosen.
+- [ ] Finish a game, or have one finished while you are away. Expect: a number on the Finished tab and on My games; the tab lists the game with Victory or
+  Defeat, and a click opens its end screen; afterwards the number is gone.
