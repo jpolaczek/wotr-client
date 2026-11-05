@@ -137,6 +137,7 @@ namespace Wotr.Client
         {
             Map.Camera.Zoom = zoom;
             Map.Camera.Pan = pan;
+            Map.PresentationMoves++;
             Map.Refresh();
         }
 

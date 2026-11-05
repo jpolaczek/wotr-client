@@ -30,7 +30,8 @@ namespace Wotr.Client.Diagnostics
                 // UI-221: every source is in view at once; the steps read sources instead of turning pages.
                 case 3: Inspect(Protection); break;
                 case 4: Inspect(OtherSource()); break;
-                default: click(board.TableEffects.Root.Q<Button>("close-effects")); open = false; break;
+                // UI-446: a source's text shows while it is hovered, so a closed panel reopens with nothing unrolled.
+                default: click(board.TableEffects.Root.Q<Button>("close-effects")); open = false; inspected = ""; break;
             }
         }
 

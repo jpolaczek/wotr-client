@@ -596,3 +596,14 @@ page as soon as the catalog is loaded, on the tab, search and scroll the player 
 (`TestScenarioList.Place`, `MainMenuScreen.ReturnToTestScenarios`). Games and Quit in the board menu keep their own
 destinations; a catalog that cannot be read leaves the main menu. Test: `TestScenarioNetworkTests` (the list after
 Exit with the search kept, `ui368-back-to-test-scenarios.png`).
+
+
+<a id="finished-games-tab--ui-496"></a>
+## Finished games have a tab — UI-496 (2026-11-05)
+
+My games has two tabs, In progress and Finished (`my-games-active`, `my-games-finished`). Since LOBBY-05 the default list holds the games still
+going, so a player who was away when the opponent won had no way to the end of that game. The Finished tab reads `api/matches?status=Finished`, lists
+each game with Victory or Defeat and how it ended, and a click opens it on its end screen. The tab's badge counts the results not yet seen, and they also
+count towards the badge on My games, so the result reaches a player who opens the menu on another page. In progress stays the first tab, and its rows and
+rooms are unchanged. Test: `MainMenuLayoutTests` (four layouts, `ui496-finished-*.png`), and `BoardMenuNetworkTests`, `ReturnListTests` and
+`InGameContextNetworkTests` open their finished games through the tab.

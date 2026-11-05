@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -23,6 +24,10 @@ namespace Wotr.PlayTests
         [UnityTest]
         public IEnumerator BothPlayersReturnToEverySaveFamilyWithCurrentPrivateViewAndNoReplay() => MatchTestRoom.Wait(Families());
 
+        // UI-496: the Finished tab's rows stand in the tree too, and its page may arrive before or after this one.
+        private static List<VisualElement> InProgressRows(VisualElement root) =>
+            root.Q("my-games-scroll")?.Query(className: "saved-match").ToList() ?? new List<VisualElement>();
+
         private static async Task List()
         {
             var fixture = Load();
@@ -35,15 +40,15 @@ namespace Wotr.PlayTests
                 {
                     using (var client = new MountedFlowClient(api, storage))
                     {
-                        await Until(() => client.Root.Query(className: "saved-match").ToList().Count == 20, token);
+                        await Until(() => InProgressRows(client.Root).Count == 20, token);
                         await ClickReady(client.Root, "show-my-games", token);
-                        var first = client.Root.Q(className: "saved-match");
+                        var first = InProgressRows(client.Root)[0];
                         var firstId = first.name.Substring("saved-match-".Length);
                         var page = await api.Get<MatchListView>("api/matches", token);
                         Click(client.Root.Query<Button>().ToList().Single(b => b.name is "refresh-lobby" or "refresh-games" &&
                             b.resolvedStyle.display != DisplayStyle.None && b.panel != null));
                         await Task.Delay(200, token);
-                        Assert.AreSame(first, client.Root.Q(className: "saved-match"), "Refreshing must retain the row controls.");
+                        Assert.AreSame(first, InProgressRows(client.Root)[0], "Refreshing must retain the row controls.");
                         Assert.IsNotEmpty(page.NextCursor, "The fixture must exercise real pagination.");
                         var nextPage = await api.Get<MatchListView>("api/matches?cursor=" + Uri.EscapeDataString(page.NextCursor), token);
                         Assert.IsNotEmpty(nextPage.Matches);
@@ -100,7 +105,10 @@ namespace Wotr.PlayTests
                             {
                                 var id = fixture.ReturnMatches[name];
                                 var current = await api.Get<PlayerView>($"api/matches/{id}", token);
-                                await Open(client, id, token);
+                                if (name == "ring-destroyed")
+                                    await OpenFinished(client, id, token);
+                                else
+                                    await Open(client, id, token);
                                 Assert.IsTrue(JToken.DeepEquals(JToken.FromObject(current), JToken.FromObject(client.Board.View)), name + "/" + side);
                                 if (name == "ring-destroyed")
                                     await InspectRingResult(client, token);

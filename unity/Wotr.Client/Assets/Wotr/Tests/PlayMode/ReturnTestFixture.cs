@@ -55,6 +55,22 @@ namespace Wotr.PlayTests
             await Task.Delay(80, token);
         }
 
+        // The main menu's status line; the Open games panel inside the menu has a label of the same name, always empty there.
+        public static Label MenuStatus(VisualElement root) => root.Q<Label>(className: "menu-status");
+
+        // UI-496: a finished game stands in My games' Finished tab.
+        public static async Task OpenFinished(MountedFlowClient client, string id, CancellationToken token)
+        {
+            await ShowList(client.Root, "resume-match-" + id, token);
+            await ClickReady(client.Root, "my-games-finished", token);
+            await Until(() => client.Root.Q<Button>("resume-match-" + id)?.worldBound.height > 0, token);
+            var row = client.Root.Q<Button>("resume-match-" + id);
+            await Reveal(row, token);
+            Click(row);
+            await Until(() => client.Board?.View?.MatchId == id && client.Board.Connection.text == "Live", token);
+            await Task.Delay(80, token);
+        }
+
         public static async Task Until(Func<bool> condition, CancellationToken token)
         {
             while (!condition())

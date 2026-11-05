@@ -133,7 +133,8 @@ namespace Wotr.PlayTests
                             // UI-217: the name sits in the tile's title label (the slot button has no text of its own).
                             var title = card.Q<Label>("hand-card-title");
                             var required = title.MeasureTextSize(title.text, title.contentRect.width, VisualElement.MeasureMode.Exactly, 0, VisualElement.MeasureMode.Undefined);
-                            Assert.LessOrEqual(required.y, title.contentRect.height + 1, "Title clipped: " + title.text);
+                            Assert.LessOrEqual(required.y, title.contentRect.height + 1,
+                                $"Title clipped: {title.text} at {width}×{scale}, {title.contentRect.width}×{title.contentRect.height} in {title.resolvedStyle.fontSize} pt");
                             Assert.GreaterOrEqual(title.resolvedStyle.fontSize, CardTitleFit.MinimumSize, title.text);
                         }
                         Assert.IsNull(client.Board.Tray.Q<Button>("confirm-decision"));

@@ -135,6 +135,10 @@ namespace Wotr.PlayTests
             var point = target.worldBound.center;
             using var down = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 1, mousePosition = point });
             target.SendEvent(down);
+            // The pointer's pressed buttons are static across the run: an unreleased press makes every later test's
+            // plain move a gesture, so region windows stop closing and tooltips stop showing (TEST-21).
+            using var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 1, mousePosition = point });
+            target.SendEvent(up);
         }
     }
 }

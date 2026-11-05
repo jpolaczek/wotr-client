@@ -89,9 +89,9 @@ namespace Wotr.PlayTests
                 var cues = new System.Collections.Generic.List<PresentationCue>();
                 fp.Activity.CuesReady += cues.AddRange;
                 await session.Send(Side.Shadow, CommandKind.UseDismay, new CommandPayload { Ids = { dismay.EligibleIds[0] }, DieId = die });
-                await Seen(() => fp.Playback.Holding && fp.Board.Root.Q(className: PresentationGlow.ClassName) != null &&
+                await SeenNow(() => fp.Playback.Holding && fp.Board.Root.Q(className: PresentationGlow.ClassName) != null &&
                         PresentationGlow.IsLit(fp.Board.OwnDice.Q<Button>(die)),
-                    "My Ruler die glows in the Shadow's presentation; cues: " + string.Join(", ", cues.Select(cue => cue.Id)) +
+                    () => "My Ruler die glows in the Shadow's presentation; cues: " + string.Join(", ", cues.Select(cue => cue.Id)) +
                     " · revisions " + fp.Board.View.Revision + "/" + sh.Board.View.Revision + " · presented " + fp.Playback.PresentedRevision +
                     " · baseline " + baseline + " · decision " + fp.Board.View.Decision?.Kind + "/" + fp.Board.View.DecisionOwner +
                     " · holding " + fp.Playback.Holding + " · live " + fp.Playback.Live + " · connected " + fp.Connected +
@@ -108,6 +108,15 @@ namespace Wotr.PlayTests
 
         // The watcher has read its history's baseline, so the opponent's next step is presented rather than remembered.
         private static Task Watching(TestScenarioRoom session, MountedMatchClient watcher) => session.Until(() => watcher.Activity.Loaded);
+
+        // The message is read when it fails, so it tells the state at the end of the wait.
+        private static async Task SeenNow(Func<bool> condition, Func<string> what)
+        {
+            var deadline = DateTime.UtcNow.AddSeconds(20);
+            while (!condition() && DateTime.UtcNow < deadline)
+                await Task.Delay(20);
+            Assert.IsTrue(condition(), what());
+        }
 
         private static async Task Seen(Func<bool> condition, string what)
         {

@@ -49,11 +49,11 @@ namespace Wotr.PlayTests
                 shadow.Notice.Open();
                 other.Board.Notice.Open();
                 await room.Settle();
-                await room.Until(() => shadow.Tray.Q<Button>("corruption-choice-" + tile)?.enabledInHierarchy == true &&
-                    other.Board.Tray.Q<Button>("corruption-choice-" + tile)?.enabledInHierarchy == true);
-                var choice = shadow.Tray.Q<Button>("corruption-choice-" + tile);
+                await room.Until(() => shadow.Root.Q<Button>("corruption-choice-" + tile)?.enabledInHierarchy == true &&
+                    other.Board.Root.Q<Button>("corruption-choice-" + tile)?.enabledInHierarchy == true);
+                var choice = shadow.Root.Q<Button>("corruption-choice-" + tile);
                 PointerGestureEvents.Press(choice);
-                PointerGestureEvents.ClickAt(other.Board.Tray.Q<Button>("corruption-choice-" + tile));
+                PointerGestureEvents.ClickAt(other.Board.Root.Q<Button>("corruption-choice-" + tile));
                 await room.At(revision + 1);
                 await room.Until(() => other.Board.View.Revision == revision + 1);
                 PointerGestureEvents.Release(choice);

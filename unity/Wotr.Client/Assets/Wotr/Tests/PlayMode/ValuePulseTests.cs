@@ -28,13 +28,21 @@ namespace Wotr.PlayTests
             Assert.AreEqual(Spent(view).ToString(), value.text, "The new value stands at once.");
             Assert.AreNotEqual(before, value.text);
             Assert.IsTrue(value.ClassListContains(ValuePulse.PulseClass), "It pulses.");
-            yield return new WaitForSecondsRealtime(.1f);
+            // Under load a frame can come late, so the test waits for the swell and the rest, not for fixed moments.
+            var swellEnds = Time.realtimeSinceStartup + 1f;
+            while (value.resolvedStyle.scale.value.x <= 1.05f && Time.realtimeSinceStartup < swellEnds)
+                yield return null;
             Assert.Greater(value.resolvedStyle.scale.value.x, 1.05f, "It swells…");
             LayoutTests.Save(client.Viewport, "ui322-value-pulse.png");
-            yield return new WaitForSecondsRealtime(ValuePulse.PulseMilliseconds / 1000f + .3f);
+            var restEnds = Time.realtimeSinceStartup + ValuePulse.PulseMilliseconds / 1000f + 2f;
+            while (!AtRest(value) && Time.realtimeSinceStartup < restEnds)
+                yield return null;
             Assert.IsFalse(value.ClassListContains(ValuePulse.PulseClass));
             Assert.AreEqual(1f, value.resolvedStyle.scale.value.x, .01f, "…and settles.");
         }
+
+        private static bool AtRest(Label value) =>
+            !value.ClassListContains(ValuePulse.PulseClass) && Mathf.Abs(value.resolvedStyle.scale.value.x - 1f) <= .01f;
 
         [UnityTest]
         public IEnumerator AQuietViewAndSkipAnimationsChangeTheCountWithoutMovement()

@@ -32,10 +32,13 @@
 .frontend .test-scenario-list .saved-games-scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; max-height: none; }
 .frontend .test-scenario-hint { white-space: normal; margin-bottom: 8px; color: rgb(176, 164, 136); font-size: 14px; }
 /* TEST-09: three fixed tabs over the list; the open one wears the selected button art. */
-.frontend .test-scenario-tabs { flex-direction: row; flex-shrink: 0; margin: 0 0 6px 0; }
-.frontend .test-scenario-tab { flex-grow: 1; flex-basis: 0; min-width: 0; height: 34px; min-height: 34px; margin: 0 6px 0 0;
+.frontend .test-scenario-tabs,
+.frontend .menu-tabs { flex-direction: row; flex-shrink: 0; margin: 0 0 6px 0; }
+.frontend .test-scenario-tab,
+.frontend .menu-tab { flex-grow: 1; flex-basis: 0; min-width: 0; height: 34px; min-height: 34px; margin: 0 6px 0 0;
     padding: 0 6px; font-size: 15px; white-space: nowrap; -unity-text-align: middle-center; }
-.frontend .test-scenario-tab:last-child { margin-right: 0; }
+.frontend .test-scenario-tab:last-child,
+.frontend .menu-tab:last-child { margin-right: 0; }
 /* TEST-10: the three expansion tabs are narrow, so the card tabs keep their whole names. */
 .frontend .test-scenario-tab.test-scenario-tab-module { flex-grow: 0; flex-basis: auto; width: 72px; }
 /* UI-295: the search by name sits under the tabs; its × clears it. */
@@ -744,8 +747,10 @@
 .main-menu .menu-window > .frontend-form .row { margin-top: 0; }
 .frontend .test-scenario-header { flex-direction: row; align-items: center; flex-shrink: 0; margin: 0 0 4px 0; }
 .frontend .test-scenario-header > .test-scenario-hint { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0 0 0 6px; padding: 0; font-size: 13px; }
-.frontend .test-scenario-tabs { margin: 0 0 4px 0; }
-.frontend .test-scenario-tab { height: 32px; min-height: 32px; margin-right: 4px; font-size: 14px; }
+.frontend .test-scenario-tabs,
+.frontend .menu-tabs { margin: 0 0 4px 0; }
+.frontend .test-scenario-tab,
+.frontend .menu-tab { height: 32px; min-height: 32px; margin-right: 4px; font-size: 14px; }
 .frontend .test-scenario-search-row { margin: 0 0 4px 0; }
 .frontend .test-scenario-list .test-scenario-search { height: 30px; min-height: 30px; margin: 0 4px 0 0; }
 .frontend .test-scenario-list .test-scenario-search > .unity-base-text-field__input { height: 30px; min-height: 30px; margin: 0; }

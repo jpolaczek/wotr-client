@@ -115,14 +115,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(before, board.View.Revision);
             board.Log.CloseCard();
             await CardGestures.Open(actor);
+            // UI-222 (owner): the click that completes a discard from the hand sends it, with no Confirm.
             PointerGestureEvents.ClickAt(board.Hand.Q<Button>("base.sh.character.01"));
-            await room.Settle();
-            board.HandDrawer.Close();
-            board.Cards.Close();
-            board.Notice.Open();
-            await room.Settle();
-            await room.Until(() => board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
-            PointerGestureEvents.ClickAt(board.Tray.Q<Button>("confirm-decision"));
             await room.At(before + 1);
             Assert.IsFalse(board.View.Effects.Any(effect => effect.SourceId == "base.fp.strategy.02"));
             Assert.AreEqual(DieLocation.Spent, board.View.Dice.Single(value => value.Id == die).Location);

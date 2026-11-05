@@ -91,10 +91,12 @@ namespace Wotr.PlayTests
             private readonly Vector2 pan;
             private readonly float zoom;
             private readonly string card;
+            private readonly int moves;
 
             public Observer(MountedMatchClient client)
             {
                 this.client = client;
+                moves = client.Board.Map.PresentationMoves;
                 pan = client.Board.Map.Camera.Pan;
                 zoom = client.Board.Map.Camera.Zoom;
                 card = client.Board.View.Hand.FirstOrDefault();
@@ -104,8 +106,12 @@ namespace Wotr.PlayTests
 
             public void Check()
             {
-                Assert.AreEqual(pan, client.Board.Map.Camera.Pan, "Opponent's decision cannot pan this player's map.");
-                Assert.AreEqual(zoom, client.Board.Map.Camera.Zoom, "Opponent's decision cannot zoom this player's map.");
+                // UI-305 (owner, OPPONENT_ACTIONS_UX 6.5): the opponent's presentation may bring a move into view; nothing else moves this map.
+                if (client.Board.Map.PresentationMoves == moves)
+                {
+                    Assert.AreEqual(pan, client.Board.Map.Camera.Pan, "Opponent's decision cannot pan this player's map.");
+                    Assert.AreEqual(zoom, client.Board.Map.Camera.Zoom, "Opponent's decision cannot zoom this player's map.");
+                }
                 if (card != null)
                 {
                     Assert.AreEqual(card, client.Board.Cards.CardId);

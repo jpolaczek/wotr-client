@@ -157,8 +157,8 @@ namespace Wotr.PlayTests
         private static void AssertLegendVisible(MapCanvas map)
         {
             var bounds = map.Legend.Popup.worldBound;
-            Assert.IsTrue(map.worldBound.Contains(bounds.min + Vector2.one));
-            Assert.IsTrue(map.worldBound.Contains(bounds.max - Vector2.one));
+            Assert.IsTrue(map.worldBound.Contains(bounds.min + Vector2.one), bounds + " starts inside the map " + map.worldBound);
+            Assert.IsTrue(map.worldBound.Contains(bounds.max - Vector2.one), bounds + " ends inside the map " + map.worldBound);
             AssertVisibleToPointer(map.Legend.Popup.Q<Label>("map-legend-heading"));
             foreach (var nation in map.Data.Borders.Palette.Style.Nations)
             {
@@ -275,11 +275,14 @@ namespace Wotr.PlayTests
             Assert.Greater(changed, samples * .6f, emphasis + " must fill the region below borders.");
         }
 
+        private const int InkTolerance = 12;
+
         private static void AssertBarriersUnchanged(MapCanvas map, string region, RenderTexture target,
             Color32[] before, Color32[] after)
         {
             var samples = 0;
             var changed = 0;
+            var largest = 0;
             foreach (var path in map.Data.Borders.Catalog.Paths.Where(p =>
                 p.PositiveNormalOwner == region || p.NegativeNormalOwner == region))
                 foreach (var part in path.Parts.Where(p => p.Kind == MapBorderKind.Impassable))
@@ -295,11 +298,13 @@ namespace Wotr.PlayTests
                         if (color.r > 65 || color.g > 65 || color.b > 65)
                             continue;
                         samples++;
-                        if (Difference(color, after[offset]) > 3)
+                        largest = Mathf.Max(largest, Difference(color, after[offset]));
+                        // UI-468 (owner): the brighter fills show faintly through the ink's soft edge, up to 10 of 255; black stays black.
+                        if (Difference(color, after[offset]) > InkTolerance)
                             changed++;
                     }
             Assert.Greater(samples, 15, "The review needs visible black barrier samples.");
-            Assert.LessOrEqual(changed, samples * .05f, "Highlights must not recolor printed barriers.");
+            Assert.LessOrEqual(changed, samples * .05f, "Highlights must not recolor printed barriers: " + changed + " of " + samples + ", by up to " + largest);
         }
 
         private static int Difference(Color32 a, Color32 b) =>
@@ -390,7 +395,8 @@ namespace Wotr.PlayTests
                     if (oldColor.r < 40 && oldColor.g < 40 && oldColor.b < 40)
                         continue;
                     checkedPixels++;
-                    if (newColor.g + 8 < oldColor.g && newColor.b + 8 < oldColor.b)
+                    // UI-468 (owner): the attack's pulse is lighter than any land, so red shows as the gap between red and green.
+                    if (newColor.r - newColor.g > oldColor.r - oldColor.g + 8)
                         redderPixels++;
                 }
             Assert.Greater(checkedPixels, 5, region + " needs visible interior pixels.");

@@ -14,7 +14,8 @@ namespace Wotr.PlayTests
 {
     public sealed class T23FullGameNetworkTests
     {
-        [UnityTest]
+        // A whole game at full motion outlasts Unity's default three minutes, now that every opponent's step is presented.
+        [UnityTest, Timeout(600000)]
         public IEnumerator NormalLobbySetupReachesAFinalResultOnTwoClientsWithProductionRandomness()
         {
             var task = Play();

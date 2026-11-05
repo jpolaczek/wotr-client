@@ -4775,3 +4775,36 @@ Playtest (owner's checklist):
 - [ ] `showcase-siege` as the Shadow. Expect: five cards in the battle window, each title whole on one or two lines.
 
 Tests: PlayMode `WebsiteScreenshotTests.TheGreatSiege`, `BattleLayoutTests`.
+
+<a id="the-23-tests--test-21"></a>
+## Real faults the failing tests hid — TEST-21 (2026-11-05)
+
+The owner asked to fix the 23 PlayMode tests left failing by release 0.10.0-rc.1. Most predated a decision of the owner's, and now follow it
+with their purpose kept. Five showed real faults in the game, fixed here:
+
+- **Hand card titles looped the layout.** A title's fit changed its font, which changed its geometry, which ran the fit again from the new
+  size, and it could answer another size: Unity stopped such a frame after ten layouts with "Layout update failed to stabilize". A title now
+  fits once for a text at a width (`HandCard.FitTitle`).
+- **A two-line title lost its last 3 points**, and a full hand at 1366×768 and 125 % could not fit a long word on a line. The title's limit now
+  holds two lines of its type (three at the smallest), and a compact tile gives its title more of its width.
+- **The map legend ran off the top of the screen** at 1366×768 and 125 %. It stands in two columns now.
+- **A Dismay re-roll landing on the die's old face was never shown.** The step's facts list only what changed, so the other player did not
+  learn of the re-roll, one time in three on a Free Peoples die (server, `ActionBoardChanges.Rerolled`; the client already presents the fact).
+
+Playtest (owner's checklist):
+- [ ] 1366×768 at 125 %. Open the map legend. Expect: all of it on the screen, in two columns.
+- [ ] The same size with 9 cards in hand. Expect: every title whole, and no title trembling.
+- [ ] Lords and Kings: the Shadow uses a Dismay token on your Ruler die. Expect: the die glows even when it lands on the same face.
+
+Tests: PlayMode `CardInteractionTests`, `MapContourRenderingTests`, `T23FullGameNetworkTests`, `T36DesktopGameTests`,
+`OpponentExpansionPresentationNetworkTests`; server `KingsDismayTests.ARerolledRulerDieIsRecordedEvenOnItsOldFace`.
+
+<a id="finished-games-tab--ui-496-spec"></a>
+## Finished games have a tab — UI-496 (2026-11-05)
+
+The owner: finished games go into a separate tab in My games. Details: [MAIN_MENU_UX](MAIN_MENU_UX.md#finished-games-tab--ui-496).
+
+Playtest (owner's checklist):
+- [ ] Open My games. Expect: two tabs, In progress and Finished, with In progress chosen.
+- [ ] Finish a game, or have one finished while you are away. Expect: a number on the Finished tab and on My games; the tab lists the game with Victory or
+  Defeat, and a click opens its end screen; afterwards the number is gone.

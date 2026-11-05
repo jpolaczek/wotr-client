@@ -6,7 +6,11 @@ namespace Wotr.Client
     public sealed class MapLegend
     {
         private readonly MapCanvas map;
+        private const int ColumnWidth = 336;
+        private const int ColumnGap = 16;
+        private const int PopupPadding = 10;
         private VisualElement overlayHost;
+        private VisualElement column;
         public VisualElement Popup { get; } = new VisualElement { name = "map-legend", focusable = true };
         public Button Toggle { get; }
         // UI-218: switches the political view; it sits above the legend's button.
@@ -36,8 +40,8 @@ namespace Wotr.Client
             map.PoliticalViewChanged += SyncPoliticalToggle;
             SyncPoliticalToggle();
             Popup.style.position = Position.Absolute;
-            Popup.style.width = 356;
-            Popup.style.paddingLeft = Popup.style.paddingRight = 10;
+            Popup.style.width = 2 * ColumnWidth + ColumnGap + 2 * PopupPadding;
+            Popup.style.paddingLeft = Popup.style.paddingRight = PopupPadding;
             Popup.style.paddingTop = Popup.style.paddingBottom = 8;
             Popup.style.fontSize = 12;
             Popup.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
@@ -103,10 +107,14 @@ namespace Wotr.Client
 
         private void AddContents()
         {
+            // TEST-21: two columns, so the whole legend stands above the bottom row at 1366×768 and 125 %.
+            var columns = new VisualElement { name = "map-legend-columns", style = { flexDirection = FlexDirection.Row, alignItems = Align.FlexStart } };
+            Popup.Add(columns);
+            column = Column(columns);
             var heading = Text("Map legend", "map-legend-heading");
             heading.style.unityFontStyleAndWeight = FontStyle.Bold;
-            Popup.Add(heading);
-            Popup.Add(Text("White — geographic passage\nBlack — impassable mountains\nColored band — nation\nWater — outside the regions"));
+            column.Add(heading);
+            column.Add(Text("White — geographic passage\nBlack — impassable mountains\nColored band — nation\nWater — outside the regions"));
             var nations = new VisualElement { style = { flexDirection = FlexDirection.Row,
                 flexWrap = Wrap.Wrap, marginTop = 6, marginBottom = 6 } };
             foreach (var nation in map.Data.Borders.Palette.Style.Nations)
@@ -124,13 +132,22 @@ namespace Wotr.Client
                 row.Add(Text(nation.Name, "map-legend-nation-" + nation.Id));
                 nations.Add(row);
             }
-            Popup.Add(nations);
+            column.Add(nations);
             // UI-195: control is the settlement gem's colour; its cut tells the kind of settlement.
-            Popup.Add(Text("Settlement gem: round — Town, emerald cut — City, gold setting — Stronghold, triangle — Fortification\n" +
+            column.Add(Text("Settlement gem: round — Town, emerald cut — City, gold setting — Stronghold, triangle — Fortification\n" +
                 "Sapphire — Free Peoples control   Ruby — Shadow control\nHighlighted terrain — current option"));
+            column = Column(columns);
+            column.style.marginLeft = ColumnGap;
             AddPolitical();
             AddArmies();
             AddMordor();
+        }
+
+        private static VisualElement Column(VisualElement columns)
+        {
+            var added = new VisualElement { style = { width = ColumnWidth, flexShrink = 0 } };
+            columns.Add(added);
+            return added;
         }
 
         // UI-218: what the political view shows.
@@ -139,8 +156,8 @@ namespace Wotr.Client
             var heading = Text("Political view (P)", "map-legend-political");
             heading.style.unityFontStyleAndWeight = FontStyle.Bold;
             heading.style.marginTop = 6;
-            Popup.Add(heading);
-            Popup.Add(Text("Every region in its nation's colour. Stripes and an outline in sapphire or ruby: a settlement " +
+            column.Add(heading);
+            column.Add(Text("Every region in its nation's colour. Stripes and an outline in sapphire or ruby: a settlement " +
                 "held by the other side."));
         }
 
@@ -150,14 +167,14 @@ namespace Wotr.Client
             var heading = Text("Mordor track", "map-legend-mordor");
             heading.style.unityFontStyleAndWeight = FontStyle.Bold;
             heading.style.marginTop = 6;
-            Popup.Add(heading);
+            column.Add(heading);
             var entries = new VisualElement { name = "map-legend-mordor-entries", style = { flexDirection = FlexDirection.Row,
                 flexWrap = Wrap.Wrap, marginTop = 4 } };
             entries.Add(Entry("mordor/gate", "Entrance from Morannon or Minas Morgul"));
             entries.Add(Entry("mordor/slab", "Step of the Fellowship"));
             entries.Add(Entry("mordor/slab-next", "Next step for the die"));
             entries.Add(Entry("mordor/crack-of-doom", "Crack of Doom"));
-            Popup.Add(entries);
+            column.Add(entries);
         }
 
         // UI-126: the army markers, drawn with the same art as on the map.
@@ -166,7 +183,7 @@ namespace Wotr.Client
             var heading = Text("Armies — zoom in to see the figures", "map-legend-armies");
             heading.style.unityFontStyleAndWeight = FontStyle.Bold;
             heading.style.marginTop = 6;
-            Popup.Add(heading);
+            column.Add(heading);
             var entries = new VisualElement { name = "map-legend-army-entries", style = { flexDirection = FlexDirection.Row,
                 flexWrap = Wrap.Wrap, marginTop = 4 } };
             // UI-406: the token is a puck, the state a rim drawn round it.
@@ -175,7 +192,7 @@ namespace Wotr.Client
             entries.Add(Entry("armies/token-puck-free", "Can act with the die", "armies/rim-token-rim-eligible"));
             entries.Add(Entry("armies/token-puck-free", "Selected force", "armies/rim-token-rim-selected"));
             entries.Add(Entry("armies/token-puck-free", "Already marched", "armies/rim-token-rim-moved"));
-            Popup.Add(entries);
+            column.Add(entries);
         }
 
         // An entry of the art kit: armies/<name> keeps its UI-126 element name, other art its category's. UI-406: a state
