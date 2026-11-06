@@ -23,6 +23,9 @@ namespace Wotr.EditorTests
         // raised pose's 12.
         private const string CarriedClass = "hand-carried";
         private const float CarriedHigher = 22;
+        // A flight's clock runs from the moment it starts, so a slow first run reads a few hundredths of the arc. One point still
+        // tells a lift in place from one held CarriedHigher above it.
+        private const float HeightTolerance = 1;
 
         [Test]
         public void AFlightRunsFromItsPreviousPlaceToItsPlaceNowOnePerDestinationMarker()
@@ -72,7 +75,7 @@ namespace Wotr.EditorTests
             var flight = map.Figures.Flight(keys[0]).Value;
             Assert.AreEqual(source, flight.From, "It goes on from where it was held…");
             Assert.AreEqual(1, flight.Frame.Lift, 1e-4f, "…in its raised pose: no second lift from the table.");
-            Assert.AreEqual(0, flight.Frame.Height, 1e-4f, "Lifted in place, it was not held higher (UI-428).");
+            Assert.AreEqual(0, flight.Frame.Height, HeightTolerance, "Lifted in place, it was not held higher (UI-428).");
             Assert.IsTrue(map.Figures.Root.Q("moving-" + keys[0]).Q<Button>().ClassListContains("selected-force"),
                 "It keeps the hand's gold rim.");
             Assert.AreEqual(1, map.Figures.Flight("character:strider").Value.Frame.Lift, 1e-4f, "Strider too.");
@@ -106,7 +109,7 @@ namespace Wotr.EditorTests
             var flight = map.Figures.Flight("unit:" + movers[0]).Value;
             Assert.Less(Vector2.Distance(drop, flight.From), .01f, "It flies on from where it was dropped…");
             Assert.AreEqual(1, flight.Frame.Lift, 1e-4f, "…in its raised pose…");
-            Assert.AreEqual(CarriedHigher * map.Stands.FigureScale, flight.Frame.Height, .01f,
+            Assert.AreEqual(CarriedHigher * map.Stands.FigureScale, flight.Frame.Height, HeightTolerance,
                 "…from the height it was held at (UI-428), which the arc leaves behind.");
             Assert.AreNotEqual(source, flight.From, "Never from its source.");
         }

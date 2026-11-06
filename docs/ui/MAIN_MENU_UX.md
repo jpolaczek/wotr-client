@@ -513,6 +513,8 @@ The damaged file is a row “Damaged play · ...” with a reason; it only works
   Or the reason for refusal. An empty library says, how to add replay.
 - The login screen has “Replays” (`auth-replays`): the same page in the menu frame
   (`replay-library-screen`) from “Back” to login. No account, server or update required.
+- The login screen has “Quit game” (`auth-quit`, UI-507, owner, 2026-11-06), third in the row after Settings and Replays. It closes
+  the game at once: before signing in there is no game and no session to lose, so unlike the main menu's it asks nothing.
 - The “Play” opens the player (UX_SPEC, REPLAY-05). “Exit match” in the board menu returns to the
   library from which the player came (menu or screen before logging in), with the list scrolling
   saved.

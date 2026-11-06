@@ -21,6 +21,8 @@ namespace Wotr.Client
         public event Action InterfaceRequested;
         // REPLAY-04: the library opens before sign-in, without an account or a server.
         public event Action ReplaysRequested;
+        // UI-507: closes the game at once; before signing in there is no game and no session to lose.
+        public event Action QuitRequested;
         private readonly TextField login = new TextField("Account name") { name = "auth-username" };
         private readonly TextField password = new TextField("Password") { name = "auth-password", isPasswordField = true };
         private readonly Button submit;
@@ -71,7 +73,10 @@ namespace Wotr.Client
             replays.AddToClassList("auth-replays");
             var settings = InterfaceSettingsPanel.OpenButton(() => InterfaceRequested?.Invoke());
             updateHint = new SettingsUpdateHint(settings);
-            var secondary = Column("auth-secondary", settings, replays);
+            var quit = BoardScreen.Button("Quit game", () => QuitRequested?.Invoke());
+            quit.name = "auth-quit";
+            quit.tooltip = "Close the game.";
+            var secondary = Column("auth-secondary", settings, replays, quit);
             secondary.AddToClassList("auth-secondary");
             card.Add(secondary);
             SubmitOnEnter(password);

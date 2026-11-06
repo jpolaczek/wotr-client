@@ -528,7 +528,8 @@
 .frontend .login-card .auth-secondary .action { flex-grow: 1; flex-basis: 0; margin: 0; }
 .frontend .login-card .auth-secondary .action:first-child { margin-right: 10px; }
 /* UI-470: USS has no :first-child, so the thin buttons touched; the gap is given to Settings by name. */
-.frontend .login-card .auth-secondary #open-interface { margin-right: 8px; }
+.frontend .login-card .auth-secondary #open-interface,
+.frontend .login-card .auth-secondary #auth-replays { margin-right: 8px; }
 .frontend .login-card .auth-hint { -unity-text-align: middle-center; font-size: 14px; margin: 0; color: rgb(170, 160, 136); }
 
 /* LOBBY-01: Open games makes room for the lobby — compact game rows, then a fixed-height chat with a folding column of
