@@ -782,7 +782,7 @@
 /* UI-497: Find game. Two columns, no scrolling: the rows on the left, the side cards and the rating on the right. */
 .main-menu .find-columns { flex-direction: row; flex-grow: 1; flex-shrink: 1; min-height: 0; }
 .main-menu .find-column { flex-grow: 1; flex-basis: 0; min-width: 0; margin-right: 16px; }
-.main-menu .find-column:last-child { margin-right: 0; }
+.main-menu .find-column.find-column-last { margin-right: 0; }
 .main-menu .find-column > .host-heading { flex-shrink: 0; margin-bottom: 2px; }
 .main-menu .find-row { flex-direction: row; align-items: center; flex-grow: 1; flex-shrink: 0; min-height: 34px; max-height: 44px; }
 .main-menu .find-row-label { width: 84px; flex-shrink: 0; justify-content: center; }

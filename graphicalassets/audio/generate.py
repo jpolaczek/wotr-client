@@ -215,6 +215,18 @@ def clock_warning(rng, variant):
     return finish(room(x, rng, tail=0.14, wet=0.08, brightness=3000), -18, fade_out=0.1)
 
 
+def match_found(rng, variant):
+    """Two low, warm notes that swell in rather than strike: a game has been found (owner, 2026-11-06: not sharp). Only low
+    partials and a slow attack, so nothing in it can pierce, and quieter than the other alerts."""
+    duration = 1.25
+    x = silence(duration)
+    for frequency, at, level in [(196.0, 0.0, 0.9), (293.7, 0.32, 1.0)]:
+        note = modal(rng, duration - at, [(frequency, 1.0, 0.42), (frequency * 2.0, 0.12, 0.26)], attack=0.11)
+        place(x, note * level, at)
+    x = lowpass(x, 1100, order=4)
+    return finish(room(x, rng, tail=0.3, wet=0.14, brightness=1600), -25, fade_in=0.02, fade_out=0.2)
+
+
 def action_failed(rng, variant):
     """Two soft, muted notes falling a minor third: that did not work."""
     duration = 0.26
@@ -298,6 +310,7 @@ CATALOGUE = [
     # Last, so the earlier cues keep their seeds (and files).
     ("PoliticsMoved", "Effects", "politics-moved", 2, 1.7, politics_moved),
     ("ClockWarning", "Alerts", "clock-warning", 1, 0.7, clock_warning),
+    ("MatchFound", "Alerts", "match-found", 1, 1.65, match_found),
 ]
 
 

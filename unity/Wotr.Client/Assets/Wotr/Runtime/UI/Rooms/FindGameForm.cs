@@ -75,7 +75,9 @@ namespace Wotr.Client
             rating.AddToClassList("find-rating");
             var stakes = new Label(Stakes) { name = "find-note", pickingMode = PickingMode.Ignore };
             stakes.AddToClassList("find-note");
-            columns.Add(Column(Heading("Your side"), sides.Root, sideChoice.Root, rating, stakes));
+            var right = Column(Heading("Your side"), sides.Root, sideChoice.Root, rating, stakes);
+            right.AddToClassList("find-column-last");
+            columns.Add(right);
             Root.Add(columns);
             Root.Add(OpponentPanel());
             Root.Add(Footer());

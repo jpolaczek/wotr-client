@@ -10,10 +10,13 @@ namespace Wotr.Editor
 {
     public static class BuildTasks
     {
+        // A second local build can go elsewhere, so one still running is not overwritten beneath its player.
+        private static string LocalFolder => System.Environment.GetEnvironmentVariable("WOTR_LOCAL_BUILD_FOLDER") ?? "local";
+
         public static void BuildLocalMac()
         {
             PlatformArchitecture.UseMacUniversal();
-            Build(BuildTarget.StandaloneOSX, "local/macos/Wotr.app", BuildOptions.None);
+            Build(BuildTarget.StandaloneOSX, LocalFolder + "/macos/Wotr.app", BuildOptions.None);
         }
 
         public static void BuildAndRunLocalMac()

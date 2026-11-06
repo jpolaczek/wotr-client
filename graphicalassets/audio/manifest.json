@@ -368,6 +368,19 @@
       "endAmplitude": 0.0,
       "dcOffset": -2e-06,
       "clippedSamples": 0
+    },
+    {
+      "cue": "MatchFound",
+      "file": "match-found-1.wav",
+      "seed": 15000,
+      "seconds": 1.25,
+      "loudness": -25.0,
+      "truePeakDb": -14.3,
+      "sha256": "62f411ffa184056d6dec0f6bb7e813594814f2c1317635628931112abe9c4255",
+      "startAmplitude": 0.0,
+      "endAmplitude": 0.0,
+      "dcOffset": -0.0,
+      "clippedSamples": 0
     }
   ]
 }

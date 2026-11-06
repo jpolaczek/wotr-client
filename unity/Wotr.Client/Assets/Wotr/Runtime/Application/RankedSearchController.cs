@@ -137,11 +137,11 @@ namespace Wotr.Client
             }
         }
 
-        // The alert first, since the window may be in the background and the clock starts at once; the first decision's
-        // extra time covers the presentation.
+        // The sound first, since the window may be in the background and the clock starts at once; the first decision's extra
+        // time covers the presentation.
         private async Task Enter(RankedSearchView view, CancellationToken token)
         {
-            sounds?.Request(new SoundRequest(SoundCue.DecisionRequired, "ranked-match/" + view.MatchId));
+            sounds?.Request(new SoundRequest(SoundCue.MatchFound, "ranked-match/" + view.MatchId));
             Form.ShowOpponent(view.Opponent, view.OpponentRating);
             await Task.Delay(presentation, token);
             running = null;

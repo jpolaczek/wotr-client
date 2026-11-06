@@ -112,6 +112,13 @@
         "Wotr/Audio/clock-warning-1"
       ],
       "longestSeconds": 0.7
+    },
+    "MatchFound": {
+      "channel": "Alerts",
+      "clips": [
+        "Wotr/Audio/match-found-1"
+      ],
+      "longestSeconds": 1.65
     }
   }
 }

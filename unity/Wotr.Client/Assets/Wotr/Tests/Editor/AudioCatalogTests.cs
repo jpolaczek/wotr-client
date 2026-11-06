@@ -15,7 +15,7 @@ namespace Wotr.EditorTests
             ("UiClick", "Effects"), ("CardInspect", "Effects"), ("CardMove", "Effects"), ("DiceRoll", "Effects"),
             ("ActionAccepted", "Effects"), ("BattleStarted", "Alerts"), ("FellowshipAdvanced", "Effects"),
             ("CorruptionChanged", "Effects"), ("DecisionRequired", "Alerts"), ("ActionFailed", "Alerts"),
-            ("Victory", "Alerts"), ("Defeat", "Alerts"), ("PoliticsMoved", "Effects"), ("ClockWarning", "Alerts")
+            ("Victory", "Alerts"), ("Defeat", "Alerts"), ("PoliticsMoved", "Effects"), ("ClockWarning", "Alerts"), ("MatchFound", "Alerts")
         };
 
         private static JObject Cues() => (JObject)JObject.Parse(Resources.Load<TextAsset>("Wotr/Audio/audio-catalog").text)["cues"];

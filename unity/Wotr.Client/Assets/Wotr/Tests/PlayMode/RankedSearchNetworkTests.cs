@@ -31,7 +31,7 @@ namespace Wotr.PlayTests
             using (var second = new MountedFlowClient(secondApi, storage))
             {
                 var alerted = false;
-                second.Interface.Sounds.Policy.Played += cue => alerted |= cue == SoundCue.DecisionRequired && second.Board == null;
+                second.Interface.Sounds.Policy.Played += cue => alerted |= cue == SoundCue.MatchFound && second.Board == null;
                 await OpenFindGame(first, token);
                 // UI-497's page reads the rating when it opens.
                 await ReturnTestFixture.Until(() => first.Root.Q<Label>("find-rating").text == "Your rating: 1500", token);
@@ -50,7 +50,7 @@ namespace Wotr.PlayTests
                 var presented = Stopwatch.StartNew();
 
                 await ReturnTestFixture.Until(() => first.Board?.View != null && second.Board?.View != null, token);
-                Assert.IsTrue(alerted, "The alert sounds before the board opens, since the window may be in the background.");
+                Assert.IsTrue(alerted, "The soft sound plays before the board opens, since the window may be in the background.");
                 Assert.Greater(presented.Elapsed.TotalSeconds, 2.5, "The opponent is presented for 3 seconds.");
                 Assert.Less(presented.Elapsed.TotalSeconds, 6, "The board opens within 3 seconds of the presentation, plus its load.");
                 Assert.AreEqual(first.Board.View.MatchId, second.Board.View.MatchId, "Both opened the same board with no further click.");
