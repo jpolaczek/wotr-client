@@ -47,6 +47,8 @@ namespace Wotr.Client
         private readonly VisualElement indicator = new VisualElement { name = "find-indicator", pickingMode = PickingMode.Ignore };
         private readonly Label elapsed = new Label { name = "find-elapsed", pickingMode = PickingMode.Ignore };
         private readonly VisualElement opponent = new VisualElement { name = "find-opponent", pickingMode = PickingMode.Ignore };
+        private readonly VisualElement opponentAvatar = AvatarImage.Create(AvatarImage.Presentation);
+        private readonly VisualElement ownAvatar = AvatarImage.Create(AvatarImage.Medium);
         private readonly Label opponentName = new Label { name = "find-opponent-name", pickingMode = PickingMode.Ignore };
         private readonly Label opponentRating = new Label { name = "find-opponent-rating", pickingMode = PickingMode.Ignore };
         private Button back;
@@ -75,7 +77,9 @@ namespace Wotr.Client
             rating.AddToClassList("find-rating");
             var stakes = new Label(Stakes) { name = "find-note", pickingMode = PickingMode.Ignore };
             stakes.AddToClassList("find-note");
-            var right = Column(Heading("Your side"), sides.Root, sideChoice.Root, rating, stakes);
+            var ratingLine = AvatarImage.Line(rating, ownAvatar);
+            ratingLine.AddToClassList("find-rating-line");
+            var right = Column(Heading("Your side"), sides.Root, sideChoice.Root, ratingLine, stakes);
             right.AddToClassList("find-column-last");
             columns.Add(right);
             Root.Add(columns);
@@ -178,9 +182,10 @@ namespace Wotr.Client
         public void ShowStatus(string text) => status.text = text;
 
         // The opponent, for the moment before the board opens. The rows make way and nothing responds any more.
-        public void ShowOpponent(string name, int value)
+        public void ShowOpponent(string name, int value, string avatar = "")
         {
             ticking?.Pause();
+            AvatarImage.Show(opponentAvatar, avatar);
             opponentName.text = name;
             opponentRating.text = "Rating " + value;
             columns.style.display = DisplayStyle.None;
@@ -225,6 +230,8 @@ namespace Wotr.Client
             heading.AddToClassList("host-heading");
             heading.AddToClassList("find-opponent-heading");
             opponent.Add(heading);
+            opponentAvatar.name = "find-opponent-avatar";
+            opponent.Add(opponentAvatar);
             opponentName.AddToClassList("find-opponent-name");
             opponent.Add(opponentName);
             opponentRating.AddToClassList("find-opponent-rating");
@@ -232,7 +239,11 @@ namespace Wotr.Client
             return opponent;
         }
 
-        public void ShowRating(int? value) => rating.text = value.HasValue ? "Your rating: " + value.Value : "Your rating: –";
+        public void ShowRating(int? value, string avatar = "")
+        {
+            rating.text = value.HasValue ? "Your rating: " + value.Value : "Your rating: –";
+            AvatarImage.Show(ownAvatar, value.HasValue ? avatar : "");
+        }
 
         private static VisualElement Column(params VisualElement[] parts)
         {

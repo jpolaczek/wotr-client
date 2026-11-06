@@ -164,7 +164,7 @@ namespace Wotr.Client
             var author = new Label(message.Author) { name = "lobby-author" };
             author.AddToClassList("lobby-author");
             OfferChallenge(author, message.Author);
-            row.Add(author);
+            row.Add(AvatarImage.Line(author, AvatarImage.Create(AvatarImage.Tiny, message.AuthorAvatar)));
             var text = new Label(message.Text) { pickingMode = PickingMode.Ignore };
             text.AddToClassList("lobby-text");
             row.Add(text);
@@ -173,7 +173,7 @@ namespace Wotr.Client
 
         private void ShowOnline(IReadOnlyList<OnlinePlayer> players)
         {
-            var key = string.Join("|", players.Select(p => p.Name + (p.You ? "*" : "")));
+            var key = string.Join("|", players.Select(p => p.Name + "/" + p.Avatar + (p.You ? "*" : "")));
             if (key != onlineKey)
             {
                 onlineKey = key;
@@ -192,7 +192,7 @@ namespace Wotr.Client
             name.tooltip = player.You ? "You" : "Right-click to challenge " + player.Name;
             if (!player.You)
                 OfferChallenge(name, player.Name);
-            return name;
+            return AvatarImage.Line(name, AvatarImage.Create(AvatarImage.Tiny, player.Avatar));
         }
 
         private void OfferChallenge(VisualElement element, string name)

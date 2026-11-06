@@ -107,6 +107,7 @@
     border-left-color: rgba(163, 132, 75, 0.42);
     border-right-color: rgba(163, 132, 75, 0.42);
 }
+.waiting-room .waiting-observer .avatar-image { margin: 0 4px 0 -6px; }
 .waiting-room .waiting-observer-name {
     max-width: 120px;
     font-size: 14px;

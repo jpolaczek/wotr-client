@@ -13,6 +13,7 @@ namespace Wotr.Client
         public string ChallengeId { get; private set; } = "";
         public event Action<string> Accept;
         public event Action<string> Decline;
+        private readonly VisualElement avatar = AvatarImage.Create(AvatarImage.Medium);
         private readonly Label text = new Label { name = "challenge-text", pickingMode = PickingMode.Ignore };
         private readonly Button accept;
         private readonly Button decline;
@@ -21,6 +22,8 @@ namespace Wotr.Client
         {
             Root.AddToClassList("challenge-tab");
             text.AddToClassList("challenge-text");
+            avatar.name = "challenge-avatar";
+            Root.Add(avatar);
             Root.Add(text);
             accept = BoardScreen.Button("Accept", () => Answer(Accept));
             accept.name = "challenge-accept";
@@ -41,6 +44,7 @@ namespace Wotr.Client
                 return;
             }
             ChallengeId = challenge.Id;
+            AvatarImage.Show(avatar, challenge.FromAvatar);
             text.text = challenge.From + " challenges you to a game";
             accept.SetEnabled(true);
             decline.SetEnabled(true);

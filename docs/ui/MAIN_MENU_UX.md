@@ -619,3 +619,11 @@ host), My games rows (the opponent), the signed-in line (one's own) and the Find
 A row keeps its height: where width is tight the avatar takes 16 px and the name truncates, with its full text in the
 tooltip. The avatar is chosen only in the browser: Settings has an Account page button that opens it in the system browser.
 The default is the Eye or the Ring, at random.
+
+Built in UI-505. The sizes: 16 px in lobby chat, the online list, an open game's host line, a My games detail line and the
+signed-in line; 20 px on a My games heading; 32 px on the challenge tab and beside one's rating in Find game. A picture and its
+name stand side by side in a small row (`AvatarImage.Line`), never one inside the other: UI Toolkit does not measure the text of
+an element with children, so a picture inside a label collapses a label sized by its text, and the name disappears. A change
+made in the browser reaches the signed-in line and the lists with the menu's next refresh (`GET /api/auth/me` for one's own).
+An unknown identifier, from a newer server, shows the Eye; an empty one names nobody and shows nothing, and the name then stands
+where the picture would.

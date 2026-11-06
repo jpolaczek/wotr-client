@@ -26,6 +26,8 @@ namespace Wotr.PlayTests
         {
             var (firstApi, firstName) = await Account(address, "rs_a_", token);
             var (secondApi, secondName) = await Account(address, "rs_b_", token);
+            await AvatarNetworkTests.Choose(address, firstName, "gondor", token);
+            await AvatarNetworkTests.Choose(address, secondName, "sauron", token);
             var storage = Storage();
             using (var first = new MountedFlowClient(firstApi, storage))
             using (var second = new MountedFlowClient(secondApi, storage))
@@ -35,6 +37,7 @@ namespace Wotr.PlayTests
                 await OpenFindGame(first, token);
                 // UI-497's page reads the rating when it opens.
                 await ReturnTestFixture.Until(() => first.Root.Q<Label>("find-rating").text == "Your rating: 1500", token);
+                Assert.AreEqual("gondor", AvatarImage.Shown(first.Root.Q<Label>("find-rating").parent), "UI-506: one's own picture.");
                 await ReturnTestFixture.ClickReady(first.Root, "submit-find", token);
                 await ReturnTestFixture.Until(() => first.Root.Q<Label>("find-elapsed").text.StartsWith("Searching"), token);
                 Assert.AreEqual(FindGameForm.CancelText, first.Root.Q<Button>("submit-find").text);
@@ -47,6 +50,8 @@ namespace Wotr.PlayTests
                 await ReturnTestFixture.Until(() => Named(first.Root, secondName) && Named(second.Root, firstName), token);
                 Assert.AreEqual("Rating 1500", first.Root.Q<Label>("find-opponent-rating").text);
                 Assert.AreEqual("Rating 1500", second.Root.Q<Label>("find-opponent-rating").text);
+                Assert.AreEqual("sauron", first.Root.Q("find-opponent-avatar").userData, "UI-506: the opponent's picture.");
+                Assert.AreEqual("gondor", second.Root.Q("find-opponent-avatar").userData, "UI-506: the opponent's picture.");
                 var presented = Stopwatch.StartNew();
 
                 await ReturnTestFixture.Until(() => first.Board?.View != null && second.Board?.View != null, token);

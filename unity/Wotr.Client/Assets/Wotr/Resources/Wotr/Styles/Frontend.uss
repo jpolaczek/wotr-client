@@ -608,6 +608,7 @@
     background-color: rgb(44, 35, 23); }
 .main-menu .challenge-text { flex-grow: 1; flex-shrink: 1; min-width: 0; font-size: 15px; -unity-font-style: bold; color: rgb(250, 232, 196);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.main-menu .challenge-tab .avatar-image { margin-right: 8px; }
 .main-menu .challenge-action { width: 92px; height: 34px; min-height: 34px; margin: 0 0 0 8px; font-size: 14px; }
 
 /* UI-263: the crests of a listed game's expansions: before the row's buttons, and in a saved game's upper right. */
@@ -815,10 +816,11 @@
     white-space: normal;
     color: rgb(206, 194, 164);
 }
+.main-menu .find-form .find-rating-line { margin-top: 4px; }
 .main-menu .find-form .find-rating {
     flex-shrink: 0;
     height: 32px;
-    margin: 4px 0 0 0;
+    margin: 0;
     padding: 0;
     font-size: 15px;
     color: rgb(226, 214, 184);
@@ -903,6 +905,7 @@
 }
 .main-menu .find-opponent { flex-grow: 1; flex-shrink: 1; min-height: 0; align-items: center; justify-content: center; }
 .main-menu .find-opponent-heading { flex-shrink: 0; }
+.main-menu .find-opponent .avatar-image { margin: 6px 0 2px 0; }
 .main-menu .find-opponent-name {
     flex-shrink: 0;
     margin: 4px 0;

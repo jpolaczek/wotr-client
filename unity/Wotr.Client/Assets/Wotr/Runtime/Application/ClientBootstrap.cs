@@ -57,6 +57,7 @@ namespace Wotr.Client
             }
             flow = new ClientFlow(ui.Content, windows: ui.Windows, sounds: ui.Sounds);
             flow.InterfaceRequested += ui.Open;
+            ui.Settings.AccountPageRequested += () => Application.OpenURL(GatewayScreen.AccountPage(ServerConfiguration.Address, ""));
             updates = UpdateController.Start(ui, flow);
             // UI-501: a platform that lets the game answer its window's close asks as Quit game does in a ranked game.
             Application.wantsToQuit += flow.AllowQuit;

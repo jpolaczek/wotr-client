@@ -210,5 +210,7 @@ expansion is in it; only the host changes them, and only before pressing Ready, 
 <a id="avatars--avatar-01"></a>
 ## Avatars — AVATAR-01 (owner, 2026-11-05)
 
-Each seat shows its player's avatar to the left of the name, at the largest size in the room, and the observer chips and the
-room's chat show it at their own small sizes. A row keeps its height.
+Each seat shows its player's avatar to the left of the name, at the largest size in the room (20 px, as much as the compact
+seat holds without growing), and the observer chips and the room's chat show it at 16 px. A row keeps its height. A change made
+in the browser appears on the next refresh and leaves everyone's readiness as it was, since a room's version does not move. An
+empty seat shows no picture.

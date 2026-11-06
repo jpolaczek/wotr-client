@@ -14,6 +14,7 @@ namespace Wotr.Client
         private readonly VisualElement emblem = new VisualElement { pickingMode = PickingMode.Ignore };
         private readonly Label name = new Label { pickingMode = PickingMode.Ignore };
         private readonly Label detail = new Label { pickingMode = PickingMode.Ignore };
+        private readonly VisualElement hostAvatar = AvatarImage.Create(AvatarImage.Tiny);
         private readonly VisualElement crests;
         private readonly Button play;
         private readonly Button observe;
@@ -30,7 +31,7 @@ namespace Wotr.Client
             name.AddToClassList("menu-row-title");
             detail.AddToClassList("menu-row-detail");
             text.Add(name);
-            text.Add(detail);
+            text.Add(AvatarImage.Line(detail, hostAvatar));
             play = RowButton("join-public-" + id, "Play", () => join(id, RoomRole.Player));
             observe = RowButton("observe-public-" + id, "Observe", () => join(id, RoomRole.Observer));
             Root.Add(emblem);
@@ -55,6 +56,7 @@ namespace Wotr.Client
             emblem.EnableInClassList("side-shadow", !free);
             name.text = room.Name;
             detail.text = Detail(room);
+            AvatarImage.Show(hostAvatar, room.HostAvatar);
             ExpansionCrests.Show(crests, room.Configuration);
             // UI-262: the row's lines end in an ellipsis, so its tooltip holds them in full. UI-420 (owner): one per line,
             // then the expansions and variants the crests stand for.

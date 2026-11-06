@@ -87,7 +87,7 @@ namespace Wotr.Client
             author.AddToClassList(observer ? "observer" : message.Side == Side.FreePeoples ? "side-free" : "side-shadow");
             var text = new Label(message.Text) { enableRichText = false, pickingMode = PickingMode.Ignore };
             text.AddToClassList("room-chat-text");
-            line.Add(author);
+            line.Add(AvatarImage.Line(author, AvatarImage.Create(AvatarImage.Tiny, message.AuthorAvatar)));
             line.Add(text);
             return line;
         }

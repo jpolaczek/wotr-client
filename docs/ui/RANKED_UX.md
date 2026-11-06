@@ -120,3 +120,9 @@ A window in the family of Host game. It has no name, visibility or variant contr
   is live and is left only by conceding.
 - [WAITING_ROOM_UX](WAITING_ROOM_UX.md): a ranked game has no table, so its rules come from the search.
 - [AUDIO_UX](AUDIO_UX.md): the clock's warning is the one reminder.
+
+<a id="avatars-in-find-game--ui-506"></a>
+## Avatars in Find game — UI-506
+
+One's own avatar stands at 32 px beside the rating. When a search matches, the presentation shows the opponent's avatar at 96 px
+between the heading and the name, for the 3 seconds of AVATAR-01 A9. Nothing else about the opponent is shown.

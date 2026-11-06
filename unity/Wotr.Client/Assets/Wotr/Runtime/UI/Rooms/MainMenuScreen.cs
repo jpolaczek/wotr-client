@@ -81,8 +81,9 @@ namespace Wotr.Client
         private Button showReplays;
         // DIST-17: the glow and note of an available update on Settings.
         private SettingsUpdateHint updateHint;
+        private VisualElement ownAvatar;
 
-        public MainMenuScreen(string username)
+        public MainMenuScreen(string username, string avatar = "")
         {
             Root.name = "main-menu";
             FrontendTheme.Apply(Root);
@@ -91,7 +92,7 @@ namespace Wotr.Client
             var page = Ignored("menu-page");
             page.pickingMode = PickingMode.Position;
             Root.Add(page);
-            page.Add(Masthead(username));
+            page.Add(Masthead(username, avatar));
             var body = new VisualElement();
             body.AddToClassList("menu-body");
             page.Add(body);
@@ -142,15 +143,19 @@ namespace Wotr.Client
             ShowPublicGames();
         }
 
-        private static VisualElement Masthead(string username)
+        // UI-505: a change made in the browser reaches this line with the menu's next refresh.
+        public void ShowOwnAvatar(string avatar) => AvatarImage.Show(ownAvatar, avatar);
+
+        private VisualElement Masthead(string username, string avatar)
         {
+            ownAvatar = AvatarImage.Create(AvatarImage.Tiny, avatar);
             var masthead = Ignored("menu-masthead");
             var title = new Label("WAR OF THE RING") { name = "menu-title", pickingMode = PickingMode.Ignore };
             title.AddToClassList("menu-title");
-            var player = new Label("Signed in as " + username) { name = "menu-player", pickingMode = PickingMode.Ignore };
-            player.AddToClassList("menu-player");
+            var ownName = new Label("Signed in as " + username) { name = "menu-player", pickingMode = PickingMode.Ignore };
+            ownName.AddToClassList("menu-player");
             masthead.Add(title);
-            masthead.Add(player);
+            masthead.Add(AvatarImage.Line(ownName, ownAvatar));
             return masthead;
         }
 

@@ -163,7 +163,7 @@ namespace Wotr.Client
         private Task OpenLobby(TestScenarioList.Place tests)
         {
             ChangeScreen();
-            var lobby = new MainMenuScreen(api.Username);
+            var lobby = new MainMenuScreen(api.Username, api.Avatar);
             lobby.ShowUpdate(updateNote);
             mainMenu = lobby;
             errorLabel = lobby.Status;
@@ -247,7 +247,7 @@ namespace Wotr.Client
                     lobby.FindGame.Offer(offered.Modules);
                 var search = await api.Get<RankedSearchView>("api/ranked/queue", token);
                 if (!token.IsCancellationRequested)
-                    lobby.FindGame.ShowRating(search.Rating);
+                    lobby.FindGame.ShowRating(search.Rating, search.Avatar);
             }
             catch (ApiException) { }
             catch (HttpRequestException) { }

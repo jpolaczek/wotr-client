@@ -142,7 +142,7 @@ namespace Wotr.Client
         private async Task Enter(RankedSearchView view, CancellationToken token)
         {
             sounds?.Request(new SoundRequest(SoundCue.MatchFound, "ranked-match/" + view.MatchId));
-            Form.ShowOpponent(view.Opponent, view.OpponentRating);
+            Form.ShowOpponent(view.Opponent, view.OpponentRating, view.OpponentAvatar);
             await Task.Delay(presentation, token);
             running = null;
             openMatch(view.MatchId);
