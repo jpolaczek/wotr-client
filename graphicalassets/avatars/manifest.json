@@ -1,0 +1,74 @@
+{
+  "avatars": {
+    "eye": {
+      "source": "graphicalassets/ui/src/dice/faces/eye.svg",
+      "sourceSha256": "7b208031d6e10f12064cac30b0e2bdddfa2d511d2033fb3f154fed043e56b209",
+      "client": "fde1a5a0814de822d93049eb765fd93aa808bf8d26d4d0f1471d479ee4b671a9",
+      "site": "fde1a5a0814de822d93049eb765fd93aa808bf8d26d4d0f1471d479ee4b671a9",
+      "site2x": "872d8372c136892318adf4a8f34c81a257140c536a34dd53029671d9d045a674"
+    },
+    "ring": {
+      "source": "graphicalassets/ui/src/icons/ring.svg",
+      "sourceSha256": "92f23fe9fbc4fac92c515753ce638d5ad20c0c385efd810ddcceb2f7fac9ac4d",
+      "client": "4702273d969280a58c7371d8e20b872ffac18e4a812e79aa52d675c98b0ea7d7",
+      "site": "4702273d969280a58c7371d8e20b872ffac18e4a812e79aa52d675c98b0ea7d7",
+      "site2x": "ebe0191d34da2aeadca257091c0ef42b67e56c6a0fa58a873a8ed0c139d33ea6"
+    },
+    "gondor": {
+      "source": "graphicalassets/figures/v3/raw/gondor-regular.png",
+      "sourceSha256": "258b983bcdd5cef282d4c459012480d33871b7f925e23db4f3441fdee55d7e2b",
+      "client": "962998b1e390a6710013540624d13b97b7ecea03b868a57972a24defe045ec2a",
+      "site": "962998b1e390a6710013540624d13b97b7ecea03b868a57972a24defe045ec2a",
+      "site2x": "aae7b5eb20b12f5316abe56c532d04ff433aa9b7b1bd2c6611fd047a8755bb4f"
+    },
+    "rohan": {
+      "source": "graphicalassets/figures/v3/raw/rohan-regular.png",
+      "sourceSha256": "5a4f59fa943b5903d6629b9f8504e82ed8c91ec53f4ff38280e22fd8e3977f7e",
+      "client": "3c4a0e8b175f08d18394b59084eb4431c8a2391986a6958c2f5a27fb8f3978fc",
+      "site": "3c4a0e8b175f08d18394b59084eb4431c8a2391986a6958c2f5a27fb8f3978fc",
+      "site2x": "e9a42e8fda9c11742f726c14155fc548b2ee248f96d01bfe91eff0840801125b"
+    },
+    "elves": {
+      "source": "graphicalassets/figures/v3/raw/elves-regular.png",
+      "sourceSha256": "f2ee8cb07bac443ca5a20892902cb45909b1c390bd50a5ef1071ac730aadcc77",
+      "client": "6c50d4c4f047d424e88211659afb1dbe2adaa3e0b0a16fe838148e7f1bfe906e",
+      "site": "6c50d4c4f047d424e88211659afb1dbe2adaa3e0b0a16fe838148e7f1bfe906e",
+      "site2x": "a201578d3ac81266473ffade040b5296a7c4c44a4e074cdf26385254119fcab1"
+    },
+    "dwarves": {
+      "source": "graphicalassets/figures/v3/raw/dwarves-regular.png",
+      "sourceSha256": "ef7a82ec1d5607153b48e3767fa81ed8e63094d0dad16eccc4c814a891670bb7",
+      "client": "56fbb620791eed7425e48ed6f4c6d220c4bcd76a324bbb87ccc0d4bac9631f87",
+      "site": "56fbb620791eed7425e48ed6f4c6d220c4bcd76a324bbb87ccc0d4bac9631f87",
+      "site2x": "0cb55b87bee214d28d0d1f0220312dd80d03efe9d519fd032e6a7e2ed1526485"
+    },
+    "north": {
+      "source": "graphicalassets/figures/v3/raw/north-regular.png",
+      "sourceSha256": "6072d476c40eb01006864a51a0ccd18f74585c4ff1684d122171f7ecc35d65a7",
+      "client": "323fc677135a504f6a7af6eb048736301d5a0d0e521d783270f629d81cbe3f6a",
+      "site": "323fc677135a504f6a7af6eb048736301d5a0d0e521d783270f629d81cbe3f6a",
+      "site2x": "593d892db648462f73182981457b74306c477891b67e40cd67f143f2e26d182d"
+    },
+    "sauron": {
+      "source": "graphicalassets/figures/v3/raw/sauron-regular.png",
+      "sourceSha256": "7f70b7f8cdd5dc6e6c8f21d1a782a7036d68c1f76737a529db14fcf5ba013936",
+      "client": "0dd5d1c1703f8ad70d5fcde2b44650c041b005bd3e7f80827b7020e8785780fe",
+      "site": "0dd5d1c1703f8ad70d5fcde2b44650c041b005bd3e7f80827b7020e8785780fe",
+      "site2x": "d4e5d4f89013d2d02d28666e1cf9f27903e0ddf0c5c16fa03ae824743fb7ea8e"
+    },
+    "isengard": {
+      "source": "graphicalassets/figures/v3/raw/isengard-regular.png",
+      "sourceSha256": "a60e99cd9b060cb3f0c0befdad27e85e8cb9d3b35e82279ba875ba5b5515b011",
+      "client": "05366e8a4f0e392130c11101a91d29a5ac391be54b966d5a0ab3b825cbbd0e91",
+      "site": "05366e8a4f0e392130c11101a91d29a5ac391be54b966d5a0ab3b825cbbd0e91",
+      "site2x": "77daeed1d1a8681697ba88c457cd3d98abeedf959d93725f22551f1137976a4e"
+    },
+    "southrons": {
+      "source": "graphicalassets/figures/v3/raw/southrons-regular.png",
+      "sourceSha256": "dd108be8d03ce768efaf54f1ddec396d8bae2db9a494558b61f0d93e0b574b84",
+      "client": "8a1c6c2442a2668b279acc702f6e739d2e2ade8f8fc2a6de3557e4d9b16d77d1",
+      "site": "8a1c6c2442a2668b279acc702f6e739d2e2ade8f8fc2a6de3557e4d9b16d77d1",
+      "site2x": "4f3d00859b2299b92e9a2908606fee9c88f6450a69c26fa9088dba2f0f3df4ee"
+    }
+  }
+}

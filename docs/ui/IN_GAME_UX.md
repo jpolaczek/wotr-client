@@ -273,3 +273,9 @@ Owner: "every window that opens should open in the middle — the Hunt, the card
   windows move clear when such a panel opens (`WindowLayout.MiddleMoved`). A hover preview does not count.
 - A window wider than the middle of a narrow board keeps the hand clear and may touch the left edge.
 - The region panel (it belongs beside its region) and the edge panels are unchanged.
+
+<a id="avatars--avatar-01"></a>
+## Avatars — AVATAR-01 (owner, 2026-11-05)
+
+The board's chat shows the author's avatar to the left of the name, at 16 px, and keeps its line count. A line already sent
+keeps the avatar it was sent with. The top bar and the end screen show no names, so they show no avatars.

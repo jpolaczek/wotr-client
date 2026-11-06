@@ -610,3 +610,12 @@ each game with Victory or Defeat and how it ended, and a click opens it on its e
 count towards the badge on My games, so the result reaches a player who opens the menu on another page. In progress stays the first tab, and its rows and
 rooms are unchanged. Test: `MainMenuLayoutTests` (four layouts, `ui496-finished-*.png`), and `BoardMenuNetworkTests`, `ReturnListTests` and
 `InGameContextNetworkTests` open their finished games through the tab.
+
+<a id="avatars--avatar-01"></a>
+## Avatars — AVATAR-01 (owner, 2026-11-05)
+
+A small picture stands to the left of a player's name: in lobby chat, the online list, challenges, the open games list (the
+host), My games rows (the opponent), the signed-in line (one's own) and the Find game window (one's own, with the rating).
+A row keeps its height: where width is tight the avatar takes 16 px and the name truncates, with its full text in the
+tooltip. The avatar is chosen only in the browser: Settings has an Account page button that opens it in the system browser.
+The default is the Eye or the Ring, at random.

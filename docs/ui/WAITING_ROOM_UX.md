@@ -206,3 +206,9 @@ expansion is in it; only the host changes them, and only before pressing Ready, 
 | OB03 | A viewer from a public poem and code, chat with role, simultaneous “Take seat” into one place (one sits, the other gets status), return to the audience, remove the viewer by the host. | OBS-04 |
 | WR06 | The host adds and removes expansions and variants by clicks; the guest sees them read-only; an unreleased module is greyed with its reason; every change resets Ready; all 93 legal configurations are reachable and fit the window in four layouts. | UI-263 |
 | WR07 | The three expansions are checkboxes with a tick; the host's Ready greys out every rule in place with "Press Not ready to change the rules.", Not ready enables them; the guest's Ready does not lock the host (`RulesChoicesTests`, `WaitingRoomRulesTests`, menu09-waiting-ready screenshots). | UI-364 |
+
+<a id="avatars--avatar-01"></a>
+## Avatars — AVATAR-01 (owner, 2026-11-05)
+
+Each seat shows its player's avatar to the left of the name, at the largest size in the room, and the observer chips and the
+room's chat show it at their own small sizes. A row keeps its height.
