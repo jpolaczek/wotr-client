@@ -66,6 +66,9 @@ namespace Wotr.Client
         public GameEndScreen GameEnd { get; } = new GameEndScreen();
         // CHAT-01: the board's chat at the bottom left, beside the map legend.
         public GameChatPanel GameChat { get; } = new GameChatPanel();
+        // UI-500: a paused ranked game's banner and veils.
+        public PauseBanner Pause { get; }
+        public event Action ResumeRequested;
         public GameDeletedNotice GameDeleted { get; } = new GameDeletedNotice();
         public DecisionWindow DecisionWindow { get; } = new DecisionWindow();
         // UI-161: the results an Elven Ring can give the chosen die, above that die.
@@ -167,7 +170,7 @@ namespace Wotr.Client
             Escape = new BoardEscape(this);
             Root.RegisterCallback<GeometryChangedEvent>(e =>
                 Root.EnableInClassList("short-viewport", e.newRect.height > 0 && e.newRect.height < 700));
-            TopBar = new TopBarView(Phase, OpponentDice, Connection, Menu.Toggle);
+            TopBar = new TopBarView(Phase, OpponentDice, Connection, Menu.Toggle, ReducedMotion);
             var top = TopBar.Root;
             Menu.SettingsRequested += () => InterfaceRequested?.Invoke();
             var stage = new VisualElement { name = "board-stage", pickingMode = PickingMode.Ignore };
@@ -427,6 +430,9 @@ namespace Wotr.Client
             Root.Add(PlayedCards.Root);
             HuntDrops = new HuntTileDrop(BoardMiddle, () => Hunt.Tab, ReducedMotion);
             Root.Add(HuntDrops.Root);
+            // UI-500: above all of the board, below only the menu, which conceding needs.
+            Pause = new PauseBanner(GameChat, stage, () => ResumeRequested?.Invoke());
+            Root.Add(Pause.Layer);
             Root.Add(Menu.Root);
             Root.Add(GameDeleted.Root);
             Escape.Attach();
@@ -837,6 +843,13 @@ namespace Wotr.Client
         // its unrolling slide does not drag the windows along. A panel fading out is no longer held (UI-322).
         private static bool Held(VisualElement panel) => panel.parent != null && !Appearance.Closed(panel) && OnScreen(panel) &&
             !panel.ClassListContains(LeftRailPreview.PreviewClass);
+
+        // UI-499/UI-500: a ranked game's clock and pause, as a view arrives; a normal game's view has no clock.
+        public void ShowClock(MoveClockView clock, Side you)
+        {
+            TopBar.ShowClock(clock, you);
+            Pause.Show(clock?.Paused == true, clock?.PausedBy == you ? "Paused by you" : "Paused by your opponent");
+        }
 
         public bool ReducedMotion()
         {

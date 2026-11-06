@@ -89,6 +89,7 @@ namespace Wotr.Client
             try
             {
                 var errors = await Task.WhenAll(
+                    OwnAvatar(token),
                     Section(() => LoadRooms(token), token),
                     Section(() => LoadPublic(false, token), token),
                     Section(() => LoadMatches(false, token), token),
@@ -104,6 +105,27 @@ namespace Wotr.Client
                     if (!token.IsCancellationRequested) screen.RequestMoreIfNeeded();
                 }
             }
+        }
+
+        // UI-505: a change made in the browser. Failing to learn it is no news: the line keeps the picture it has, and the
+        // lists below say if the server is gone.
+        private async Task<string> OwnAvatar(CancellationToken token)
+        {
+            try
+            {
+                var me = await api.Get<SessionView>("api/auth/me", token);
+                token.ThrowIfCancellationRequested();
+                api.AvatarSeen(me.Avatar);
+                screen.ShowOwnAvatar(me.Avatar);
+            }
+            catch (Exception error) when (!(error is OperationCanceledException))
+            {
+                UnityEngine.Debug.Log("Own avatar not read: " + error.GetType().Name);
+            }
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
+            {
+            }
+            return "";
         }
 
         private async Task LoadRooms(CancellationToken token)

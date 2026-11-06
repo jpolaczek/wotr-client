@@ -503,3 +503,23 @@ play once the Fellowship is on the track must be shown separately". The client c
   Fellowship to enter Mordor under their own heading ("Join on the Mordor track · N"); before, UI-184, they stood on a short
   "Mordor" line inside the pool's block.
 
+<a id="looking-back-at-a-stage--ui-509"></a>
+## Looking back at a stage — UI-509 (owner, 2026-11-06)
+
+Every stage of the Hunt window's ribbon already reached takes a click and shows that stage as it stood, in this window only: the board, the dice, the hand, the clock and every other window stay at the present. A stage not reached yet is greyed, never hidden. The hit area reaches 32 points without moving the row. The owner withdrew the same thing for the battle window, whose ribbon stays informational.
+
+- **What it draws.** The stage's last entry in the public Hunt report that comes with every view, so there is no request. An entry with no snapshot of its own (a change of corruption or place) leaves the last one standing. A stage with nothing recorded says so and shows the last one before it. The window's corruption and Guide are today's, so a stage leaves them out, and its controls and responses wait hidden for the return.
+- **Nothing responds.** A cover over the dice and tile takes clicks, so nothing recorded is a target.
+- **Where the present is.** The gilt marker stays on the stage the Hunt stands at, and the stage shown carries its own mark. A click on the lit stage or Esc returns, with no button of its own (UI-430: the lit stage is that option's picture), and Esc does so also while the window holds the decision. Closing the window also returns.
+- **The game goes on.** New views apply underneath, so a return shows the present. An opponent's move leaves the look back alone. A decision of the player's own ends it at once, so it is never missed.
+- **A chain.** `‹ ›` in the header, shown only for a chain of several Hunts, pages through them; each line names its Hunt.
+- **The other player.** Before the reroll the Hunt stands at its roll for them, so they have no earlier stage until it moves on.
+
+Playtest. **Scenario:** a Hunt with a re-roll and a tile, from the test scenarios or a real game.
+
+1. Once the tile is drawn, click **Roll**. Expected: the dice with no tile, the marker still on the current stage, and the map and console unchanged.
+2. Click **Tile**. Expected: the tile alone.
+3. Click a die or the tile. Expected: nothing.
+4. Press Esc. Expected: the present, with your controls back, and the window still open.
+5. In a Hunt with no reroll offered, click **Re-roll**. Expected: a line saying nothing happened at this stage, and the roll as it stood.
+6. In a chain of two Hunts, click `‹`. Expected: the first Hunt's result, named in the line.

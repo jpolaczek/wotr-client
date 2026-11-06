@@ -43,6 +43,22 @@ namespace Wotr.Client
         private readonly VisualElement stages = new VisualElement { name = "hunt-stage-row" };
         // UI-327: one ribbon for the window, so its marker glides between the Hunt's phases.
         private readonly StageRibbon ribbon = HuntStages.Ribbon();
+        // UI-509: an earlier stage shown in this window only: -1 for the present. The blocker lets nothing in it respond; the decision
+        // and its controls wait, hidden, for the return.
+        private readonly VisualElement blocker = new VisualElement { name = "hunt-stage-blocker" };
+        private Button previousHunt;
+        private Button nextHunt;
+        private VisualElement huntPager;
+        private int shownStage = -1;
+        private int shownHunt;
+        private int reachedStage = -1;
+        private string reachedScope = "";
+        private string decisionAtPreview = "";
+        private PlayerView contextView;
+        private TurnDraft contextDraft;
+        private ActionDieContext contextDie;
+        private bool contextEnabled;
+        public bool ShowsStage => shownStage >= 0;
         private const long PhaseFadeDelay = 120;
         private string placedFor = "";
         private readonly Label title;
@@ -107,6 +123,7 @@ namespace Wotr.Client
             title = header.Q<Label>();
             idleCount.AddToClassList("hunt-idle-count");
             header.Add(idleCount);
+            header.Add(HuntPager());
             PoolToggle = IconButton.Create("hunt-pool", "Hunt pool · Show the tiles in the pool", TogglePool);
             PoolToggle.name = "hunt-pool-toggle";
             header.Add(PoolToggle);
@@ -133,6 +150,9 @@ namespace Wotr.Client
             Root.Add(main);
             DecisionHost.Add(Responses.Root);
             Root.Add(DecisionHost);
+            ribbon.Clickable = true;
+            ribbon.StageClicked += ClickStage;
+            blocker.AddToClassList("hunt-stage-blocker");
             Root.RegisterCallback<GeometryChangedEvent>(e => { if (PopoverPlacement.SizeChanged(e.oldRect, e.newRect)) Position(); });
         }
 
@@ -151,6 +171,9 @@ namespace Wotr.Client
             }
             view = latest;
             Tab.style.display = DisplayStyle.Flex;
+            var key = HuntWindowState.Key(latest);
+            if (ShowsStage && (key.Length > 0 && key != scope || NewOwnDecision(latest)))
+                EndStage();
             OpenNewHunt();
             Render();
         }
@@ -187,7 +210,120 @@ namespace Wotr.Client
             Guides.Apply(view);
             report.Apply(underway ? view.HuntReport : null);
             ApplyFocus();
+            OfferStages(hunt);
+            if (ShowsStage)
+                DrawStage(hunt);
             RefreshVisibility();
+        }
+
+        private VisualElement HuntPager()
+        {
+            huntPager = BoardScreen.Row();
+            huntPager.name = "hunt-pager";
+            huntPager.AddToClassList("hunt-pager");
+            huntPager.style.display = DisplayStyle.None;
+            previousHunt = IconButton.Create("back", "Previous Hunt", () => PageHunt(-1));
+            previousHunt.name = "hunt-back";
+            nextHunt = IconButton.Create("next", "Next Hunt", () => PageHunt(1));
+            nextHunt.name = "hunt-forward";
+            huntPager.Add(previousHunt);
+            huntPager.Add(nextHunt);
+            return huntPager;
+        }
+
+        private int LiveHunt => view?.HuntReport?.Entries.LastOrDefault(entry => entry.Kind == HuntReportKind.Started)?.HuntId ?? 0;
+
+        private HuntView LiveView => Underway(view) || view?.HuntReport?.Completed == true ? HuntActions.Displayed(view) : null;
+
+        private void ClickStage(int stage)
+        {
+            var hunt = ShowsStage ? shownHunt : LiveHunt;
+            if (hunt == LiveHunt && stage == HuntWindowState.Index(view, LiveView))
+                EndStage();
+            else
+                ShowStage(hunt, stage);
+        }
+
+        private void PageHunt(int change)
+        {
+            var hunt = (ShowsStage ? shownHunt : LiveHunt) + change;
+            if (hunt >= LiveHunt)
+                EndStage();
+            else if (hunt >= 1)
+                ShowStage(hunt, HuntWindowState.Stages(HuntStageHistory.From(view.HuntReport).Nearest(hunt, 0) ?? LiveView).Count - 1);
+        }
+
+        private void ShowStage(int hunt, int stage)
+        {
+            if (!ShowsStage)
+                decisionAtPreview = view.Decision?.Id ?? "";
+            shownHunt = hunt;
+            shownStage = stage;
+            Render();
+        }
+
+        public void EndStage()
+        {
+            if (!ShowsStage)
+                return;
+            shownStage = -1;
+            blocker.RemoveFromHierarchy();
+            DecisionHost.style.display = StyleKeyword.Null;
+            Render();
+            if (contextView != null)
+                Context(contextView, contextDraft, contextDie, contextEnabled);
+        }
+
+        // A decision of the player's own ends a look back, so it is never missed.
+        private static bool IsOwnDecision(PlayerView latest) => latest.Decision != null && latest.DecisionOwner == latest.You;
+
+        private bool NewOwnDecision(PlayerView latest) => IsOwnDecision(latest) && latest.Decision.Id != decisionAtPreview;
+
+        // A stage of this Hunt is open once reached; an earlier Hunt of the chain is over, so all of its stages are. The furthest stage
+        // reached stays open under a stage the ribbon has no place for.
+        private void OfferStages(HuntView hunt)
+        {
+            if (reachedScope != scope)
+            {
+                reachedScope = scope;
+                reachedStage = -1;
+            }
+            reachedStage = Mathf.Max(reachedStage, HuntWindowState.Index(view, hunt));
+            var shown = ShowsStage ? shownHunt : LiveHunt;
+            ribbon.Offer(stage => shown < LiveHunt || stage <= reachedStage, ShowsStage ? shownStage : -1);
+            huntPager.style.display = LiveHunt > 1 ? DisplayStyle.Flex : DisplayStyle.None;
+            previousHunt.SetEnabled(shown > 1);
+            nextHunt.SetEnabled(shown < LiveHunt);
+        }
+
+        // Only what the report holds: the window's corruption and Guide are today's, so a stage leaves them out.
+        private void DrawStage(HuntView live)
+        {
+            var history = HuntStageHistory.From(view.HuntReport);
+            var recorded = history.Nearest(shownHunt, shownStage);
+            var titles = HuntWindowState.Stages(recorded ?? live);
+            var title = titles[Mathf.Min(shownStage, titles.Count - 1)].Title;
+            step.text = (LiveHunt > 1 ? "Hunt " + shownHunt + " · " : "") + title + " · " +
+                (history.At(shownHunt, shownStage) == null ? "Nothing happened at this stage · " : "") +
+                "An earlier stage · Esc returns to the present";
+            owner.style.display = DisplayStyle.None;
+            source.text = recorded == null ? "" : HuntReportText.Source(recorded.SourceId, data) + " · Pool " + recorded.PoolCount;
+            Dice.Apply(recorded);
+            Tile.Apply(recorded);
+            Dice.Root.style.display = recorded != null && !recorded.Mordor && recorded.TileId.Length == 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            Tile.Root.style.display = recorded?.TileId.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            Disarm();
+        }
+
+        private void Disarm()
+        {
+            Guides.Root.style.display = DisplayStyle.None;
+            DecisionHost.style.display = DisplayStyle.None;
+            if (blocker.parent != main)
+                main.Add(blocker);
+            Dice.Context(view, new TurnDraft(), false);
+            Tile.Root.RemoveFromClassList("legal-target");
+            ReadOnlyControl.Apply(Tile.Root, false);
         }
 
         private static bool Underway(PlayerView view) => view.Hunt != null || view.HuntReport?.Completed == false;
@@ -232,6 +368,10 @@ namespace Wotr.Client
 
         public void Context(PlayerView latest, TurnDraft draft, ActionDieContext context, bool enabled)
         {
+            contextView = latest;
+            contextDraft = draft;
+            contextDie = context;
+            contextEnabled = enabled;
             var owns = HuntActions.UsesPanel(latest, draft);
             Held = owns;
             // Esc passes a held panel by, as it did the permanent column, and reaches the current choice.
@@ -254,6 +394,8 @@ namespace Wotr.Client
             Guides.Root.style.display = guide ? DisplayStyle.Flex : DisplayStyle.None;
             Guides.Context(latest, draft, context, enabled && guide);
             Tab.EnableInClassList("legal-target", owns && latest.DecisionOwner == latest.You && latest.Decision != null);
+            if (ShowsStage)
+                Disarm();
             var decision = latest.Decision?.Id ?? "";
             if (decision != observedDecision)
             {
@@ -395,6 +537,7 @@ namespace Wotr.Client
 
         public void Close()
         {
+            EndStage();
             Pinned = false;
             closedFor = scope;
             result = "";

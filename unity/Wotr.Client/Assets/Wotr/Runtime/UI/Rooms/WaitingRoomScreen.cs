@@ -271,6 +271,7 @@ namespace Wotr.Client
             public VisualElement Root { get; }
             private readonly Side side;
             private readonly Label player = new Label();
+            private readonly VisualElement avatar = AvatarImage.Create(AvatarImage.Small);
             private readonly Label tags = new Label();
             private readonly Label state = new Label();
             private readonly Button take;
@@ -299,10 +300,10 @@ namespace Wotr.Client
                 state.name = "seat-" + key + "-state";
                 state.AddToClassList("waiting-seat-state");
                 foreach (var label in new[] { player, tags, state })
-                {
                     label.pickingMode = PickingMode.Ignore;
-                    Root.Add(label);
-                }
+                Root.Add(AvatarImage.Line(player, avatar));
+                Root.Add(tags);
+                Root.Add(state);
                 take = Action("seat-" + key + "-take", "Take seat", () => takeSeat(side), "waiting-take");
                 remove = Action("seat-" + key + "-remove", "Remove", () => removePlayer(holder), "waiting-remove");
                 Root.Add(take);
@@ -316,6 +317,7 @@ namespace Wotr.Client
                 var accepted = side == Side.FreePeoples ? room.FreePeoplesAccepted : room.ShadowAccepted;
                 var yours = room.Role == RoomRole.Player && room.You == side;
                 player.text = taken ? holder : "Waiting for a player…";
+                AvatarImage.Show(avatar, taken ? (side == Side.FreePeoples ? room.FreePeoplesAvatar : room.ShadowAvatar) : "");
                 Root.EnableInClassList("empty", !taken);
                 Root.EnableInClassList("yours", yours);
                 var host = taken && holder == room.Host;
@@ -361,7 +363,7 @@ namespace Wotr.Client
             public void Show(RoomView room, int limit)
             {
                 title.text = "Observers " + room.Observers.Count + "/" + limit;
-                var roster = string.Join("\n", room.Observers.Select(o => o.Name + (o.IsHost ? "*" : "")));
+                var roster = string.Join("\n", room.Observers.Select(o => o.Name + "/" + o.Avatar + (o.IsHost ? "*" : "")));
                 if (roster == shown)
                     return;
                 shown = roster;
@@ -391,6 +393,7 @@ namespace Wotr.Client
             {
                 var chip = new VisualElement { name = "observer-" + observer.Name };
                 chip.AddToClassList("waiting-observer");
+                chip.Add(AvatarImage.Create(AvatarImage.Tiny, observer.Avatar));
                 var label = new Label(observer.IsHost ? observer.Name + " · Host" : observer.Name) { pickingMode = PickingMode.Ignore, enableRichText = false };
                 label.AddToClassList("waiting-observer-name");
                 chip.Add(label);

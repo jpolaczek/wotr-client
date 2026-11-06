@@ -3,7 +3,7 @@
 
 **The mandatory UI-73–UI-80 model:** [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md) separates non-interactive information on hover/focus from the panel opened by clicking or Enter/Space. The map area on the hover only stands out; the region opens by clicking. The legal end click/drop continues to perform a step. The map covers the screen and has the edge pan; figure moves readably and Fellowship/Hunt have a common layout. The U01–U17 below are current requirements; the clearly marked descriptions of historical implementations and results are not acceptance of this version. The status of implementation defines the register.
 
-Specification accepted 2026-10-06 for UI-14–UI-24, developed by the subsequent tasks UI. The document itself does not mean finished runtime; status and evidence are in Register. Full decision coverage: [catalog](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/ui/interaction-inventory.json), attempts: [SCENARIOS](SCENARIOS.md).
+Specification accepted 2026-10-06 for UI-14–UI-24, developed by the subsequent tasks UI. The document itself does not mean finished runtime; status and evidence are in Register. Full decision coverage: [catalog](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/ui/interaction-inventory.json), attempts: [SCENARIOS](SCENARIOS.md).
 
 <a id="u01--cel-i-układ"></a>
 ## U01 — Objective and arrangement
@@ -4808,3 +4808,12 @@ Playtest (owner's checklist):
 - [ ] Open My games. Expect: two tabs, In progress and Finished, with In progress chosen.
 - [ ] Finish a game, or have one finished while you are away. Expect: a number on the Finished tab and on My games; the tab lists the game with Victory or
   Defeat, and a click opens its end screen; afterwards the number is gone.
+
+<a id="ranked-play--rank-01-spec"></a>
+## Ranked play — R35, planned (2026-11-05)
+
+The owner adds a ranked mode: Find game searches for an opponent, the server starts the game at once, every decision
+runs a clock, a player may pause three times, leaving concedes, and the result changes a per-account rating shown on a
+Leaderboards page. It is planned, not implemented (UI-497–UI-504). The interface is in [RANKED_UX](RANKED_UX.md); the
+rules are in `wotr-server:docs/RANKED_PLAY.md`. Two exceptions to rules above: the move clock stands in the top bar only
+in ranked games, and its warning is the one sound reminder.

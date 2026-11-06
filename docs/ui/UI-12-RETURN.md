@@ -4,7 +4,7 @@
 <a id="kontrakt-i-plan-przed-implementacją"></a>
 ## Contract and plan before implementation
 
-R05/R07/R10/R13/R21; S09/S13/S20–S22. We use the received endpoints [T35](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/server/T35-CORRESPONDENCE.md), the existing UI-10 revision gate, the draft reconcilization and the private UI-11 policy. We do not change the rules of the game.
+R05/R07/R10/R13/R21; S09/S13/S20–S22. We use the received endpoints [T35](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/server/T35-CORRESPONDENCE.md), the existing UI-10 revision gate, the draft reconcilization and the private UI-11 policy. We do not change the rules of the game.
 
 1. The list of games shows the opponent, the page, the short decision context, the status of Your
    decision/Waiting/result and the symbol of the new changes. Filters and pages are clickable.
@@ -104,3 +104,23 @@ Final Renew `scripts/test-client.sh -testFilter 'MovementNetworkTests;ReturnReco
 The revised modules: Application (ClientFlow, LobbyBrowser, MatchSession, MatchSeenTracker, decision controllers), Persistence, snapshot/session draft, UI/Rooms, tray, Games button and styles. Tests separate local I/O, HTTP/WS/PG, fixture entries, restart process and layout. Documents of contracts, architecture, UX, scripts and TESTING are up-to-date; the structure and validation of the register is checked. There are no new rules or gate source.
 
 Next stage: UI-13 — measurements and availability of desktop. The user 2026-10-06 confirmed the absence of Windows environment and recommended to prepare a build with the open record of the unexecuted Windows test. We do not count runtime Windows or gameplay between platforms based on macOS automation. Manual user attempts are still postponed. The compatibility of the receipt between versions remains the open, already planned T37 range.
+
+<a id="ranked-policy--ui-504"></a>
+## The ranked policy — UI-504 (2026-11-05)
+
+A ranked game's clock keeps running through a lost connection, so its board follows a stricter policy
+(`ConnectionPolicy.Ranked`) from the first view that shows a clock. Normal, test and observer boards keep today's
+values (`ConnectionPolicy.Standard`).
+
+| | Standard | Ranked |
+|---|---|---|
+| No message from the server | waits | the socket ends after 8 s |
+| Retry | backs off from 1 s to 15 s | every second, with jitter |
+| One attempt | the HTTP client's 15 s | 5 s, commands too |
+| `Retry-After` | up to 60 s | up to 5 s |
+| Heartbeat to the server | none | a frame every 2 s |
+
+The rest of this document holds in a ranked game: the draft and the map stay usable offline, commit is disabled, and an
+uncertain command is recovered through its receipt, so it applies exactly once. A view read before the socket returns is
+applied at once with no presentation of the steps missed, and the action log lists them. A required update waits for the
+end of the game (RANK-10).

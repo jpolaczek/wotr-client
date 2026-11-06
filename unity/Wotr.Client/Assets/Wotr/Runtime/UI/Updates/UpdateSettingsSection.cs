@@ -60,7 +60,10 @@ namespace Wotr.Client
             Root.Add(confirmation);
         }
 
-        public void Render(UpdateSnapshot update, string ownVersion, bool exiting, string exitError)
+        public const string RankedHolds = "Finish your ranked game first: restarting now would lose it.";
+
+        // UI-501: the restart is not offered during an unfinished ranked game.
+        public void Render(UpdateSnapshot update, string ownVersion, bool exiting, string exitError, bool rankedActive = false)
         {
             var withdrawn = update.Plan != null && update.Plan.RepairOffer == null && update.Plan.Mode != UpdateMode.ServerBehind;
             status.text = exitError.Length > 0 ? exitError : UpdateTexts.Status(update) +
@@ -77,10 +80,12 @@ namespace Wotr.Client
                 Primary(update.Repair ? "Restart and repair" : "Restart and update", () => Install?.Invoke());
             else
                 Primary(null, null);
-            primary.SetEnabled(!busy);
-            repair.SetEnabled(!busy && update.CanInstall && !withdrawn && update.Plan?.RepairOffer != null &&
+            var restartHeld = rankedActive && update.Status == UpdateStatus.Ready;
+            primary.SetEnabled(!busy && !restartHeld);
+            primary.tooltip = restartHeld ? RankedHolds : "";
+            repair.SetEnabled(!busy && !rankedActive && update.CanInstall && !withdrawn && update.Plan?.RepairOffer != null &&
                 update.Status != UpdateStatus.Downloading);
-            repair.tooltip = !update.CanInstall ? "This copy was not installed by the game's installer. Install it from the game page."
+            repair.tooltip = rankedActive ? RankedHolds : !update.CanInstall ? "This copy was not installed by the game's installer. Install it from the game page."
                 : withdrawn ? "This version was withdrawn. Update to the newest version instead."
                 : "Downloads this version again and reinstalls it. Settings and saved games stay.";
             notesVersion = update.Repair ? "" : update.Version;

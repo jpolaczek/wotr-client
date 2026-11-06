@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -14,10 +15,16 @@ namespace Wotr.Client
     public sealed class StageRibbon
     {
         public const double GlideSeconds = .35;
+        private const string ClickableClass = "stage-clickable";
+        private const string PreviewedClass = "previewed-stage";
         private const float MarkerLeft = -5;
         private const float MarkerTop = -1;
         private readonly string prefix;
         private readonly List<VisualElement> stages = new List<VisualElement>();
+        private readonly List<string> titles = new List<string>();
+        private bool clickable;
+        private Func<int, bool> reachable = _ => false;
+        private int previewed = -1;
         private string shape = "";
         private string scope = "";
         private int current = -1;
@@ -30,6 +37,19 @@ namespace Wotr.Client
         private IVisualElementScheduledItem glide;
         public VisualElement Root { get; } = BoardScreen.Row("battle-stages");
         public VisualElement Marker { get; } = new VisualElement { name = "stage-glide", pickingMode = PickingMode.Ignore };
+        // UI-509: a stage already reached, clicked.
+        public event Action<int> StageClicked;
+
+        // UI-509: its stages take clicks from here on; a ribbon left alone stays informational.
+        public bool Clickable
+        {
+            get => clickable;
+            set
+            {
+                clickable = value;
+                shape = "";
+            }
+        }
 
         public StageRibbon(string name, string prefix)
         {
@@ -61,7 +81,36 @@ namespace Wotr.Client
                 stages[i].EnableInClassList("current-stage", i == index);
             current = index;
             Root.tooltip = tooltip;
+            ApplyOffer();
             Place();
+        }
+
+        // UI-509: which stages take a click, and which one a preview shows.
+        public void Offer(Func<int, bool> reachable, int previewed)
+        {
+            this.reachable = reachable;
+            this.previewed = previewed;
+            ApplyOffer();
+        }
+
+        private void ApplyOffer()
+        {
+            if (!clickable)
+                return;
+            for (var i = 0; i < stages.Count; i++)
+            {
+                var open = reachable(i);
+                stages[i].SetEnabled(open);
+                stages[i].EnableInClassList(PreviewedClass, i == previewed);
+                stages[i].tooltip = titles[i] + (open ? " · See this stage as it stood" : " · Not reached yet");
+            }
+        }
+
+        private void MakeClickable(VisualElement stage, int index)
+        {
+            stage.pickingMode = PickingMode.Position;
+            stage.AddToClassList(ClickableClass);
+            ObjectPress.Register(stage, () => StageClicked?.Invoke(index));
         }
 
         private void Build(IReadOnlyList<(string Key, string Title)> list, string icons)
@@ -69,6 +118,7 @@ namespace Wotr.Client
             foreach (var stage in stages)
                 stage.RemoveFromHierarchy();
             stages.Clear();
+            titles.Clear();
             left = null;
             placed = -1;
             foreach (var (key, title) in list)
@@ -82,8 +132,11 @@ namespace Wotr.Client
                 stage.Add(new Label(title) { pickingMode = PickingMode.Ignore, enableRichText = false });
                 // A stage that moves inside an unchanged row (its label laid out late) moves the marker with it.
                 stage.RegisterCallback<GeometryChangedEvent>(_ => Place());
+                if (clickable)
+                    MakeClickable(stage, stages.Count);
                 Root.Add(stage);
                 stages.Add(stage);
+                titles.Add(title);
             }
         }
 
@@ -101,7 +154,8 @@ namespace Wotr.Client
             if (stage.width <= 0 || float.IsNaN(stage.x))
                 return;
             Marker.style.display = DisplayStyle.Flex;
-            Marker.style.top = stage.y + MarkerTop;
+            // A clickable stage is taller than its row, for its hit area, and stands centred on it.
+            Marker.style.top = stage.y + (stage.height - Root.contentRect.height) / 2 + MarkerTop;
             var to = stage.x + MarkerLeft;
             var same = placed == current;
             placed = current;

@@ -22,24 +22,24 @@ From MENU-28 host addresses are not in git (`ServerConfiguration`, `ClientEnviro
 - In CI workflow installers save `.env` from the variable repository.
 - `PlayerPrefs` "wotr.server" is not used. Tests indicate your server by `ServerConfiguration.Use`.
 
-The menu shows open games and My games and Host a game, Join by code, Settings and Sign out; screen layout from MENU-11 describes the section “ Menu layout — MENU-11 Public means visibility for logged users of this server, without automatic matchmaking. The list refreshes every 5 s, waiting room what 2 p. Requests are cancelled when changing the screen. From MENU-09 lists contain more rows and scroll without filters All/Your decision/Waiting/Finished and without Previous/Next. Further pages API load after scrolling to the end; refresh includes the loaded part, retains rows and position. Another page without scrolling only loads the list shorter than the view, evaluated after the new rows are placed ( DIST-01 Field Game code and Join by code stand by MENU-11 in column action One list error does not hide the others. Back at 404 returns to the menu. Source of this product adjustment: user request 2026-10-12 .
+The menu shows open games and My games and Host a game, Join by code, Settings and Sign out; screen layout from MENU-11 describes the section “ Menu layout — MENU-11 Public means visibility for logged users of this server, without automatic matchmaking. Ranked play (R35, owner 2026-11-05) adds a separate search, Find game, which pairs players automatically; open games are unchanged ([RANKED_UX](RANKED_UX.md)). The list refreshes every 5 s, waiting room what 2 p. Requests are cancelled when changing the screen. From MENU-09 lists contain more rows and scroll without filters All/Your decision/Waiting/Finished and without Previous/Next. Further pages API load after scrolling to the end; refresh includes the loaded part, retains rows and position. Another page without scrolling only loads the list shorter than the view, evaluated after the new rows are placed ( DIST-01 Field Game code and Join by code stand by MENU-11 in column action One list error does not hide the others. Back at 404 returns to the menu. Source of this product adjustment: user request 2026-10-12 .
 
 Host game: name (default {username}'s game, 1–64 characters after trim, no controls), Public/Private (default Public), Free Peoples/Shadow (default Free Peoples). A new table starts as the base game with two seats; since UI-263 (2026-10-19) its host chooses the expansions and variants in the waiting room ([WAITING_ROOM_UX](WAITING_ROOM_UX.md#rules-strip--ui-263-2026-10-19)), and the server offers only the released modules (wotr-server EXP-01). Name/widocznoity/page are constant since creation. The public line opens and takes a free seat with one click.
 
 Private room does not enter the public list. Host public and private room generates/copy random code; at the same time, one code is active, generating is impotent. Joining a member repeated after losing the reply does not take second place. Upon the guest's departure, the code is invalidated; the host can generate a new one. Start/close sizing prevents new attachments. The code never goes to public DTO.
 
-Both players set/remove Ready for the current version. Only host can start a new game. Return before start: the guest slows down the place and resets both acceptances; host closes the room. The disconnect is not an exit. The join/leave/start races are settled under one room block. If the start wins, the exit retains the participants and saves. Each started game allows you to continue by correspondence and return by My games without playing the decision.
+Both players set/remove Ready for the current version. Only host can start a new game. Return before start: the guest slows down the place and resets both acceptances; host closes the room. The disconnect is not an exit. The join/leave/start races are settled under one room block. If the start wins, the exit retains the participants and saves. Each started game allows you to continue by correspondence and return by My games without playing the decision. A ranked game (R35) is the exception: it is live, a disconnect is still not an exit but its clock keeps running, and it is left only by conceding ([RANKED_UX](RANKED_UX.md)).
 
 <a id="układ-menu--menu-11-2026-10-15"></a>
 ## Menu layout — MENU-11 (2026-10-15)
 
-Source: User application from 2026-10-15 — “very simple window” with public games and information about who hosts; right-hand button “my games” with a list of games started; menu is to have design, not look like “trast tabs and buttons thrown together on poop”. User decision of that day: public games are open rooms on our server, visible to all accounts (R04), without public matchmaking.
+Source: User application from 2026-10-15 — “very simple window” with public games and information about who hosts; right-hand button “my games” with a list of games started; menu is to have design, not look like “trast tabs and buttons thrown together on poop”. User decision of that day: public games are open rooms on our server, visible to all accounts (R04), without public matchmaking. The owner's decision of 2026-11-05 (R35) adds ranked matchmaking as a separate search; open games keep this rule.
 
 The screen (`MainMenuScreen`) has three layers:
 
 - background**: dim map (`MapCanvas/terrain`), without interaction;
 - **header**: ‘WAR OF THE RING’ in Cinzel and ‘Signed in as {username}’;
-- **Body** of constant size 980×540, (reduces only on the screen that does not accommodate it):
+- **Body** of constant size 980×600 (540 until the compact menu of UI-470's line; `Frontend.uss` has held 600 since), reduced only on a screen that does not accommodate it:
   - **window** (`menu-window`; since UI-470 the thin `frontend/card` with the page title centred over
     `frontend/divider` and the Refresh button at the header's right end; formerly `frames/panel` and
     `frames/panel-header`);
@@ -368,6 +368,9 @@ The wait room has a main menu layout: a window with two player places, an invita
 
 The user request from 2026-10-16: “we withdraw the delete game button from the game menu from the map. games are to be changed to exit match. exiting the game does not remove it, exiting the empty host of the game that has not started, removes this room”.
 
+A ranked game (R35, owner 2026-11-05) is the exception to this menu: Exit match becomes Concede and Quit game warns that
+it concedes, both after a confirmation; deleting the game is refused by the server ([RANKED_UX](RANKED_UX.md)).
+
 - The board Menu: Resume, Victory, Settings, Exit match, Quit game. “Exit match” (`back-to-games`)
   saves draft and returns to the main menu; the batch stays on the server and on the list “My
   games”. There is no longer a button “Delete game”, its question windows or `MatchDeletion` on the
@@ -426,7 +429,7 @@ the whole selection); their tooltips leave out Ready. The client then configures
 <a id="logowanie-bez-rejestracji--auth-03-2026-10-16"></a>
 ## Logging without registration — AUTH-03 (2026-10-16)
 
-Decision [D16](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/DECISIONS.md): an account is set up on the game page, the client only opens it. `GatewayScreen`:
+Decision [D16](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/DECISIONS.md): an account is set up on the game page, the client only opens it. `GatewayScreen`:
 - one `Account name` (`auth-username`) field and password; the client checks that the entry is a
   valid account name (an email address gets "sign in with your account name, not the email address"),
   and the server finds the account by name only (AUTH-05, 2026-10-17);
@@ -510,6 +513,8 @@ The damaged file is a row “Damaged play · ...” with a reason; it only works
   Or the reason for refusal. An empty library says, how to add replay.
 - The login screen has “Replays” (`auth-replays`): the same page in the menu frame
   (`replay-library-screen`) from “Back” to login. No account, server or update required.
+- The login screen has “Quit game” (`auth-quit`, UI-507, owner, 2026-11-06), third in the row after Settings and Replays. It closes
+  the game at once: before signing in there is no game and no session to lose, so unlike the main menu's it asks nothing.
 - The “Play” opens the player (UX_SPEC, REPLAY-05). “Exit match” in the board menu returns to the
   library from which the player came (menu or screen before logging in), with the list scrolling
   saved.
@@ -607,3 +612,20 @@ each game with Victory or Defeat and how it ended, and a click opens it on its e
 count towards the badge on My games, so the result reaches a player who opens the menu on another page. In progress stays the first tab, and its rows and
 rooms are unchanged. Test: `MainMenuLayoutTests` (four layouts, `ui496-finished-*.png`), and `BoardMenuNetworkTests`, `ReturnListTests` and
 `InGameContextNetworkTests` open their finished games through the tab.
+
+<a id="avatars--avatar-01"></a>
+## Avatars — AVATAR-01 (owner, 2026-11-05)
+
+A small picture stands to the left of a player's name: in lobby chat, the online list, challenges, the open games list (the
+host), My games rows (the opponent), the signed-in line (one's own) and the Find game window (one's own, with the rating).
+A row keeps its height: where width is tight the avatar takes 16 px and the name truncates, with its full text in the
+tooltip. The avatar is chosen only in the browser: Settings has an Account page button that opens it in the system browser.
+The default is the Eye or the Ring, at random.
+
+Built in UI-505. The sizes: 16 px in lobby chat, the online list, an open game's host line, a My games detail line and the
+signed-in line; 20 px on a My games heading; 32 px on the challenge tab and beside one's rating in Find game. A picture and its
+name stand side by side in a small row (`AvatarImage.Line`), never one inside the other: UI Toolkit does not measure the text of
+an element with children, so a picture inside a label collapses a label sized by its text, and the name disappears. A change
+made in the browser reaches the signed-in line and the lists with the menu's next refresh (`GET /api/auth/me` for one's own).
+An unknown identifier, from a newer server, shows the Eye; an empty one names nobody and shows nothing, and the name then stands
+where the picture would.

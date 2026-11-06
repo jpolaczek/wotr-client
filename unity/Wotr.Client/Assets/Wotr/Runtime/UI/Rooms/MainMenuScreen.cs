@@ -33,6 +33,13 @@ namespace Wotr.Client
         private int unseenResults;
         private readonly HostGameForm host;
         private readonly DemoStartPage demo = new DemoStartPage();
+        // UI-497: the ranked search's page; opening it asks the flow for the released modules and the rating.
+        private readonly FindGameForm find = new FindGameForm();
+        public event Action FindOpened;
+        // UI-503: the ranked top 25; opening it asks the flow to read it.
+        public LeaderboardPage Leaderboards { get; } = new LeaderboardPage();
+        public event Action LeaderboardsOpened;
+        private Button showLeaderboards;
         private readonly VisualElement lists = new VisualElement();
         private readonly VisualElement publicRooms = new VisualElement();
         private readonly Dictionary<string, PublicRoomRow> publicRows = new Dictionary<string, PublicRoomRow>();
@@ -74,8 +81,9 @@ namespace Wotr.Client
         private Button showReplays;
         // DIST-17: the glow and note of an available update on Settings.
         private SettingsUpdateHint updateHint;
+        private VisualElement ownAvatar;
 
-        public MainMenuScreen(string username)
+        public MainMenuScreen(string username, string avatar = "")
         {
             Root.name = "main-menu";
             FrontendTheme.Apply(Root);
@@ -84,7 +92,7 @@ namespace Wotr.Client
             var page = Ignored("menu-page");
             page.pickingMode = PickingMode.Position;
             Root.Add(page);
-            page.Add(Masthead(username));
+            page.Add(Masthead(username, avatar));
             var body = new VisualElement();
             body.AddToClassList("menu-body");
             page.Add(body);
@@ -104,6 +112,11 @@ namespace Wotr.Client
             demo.Back += ShowPublicGames;
             demo.Root.style.display = DisplayStyle.None;
             panel.Add(demo.Root);
+            find.Back += ShowPublicGames;
+            find.Root.style.display = DisplayStyle.None;
+            panel.Add(find.Root);
+            Leaderboards.Root.style.display = DisplayStyle.None;
+            panel.Add(Leaderboards.Root);
             testScenarios.Start += id => StartScenario?.Invoke(id);
             testScenarios.Back += ShowPublicGames;
             testScenarios.Root.style.display = DisplayStyle.None;
@@ -114,6 +127,8 @@ namespace Wotr.Client
             showMine = Action("show-my-games", "My games", ShowMyGames);
             showReplays = Action("show-replays", "Replays", ShowReplays);
             showReplays.tooltip = "Watch saved games again, and import or export replay files.";
+            showLeaderboards = Action("show-leaderboards", "Leaderboards", ShowLeaderboards);
+            showLeaderboards.tooltip = "The 25 highest ranked players, and your own place.";
             myTurns.AddToClassList("menu-action-badge");
             showMine.Add(myTurns);
             ShowTurns(0);
@@ -128,15 +143,19 @@ namespace Wotr.Client
             ShowPublicGames();
         }
 
-        private static VisualElement Masthead(string username)
+        // UI-505: a change made in the browser reaches this line with the menu's next refresh.
+        public void ShowOwnAvatar(string avatar) => AvatarImage.Show(ownAvatar, avatar);
+
+        private VisualElement Masthead(string username, string avatar)
         {
+            ownAvatar = AvatarImage.Create(AvatarImage.Tiny, avatar);
             var masthead = Ignored("menu-masthead");
             var title = new Label("WAR OF THE RING") { name = "menu-title", pickingMode = PickingMode.Ignore };
             title.AddToClassList("menu-title");
-            var player = new Label("Signed in as " + username) { name = "menu-player", pickingMode = PickingMode.Ignore };
-            player.AddToClassList("menu-player");
+            var ownName = new Label("Signed in as " + username) { name = "menu-player", pickingMode = PickingMode.Ignore };
+            ownName.AddToClassList("menu-player");
             masthead.Add(title);
-            masthead.Add(player);
+            masthead.Add(AvatarImage.Line(ownName, ownAvatar));
             return masthead;
         }
 
@@ -196,6 +215,8 @@ namespace Wotr.Client
             column.Add(showPublic);
             column.Add(showMine);
             column.Add(showReplays);
+            column.Add(Action("find-game", "Find game", ShowFindGame));
+            column.Add(showLeaderboards);
             column.Add(Action("host-game", "Host a game", ShowHostForm));
             column.Add(Action("menu-demo", "Demo vs CPU", ShowDemo));
             column.Add(JoinBox());
@@ -303,6 +324,9 @@ namespace Wotr.Client
             games.style.display = shown == games ? DisplayStyle.Flex : DisplayStyle.None;
             host.Root.style.display = shown == host.Root ? DisplayStyle.Flex : DisplayStyle.None;
             demo.Root.style.display = shown == demo.Root ? DisplayStyle.Flex : DisplayStyle.None;
+            find.Root.style.display = shown == find.Root ? DisplayStyle.Flex : DisplayStyle.None;
+            Leaderboards.Root.style.display = shown == Leaderboards.Root ? DisplayStyle.Flex : DisplayStyle.None;
+            showLeaderboards.EnableInClassList("selected", shown == Leaderboards.Root);
             testScenarios.Root.style.display = shown == testScenarios.Root ? DisplayStyle.Flex : DisplayStyle.None;
             Replays.Root.style.display = shown == Replays.Root ? DisplayStyle.Flex : DisplayStyle.None;
             showPublic.EnableInClassList("selected", shown == tables);
@@ -327,6 +351,32 @@ namespace Wotr.Client
         {
             ShowPage("Demo vs CPU", demo.Root);
             DemoOpened?.Invoke();
+        }
+
+        private void ShowFindGame()
+        {
+            find.Reset();
+            ShowPage("Find game", find.Root);
+            FindOpened?.Invoke();
+        }
+
+        public FindGameForm FindGame => find;
+
+        public bool LeaderboardsShown => Leaderboards.Root.style.display.value == DisplayStyle.Flex;
+
+        private void ShowLeaderboards()
+        {
+            ShowPage("Leaderboards", Leaderboards.Root);
+            LeaderboardsOpened?.Invoke();
+        }
+
+        // UI-498: while a search runs, only its Cancel search responds; the menu's other actions are disabled, not hidden.
+        public void ShowSearching(bool value)
+        {
+            Root.Q("menu-actions").SetEnabled(!value);
+            Root.Q<Button>("refresh-games").SetEnabled(!value);
+            Challenge.Root.SetEnabled(!value);
+            find.ShowSearching(value);
         }
 
         public DemoStartPage DemoPage => demo;

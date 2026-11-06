@@ -57,7 +57,10 @@ namespace Wotr.Client
             }
             flow = new ClientFlow(ui.Content, windows: ui.Windows, sounds: ui.Sounds);
             flow.InterfaceRequested += ui.Open;
+            ui.Settings.AccountPageRequested += () => Application.OpenURL(GatewayScreen.AccountPage(ServerConfiguration.Address, ""));
             updates = UpdateController.Start(ui, flow);
+            // UI-501: a platform that lets the game answer its window's close asks as Quit game does in a ranked game.
+            Application.wantsToQuit += flow.AllowQuit;
         }
 
         // MENU-12 applies the saved window mode at start (Fullscreen by default, a maximized window on macOS), which would
@@ -117,6 +120,7 @@ namespace Wotr.Client
         {
             updates?.Dispose();
             updates = null;
+            ReleaseWindowClose();
             flow?.Dispose();
             flow = null;
             ui?.Dispose();
@@ -126,9 +130,16 @@ namespace Wotr.Client
             root.Add(BoardScreen.Root);
             BoardScreen.ShowFixture();
         }
+        private void ReleaseWindowClose()
+        {
+            if (flow != null)
+                Application.wantsToQuit -= flow.AllowQuit;
+        }
+
         private void OnDestroy()
         {
             updates?.Dispose();
+            ReleaseWindowClose();
             flow?.Dispose();
             ui?.Dispose();
             instance?.Dispose();

@@ -18,7 +18,11 @@ namespace Wotr.Client
         Victory,
         Defeat,
         // AUDIO-12: a nation's token slides on the Politics track.
-        PoliticsMoved
+        PoliticsMoved,
+        // UI-499: the move clock's warning in a ranked game, to its owner, once per decision.
+        ClockWarning,
+        // Owner, 2026-11-06: a ranked search found a game. Low and soft, as the decision alert was too sharp for it.
+        MatchFound
     }
 
     public enum SoundChannel
@@ -46,6 +50,8 @@ namespace Wotr.Client
             [SoundCue.DecisionRequired] = 8,
             [SoundCue.BattleStarted] = 9,
             [SoundCue.ActionFailed] = 10,
+            [SoundCue.ClockWarning] = 10,
+            [SoundCue.MatchFound] = 8,
             [SoundCue.Victory] = 11,
             [SoundCue.Defeat] = 11
         };
@@ -65,6 +71,6 @@ namespace Wotr.Client
 
         // Without focus only a new decision and the end of the open game may sound (AUDIO_UX, Settings and background).
         public static bool HeardInBackground(SoundCue cue) =>
-            cue is SoundCue.DecisionRequired or SoundCue.Victory or SoundCue.Defeat;
+            cue is SoundCue.DecisionRequired or SoundCue.ClockWarning or SoundCue.MatchFound or SoundCue.Victory or SoundCue.Defeat;
     }
 }

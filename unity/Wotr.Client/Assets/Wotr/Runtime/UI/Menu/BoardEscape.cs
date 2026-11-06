@@ -125,6 +125,12 @@ namespace Wotr.Client
                 board.Menu.Close();
                 return;
             }
+            // UI-509: a look back at an earlier stage ends first, also while the Hunt window holds the decision.
+            if (board.Hunt.ShowsStage)
+            {
+                board.Hunt.EndStage();
+                return;
+            }
             var visible = windows.Where(w => !w.Root.ClassListContains("edge-permanent-panel") && !(w.Root == board.Hand && board.HandDrawer.Docked) &&
                 Visible(w.Root)).ToList();
             var window = visible.FirstOrDefault(w => w.Root == target || w.Root.Contains(target)) ??

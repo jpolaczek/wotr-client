@@ -7,7 +7,7 @@ The server, rules, Contracts, canonical content and central task registry live i
 [wotr-server](https://github.com/jpolaczek/wotr-server). Both are public open source from one
 fresh commit (D17); the earlier history (split from the `WotR` monorepo in DIST-03) stays in
 private archives. Boundaries and link conventions are documented in
-[REPOSITORY_SPLIT](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/release/REPOSITORY_SPLIT.md).
+[REPOSITORY_SPLIT](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/release/REPOSITORY_SPLIT.md).
 
 <a id="pierwsze-uruchomienie"></a>
 ## First launch

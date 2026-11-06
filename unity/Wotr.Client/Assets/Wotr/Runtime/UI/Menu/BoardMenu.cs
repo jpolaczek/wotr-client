@@ -6,7 +6,7 @@ namespace Wotr.Client
     public sealed class BoardMenu
     {
         // What the menu last asked the flow for; Retry repeats it.
-        private enum Leave { Games, Quit }
+        private enum Leave { Games, Quit, Concede, QuitAndConcede }
 
         public VisualElement Root { get; } = new VisualElement { name = "board-menu" };
         public VisualElement Panel { get; } = new VisualElement { name = "board-menu-panel" };
@@ -17,6 +17,11 @@ namespace Wotr.Client
         // MENU-14: a confirmed Quit game; the flow saves the recovery data first, like Games, and then closes the game.
         public event Action<bool> QuitRequested;
         public ConfirmationDialog Quit { get; } = ConfirmationDialog.Quit("This game stays on the server. Resume it from My games.");
+        // UI-501: in a ranked game Exit match is Concede and Quit game concedes; true when the game also quits.
+        public ConfirmationDialog ConcedeQuestion { get; } = ConfirmationDialog.Concede();
+        public ConfirmationDialog QuitAndConcedeQuestion { get; } = ConfirmationDialog.QuitAndConcede();
+        public event Action<bool> ConcedeRequested;
+        public const string ConcedeFailed = "The concession could not reach the server. You are still in the game.";
         public event Action SettingsRequested;
         public event Action VictoryRequested;
         private readonly Button resume;
@@ -27,6 +32,7 @@ namespace Wotr.Client
         private VisualElement returnFocus;
         private int outsidePointer = -1;
         private Leave leaving;
+        private bool ranked;
 
         public BoardMenu()
         {
@@ -40,17 +46,21 @@ namespace Wotr.Client
             Toggle.name = "open-board-menu";
             Toggle.AddToClassList("board-menu-toggle");
             // MENU-32: no Delete game here; Exit match (formerly Games) leaves the match on the server.
-            Toggle.tooltip = "Resume · Victory · Settings · Exit match · Quit game";
+            Toggle.tooltip = NormalTooltip;
             resume = Add("Resume", "board-menu-resume", Close);
             Add("Victory", "board-menu-victory", () => { Close(); VictoryRequested?.Invoke(); });
             Add("Settings", "open-interface", OpenSettings);
-            games = Add("Exit match", "back-to-games", () => RequestGames(false));
-            quit = Add("Quit game", "board-menu-quit", Quit.Open);
+            games = Add(ExitText, "back-to-games", ExitPressed);
+            quit = Add("Quit game", "board-menu-quit", QuitPressed);
             status.AddToClassList("board-menu-status");
             Panel.Add(status);
             retry = Add("Retry", "board-menu-retry", Retry);
             Quit.Confirmed += () => RequestQuit(false);
             Root.Add(Quit.Root);
+            ConcedeQuestion.Confirmed += () => RequestConcede(false);
+            Root.Add(ConcedeQuestion.Root);
+            QuitAndConcedeQuestion.Confirmed += () => RequestConcede(true);
+            Root.Add(QuitAndConcedeQuestion.Root);
             SetSaving(false);
             Root.RegisterCallback<PointerDownEvent>(OutsideDown, TrickleDown.TrickleDown);
             Root.RegisterCallback<PointerUpEvent>(OutsideUp, TrickleDown.TrickleDown);
@@ -67,6 +77,44 @@ namespace Wotr.Client
 
         // UI-169: the end-of-game screen's Main menu leaves the match by the same path as Games.
         public void LeaveToGames() => RequestGames(false);
+
+        // UI-501: a ranked game names what leaving costs; a finished one is an ordinary game again.
+        public void SetRanked(bool value)
+        {
+            ranked = value;
+            games.text = value ? "Concede" : ExitText;
+            Toggle.tooltip = value ? "Resume · Victory · Settings · Concede · Quit game" : NormalTooltip;
+        }
+
+        // The window's close asks the same question as Quit game.
+        public void AskToQuitAndConcede()
+        {
+            Open();
+            QuitAndConcedeQuestion.Open();
+        }
+
+        private void ExitPressed()
+        {
+            if (ranked)
+                ConcedeQuestion.Open();
+            else
+                RequestGames(false);
+        }
+
+        private void QuitPressed()
+        {
+            if (ranked)
+                QuitAndConcedeQuestion.Open();
+            else
+                Quit.Open();
+        }
+
+        private void RequestConcede(bool quitting)
+        {
+            leaving = quitting ? Leave.QuitAndConcede : Leave.Concede;
+            Request++;
+            ConcedeRequested?.Invoke(quitting);
+        }
 
         private void RequestGames(bool retry)
         {
@@ -87,6 +135,8 @@ namespace Wotr.Client
         {
             if (leaving == Leave.Quit)
                 RequestQuit(true);
+            else if (leaving is Leave.Concede or Leave.QuitAndConcede)
+                RequestConcede(leaving == Leave.QuitAndConcede);
             else
                 RequestGames(true);
         }
@@ -120,6 +170,8 @@ namespace Wotr.Client
                 return;
             Request++;
             Quit.Hide();
+            ConcedeQuestion.Hide();
+            QuitAndConcedeQuestion.Hide();
             Root.style.display = DisplayStyle.None;
             SetSaving(false);
             if (returnFocus?.panel != null && returnFocus.enabledInHierarchy && returnFocus.resolvedStyle.display != DisplayStyle.None)
@@ -128,9 +180,9 @@ namespace Wotr.Client
                 Toggle.Focus();
         }
 
-        public void SetSaving(bool saving, string error = "")
+        public void SetSaving(bool saving, string error = "", string progress = Progress)
         {
-            status.text = saving ? Progress : error;
+            status.text = saving ? progress : error;
             status.style.display = status.text.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
             games.SetEnabled(!saving);
             quit.SetEnabled(!saving);
@@ -139,14 +191,20 @@ namespace Wotr.Client
         }
 
         private const string Progress = "Saving recovery data…";
+        public const string Conceding = "Conceding…";
+        private const string ExitText = "Exit match";
+        private const string NormalTooltip = "Resume · Victory · Settings · Exit match · Quit game";
 
         // The question in front answers Escape before the menu (BoardEscape).
-        public ConfirmationDialog OpenQuestion => Quit.IsOpen ? Quit : null;
+        public ConfirmationDialog OpenQuestion => Quit.IsOpen ? Quit
+            : ConcedeQuestion.IsOpen ? ConcedeQuestion
+            : QuitAndConcedeQuestion.IsOpen ? QuitAndConcedeQuestion : null;
 
         private void OutsideDown(PointerDownEvent e)
         {
             var target = e.target as VisualElement;
-            if (e.button != 0 || Panel.Contains(target) || Inside(Quit, target))
+            if (e.button != 0 || Panel.Contains(target) || Inside(Quit, target) || Inside(ConcedeQuestion, target) ||
+                Inside(QuitAndConcedeQuestion, target))
                 return;
             outsidePointer = e.pointerId;
             Root.CapturePointer(e.pointerId);

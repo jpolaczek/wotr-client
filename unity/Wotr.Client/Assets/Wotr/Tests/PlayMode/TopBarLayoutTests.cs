@@ -16,6 +16,9 @@ namespace Wotr.PlayTests
 {
     public sealed class TopBarLayoutTests
     {
+        // Where the chat's icon stood before the pause.
+        private static Vector2 ChatPlace;
+
         // At a fractional panel scale an element's edges round to whole pixels: a 1-point hairline shows as one pixel or two.
         private const float PixelRounding = 1.2f;
 
@@ -48,6 +51,63 @@ namespace Wotr.PlayTests
                             CheckDice(client.Board, label);
                             CheckCounters(client.Board, label);
                             CheckArtwork(client.Board, label);
+                            // UI-499: a normal game's bar holds no clock, and takes no room for one.
+                            Assert.IsNull(client.Board.TopBar.Root.Q("move-clock"), label);
+                            var normal = Bounds(client.Board);
+                            var ranked = Ranked(views[key]);
+                            client.Apply(ranked);
+                            client.Board.ShowClock(ranked.Clock, ranked.You);
+                            for (var frame = 0; frame < 6; frame++)
+                                yield return null;
+                            LayoutTests.Save(target, $"ui499-topbar-{key}-{width}-{scale:0.00}.png");
+                            CheckBar(client.Board, label + " with the clock");
+                            CheckClock(client.Board, label);
+                            // UI-504: the words under the time move nothing else in the bar, and fit.
+                            var box = client.Board.TopBar.Clock.Box.worldBound;
+                            foreach (var words in new[] { TopBarClock.Reconnecting, TopBarClock.OpponentReconnecting })
+                            {
+                                if (words == TopBarClock.Reconnecting)
+                                    client.Board.TopBar.Clock.ShowConnected(false);
+                                else
+                                {
+                                    client.Board.TopBar.Clock.ShowConnected(true);
+                                    client.Board.TopBar.Clock.ShowOpponent(false);
+                                }
+                                for (var frame = 0; frame < 6; frame++)
+                                    yield return null;
+                                var status = client.Board.TopBar.Clock.Status;
+                                Assert.AreEqual(words, status.text, label);
+                                Assert.AreEqual(box, client.Board.TopBar.Clock.Box.worldBound, "The clock keeps its place and width. " + label);
+                                Inside(status, client.Board.TopBar.Clock.Box.worldBound, label);
+                                Inside(client.Board.TopBar.Clock.Root, client.Board.TopBar.Clock.Box.worldBound, label);
+                                var wide = status.MeasureTextSize(status.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
+                                Assert.GreaterOrEqual(client.Board.TopBar.Clock.Box.contentRect.width + 1, wide, "Its words are not cut. " + label);
+                                LayoutTests.Save(target, $"ui504-{(words == TopBarClock.Reconnecting ? "own" : "opponent")}-{key}-{width}-{scale:0.00}.png");
+                            }
+                            client.Board.TopBar.Clock.ShowOpponent(true);
+                            // UI-500: the banner under the bar, Resume inside it, and the chat clear of the veil.
+                            client.Board.GameChat.Available(true);
+                            for (var frame = 0; frame < 6; frame++)
+                                yield return null;
+                            ChatPlace = client.Board.GameChat.Icon.worldBound.position;
+                            ranked.Clock.Paused = true;
+                            ranked.Clock.PausedBy = TurnFlowOther(ranked.You);
+                            client.Board.ShowClock(ranked.Clock, ranked.You);
+                            for (var frame = 0; frame < 6; frame++)
+                                yield return null;
+                            LayoutTests.Save(target, $"ui500-paused-{key}-{width}-{scale:0.00}.png");
+                            CheckBar(client.Board, label + " paused");
+                            CheckPaused(client.Board, label);
+                            ranked.Clock.Paused = false;
+                            client.Board.ShowClock(null, ranked.You);
+                            for (var frame = 0; frame < 6; frame++)
+                                yield return null;
+                            Assert.That(client.Board.GameChat.Icon.worldBound.position.y, Is.EqualTo(ChatPlace.y).Within(1), "The chat comes back. " + label);
+                            client.Board.GameChat.Available(false);
+                            client.Apply(views[key]);
+                            for (var frame = 0; frame < 6; frame++)
+                                yield return null;
+                            CollectionAssert.AreEqual(normal, Bounds(client.Board), "Without its clock the bar is as it was. " + label);
                         }
                     }
                     finally
@@ -58,6 +118,93 @@ namespace Wotr.PlayTests
                         Object.Destroy(target);
                     }
                 }
+        }
+
+        // UI-499: past the warning the clock is red and pulses; reduced motion drops the pulse, not the colour.
+        [UnityTest]
+        public IEnumerator TheClockPulsesPastItsWarningAndReducedMotionKeepsOnlyTheColour()
+        {
+            var config = Environment.GetEnvironmentVariable("WOTR_CLIENT_TEST_CONFIG");
+            var file = Path.Combine(Path.GetDirectoryName(config), "ui09-resources.json");
+            var views = JsonConvert.DeserializeObject<Dictionary<string, PlayerView>>(File.ReadAllText(file));
+            using var client = new MountedMatchClient("http://localhost", "topbar-clock");
+            var ranked = Ranked(views["unrolled-FreePeoples"]);
+            ranked.Clock.RemainingMilliseconds = 60000;
+            ranked.Clock.WarningMilliseconds = 60000;
+            client.Apply(ranked);
+            client.Board.ShowClock(ranked.Clock, ranked.You);
+            var clock = client.Board.TopBar.Root.Q<Label>("move-clock");
+            var lowest = 1f;
+            for (var wait = 0f; wait < 1.1f; wait += Time.unscaledDeltaTime)
+            {
+                lowest = Mathf.Min(lowest, clock.style.opacity.value);
+                yield return null;
+            }
+            Assert.Less(lowest, 0.9f, "It pulses.");
+            Assert.IsTrue(clock.ClassListContains(TopBarClock.WarningClass));
+
+            client.Interface.Preferences.SetReducedMotion(true);
+            yield return new WaitForSecondsRealtime(0.2f);
+            lowest = 1f;
+            for (var wait = 0f; wait < 1.1f; wait += Time.unscaledDeltaTime)
+            {
+                lowest = Mathf.Min(lowest, clock.style.opacity.value);
+                yield return null;
+            }
+            Assert.AreEqual(1f, lowest, "Reduced motion drops the pulse.");
+            Assert.IsTrue(clock.ClassListContains(TopBarClock.WarningClass), "It keeps the colour.");
+            client.Interface.Preferences.SetReducedMotion(false);
+        }
+
+        // The longest phase name and a clock past its warning, with the longest text it can read.
+        private static PlayerView Ranked(PlayerView view)
+        {
+            var ranked = JsonConvert.DeserializeObject<PlayerView>(JsonConvert.SerializeObject(view));
+            ranked.Phase = Enum.GetValues(typeof(GamePhase)).Cast<GamePhase>().OrderByDescending(phase => BoardScreen.PhaseName(phase).Length).First();
+            ranked.Clock = new MoveClockView
+            {
+                DecisionId = "layout", Owner = TurnFlowOther(view.You), RemainingMilliseconds = 8000, LimitMilliseconds = 300000, WarningMilliseconds = 10000
+            };
+            return ranked;
+        }
+
+        private static Side TurnFlowOther(Side side) => side == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
+
+        private static List<Rect> Bounds(BoardScreen board) =>
+            board.TopBar.Root.Children().Where(Visible).Select(child => child.worldBound).ToList();
+
+        private static void CheckClock(BoardScreen board, string label)
+        {
+            var clock = board.TopBar.Root.Q<Label>("move-clock");
+            Assert.IsNotNull(clock, label);
+            StringAssert.StartsWith("Opponent 0:0", clock.text, label);
+            var needed = clock.MeasureTextSize("Opponent 0:00", 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
+            Assert.GreaterOrEqual(clock.contentRect.width + 1, needed, "The clock's text is not cut. " + label);
+            Assert.IsTrue(clock.ClassListContains(TopBarClock.WarningClass), "Red past the warning, whoever hears the sound. " + label);
+        }
+
+        private static void CheckPaused(BoardScreen board, string label)
+        {
+            var banner = board.Root.Q("pause-banner");
+            Inside(banner, board.Root.Q("board-stage").worldBound, label);
+            Inside(board.Root.Q<Button>("pause-resume"), banner.worldBound, label);
+            Assert.AreEqual("Paused by your opponent", board.Root.Q<Label>("pause-banner-text").text, label);
+            Assert.IsFalse(board.TopBar.Clock.PauseButton.enabledInHierarchy, "No second pause during a pause. " + label);
+            Assert.Greater(board.TopBar.Clock.PauseButton.worldBound.height, 0, "Disabled, not hidden. " + label);
+            var panel = board.Root.panel;
+            var veil = board.Root.Q("pause-veil");
+            var surfaces = new Dictionary<string, VisualElement>
+            {
+                ["the map"] = board.Root.Q("board-stage"), ["the console"] = board.Console.Root, ["the hand"] = board.Hand,
+                ["the own dice"] = board.OwnDice, ["the Fellowship corner"] = board.Edges.Corner, ["the left rail"] = board.Nations.Root
+            };
+            foreach (var surface in surfaces)
+                Assert.AreSame(veil, panel.Pick(surface.Value.worldBound.center), $"The veil takes the clicks of {surface.Key}. {label}");
+            Assert.AreSame(board.GameChat.Icon, panel.Pick(board.GameChat.Icon.worldBound.center), "The chat stands above the veil. " + label);
+            Assert.AreNotSame(veil, panel.Pick(board.Menu.Toggle.worldBound.center), "The bar stays free, for the menu. " + label);
+            Assert.That(board.GameChat.Icon.worldBound.position.x, Is.EqualTo(ChatPlace.x).Within(1), "The chat does not move. " + label);
+            Assert.That(board.GameChat.Icon.worldBound.position.y, Is.EqualTo(ChatPlace.y).Within(1), "The chat does not move. " + label);
+            Assert.IsFalse(board.GameChat.Icon.worldBound.Overlaps(banner.worldBound), label);
         }
 
         private static void CheckBar(BoardScreen board, string label)

@@ -1,7 +1,7 @@
 <a id="klient-unity--budowanie-i-testy"></a>
 # Unity Client — Building and Testing
 
-Moved from `docs/DEVELOPMENT.md` monorepo at the repository division (DIST-03). The instructions for the backend, the database and implementation are in [DEVELOPMENT server](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/DEVELOPMENT.md). Before running Unity `scripts/unity.sh` downloads pinned with dependencies (`python3 scripts/bootstrap_deps.py`, description in [README](../README.md)).
+Moved from `docs/DEVELOPMENT.md` monorepo at the repository division (DIST-03). The instructions for the backend, the database and implementation are in [DEVELOPMENT server](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/DEVELOPMENT.md). Before running Unity `scripts/unity.sh` downloads pinned with dependencies (`python3 scripts/bootstrap_deps.py`, description in [README](../README.md)).
 
 For a clean contributor bootstrap, use `python3 scripts/bootstrap_deps.py fetch
 --anonymous --test` in a fresh checkout. The flag prevents the bootstrap from

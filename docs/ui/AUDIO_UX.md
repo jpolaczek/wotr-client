@@ -192,7 +192,7 @@ Each task provides tests to preserve its boundary. acceptance aggregate real-wor
 
 The slide slide moves nothing. Test sound plays ActionAccepted and after 0,3 s DecisionRequired, on the current levels. When the sliders sound is switched off, the background alerts and test are greyed out at their places. The change goes immediately to `SoundPolicy.Levels`, and the turn off of the video.
 - Background: `Application.focusChanged` sets `SoundPolicy.Focused` (also when minimizing; the game
-  starts with focus). The background filter with AUDIO-02 only passes DecisionRequired, Victory and
+  starts with focus). The background filter with AUDIO-02 only passes DecisionRequired, ClockWarning (UI-499), MatchFound (a ranked search found a game), Victory and
   Defeat, and the omitted events do not return after focus. `runInBackground` in ProjectSettings is
   already enabled, so the client can play these signals in the background.
 
@@ -287,7 +287,9 @@ One gesture gives one sound, not separately in the controller, parent and inspec
     priority), for the second throw;
   - a track pair with decision or end: both stages, then one signal (`GameSounds.Trailing`), without
     waiting the interface.
-- No reminders, no system notifications, no catch-up after the focus comes back.
+- No reminders, no system notifications, no catch-up after the focus comes back. One exception (R35, owner
+  2026-11-05): in a ranked game the move clock's `ClockWarning` sounds once per decision to its owner, 10 s before the
+  limit, also in the background ([RANKED_UX](RANKED_UX.md)).
 
 <a id="odbiór--audio-08-2026-10-15"></a>
 ## acceptance — AUDIO-08 (2026-10-15)

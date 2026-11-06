@@ -18,6 +18,13 @@ namespace Wotr.Client
 
         public static ConfirmationDialog Quit(string note) => new ConfirmationDialog("quit", "Quit War of the Ring?", note, "Quit");
 
+        // UI-501: leaving a ranked game is a named concession.
+        public static ConfirmationDialog Concede() => new ConfirmationDialog("concede", "Concede this game?",
+            "You lose the game and your rating follows. You cannot return to it.", "Concede");
+
+        public static ConfirmationDialog QuitAndConcede() => new ConfirmationDialog("quit-concede", "Quit and concede?",
+            "Leaving a ranked game concedes it: you lose the game and your rating follows.", "Concede");
+
         private ConfirmationDialog(string prefix, string title, string note, string confirmText)
         {
             Root.name = prefix + "-confirmation";

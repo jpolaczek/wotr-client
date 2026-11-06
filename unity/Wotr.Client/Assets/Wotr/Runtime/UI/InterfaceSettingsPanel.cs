@@ -9,6 +9,8 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement { name = "interface-settings" };
         public bool IsOpen => Root.style.display.value == DisplayStyle.Flex;
         public event Action Closed;
+        // UI-505: Account page, which opens the site's account page in the system browser (AVATAR-01 A4).
+        public event Action AccountPageRequested;
         private readonly InterfacePreferences preferences;
         private readonly Button normal;
         private readonly Button large;
@@ -76,6 +78,10 @@ namespace Wotr.Client
             var reset = BoardScreen.Button("Reset window positions", () => resetWindows?.Invoke());
             reset.name = "reset-window-layout";
             interfaceColumn.Add(reset);
+            var account = BoardScreen.Button("Account page", () => AccountPageRequested?.Invoke());
+            account.name = "open-account-page";
+            account.tooltip = "Choose your avatar on the game's site, in your browser.";
+            interfaceColumn.Add(account);
         }
 
         // DIST-07: a full-width section under the two columns (Updates).

@@ -19,6 +19,11 @@ namespace Wotr.Client
         private readonly Func<string, string, string, ILocalMatchStorage> localStorage;
         private readonly Action quit;
         private readonly SoundModule sounds;
+        private RankedSearchController rankedSearch;
+        private LeaderboardController leaderboards;
+        // UI-501: an open, unfinished ranked game holds the update's restart back.
+        public event Action RankedMatchChanged;
+        public bool RankedMatchActive => matchSession?.RankedActive == true;
         private MatchSession matchSession;
         // OBS-05: the live board of a game one watches; never at the same time as a player's match session.
         private ObserverSession observer;
@@ -70,7 +75,10 @@ namespace Wotr.Client
             this.localStorage = localStorage ?? ((server, account, match) => new LocalMatchFiles(this.storageRoot, server, account, match));
             api = authenticatedApi;
             if (api != null && api.AccountId.Length > 0)
+            {
                 Perform(ShowLobby);
+                _ = EnterActiveMatch();
+            }
             else
                 ShowLogin();
         }
@@ -93,6 +101,7 @@ namespace Wotr.Client
             root.Add(authScreen.Root);
             authScreen.InterfaceRequested += OpenInterface;
             authScreen.ReplaysRequested += () => ShowReplayLibrary();
+            authScreen.QuitRequested += quit;
             // AUTH-03/AUTH-05: the game only signs in, with the account name; accounts are made on the game's site.
             authScreen.Submitted += (login, password) => Perform(async () =>
             {
@@ -102,7 +111,41 @@ namespace Wotr.Client
                 await api.Login(login, password, screenLifetime.Token);
                 authScreen.ClearPassword();
                 await ShowLobby();
+                _ = EnterActiveMatch();
             });
+        }
+
+        // UI-501: a seat in an unfinished ranked game is where the player belongs, since its clock runs. The menu is already up
+        // and takes no longer for this: signing in never waits on the question, and a player without a seat never notices it.
+        private async Task EnterActiveMatch()
+        {
+            var menu = mainMenu;
+            var match = await ActiveRankedMatch();
+            if (match != null && !disposed && menu != null && mainMenu == menu)
+                Perform(() => ShowMatch(match));
+        }
+
+        private async Task<string> ActiveRankedMatch()
+        {
+            try
+            {
+                var search = await api.Get<RankedSearchView>(RankedSearchController.Route, screenLifetime.Token);
+                return search.Status == RankedSearchStatus.Matched ? search.MatchId : null;
+            }
+            catch (Exception error) when (error is ApiException or HttpRequestException or OperationCanceledException or ObjectDisposedException)
+            {
+                return null;
+            }
+        }
+
+        // UI-501: closing the window is leaving, so it asks as Quit game does. A lost connection is not leaving, and nothing
+        // could be conceded then: the window closes, and the clock decides.
+        public bool AllowQuit()
+        {
+            if (disposed || !RankedMatchActive || matchSession?.Connected != true)
+                return true;
+            Board.Menu.AskToQuitAndConcede();
+            return false;
         }
 
         // MENU-25: the main menu with a notice in its status line (a player removed from a room).
@@ -121,7 +164,7 @@ namespace Wotr.Client
         private Task OpenLobby(TestScenarioList.Place tests)
         {
             ChangeScreen();
-            var lobby = new MainMenuScreen(api.Username);
+            var lobby = new MainMenuScreen(api.Username, api.Avatar);
             lobby.ShowUpdate(updateNote);
             mainMenu = lobby;
             errorLabel = lobby.Status;
@@ -130,6 +173,9 @@ namespace Wotr.Client
             lobby.Create += request => Perform(async () => ShowRoom(await api.Post<RoomView>("api/rooms", request, screenLifetime.Token)));
             lobby.Demo += (side, configuration) => Perform(() => StartDemo(side, configuration));
             lobby.DemoOpened += () => _ = LoadDemoModules(lobby, screenLifetime.Token);
+            lobby.FindOpened += () => _ = LoadFindGame(lobby, screenLifetime.Token);
+            rankedSearch = new RankedSearchController(api, lobby, id => Perform(() => ShowMatch(id)), ErrorText, sounds);
+            leaderboards = new LeaderboardController(api, lobby);
             lobby.Join += (code, role) => Perform(async () => ShowRoom(await api.Post<RoomView>("api/rooms/join",
                 new JoinRoomRequest { Code = code, Role = role }, screenLifetime.Token)));
             lobby.JoinPublic += (id, role) => Perform(async () => ShowRoom(await api.Post<RoomView>(
@@ -185,6 +231,24 @@ namespace Wotr.Client
                 var offered = await api.Get<OfferedModulesView>("api/rooms/offered-modules", token);
                 if (!token.IsCancellationRequested)
                     lobby.ShowDemoModules(offered.Modules);
+            }
+            catch (ApiException) { }
+            catch (HttpRequestException) { }
+            catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+        }
+
+        // UI-497: the released modules and the rating of the Find game page. Without an answer the expansions stay Off, which
+        // the server accepts, and the rating stays blank.
+        private async Task LoadFindGame(MainMenuScreen lobby, CancellationToken token)
+        {
+            try
+            {
+                var offered = await api.Get<OfferedModulesView>("api/rooms/offered-modules", token);
+                if (!token.IsCancellationRequested)
+                    lobby.FindGame.Offer(offered.Modules);
+                var search = await api.Get<RankedSearchView>("api/ranked/queue", token);
+                if (!token.IsCancellationRequested)
+                    lobby.FindGame.ShowRating(search.Rating, search.Avatar);
             }
             catch (ApiException) { }
             catch (HttpRequestException) { }
@@ -413,6 +477,7 @@ namespace Wotr.Client
             {
                 board.Menu.GamesRequested += retry => RequestLeaveMatch(board, retry, false);
                 board.Menu.QuitRequested += retry => RequestLeaveMatch(board, retry, true);
+                board.Menu.ConcedeRequested += quitting => RequestConcede(board, quitting);
                 board.GameDeleted.MenuRequested += () => Perform(LeaveDeletedMatch);
             }, true);
 
@@ -444,6 +509,31 @@ namespace Wotr.Client
                 : null;
             cancellation.ThrowIfCancellationRequested();
             matchSession = new MatchSession(matchApi, matchId, board, persistence, sounds, Replays);
+            matchSession.RankedChanged += () => RankedMatchChanged?.Invoke();
+        }
+
+        // UI-501: the concession first, waiting for its answer. Without one the player stays in the game and is told so.
+        private async void RequestConcede(BoardScreen board, bool quitting)
+        {
+            var request = board.Menu.Request;
+            var session = matchSession;
+            board.Menu.SetSaving(true, progress: BoardMenu.Conceding);
+            try
+            {
+                await session.Concede();
+                if (disposed || Board != board)
+                    return;
+                if (quitting)
+                    await LeaveMatch(board, request, false, true);
+                else
+                    board.Menu.Close();
+            }
+            catch (OperationCanceledException) when (disposed || Board != board) { }
+            catch (Exception error) when (error is ApiException or HttpRequestException or OperationCanceledException)
+            {
+                if (!disposed && Board == board && board.Menu.Request == request)
+                    board.Menu.SetSaving(false, BoardMenu.ConcedeFailed);
+            }
         }
 
         private async void RequestLeaveMatch(BoardScreen board, bool retry, bool quitting)
@@ -612,6 +702,10 @@ namespace Wotr.Client
             screenLifetime.Dispose();
             screenLifetime = new CancellationTokenSource();
             CloseMatch();
+            rankedSearch?.Dispose();
+            rankedSearch = null;
+            leaderboards?.Dispose();
+            leaderboards = null;
             waitingRoom?.Dispose();
             waitingRoom = null;
             lobbyBrowser?.Dispose();
@@ -635,6 +729,8 @@ namespace Wotr.Client
             screenLifetime.Cancel();
             screenLifetime.Dispose();
             CloseMatch();
+            rankedSearch?.Dispose();
+            leaderboards?.Dispose();
             waitingRoom?.Dispose();
             waitingRoom = null;
             lobbyBrowser?.Dispose();
@@ -654,6 +750,7 @@ namespace Wotr.Client
             matchSession.Dispose(saveDraft);
             localWrites = matchSession.LocalWrites;
             matchSession = null;
+            RankedMatchChanged?.Invoke();
         }
     }
 }

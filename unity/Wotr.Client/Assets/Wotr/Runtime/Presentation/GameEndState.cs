@@ -28,7 +28,7 @@ namespace Wotr.Client
                 Winner = winner,
                 Won = !observed && winner == view.You,
                 Observed = observed,
-                Subtitle = BoardScreen.SideName(winner) + " win · " + Reason(view.Victory),
+                Subtitle = BoardScreen.SideName(winner) + " win · " + (observed ? Reason(view.Victory, winner) : Personal(view.Victory, winner == view.You) ?? Reason(view.Victory)),
                 Scene = SceneOf(observed ? winner : view.You, observed || winner == view.You),
                 Summary = Lines(view)
             };
@@ -39,8 +39,34 @@ namespace Wotr.Client
             VictoryCondition.RingDestroyed => "The Ring is destroyed",
             VictoryCondition.RingCorrupted => "The Ring-bearers are corrupted",
             VictoryCondition.ShadowMilitary or VictoryCondition.FreePeoplesMilitary => "Military victory",
+            VictoryCondition.Conceded => "Conceded",
+            VictoryCondition.TimedOut => "Out of time",
             _ => "The game is over"
         };
+
+        // UI-502: for someone who watched: the side that gave the game up is named.
+        public static string Reason(VictoryCondition? victory, Side winner)
+        {
+            var loser = winner == Side.FreePeoples ? "The Shadow" : "The Free Peoples";
+            return victory switch
+            {
+                VictoryCondition.Conceded => loser + " conceded",
+                VictoryCondition.TimedOut => loser + " ran out of time",
+                _ => Reason(victory)
+            };
+        }
+
+        // UI-502: each player reads their own ranked ending; null for an ending that is the same for both.
+        public static string Personal(VictoryCondition? victory, bool won) => victory switch
+        {
+            VictoryCondition.Conceded => won ? "Your opponent conceded" : "You conceded",
+            VictoryCondition.TimedOut => won ? "Your opponent ran out of time" : "You ran out of time",
+            _ => null
+        };
+
+        // The server's rounded numbers, which already add up.
+        public static string RatingLine(RankedResultView result) =>
+            "Rating " + result.RatingBefore + " → " + result.RatingAfter + " (" + (result.Change >= 0 ? "+" : "") + result.Change + ")";
 
         private static string SceneOf(Side side, bool won) =>
             (side == Side.FreePeoples ? "free" : "shadow") + (won ? "-victory" : "-defeat");

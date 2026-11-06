@@ -41,6 +41,7 @@ namespace Wotr.Client
         public string Token { get; private set; } = "";
         public string AccountId { get; private set; } = "";
         public string Username { get; private set; } = "";
+        public string Avatar { get; private set; } = "";
         public ClientBuildInfo Identity { get; }
 
         // DIST-07: a 409 refusal of this version (ClientUpdateRequired / ServerUpdateRequired) from any request, on
@@ -79,7 +80,11 @@ namespace Wotr.Client
             Token = session.Token;
             AccountId = session.AccountId;
             Username = session.Username;
+            Avatar = session.Avatar ?? "";
         }
+
+        // AVATAR-02: the avatar is chosen in the browser, so what this client shows for itself may change at any time.
+        public void AvatarSeen(string avatar) => Avatar = avatar ?? "";
 
         public async Task Logout(CancellationToken cancellation)
         {
@@ -87,13 +92,14 @@ namespace Wotr.Client
             {
                 await Send<object>("POST", "api/auth/logout", null, cancellation);
             }
-            finally { Token = AccountId = Username = ""; }
+            finally { Token = AccountId = Username = Avatar = ""; }
         }
 
         public Task<T> Get<T>(string path, CancellationToken cancellation) => Send<T>("GET", path, null, cancellation);
         public Task<T> Post<T>(string path, object body, CancellationToken cancellation) => Send<T>("POST", path, body, cancellation);
         public Task<T> Put<T>(string path, object body, CancellationToken cancellation) => Send<T>("PUT", path, body, cancellation);
         public Task Delete(string path, CancellationToken cancellation) => Send<object>("DELETE", path, null, cancellation);
+        public Task<T> Delete<T>(string path, CancellationToken cancellation) => Send<T>("DELETE", path, null, cancellation);
 
         // REPLAY-04: a file the server streams (a replay), copied into `target` as it arrives; errors as in Send.
         public async Task Download(string path, Stream target, CancellationToken cancellation)

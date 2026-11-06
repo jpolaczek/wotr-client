@@ -14,7 +14,7 @@ namespace Wotr.PlayTests
 {
     internal sealed class ReturnTestFixture
     {
-        public string Address, ReturnFreePeoplesUser, ReturnShadowUser, Password;
+        public string Address, ReturnFreePeoplesUser, ReturnShadowUser, Password, LeaderboardTopUser, LeaderboardLowUser;
         public Dictionary<string, string> ReturnMatches;
 
         public static ReturnTestFixture Load()

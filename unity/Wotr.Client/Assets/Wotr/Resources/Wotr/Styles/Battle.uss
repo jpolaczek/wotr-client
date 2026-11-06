@@ -652,3 +652,22 @@
    onto the next row. A definite width keeps the wrapped rows inside the frame (an auto width measures them unwrapped). */
 .regional-battle.event-loss-panel,
 .loss-planning .regional-battle.event-loss-panel { width: 460px; max-width: 95%; }
+
+/* UI-509: a stage already reached takes a click, in the Hunt window. Its hit area reaches 32 points, centred on its row, which keeps its
+   height. The stage a preview shows stands in gold; the gilt marker stays where the Hunt stands. Nothing in a recorded stage responds. */
+.battle-stage.stage-clickable { height: 32px; }
+.short-viewport .battle-stage.stage-clickable { height: 30px; }
+.battle-stage.stage-clickable:hover .unity-label { color: rgb(245, 212, 133); }
+.battle-stage.stage-clickable:hover .battle-stage-icon { opacity: 1; }
+.battle-stage.stage-clickable.pressed { translate: 0 1px; }
+.battle-stage.stage-clickable:disabled { opacity: 0.4; }
+.battle-stage.previewed-stage .unity-label {
+    padding: 0 5px;
+    border-radius: 3px;
+    background-color: rgba(232, 204, 130, 0.18);
+    color: rgb(245, 212, 133);
+    -unity-font-style: bold;
+}
+.battle-stage.previewed-stage .battle-stage-icon { opacity: 1; }
+.hunt-stage-blocker { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.hunt-panel .hunt-pager { flex-direction: row; align-items: center; flex-shrink: 0; margin: 0 4px; }

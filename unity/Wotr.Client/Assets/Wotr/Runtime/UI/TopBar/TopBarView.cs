@@ -1,4 +1,6 @@
+using System;
 using UnityEngine.UIElements;
+using Wotr.Contracts;
 
 namespace Wotr.Client
 {
@@ -18,9 +20,13 @@ namespace Wotr.Client
         public OpponentSummary Opponent { get; } = new OpponentSummary();
         // UI-263: the game's expansion crests after the phase, the variants in their tooltip.
         public VisualElement Crests { get; } = ExpansionCrests.Row("topbar-crests");
+        // UI-499: stands in the bar only in a ranked game; a normal game's bar never holds it.
+        public TopBarClock Clock { get; }
+        private readonly VisualElement divider = Divider();
 
-        public TopBarView(Label phase, VisualElement opponentDice, Label connection, Button menu)
+        public TopBarView(Label phase, VisualElement opponentDice, Label connection, Button menu, Func<bool> reducedMotion = null)
         {
+            Clock = new TopBarClock(reducedMotion ?? (() => false));
             Root.AddToClassList("topbar");
             // UI-98: the slim bar lies in the 26-point edge-pan band, so like the other HUD edges it pans
             // only on the outer rim (MapEdgePan) and reading it never moves the map.
@@ -31,7 +37,7 @@ namespace Wotr.Client
             phase.AddToClassList("phase");
             Root.Add(phase);
             Root.Add(Crests);
-            Root.Add(Divider());
+            Root.Add(divider);
             opponentDice.AddToClassList("row");
             Root.Add(opponentDice);
             Root.Add(Opponent.Root);
@@ -42,6 +48,21 @@ namespace Wotr.Client
         }
 
         public bool Compact => Root.ClassListContains(CompactClass);
+
+        public void ShowClock(MoveClockView clock, Side you)
+        {
+            Clock.Show(clock, you);
+            if (Clock.Active && Clock.Box.parent == null)
+            {
+                Root.Insert(Root.IndexOf(divider), Clock.Box);
+                Root.Insert(Root.IndexOf(divider), Clock.PauseButton);
+            }
+            else if (!Clock.Active)
+            {
+                Clock.Box.RemoveFromHierarchy();
+                Clock.PauseButton.RemoveFromHierarchy();
+            }
+        }
 
         private void UpdateCompact(float width)
         {

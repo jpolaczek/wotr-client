@@ -67,7 +67,7 @@ From the owner's decisions and the current standards; an implementer does not ch
    short optional caption per beat (a place or name, "At war", "Cancelled", "No effect"; since UI-491 a quiet battle decision's
    word, "Holds", "Stops", "No card"; since UI-493 the name of a table card leaving). No sentence repeating a move that is
    visible, no side names, costs or backend identifiers in captions. Card rules text is never abbreviated or shrunk.
-10. **Controls budget.** At most **one** new control: the transient Skip target (§6.3). No Pause, Resume, Read, Next,
+10. **Controls budget.** (A ranked game's Pause stops the clock, not a presentation: see RANKED_UX.) At most **one** new control: the transient Skip target (§6.3). No Pause, Resume, Read, Next,
     Continue, Skip all, speed menu, timeline, event strip, unread counter, replay or return-view button.
 11. **Accessibility.** Shape and symbol as well as colour; the same facts with sound muted and under Reduced motion.
     Fonts per [TYPOGRAPHY](TYPOGRAPHY.md): Cinzel SemiBold for names and headings, Alegreya for text and numbers; never
