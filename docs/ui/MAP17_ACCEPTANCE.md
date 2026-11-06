@@ -18,9 +18,9 @@ Final report from 2026-10-08 . Verification shall include . NET **3723/3723**, E
   renderer gets 142 164 points. These are input data counters with MapProfileMemory/MapRenderer , no
   GPU vertics or the sum of variants.
 - Sources: [import and
-  restrictions](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/MAP-12-GEOMETRY.json),
+  restrictions](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/sources/MAP-12-GEOMETRY.json),
   [Comparison of borders with
-  board](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/map13-review/README.md),
+  board](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/sources/map13-review/README.md),
   [plan and pallet](MAP_CONTOURS_UX.md), [Interaction](MAP15_INTERACTION_COVERAGE.md). interpolated
   source lines under mountains/panels and primary route tolerance remain public; acceptance does not
   add imaginary transitions.

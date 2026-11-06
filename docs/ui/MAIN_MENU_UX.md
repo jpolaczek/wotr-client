@@ -429,7 +429,7 @@ the whole selection); their tooltips leave out Ready. The client then configures
 <a id="logowanie-bez-rejestracji--auth-03-2026-10-16"></a>
 ## Logging without registration — AUTH-03 (2026-10-16)
 
-Decision [D16](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/DECISIONS.md): an account is set up on the game page, the client only opens it. `GatewayScreen`:
+Decision [D16](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/DECISIONS.md): an account is set up on the game page, the client only opens it. `GatewayScreen`:
 - one `Account name` (`auth-username`) field and password; the client checks that the entry is a
   valid account name (an email address gets "sign in with your account name, not the email address"),
   and the server finds the account by name only (AUTH-05, 2026-10-17);
