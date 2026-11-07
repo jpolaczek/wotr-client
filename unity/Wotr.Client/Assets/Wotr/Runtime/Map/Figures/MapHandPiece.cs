@@ -130,9 +130,9 @@ namespace Wotr.Client
             button.AddToClassList(force.Army.Side == Side.FreePeoples ? "fp" : "sh");
             button.EnableInClassList("garrison", garrison);
             button.AddToClassList("selected-force");
-            piece.army = new MapArmyArtwork(button);
+            // UI-522: the lifted units keep the reach of their force's row stand.
+            piece.army = new MapArmyArtwork(button) { RowReach = force.Artwork.RowReach };
             piece.army.Layout(true);
-            piece.Stand.Design(feet, MapArmyArtwork.Visible(garrison, true));
             piece.Hold(force, units);
             return piece;
         }
@@ -159,6 +159,8 @@ namespace Wotr.Client
             Ids.Clear();
             Ids.UnionWith(held.Select(unit => unit.Id));
             army.Apply(ArmyMarker.From(force.Army.RegionId, force.Army.Side, force.Army.Garrison, held));
+            var garrison = force.Army.Garrison;
+            Stand.Design(MapArmyArtwork.Feet(garrison, true), MapArmyArtwork.Visible(garrison, true, army.SpreadLeft, army.SpreadRight));
         }
 
         // Whether its source still stands on the table.

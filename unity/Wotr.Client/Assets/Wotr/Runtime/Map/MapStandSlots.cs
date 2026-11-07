@@ -17,6 +17,11 @@ namespace Wotr.Client
         // Every base is seen at the same angle: its depth is this share of its width.
         public const float Depth = .4f;
         public static readonly StandFootprint Army = new StandFootprint(40, 40, 40);
+        // UI-522: the widest row stand a field force or garrison may stand on (MapArmyArtwork.RowStandWidth at its design
+        // unit), half of it on either side of the feet at most; each place records how far its own may reach on either
+        // side (RegionStands.FieldRow, GarrisonRow).
+        public const float ForceWidest = 71;
+        public const float RowReach = ForceWidest / 2;
         public static readonly StandFootprint Character = new StandFootprint(14, 16, 36);
         public static readonly StandFootprint Fellowship = new StandFootprint(16, 18, 36);
 
@@ -97,6 +102,12 @@ namespace Wotr.Client
         private const float Gap = 2;
 
         [JsonProperty("capacity")] public float Capacity { get; set; }
+        // UI-522: how far (board units) the row stand of its field force and of its garrison may reach on either side of
+        // their feet, [left, right], clear of everything fixed around them (scripts/export_map_stands.py, force_rooms);
+        // the stands that come and go narrow it further (MapArmyRowRoom). A region the export does not cover keeps the
+        // round base.
+        [JsonProperty("fieldRow")] public float[] FieldRow { get; set; } = RoundRow();
+        [JsonProperty("garrisonRow")] public float[] GarrisonRow { get; set; } = RoundRow();
         // A stronghold's drawing and its garrison's figures at the gate: names keep clear of it.
         [JsonProperty("fortress")] public float[] FortressBounds { get; set; }
         [JsonProperty("garrison")] public float[] GarrisonPoint { get; set; }
@@ -110,6 +121,8 @@ namespace Wotr.Client
         private List<StandPlace> places;
 
         [JsonIgnore] public bool HasGarrison => GarrisonPoint != null;
+        [JsonIgnore] public Vector2 FieldReach => Point(FieldRow);
+        [JsonIgnore] public Vector2 GarrisonReach => Point(GarrisonRow);
         // The scale its figures show at in the worst case.
         [JsonIgnore] public float ShownScale => Mathf.Min(1, Capacity);
         [JsonIgnore] public Vector2 Field => Point(FieldPoint);
@@ -203,6 +216,8 @@ namespace Wotr.Client
 
         private static Vector2 Point(float[] point) => new Vector2(point[0], point[1]);
 
+        private static float[] RoundRow() => new[] { StandFootprint.Army.BaseWidth / 2, StandFootprint.Army.BaseWidth / 2 };
+
         private static float[] Coordinates(Vector2 point) => new[] { point.x, point.y };
     }
 
@@ -213,7 +228,7 @@ namespace Wotr.Client
     public sealed class MapStandSlots
     {
         public const string Resource = "MapCanvas/stand-slots";
-        public const string Version = "stand-slots-2";
+        public const string Version = "stand-slots-3";
         // The worst case the footprints are sized for: 1366×768 at 125 % is a 1092.8×614.4 point map.
         public static readonly Vector2 WorstCaseView = new Vector2(1366 / 1.25f, 768 / 1.25f);
         private const float ZoomTolerance = 1e-4f;
@@ -338,6 +353,7 @@ namespace Wotr.Client
         private static void RequireRegion(MapStandSlots data, string id, bool stronghold)
         {
             var complete = data.Regions.TryGetValue(id, out var stands) && stands != null && stands.Capacity > 0 &&
+                Row(stands.FieldRow) && Row(stands.GarrisonRow) &&
                 MapContourValidation.ValidPoint(stands.FieldPoint) && MapContourValidation.ValidPoint(stands.FellowshipPoint) &&
                 MapContourValidation.ValidPoint(stands.PlannedPoint) && MapContourValidation.ValidPoint(stands.SovereignPoint) &&
                 ValidPoints(stands.CharacterPoints, RegionStands.CharacterPlaces);
@@ -347,6 +363,9 @@ namespace Wotr.Client
             var none = stands.GarrisonPoint == null && stands.GarrisonCharacterPoints == null && stands.FortressBounds == null;
             MapContourValidation.Require(stronghold ? garrison : none, "Map stand places disagree with the strongholds: " + id);
         }
+
+        private static bool Row(float[] reach) => reach?.Length == 2 &&
+            reach.All(side => side >= StandFootprint.Army.BaseWidth / 2 && side <= StandFootprint.RowReach);
 
         private static bool ValidPoints(float[][] points, int count) =>
             points != null && points.Length == count && points.All(MapContourValidation.ValidPoint);

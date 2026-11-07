@@ -112,6 +112,47 @@ namespace Wotr.EditorTests
             CollectionAssert.IsEmpty(covered);
         }
 
+        // UI-522: a field force's or garrison's row stand at its place's reach stays inside its region, and its figures
+        // (two thirds of an army's 40 units) cover no settlement, other fortress drawing or name.
+        [Test]
+        public void ARowStandAtItsReachStaysInItsRegionAndCoversNothing()
+        {
+            var gems = data.Regions.Values.Where(r => r.Settlement != null && data.Shapes.ContainsKey(r.Id))
+                .Select(r => (r.Id, Rect: GemRect(data.Shapes[r.Id], r.Settlement))).ToList();
+            var drawings = MapLandmarks.Load().Items.Select(l => (l.Id, l.Rect)).ToList();
+            var names = data.Regions.Values.Where(r => data.Shapes.ContainsKey(r.Id)).Select(r => (r.Id, Rect: NameRect(r))).ToList();
+            var problems = new List<string>();
+            var wide = 0;
+            foreach (var entry in stands.Regions)
+                foreach (var (kind, feet, reach) in Rows(entry.Value))
+                {
+                    var where = entry.Key + " " + kind;
+                    var round = StandFootprint.Army.BaseWidth / 2;
+                    if (Mathf.Min(reach.x, reach.y) < round || Mathf.Max(reach.x, reach.y) > StandFootprint.RowReach)
+                        problems.Add(where + " has no row reach");
+                    if (reach.x + reach.y <= 2 * round)
+                        continue;
+                    wide++;
+                    var centre = new Vector2(feet.x + (reach.y - reach.x) / 2, feet.y);
+                    if (!BaseInside(data.Shapes[entry.Key], centre, new Vector2(reach.x + reach.y, StandFootprint.Army.BaseDepth) / 2))
+                        problems.Add(where + "'s row leaves the region");
+                    var row = Rect.MinMaxRect(feet.x - reach.x, feet.y - 27, feet.x + reach.y, feet.y + StandFootprint.Army.BaseDepth / 2);
+                    problems.AddRange(gems.Where(g => row.Overlaps(g.Rect)).Select(g => where + " covers the settlement of " + g.Id));
+                    problems.AddRange(drawings.Where(d => !(d.Id == entry.Key && kind == StandKind.Garrison) && row.Overlaps(d.Rect))
+                        .Select(d => where + " covers the drawing of " + d.Id));
+                    problems.AddRange(names.Where(n => row.Overlaps(n.Rect)).Select(n => where + " covers the name of " + n.Id));
+                }
+            TestContext.WriteLine("Row stands wider than a round base: " + wide);
+            CollectionAssert.IsEmpty(problems);
+        }
+
+        private static IEnumerable<(StandKind Kind, Vector2 Feet, Vector2 Reach)> Rows(RegionStands stands)
+        {
+            yield return (StandKind.Field, stands.Field, stands.FieldReach);
+            if (stands.Garrison is Vector2 gate)
+                yield return (StandKind.Garrison, gate, stands.GarrisonReach);
+        }
+
         [Test]
         public void AGarrisonStandsAtItsFortressGate()
         {

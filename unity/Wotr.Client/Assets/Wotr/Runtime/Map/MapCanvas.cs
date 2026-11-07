@@ -851,8 +851,30 @@ namespace Wotr.Client
                 fieldSides[group.Key] = Stands.Assign(group.Key, forces);
             }
             Characters.Assign(region => fieldSides.TryGetValue(region, out var side) ? side : null);
+            FitRows();
             Stands.Sort();
         }
+
+        // UI-522: every force's row stand as wide as the stands beside it now allow; again whenever the Fellowship or a
+        // planned ghost comes or goes.
+        internal void FitRows()
+        {
+            foreach (var pair in regionMarkers)
+                Stands.FitRows(pair.Value, Standing(pair.Key));
+        }
+
+        private IEnumerable<(Vector2 Feet, StandFootprint Footprint)> Standing(string region)
+        {
+            foreach (var feet in Characters.Standing(region))
+                yield return (feet, StandFootprint.Character);
+            if (FellowshipMarker?.Region == region)
+                yield return (Stands.Stands(region).Fellowship, StandFootprint.Fellowship);
+            if (PlannedIn(region))
+                yield return (Stands.Stands(region).Planned, StandFootprint.Army);
+        }
+
+        private bool PlannedIn(string region) =>
+            new[] { PlannedRecruits, PlannedFlights, PlannedJourneys }.Any(ghosts => ghosts?.Regions.Contains(region) == true);
 
         // UI-274: a force holding a king that a decision or the selected die lights glows, and its click chooses the
         // king, unless the force is itself a source for the selected die (then the king's portrait chooses him).

@@ -64,7 +64,7 @@ namespace Wotr.Client
             var artwork = new MapArmyArtwork(button);
             artwork.Layout(true);
             artwork.Apply(army);
-            miniature.Visible = MapArmyArtwork.Visible(garrison, true);
+            miniature.Visible = MapArmyArtwork.Visible(garrison, true, artwork.SpreadLeft, artwork.SpreadRight);
             return miniature;
         }
 

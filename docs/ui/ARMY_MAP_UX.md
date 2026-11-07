@@ -975,10 +975,46 @@ one rule (`MapArmyArtwork.Figures`):
 - **Everything fits (three figures or fewer, a ghost's carried characters counted).** Every unit stands as its own
   figure, in its own nation's colours, Elites first, then Regulars, the Nazgûl and other Leaders. No figure carries a
   number; the plaque keeps the nation emblems and the total.
-- **Too many.** One figure of each kind (Elite, Regular, Nazgûl, other Leaders; at most four, two behind two) stands for
-  all of them, drawn as the nation with the most of that kind, and carries its own count, "×N", at its feet on the
-  right when N is more than one. The plaque keeps the emblems and the total, so a 2 Elite, 3 Regular, 1 Leader army
+- **Too many.** One figure of each kind (Elite, Regular, Nazgûl, other Leaders; at most four) stands for all of them,
+  drawn as the nation with the most of that kind, and carries its own count, "×N" (since UI-522 the kinds stand side by
+  side; below). The plaque keeps the emblems and the total, so a 2 Elite, 3 Regular, 1 Leader army
   reads "×2", "×3", the Leader alone, and 6.
 
 `MapArmyArtworkTests` checks both cases on both sides (the new "crowd" samples), that the counts add up to the army,
 stay inside the marker and clear of the total, and that a token and a small army show none.
+
+## One figure of each kind, side by side — UI-522 (2026-11-07)
+
+The owner, with a picture of Barad-dûr's field army (4 Regulars, 1 Elite, 1 Nazgûl): "the units still stand on top of
+one another and it is not clear what is there". UI-510's figures stood 13 points apart on a stand one figure wide, so
+they covered each other and their counts. The owner chose among three layouts (side by side and smaller on a wider stand;
+one figure with the composition on the plaque; side by side on today's stand) the first, and then, told that reserving
+a full row stand everywhere would leave 42 regions instead of 15 showing tokens until zoomed in, a row as wide as each
+region allows:
+
+- **The row** (`MapArmyArtwork`, `army-row`). An army that shows one figure of each kind with two or more kinds stands
+  them in a row: two thirds of their stature, each centred in a column of its own (28 points, 2 apart) that no other
+  figure enters, a wide painted cell drawn narrower; its count, ×1 too, centred at its feet just above the plaque. The
+  plaque keeps the emblems and the total. The stand, its rim and its contact shadow widen past the holder on either side
+  (`SpreadLeft`, `SpreadRight`); the click shape and the visible part widen with them, and the holder, its feet point
+  and every flight keep their size. Three kinds take 96 points (71 board units), four a narrower column each.
+- **How wide** (`MapArmyRowRoom`, `RegionStands.FieldRow` and `GarrisonRow`). The stand places do not move. Each field
+  and garrison place records how far its row stand may reach before and after its feet, from a round base's 20 units to
+  35.5 a side in half-unit steps: inside the region, off the other force's and the king's marker's bases, on no
+  settlement, other fortress drawing or region name, and on no label of a force it stands in front of
+  (`scripts/export_map_stands.py`, `force_rooms`). The stands that come and go narrow the side they stand on when the
+  map lays its figures out: a character's, the Fellowship's, a planned ghost's or a second force on the planned place
+  keeps UI-422's gap from the row's round end and clear of its figures. The stand is centred on the feet where both
+  sides reach that far, otherwise it leans to the open side, so a Witch-king beside Barad-dûr's army leaves the row its
+  other side. A narrower row draws narrower columns, so its figures are smaller but never cover one another. Of the 121
+  places, 93 reach 50 units or more across, 62 reach 64 and 44 the full 71 (Barad-dûr, Gorgoroth); Minas Morgul and Dol
+  Guldur keep the round stand. A row takes a press anywhere on its band up to its figures' height, so a press where a
+  full army's figures stood still reaches it.
+- **Unchanged.** Every region's places, capacities and names; the 15 regions that show tokens at the worst case; the
+  far token, which shows the total only.
+
+Checks: PlayMode `MapArmyArtworkTests.OneFigureOfEachKindStandsSideBySideWithItsCount` (the owner's army and a Gondor
+garrison on the widest stand, the narrowest and one narrowed on its left, at 100 and 125 %: no figure over another,
+every count at its figure's feet and clear of the others and the total, each figure takes the click) and `MapArmyRowTests` (Barad-dûr on the map
+beside the Witch-king at three zooms on 1366 × 768 at 125 % and 1920 × 1080); EditMode `MapArmyRowRoomTests` (the
+narrowing on either side) and `MapStandSlotsTests.ARowStandAtItsReachStaysInItsRegionAndCoversNothing`.

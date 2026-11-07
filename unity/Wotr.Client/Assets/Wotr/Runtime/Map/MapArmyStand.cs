@@ -18,6 +18,11 @@ namespace Wotr.Client
         public bool Visible;
         // The level it was last laid out at: figures on a base, or a token.
         public bool? Figures;
+        // UI-522: how far its place's row stand reaches on either side (board units) and whether it stands on the planned
+        // place, set where it is stood.
+        public static readonly Vector2 RoundReach = Vector2.one * StandFootprint.Army.BaseWidth / 2;
+        public Vector2 PlaceReach = RoundReach;
+        public bool AtPlanned;
         // UI-403: its units held in the hand (or shown by a planned ghost elsewhere); its base shows the others.
         private readonly HashSet<string> lifted = new HashSet<string>();
 
@@ -31,7 +36,25 @@ namespace Wotr.Client
                 return;
             Figures = figures;
             Artwork.Layout(figures);
-            Stand.Design(MapArmyArtwork.Feet(Army.Garrison, figures), MapArmyArtwork.Visible(Army.Garrison, figures));
+            Design();
+        }
+
+        // The point under its feet and its visible part at its level; UI-522: a row's wider stand widens the visible part.
+        private void Design()
+        {
+            var figures = Figures == true;
+            var visible = MapArmyArtwork.Visible(Army.Garrison, figures, figures ? Artwork.SpreadLeft : 0, figures ? Artwork.SpreadRight : 0);
+            Stand.Design(MapArmyArtwork.Feet(Army.Garrison, figures), visible);
+        }
+
+        // UI-522: how far its row stand may reach on either side now, in board units; a new reach lays its row out again.
+        public void Room(Vector2 reach)
+        {
+            var points = reach * MapArmyArtwork.DesignUnit;
+            if (Vector2.Distance(Artwork.RowReach, points) < .01f)
+                return;
+            Artwork.RowReach = points;
+            ShowArmy();
         }
 
         // UI-403 (SetLiftMask): the units that left the table; the base shows only what stays behind, and disappears when
@@ -54,6 +77,8 @@ namespace Wotr.Client
             var empty = lifted.Count > 0 && staying.Count == 0;
             Button.EnableInClassList(LiftedClass, empty);
             Artwork.Apply(lifted.Count == 0 || empty ? Army : Staying(staying));
+            if (Figures.HasValue)
+                Design();
         }
 
         private ArmyMarker Staying(IEnumerable<ArmyUnit> units)

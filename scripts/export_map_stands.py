@@ -40,7 +40,7 @@ LANDMARKS = RESOURCES / 'MapCanvas/landmarks.json'
 BOARD = RESOURCES / 'base-board.json'
 OVERRIDES = ROOT / 'scripts/map-stands-overrides.json'
 OUTPUT = RESOURCES / 'MapCanvas/stand-slots.json'
-VERSION = 'stand-slots-2'
+VERSION = 'stand-slots-3'
 MAP_W, MAP_H = 1632.0, 1338.0
 
 # The worst case: 1366x768 at 125 % is a 1092.8x614.4 point map; figures show down to 1.2 x its fit zoom
@@ -394,6 +394,12 @@ class Raster:
         if not (0 <= row < self.reach.shape[0] and 0 <= col < self.reach.shape[1]):
             return 0.0
         return float(self.reach[row, col])
+
+    def reach_along(self, x, y, left, right):
+        """UI-522: the least room along a horizontal spine from `left` before a point to `right` after it, a pixel at a
+        time: a row stand's round ends fit wherever their centres may stand on it."""
+        offsets = np.arange(-left, right + 1e-6, 1 / RESOLUTION)
+        return min(self.reach_at(x + offset, y) for offset in offsets)
 
     def inside_share(self, x0, y0, x1, y1):
         """The share of each rectangle's area that lies on the region (vectorised)."""
@@ -1201,10 +1207,11 @@ def place_sovereigns(regions, layouts):
     return {region.id: place_sovereign(region, layouts[region.id], layouts, regions) for region in regions}
 
 
-def region_json(region, layout, capacity_value, sovereign):
-    """A region's capacity, its places in a fixed order, the place of a corrupted king's marker and, for a stronghold,
-    the fortress its name keeps clear of."""
+def region_json(region, layout, capacity_value, sovereign, rooms):
+    """A region's capacity, its places in a fixed order, the place of a corrupted king's marker, the room of its forces'
+    row stands (UI-522) and, for a stronghold, the fortress its name keeps clear of."""
     result = {'capacity': capacity_value}
+    result.update({f'{kind}Row': list(reach) for kind, reach in rooms.items()})
     if region.stronghold:
         result['fortress'] = list(region.fortress())
     order = ('garrison', 'garrisonCharacters', 'field', 'characters', 'fellowship', 'planned')
@@ -1218,14 +1225,15 @@ def region_json(region, layout, capacity_value, sovereign):
     return result
 
 
-def document(regions, layouts, capacities, sovereigns):
+def document(regions, layouts, capacities, sovereigns, rooms):
     return {
         'version': VERSION,
-        'task': 'UI-422, UI-425',
+        'task': 'UI-422, UI-425, UI-522',
         'sourceHashes': source_hashes(),
         'worstCaseZoom': round(worst_case_zoom(), 5),
         'footprints': {name: footprint.to_json() for name, footprint in FOOTPRINTS.items()},
-        'regions': {region.id: region_json(region, layouts[region.id], capacities[region.id], sovereigns[region.id])
+        'regions': {region.id: region_json(region, layouts[region.id], capacities[region.id], sovereigns[region.id],
+                                           rooms[region.id])
                     for region in sorted(regions, key=lambda r: r.id)},
     }
 
@@ -1244,6 +1252,114 @@ def serialise(data):
 
 def compact(value):
     return json.dumps(value, ensure_ascii=False, separators=(', ', ': '))
+
+
+# ---- Row stands (UI-522) ------------------------------------------------------------------------------
+
+# UI-522 (owner, 2026-11-07): a force of more units than all stand shows one figure of each kind side by side, two thirds
+# of their stature, on a stand as wide as the row (MapArmyArtwork, up to 96 points: 71 units) and as deep as an army's.
+# The places keep their layout; each field and garrison place records how far its row stand may reach on either side of
+# its feet — from a round base's half (20 units) up to 35.5, in half-unit steps — keeping inside the region, off the
+# other force's and the king's marker's bases, on no gem, other fortress drawing or region name, and on no label of a
+# force it stands in front of (its region's other force or a neighbour's). The owner chose this over a row stand
+# reserved everywhere, which left 42 regions instead of 15 showing tokens at the worst case. The characters, the
+# Fellowship and the planned recruits come and go, so the client narrows the side a stand of theirs stands on
+# (MapArmyRowRoom); the row then reaches further on the open side.
+ROW_REACH = 35.5
+ROW_STEP = 0.5
+# A row's figures stand two thirds as tall as an army's (MapArmyArtwork.RowScale).
+ROW_TOP = -27.0
+
+
+def row_rect(x, y, left, right):
+    """A row stand's figures down to its base's front, at scale 1."""
+    return x - left, y + ROW_TOP, x + right, y + ARMY.base[1] / 2
+
+
+def row_distance(x, y, reach, px, py, other=None):
+    """The distance between a row stand's spine (its round ends an army's) and another base's — a round one, or a row
+    of the given reach — with depth measured over DEPTH."""
+    radius = ARMY.radius(1.0)
+    left, right = reach
+    other_left, other_right = other or (radius, radius)
+    spine = (x - (left - radius), x + (right - radius))
+    other_spine = (px - (other_left - radius), px + (other_right - radius))
+    across = max(other_spine[0] - spine[1], spine[0] - other_spine[1], 0.0)
+    return math.hypot(across, (y - py) / DEPTH)
+
+
+def force_rooms(regions, layouts, names, sovereigns):
+    """Each region's field and garrison row reach (left, right): the garrison's first, the field's clear of it."""
+    covers = [('gem', r.id, r.gem) for r in regions if r.gem] + [('drawing', r.id, r.drawing) for r in regions if r.drawing]
+    rooms = {}
+    for region in regions:
+        layout = layouts[region.id]
+        neighbours = armies_near(region, layouts)
+        forces = sorted((place for place in layout if place.slot.kind in ARMIES), key=lambda p: p.slot.kind != 'garrison')
+        rooms[region.id] = {}
+        for place in forces:
+            context = (region, layout, covers, names, sovereigns[region.id], neighbours, rooms[region.id])
+            rooms[region.id][place.slot.kind] = row_reach(place, context)
+    return rooms
+
+
+def row_reach(place, context):
+    """The furthest each side reaches with the other round, then both together, the longer side giving way first."""
+    radius = ARMY.radius(1.0)
+    left = furthest(lambda value: row_fits(place, (value, radius), *context))
+    right = furthest(lambda value: row_fits(place, (radius, value), *context))
+    while (left > radius or right > radius) and not row_fits(place, (left, right), *context):
+        if left >= right:
+            left -= ROW_STEP
+        else:
+            right -= ROW_STEP
+    return left, right
+
+
+def furthest(fits):
+    """The furthest reach, in steps down from the widest, that fits; a round base's half always does."""
+    value = ROW_REACH
+    while value > ARMY.radius(1.0) and not fits(value):
+        value -= ROW_STEP
+    return value
+
+
+def row_fits(place, reach, region, layout, covers, names, sovereign, neighbours, rooms):
+    """Whether a force's row stand reaching this far either side fits its place (force_rooms)."""
+    x, y = place.x, place.y
+    left, right = reach
+    radius = ARMY.radius(1.0)
+    if region.raster.reach_along(x, y, left - radius, right - radius) < radius + MARGIN:
+        return False
+    if row_distance(x, y, reach, *sovereign) < radius + CHARACTER.radius(1.0) + GAP:
+        return False
+    rect = row_rect(x, y, left, right)
+    for kind, owner, box in covers:
+        exempt = kind == 'drawing' and owner == region.id and place.slot.garrison_group
+        if not exempt and covers_rect(rect, box):
+            return False
+    if any(covers_rect(rect, name) for name in names.values()):
+        return False
+    for other in layout:
+        if other is place or other.slot.kind not in ARMIES:
+            continue
+        if row_distance(x, y, reach, other.x, other.y, rooms.get(other.slot.kind)) < 2 * radius + GAP:
+            return False
+        # A siege shows both armies (UI-422): the row's whole picture against the other force's.
+        whole = (x - left, y + ARMY_PICTURE[1], x + right, rect[3])
+        if hidden_share(whole, other.rect(1.0)) > ARMIES_HIDDEN:
+            return False
+    owners = [(other.x, other.y) for other in layout if other is not place and other.slot.kind in ARMIES]
+    owners += [(ox, oy) for _, ox, oy in neighbours]
+    for ox, oy in owners:
+        if bool(in_front(x, y, ox, oy)) and overlaps(rect, offset(PLAQUE, ox, oy, 1.0)):
+            return False
+    return True
+
+
+def covers_rect(rect, box):
+    """Whether a rectangle comes within the clearance of an obstacle's box."""
+    return bool(covers(rect, box, CLEARANCE))
 
 
 # ---- Acceptance ---------------------------------------------------------------------------------------
@@ -1379,11 +1495,12 @@ def main():
     regions, _ = load_inputs()
     layouts, capacities, names = export(regions)
     sovereigns = place_sovereigns(regions, layouts)
+    rooms = force_rooms(regions, layouts, names, sovereigns)
     problems = verify(regions, layouts, capacities, names)
     problems += verify_readability(regions, layouts, capacities, sovereigns)
     if problems:
         raise ValueError('Stand places fail the acceptance checks:\n' + '\n'.join(problems))
-    text = serialise(document(regions, layouts, capacities, sovereigns))
+    text = serialise(document(regions, layouts, capacities, sovereigns, rooms))
     if args.preview:
         preview(regions, layouts, capacities, names, sovereigns, args.preview)
     if args.check:

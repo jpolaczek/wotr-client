@@ -96,6 +96,10 @@ namespace Wotr.Client
                 Remove(id, animated && !reduced);
         }
 
+        // UI-522: where the characters of a region stand now: the front of each place's group.
+        public IEnumerable<Vector2> Standing(string region) =>
+            stands.Values.Where(stand => stand.Region == region && !stand.Stacked).Select(stand => stand.Stand.Feet);
+
         // Every region's characters on their places, each group shown with the characters stacked behind its front.
         public void Assign(Func<string, Side?> fieldSide)
         {

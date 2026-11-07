@@ -118,9 +118,23 @@ namespace Wotr.Client
                 var gate = force.Army.Garrison ? stands.Garrison : null;
                 if (gate == null && field == 0)
                     fieldSide = force.Army.Side;
+                // UI-522: the gate and the field have their place's row reach; the planned place an army's round base,
+                // which narrows the field's row like any stand beside it (FitRows).
+                force.AtPlanned = gate == null && field > 0;
+                force.PlaceReach = gate != null ? stands.GarrisonReach : force.AtPlanned ? MapArmyStand.RoundReach : stands.FieldReach;
                 Stand(force.Stand, gate ?? (field++ == 0 ? stands.Field : stands.Planned));
             }
             return fieldSide;
+        }
+
+        // UI-522: each of a region's forces on a row stand as wide as its place's room and the stands beside it now allow:
+        // its characters', the Fellowship's, a planned ghost's and a force on the planned place.
+        internal void FitRows(IReadOnlyList<MapArmyStand> forces, IEnumerable<(Vector2 Feet, StandFootprint Footprint)> standing)
+        {
+            var beside = standing.ToList();
+            beside.AddRange(forces.Where(force => force.AtPlanned).Select(force => (force.Stand.Feet, StandFootprint.Army)));
+            foreach (var force in forces.Where(force => !force.AtPlanned))
+                force.Room(MapArmyRowRoom.Narrow(force.Stand.Feet, force.PlaceReach, beside));
         }
 
         // The army pass: every force on its place at its region's level; the bounds of the shown ones are reserved, so

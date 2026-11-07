@@ -714,7 +714,16 @@ flight per destination marker, rendered with the same miniature.
   (0.97), South Anduin Vale 0.85 (0.96), Ash Mountains 0.85 (0.86), Moria 0.85 (0.87), High Pass 0.92, Old Ford 0.95, Edoras
   0.96 (0.98), Lorien 0.96 (≥ 1), Narrows of the Forest 0.96 (≥ 1), Old Forest Road 0.96; every region still shows figures
   before the closest zoom. 90 of the 105 regions' places moved; capacities above 1 now stop at 1.0–1.02 in many regions.
-- **Format.** `stand-slots-2` (the `sovereign` point; `MapStandSlots.Validate` rejects a region without it).
+- **Format.** `stand-slots-2` (the `sovereign` point; `MapStandSlots.Validate` rejects a region without it); since UI-522
+  `stand-slots-3`, which adds each region's `fieldRow` and, for a stronghold, `garrisonRow`.
+- **Row reach** (UI-522, 2026-11-07, ARMY_MAP_UX). A force that shows one figure of each kind stands them side by side on
+  a row stand up to 71 units wide. The places stay as laid out; each field and garrison place records how far its row
+  stand may reach before and after its feet (20 to 35.5 units a side, in half-unit steps): inside the region (a stadium,
+  its round ends an army's, along its spine), off the other force's and the king's marker's bases, on no gem, other
+  fortress drawing or name, and on no label of a force it stands in front of. The client narrows the side a character,
+  the Fellowship or the planned recruits stand on at the moment (`MapArmyRowRoom`). Reserving a full row in the layout
+  itself left 42 regions below capacity 1 instead of 15, and re-laying each region around a row widened barely a
+  quarter of them; the owner chose a row as wide as each place allows.
 - **Checks.** `python3 scripts/export_map_stands.py --check` lays everything out again, runs UI-422's checks and UI-425's
   (`verify_readability`: tokens off the gems, labels clear within a region and across neighbours, kings' markers) and
   compares the result with the file; it now takes about 3 minutes. EditMode `MapStandSlotsTests`
