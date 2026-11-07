@@ -964,3 +964,21 @@ UI-407 matrix's readability defects; the stand places (`stand-slots.json`, `stan
 
 Tests: `TabletopAcceptanceMatrixTests` (`TabletopFrameChecks.AssertReadable` in every static frame),
 `TabletopObjectsTests`, `MapRegionNamesTests`, `MapStandSlotsTests`, `MapStandScaleTests`.
+
+## Every figure, or one of each kind with its count — UI-510 (2026-11-07)
+
+The owner: "with two or three units every figure shows, and then they show as if stacked on one another with one
+number. We don't want that: if there are too many units to show them all, show one of each type and its own count, so
+everything is clear without another click." The miniature (the figures level; the far token is unchanged) now follows
+one rule (`MapArmyArtwork.Figures`):
+
+- **Everything fits (three figures or fewer, a ghost's carried characters counted).** Every unit stands as its own
+  figure, in its own nation's colours, Elites first, then Regulars, the Nazgûl and other Leaders. No figure carries a
+  number; the plaque keeps the nation emblems and the total.
+- **Too many.** One figure of each kind (Elite, Regular, Nazgûl, other Leaders; at most four, two behind two) stands for
+  all of them, drawn as the nation with the most of that kind, and carries its own count, "×N", at its feet on the
+  right when N is more than one. The plaque keeps the emblems and the total, so a 2 Elite, 3 Regular, 1 Leader army
+  reads "×2", "×3", the Leader alone, and 6.
+
+`MapArmyArtworkTests` checks both cases on both sides (the new "crowd" samples), that the counts add up to the army,
+stay inside the marker and clear of the total, and that a token and a small army show none.

@@ -39,6 +39,11 @@ namespace Wotr.Client
         // Unused parts are hidden by class, so the level rules of Styles/Armies.uss can still hide the rest.
         public const string UnusedClass = "army-part-unused";
         public const int MaximumEmblems = 2;
+        // UI-510 (owner, 2026-11-07): up to three figures every figure stands; a bigger army shows one figure of each kind
+        // (Elite, Regular, Nazgûl, other Leaders), at most four, each with its own count.
+        public const int AllShown = 3;
+        public const int MaximumFigures = 4;
+        public const string FigureCountClass = "army-figure-count";
         // Design points per board unit: an elite stands 54 points tall at the design size, as since UI-192.
         public const float DesignUnit = 1.35f;
         // The army's base (40 units) and the room beside it for the state rim and the halo.
@@ -67,17 +72,22 @@ namespace Wotr.Client
         private const float TopFaceMiddle = 16;
         // The holder a marker stands in (MapStand): room for either level.
         public static readonly Vector2 HolderSize = new Vector2(BoxWidth, BoxHeight);
-        // Two or three figures stand staggered: the first farther back (higher, a little smaller), the others in front.
+        // Two or three figures stand staggered: the first farther back (higher, a little smaller), the others in front;
+        // UI-510: four stand two behind two.
         private static readonly Slot[][] Slots =
         {
             new[] { new Slot(0, 0, 1) },
             new[] { new Slot(-9, -4, .94f), new Slot(9, 0, 1) },
-            new[] { new Slot(0, -6, .9f), new Slot(-13, 0, 1), new Slot(13, 0, 1) }
+            new[] { new Slot(0, -6, .9f), new Slot(-13, 0, 1), new Slot(13, 0, 1) },
+            new[] { new Slot(-8, -7, .84f), new Slot(9, -7, .84f), new Slot(-15, 0, .92f), new Slot(15, 0, .92f) }
         };
 
         public VisualElement Root { get; } = Ignored("army-artwork");
-        private readonly Image[] silhouettes = new Image[3];
-        private readonly float[] statures = new float[3];
+        private readonly Image[] silhouettes = new Image[MaximumFigures];
+        private readonly float[] statures = new float[MaximumFigures];
+        // UI-510: how many each figure stands for, and its count at its feet when that is more than one.
+        private readonly int[] amounts = new int[MaximumFigures];
+        private readonly Label[] figureCounts = new Label[MaximumFigures];
         private readonly VisualElement[] emblems = new VisualElement[MaximumEmblems];
         private readonly Label more = new Label("+") { name = "army-more-nations", pickingMode = PickingMode.Ignore };
         private readonly Label count = new Label { name = "army-count", pickingMode = PickingMode.Ignore };
@@ -117,6 +127,12 @@ namespace Wotr.Client
                 silhouettes[i].AddToClassList("army-silhouette");
                 Root.Add(silhouettes[i]);
             }
+            for (var i = 0; i < figureCounts.Length; i++)
+            {
+                figureCounts[i] = new Label { name = FigureCountClass + "-" + i, pickingMode = PickingMode.Ignore };
+                figureCounts[i].AddToClassList(FigureCountClass);
+                Root.Add(figureCounts[i]);
+            }
             Root.Add(plaque);
             var row = Ignored("army-emblems");
             for (var i = 0; i < emblems.Length; i++)
@@ -154,15 +170,20 @@ namespace Wotr.Client
 
         public void Apply(ArmyMarker army)
         {
-            var appearances = Appearances(army);
-            shown = Math.Min(silhouettes.Length, appearances.Count);
+            var figures = Figures(army);
+            shown = Math.Min(silhouettes.Length, figures.Count);
             for (var i = 0; i < shown; i++)
             {
-                silhouettes[i].sprite = FigureArtwork.Sprite(appearances[i]);
-                statures[i] = FigureStature.Of(appearances[i]);
+                silhouettes[i].sprite = FigureArtwork.Sprite(figures[i].Art);
+                statures[i] = FigureStature.Of(figures[i].Art);
+                amounts[i] = figures[i].Count;
+                figureCounts[i].text = "×" + figures[i].Count;
             }
             for (var i = 0; i < silhouettes.Length; i++)
+            {
                 silhouettes[i].EnableInClassList(UnusedClass, i >= shown);
+                figureCounts[i].EnableInClassList(UnusedClass, i >= shown || amounts[i] <= 1);
+            }
             PlaceSilhouettes();
             for (var i = 0; i < emblems.Length; i++)
                 ShowEmblem(emblems[i], i < army.Nations.Count ? army.Nations[i].Nation : null);
@@ -259,8 +280,13 @@ namespace Wotr.Client
                 silhouettes[i].style.height = size.y;
                 silhouettes[i].style.left = StandFeet.x + x - size.x / 2;
                 silhouettes[i].style.top = StandFeet.y + FrontFeet + slots[i].Feet - size.y;
+                // UI-510: the count stands at the figure's feet, on its right.
+                figureCounts[i].style.left = StandFeet.x + x + size.x * .12f;
+                figureCounts[i].style.top = StandFeet.y + FrontFeet + slots[i].Feet - FigureCountHeight;
             }
         }
+
+        private const float FigureCountHeight = 12;
 
         // UI-454 (owner, 2026-11-03): where a lone figure's box stands on its base, in the holder's design points — what a
         // recruit flying from its Reserve slot matches to the slot's own picture of it.
@@ -342,25 +368,41 @@ namespace Wotr.Client
             return element;
         }
 
-        // ART-01: each figure is of the nation with the most figures of its kind (Nations come largest first). UI-402: a
-        // ghost's carried characters stand first, each its own figure (one beside units, up to three alone); a board army
-        // carries none.
-        private static List<FigureArt> Appearances(ArmyMarker army)
+        // UI-402: a ghost's carried characters stand first, each its own figure (one beside units, up to three alone); a
+        // board army carries none. UI-510 (owner, 2026-11-07: "if there are too many units to show them all, show one of each
+        // type and its own count, so everything is clear without another click"): when every figure fits, each unit
+        // stands in its own nation's colours; otherwise one figure of each kind stands for all of them with their count.
+        // ART-01: such a figure is of the nation with the most figures of its kind (Nations come largest first).
+        public static List<(FigureArt Art, int Count)> Figures(ArmyMarker army)
         {
-            var result = new List<FigureArt>(3);
-            var characters = army.Total > 0 ? 1 : 3;
+            var result = new List<(FigureArt Art, int Count)>(MaximumFigures);
+            var characters = army.Total > 0 ? 1 : AllShown;
             foreach (var character in army.Carried.Take(characters))
-                result.Add(character.Art);
-            if (army.Elite > 0 && result.Count < 3)
-                result.Add(Of(army, UnitKind.Elite, n => n.Elite));
-            if (army.Regular > 0 && result.Count < 3)
-                result.Add(Of(army, UnitKind.Regular, n => n.Regular));
-            if (army.Leaders > 0 && result.Count < 3)
-                result.Add(army.Nazgul > 0 ? Of(army, UnitKind.Nazgul, n => n.Nazgul)
-                    : Of(army, UnitKind.Leader, n => n.Leaders));
-            if (result.Count == 1 && army.Total > 1)
-                result.Add(result[0]);
-            return result;
+                result.Add((character.Art, 1));
+            if (army.Total <= AllShown - result.Count && army.Units.Count == army.Total)
+            {
+                foreach (var unit in army.Units.OrderBy(u => KindOrder(u.Kind)))
+                    result.Add((FigureAppearances.Unit(unit.Nation, unit.Kind, army.Side), 1));
+                return result;
+            }
+            var otherLeaders = army.Leaders - army.Nazgul;
+            if (army.Elite > 0)
+                result.Add((Of(army, UnitKind.Elite, n => n.Elite), army.Elite));
+            if (army.Regular > 0)
+                result.Add((Of(army, UnitKind.Regular, n => n.Regular), army.Regular));
+            if (army.Nazgul > 0)
+                result.Add((Of(army, UnitKind.Nazgul, n => n.Nazgul), army.Nazgul));
+            if (otherLeaders > 0)
+                result.Add((Of(army, UnitKind.Leader, n => n.Leaders), otherLeaders));
+            return result.Take(MaximumFigures).ToList();
         }
+
+        private static int KindOrder(UnitKind kind) => kind switch
+        {
+            UnitKind.Elite => 0,
+            UnitKind.Regular => 1,
+            UnitKind.Nazgul => 2,
+            _ => 3
+        };
     }
 }

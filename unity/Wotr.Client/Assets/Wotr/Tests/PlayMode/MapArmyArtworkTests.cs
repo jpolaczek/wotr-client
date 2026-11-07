@@ -60,6 +60,13 @@ namespace Wotr.PlayTests
                     cases.Add(new Sample("garrison", Army(side, true, (nation, UnitKind.Regular, 10)), figures, ""));
                     foreach (var state in States.Skip(1))
                         cases.Add(new Sample("state", Army(side, false, (nation, UnitKind.Elite, 1)), figures, state.Class));
+                    // UI-510: too many to show all — one figure of each kind with its own count (figures only; a token shows
+                    // its total).
+                    if (figures)
+                        cases.Add(new Sample("crowd", side == Side.FreePeoples
+                            ? Army(side, false, (nation, UnitKind.Regular, 3), (ally, UnitKind.Elite, 2), (nation, UnitKind.Leader, 1))
+                            : Army(side, false, (nation, UnitKind.Regular, 4), (ally, UnitKind.Elite, 2), (ally, UnitKind.Nazgul, 2)),
+                            figures, ""));
                 }
             for (var index = 0; index < cases.Count; index++)
             {
@@ -98,6 +105,7 @@ namespace Wotr.PlayTests
             }
             var images = Shown(button, "army-silhouette");
             Assert.AreEqual(sample.Figures ? Expected(sample.Marker) : 0, images.Length, button.name);
+            CheckFigureCounts(sample, images.Length);
             foreach (var image in images)
             {
                 AssertInside(image, button);
@@ -184,7 +192,35 @@ namespace Wotr.PlayTests
         private static Image[] Shown(Button button, string className) => button.Query<Image>(className: className).ToList()
             .Where(image => image.resolvedStyle.display != DisplayStyle.None).ToArray();
 
-        private static int Expected(ArmyMarker marker) => marker.Leaders > 0 && marker.Total > 2 ? 3 : marker.Total > 1 ? 2 : 1;
+        // UI-510: up to three units every one stands; more stand one figure of each kind (Elite, Regular, Nazgûl, Leader).
+        private static int Expected(ArmyMarker marker) => marker.Total <= MapArmyArtwork.AllShown ? marker.Total :
+            new[] { marker.Elite, marker.Regular, marker.Nazgul, marker.Leaders - marker.Nazgul }.Count(count => count > 0);
+
+        // UI-510: a figure standing for several of its kind shows their number at its feet, inside the marker and clear of
+        // the total; the figures' numbers add up to the army. A token and a small army show none.
+        private static void CheckFigureCounts(Sample sample, int figures)
+        {
+            var button = sample.Button;
+            var counts = button.Query<Label>(className: MapArmyArtwork.FigureCountClass).ToList()
+                .Where(label => label.resolvedStyle.display != DisplayStyle.None).ToList();
+            if (!sample.Figures || sample.Marker.Total <= MapArmyArtwork.AllShown)
+            {
+                Assert.IsEmpty(counts, "No figure counts: " + button.name);
+                return;
+            }
+            Assert.IsNotEmpty(counts, "A big army's figures carry their counts: " + button.name);
+            var total = button.Q<Label>("army-count");
+            var sum = figures - counts.Count;
+            foreach (var count in counts)
+            {
+                StringAssert.StartsWith("×", count.text, button.name);
+                sum += int.Parse(count.text.Substring(1));
+                AssertInside(count, button);
+                Assert.IsFalse(count.isElided, count.text);
+                Assert.IsFalse(count.worldBound.Overlaps(total.worldBound), "A figure's count clear of the total: " + button.name);
+            }
+            Assert.AreEqual(sample.Marker.Total, sum, "The figures' counts add up to the army: " + button.name);
+        }
 
         private static void AssertInside(VisualElement child, Button button)
         {
