@@ -179,6 +179,11 @@ namespace Wotr.PlayTests
             Assert.AreSame(locate, panel.Q(className: "fellowship-state-row").parent);
             var condition = panel.Q<Label>("fellowship-condition");
             Assert.LessOrEqual(Width(condition), condition.contentRect.width + 1, "Hidden/Revealed stays readable · " + label);
+            // UI-512: the condition's picture stands before its word in the row, never over it.
+            var symbol = panel.Q("fellowship-panel-ring");
+            Assert.LessOrEqual(symbol.worldBound.xMax, condition.worldBound.xMin + 0.5f,
+                $"The symbol {symbol.worldBound} stands before Hidden/Revealed {condition.worldBound} · " + label);
+            Assert.GreaterOrEqual(symbol.worldBound.xMin + 0.5f, locate.worldBound.xMin, "The symbol stays in the locate button · " + label);
             Assert.Greater(panel.Q<Label>("fellowship-location").contentRect.width, 24, "The position keeps room in the header · " + label);
             Assert.AreEqual(PickingMode.Ignore, condition.pickingMode);
             var tokens = panel.Query<Button>(className: "companion-token").ToList().Where(Visible).ToList();
