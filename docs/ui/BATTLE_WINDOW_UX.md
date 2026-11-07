@@ -591,3 +591,14 @@ every figure that may advance — the same command as choosing them all and clic
 tooltip names the region. Choosing figures one by one, then the region, and Stay are unchanged; the hint reads
 "Choose figures, then click the destination · Or Advance all, or Stay." `BattleAdvanceAllTests` checks the footer row
 and the command's figures.
+
+## The window folds into a plaque that keeps its buttons — UI-521 (2026-11-07)
+
+From UI-517's plan the owner chose the first direction: "fold it into a small plaque, but keep the clickable buttons".
+The window's header gains a fold button (`collapse`, then `expand`) before ×. Folded, the window is a 480-point plaque
+where it stood: its header (the battle, its mode and round, the Ask for cards setting, unfold and close), the step's
+decision ("You · Continue or stop the attack") and the footer's buttons, which keep working (Continue / Stop, No card,
+Keep roll, Stay / Advance all, Hold / Retreat with its region clicked on the map, Fight in field / Retreat inside, Extend
+siege), and a Combat choice's cards. The scene strip, the stage ribbon, both forces and a presented round wait for the
+unfold. A decision that needs a pick inside the window — the player's own losses or reroll — unfolds it; a new battle
+opens unfolded. `BattleFoldTests` checks the four layouts, a folded button's command and the losses' unfold.

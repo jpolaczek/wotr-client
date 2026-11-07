@@ -554,6 +554,22 @@
 /* UI-440 (owner): Evil Knowledge, an ability, is its bare skill icon (SkillIcon), centred in the footer's 33-point row. */
 #board-screen .regional-battle .tray .battle-choice-footer .skill-icon.battle-skill-choice { width: 32px; height: 32px; margin: 0 6px; align-self: center; }
 .regional-battle .tray #battle-stay { width: 96px; min-width: 96px; }
+/* UI-521 (owner, after UI-517's plan): folded, the window is a small plaque — its header, the step's decision and the
+   footer's buttons, which keep working (and a Combat choice's cards); the scene, the stage ribbon, both forces and a
+   presented round wait for the unfold. */
+.regional-battle > .battle-folded-step { display: none; }
+.regional-battle.battle-folded > .battle-folded-step {
+    display: flex;
+    margin: 2px 10px 4px 10px;
+    padding: 0;
+    font-size: 13px;
+    white-space: normal;
+    color: rgb(243, 228, 182);
+}
+.regional-battle.battle-folded > .battle-scene,
+.regional-battle.battle-folded .stage-ribbon,
+.regional-battle.battle-folded .battle-forces,
+.regional-battle.battle-folded > .battle-presented { display: none; }
 /* UI-515: Advance all, beside Select all and Stay. */
 .regional-battle .tray #battle-advance-all { width: 132px; min-width: 132px; }
 /* UI-146: the advance's select/deselect-all toggle: its fixed square in the footer; on, the warm field (UI-471). */

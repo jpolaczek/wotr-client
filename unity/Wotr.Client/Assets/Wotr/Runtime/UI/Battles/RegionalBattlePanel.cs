@@ -58,6 +58,17 @@ namespace Wotr.Client
         public StageRibbon Ribbon => ribbon;
         public bool Presenting => presented.parent == Root;
 
+        // UI-521 (owner, 2026-11-07, choosing UI-517's first direction: "fold it into a small plaque, keeping the clickable
+        // buttons"): the header's fold button turns the window into a plaque — its header (the battle and the round), the
+        // step's decision and the footer's buttons, which keep working, and a Combat choice's cards. The scene, the stage
+        // ribbon and both forces wait for the unfold. A decision that needs a pick inside the window (the player's losses or
+        // reroll) unfolds it, and a new battle opens unfolded.
+        public const string FoldedClass = "battle-folded";
+        public const float FoldedWidth = 480;
+        public bool Folded { get; private set; }
+        private readonly Button fold;
+        private readonly Label foldedStep = new Label { name = "battle-folded-step", enableRichText = false };
+
         public RegionalBattlePanel(VisualElement tray, VisualElement dock, MapCanvas map)
         {
             this.tray = tray;
@@ -69,10 +80,17 @@ namespace Wotr.Client
             close.name = "close-battle";
             close.tooltip = "Close battle panel · Keep your selection";
             close.AddToClassList("close-battle");
+            fold = IconButton.Create("collapse", FoldTooltip, () => SetFolded(!Folded));
+            fold.name = "fold-battle";
+            fold.AddToClassList("fold-battle");
             header = FloatingWindow.Header("Battle");
             heading = header.Q<Label>(className: "title");
+            header.Add(fold);
             header.Add(close);
             Root.Add(header);
+            foldedStep.AddToClassList("battle-folded-step");
+            foldedStep.pickingMode = PickingMode.Ignore;
+            Root.Add(foldedStep);
             scene.AddToClassList("battle-scene");
             attackerEmblem.AddToClassList("battle-scene-emblem");
             defenderEmblem.AddToClassList("battle-scene-emblem");
@@ -129,7 +147,7 @@ namespace Wotr.Client
         public void AttachPolicy(VisualElement policy)
         {
             policy.AddToClassList("battle-window-policy");
-            header.Insert(header.IndexOf(close), policy);
+            header.Insert(header.IndexOf(fold), policy);
         }
 
         public void Apply(PlayerView view)
@@ -166,6 +184,10 @@ namespace Wotr.Client
                     view.DecisionOwner.HasValue ? BoardScreen.SideName(view.DecisionOwner.Value) + " is choosing" : "Resolving battle";
                 Scene(view);
             }
+            foldedStep.text = decision.text;
+            // UI-521: a new battle opens unfolded; a pick the plaque does not show unfolds it.
+            if (started || Folded && NeedsTheWindow(view))
+                SetFolded(false);
             // UI-149: a new battle opens its window for both players; a window closed during the battle stays closed.
             if (started)
                 Open();
@@ -320,10 +342,34 @@ namespace Wotr.Client
             Position();
         }
 
+        private const string FoldTooltip = "Fold the battle window · Its buttons keep working";
+        private const string UnfoldTooltip = "Unfold the battle window";
+
+        private void SetFolded(bool value)
+        {
+            if (Folded == value)
+                return;
+            Folded = value;
+            Root.EnableInClassList(FoldedClass, value);
+            IconButton.SetIcon(fold, value ? "expand" : "collapse");
+            fold.tooltip = value ? UnfoldTooltip : FoldTooltip;
+            Position();
+        }
+
+        // The player's losses and reroll are picked on figures and dice inside the window.
+        private static bool NeedsTheWindow(PlayerView view) => view.Decision != null && view.DecisionOwner == view.You &&
+            view.Decision.Kind is DecisionKind.Losses or DecisionKind.BattleReroll;
+
         public void Position()
         {
             if (cardDrag)
                 return;
+            // UI-521: the plaque keeps the window's place, at its own small width.
+            if (Folded)
+            {
+                Root.style.width = FoldedWidth;
+                return;
+            }
             var previewWidth = combatChoice ? CardViewportLayout.MaximumInitialWidth : cardPreviewWidth;
             var reservedWidth = Mathf.Max(historyContext ? 414 : 0, previewWidth > 0 ? previewWidth + 24 : 0);
             Root.style.width = reservedWidth > 0
