@@ -135,6 +135,36 @@ namespace Wotr.PlayTests
             yield return stage.Released();
         }
 
+        // UI-520 (owner): a roll's result stands named on its side's roll heading, "No hits" too, long enough to read.
+        [UnityTest]
+        public IEnumerator AMissedRollIsNamedOnItsHeadingLongEnoughToRead()
+        {
+            using var stage = Attack(out var fight, viewer: Side.FreePeoples);
+            yield return Open(stage, fight);
+            var round = fight.Next();
+            round.Record(battle => Roll(battle.Attacker, "a", 1, 2, 3));
+            round.Record(battle => Roll(battle.Defender, "d", 6, 3));
+            stage.Play(round.Latest(), null, round.Steps.ToArray());
+            yield return stage.Until(() => Results(stage).Count == 1 && Results(stage)[0].text == "No hits");
+            var started = Time.realtimeSinceStartup;
+            var column = stage.Board.Battles.Presented.Q("battle-attacker");
+            var heading = column.Q(className: "battle-roll-heading");
+            var plate = Results(stage)[0].worldBound;
+            Assert.AreEqual(heading.worldBound.yMin, plate.yMin, 1f, "On the attacker's roll heading's row.");
+            Assert.LessOrEqual(plate.xMax, column.worldBound.xMax + 1, "Inside the attacker's column.");
+            foreach (var die in column.Query(className: "battle-die").ToList())
+                Assert.IsFalse(plate.Overlaps(die.worldBound), "Clear of the dice: " + die.name);
+            yield return new WaitForSecondsRealtime(.2f);
+            stage.Save("ui520-no-hits.png");
+            yield return stage.Until(() => Results(stage).Count == 1 && Results(stage)[0].text == "1 hit");
+            Assert.GreaterOrEqual(Time.realtimeSinceStartup - started, BattlePresenter.RollSeconds + PresentationPace.ResultSeconds - .2f,
+                "The miss stood long enough to read.");
+            yield return stage.Released();
+        }
+
+        private static List<Label> Results(PresentedBoardStage stage) =>
+            stage.Board.Root.Query<Label>(className: PresentationPace.ResultClass).ToList();
+
         [UnityTest]
         public IEnumerator ACancelledCardIsRingedWithItsCancellation([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {

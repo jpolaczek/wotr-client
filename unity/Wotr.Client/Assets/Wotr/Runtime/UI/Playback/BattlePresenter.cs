@@ -115,8 +115,14 @@ namespace Wotr.Client
             if (rolled.Count > 0)
             {
                 sounds.Play(SoundCue.DiceRoll, "presented/" + cue.Id);
-                Mark(() => Rolled(rolled));
-                return new TimedBeat(now, RollSeconds);
+                var results = RollResults(battle, rolled).ToList();
+                Mark(() =>
+                {
+                    Rolled(rolled);
+                    foreach (var (side, count) in results)
+                        ResultPlate(battle, side, count);
+                });
+                return new TimedBeat(now, RollSeconds + PresentationPace.ResultSeconds);
             }
             if (cards.Count > 0)
             {
@@ -144,6 +150,28 @@ namespace Wotr.Client
             var text = BattleChoiceCaption.Of(cue.Command);
             Mark(() => marks.Plate(Column(battle, side), CaptionPlate(text)));
             return new TimedBeat(now, ChoiceSeconds);
+        }
+
+        // UI-520: each side whose dice this roll changed, with its hits — a force's total, or a special attack's own.
+        private static IEnumerable<(Side Side, int Hits)> RollResults(BattleView battle, ICollection<string> rolled)
+        {
+            var sides = new HashSet<Side>();
+            foreach (var force in new[] { battle.Attacker, battle.Defender })
+                if (force.Dice.Any(die => rolled.Contains(die.Id)) && sides.Add(force.Side))
+                    yield return (force.Side, force.Hits);
+            foreach (var attack in battle.SpecialAttacks)
+                if (attack.Dice.Any(die => rolled.Contains(die.Id)) && sides.Add(attack.Side))
+                    yield return (attack.Side, attack.Dice.Count(die => die.Hit));
+        }
+
+        // UI-520: the result at the right end of the side's roll heading's row, clear of its dice and of a quiet decision's
+        // caption (UI-491, at the column's top).
+        private void ResultPlate(BattleView battle, Side side, int count)
+        {
+            var heading = Column(battle, side)?.Q(className: "battle-roll-heading");
+            var plate = CaptionPlate(PresentationPace.ResultText(count));
+            plate.AddToClassList(PresentationPace.ResultClass);
+            marks.Plate(heading, plate, PlateSide.Inside);
         }
 
         private static Label CaptionPlate(string text)
