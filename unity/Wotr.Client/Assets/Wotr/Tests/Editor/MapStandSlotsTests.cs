@@ -20,9 +20,10 @@ namespace Wotr.EditorTests
         // figures once the zoom shrinks the footprint to their capacity (TABLETOP_FIGURES_UX, "Stand places").
         private static readonly string[] TokenRegions =
         {
+            // UI-513: placing the Fellowship before the field's recruits and characters left Narrows of the Forest and South
+            // Anduin Vale room for every figure.
             "ash-mountains", "dol-guldur", "edoras", "gladden-fields", "high-pass", "lorien", "lossarnach", "minas-morgul",
-            "moria", "narrows-of-the-forest", "old-ford", "old-forest-road", "rhosgobel", "south-anduin-vale",
-            "southern-mirkwood", "western-mirkwood", "woodland-realm"
+            "moria", "old-ford", "old-forest-road", "rhosgobel", "southern-mirkwood", "western-mirkwood", "woodland-realm"
         };
         private const float LowestCapacity = .5f;
 
@@ -153,6 +154,20 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEquivalent(TokenRegions, tokens);
             foreach (var entry in stands.Regions)
                 Assert.GreaterOrEqual(entry.Value.Capacity, LowestCapacity, entry.Key + " shows figures once zoomed in");
+        }
+
+        // UI-513 (owner, a picture of Dagorlad): the Fellowship stands well inside its region, nearer its middle than its
+        // border, so where it is reads at a glance. Before, the median place stood 10 board units from the border and the
+        // nearest 3.7.
+        [Test]
+        public void TheFellowshipStandsWellInsideItsRegion()
+        {
+            var distances = stands.Regions.Where(e => e.Value.FellowshipPoint != null && data.Shapes.ContainsKey(e.Key))
+                .Select(e => (Region: e.Key, Distance: BorderDistance(data.Shapes[e.Key], e.Value.Fellowship)))
+                .OrderBy(r => r.Distance).ToList();
+            TestContext.WriteLine("Nearest the border: " + string.Join(", ", distances.Take(6).Select(r => $"{r.Region} {r.Distance:0.0}")));
+            Assert.GreaterOrEqual(distances[0].Distance, 5f, distances[0].Region + " keeps its Fellowship off the border");
+            Assert.GreaterOrEqual(distances[distances.Count / 2].Distance, 20f, "The median Fellowship stands well inside its region.");
         }
 
         // An expansion module's region override always gets a place: a stronghold made of a region without a garrison
@@ -367,6 +382,21 @@ namespace Wotr.EditorTests
 
         // The ellipse lies inside the region when its centre does and no border segment comes into it: scaled to a unit
         // circle, every segment stays at least 1 from its centre.
+        private static float BorderDistance(RegionGeometry shape, Vector2 point)
+        {
+            var best = float.MaxValue;
+            foreach (var ring in shape.Rings)
+                for (var i = 0; i < ring.Points.Length; i++)
+                {
+                    var a = new Vector2(ring.Points[i][0], ring.Points[i][1]);
+                    var next = ring.Points[(i + 1) % ring.Points.Length];
+                    var segment = new Vector2(next[0], next[1]) - a;
+                    var along = segment.sqrMagnitude == 0 ? 0 : Mathf.Clamp01(Vector2.Dot(point - a, segment) / segment.sqrMagnitude);
+                    best = Mathf.Min(best, Vector2.Distance(point, a + along * segment));
+                }
+            return best;
+        }
+
         private static bool BaseInside(RegionGeometry shape, Vector2 centre, Vector2 radii)
         {
             if (!MapContourMath.Contains(shape, centre))

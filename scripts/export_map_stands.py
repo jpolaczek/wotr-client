@@ -111,6 +111,9 @@ LARGEST_CAPACITY = 2.0
 # Score: a pull towards each slot's target (target()), open ground up to a cap, figures on their own region, figures
 # that do not hide each other (heavily first, lightly where that does not fit), and room left for a moved name.
 ROOM_CAP, ROOM_WEIGHT = 8.0, 0.5
+# UI-513 (owner): the Fellowship stands well inside its region, nearer its middle than its border, so where it is reads
+# at a glance; its place weighs open ground far more, and further, than the other places do.
+FELLOWSHIP_ROOM_CAP, FELLOWSHIP_ROOM_WEIGHT = 30.0, 1.0
 OUTSIDE_WEIGHT, ROOM_FOR_NAME_WEIGHT = 40.0, 25.0
 HIDDEN_WEIGHTS = (200.0, 30.0)
 # In a siege the besieger in the field and the garrison never hide more of each other than this.
@@ -320,16 +323,18 @@ class Region:
 
     def slots(self):
         """The slots in the order they are placed: the garrison, the field force (UI-425: before the garrison's
-        characters, which keep clear of its label), the garrison's characters, then the largest first."""
+        characters, which keep clear of its label), the garrison's characters, the Fellowship (UI-513: before the
+        field's recruits and characters, so it takes the open middle rather than what they leave), then the rest
+        largest first."""
         result = []
         if self.stronghold:
             result.append(Slot('garrison', None, ARMY))
         result.append(Slot('field', None, ARMY))
         if self.stronghold:
             result += [Slot('garrisonCharacters', i, CHARACTER) for i in range(3)]
+        result.append(Slot('fellowship', None, FELLOWSHIP))
         result.append(Slot('planned', None, ARMY))
         result += [Slot('characters', i, CHARACTER) for i in range(6)]
-        result.append(Slot('fellowship', None, FELLOWSHIP))
         return result
 
 
@@ -807,6 +812,8 @@ class Search:
         (tx, ty), vertical, weight = target(self.region, slot, placed)
         score = -weight * np.hypot(xs - tx, (ys - ty) * vertical)
         score += ROOM_WEIGHT * np.minimum(reach - radius - MARGIN, ROOM_CAP)
+        if slot.kind == 'fellowship':
+            score += FELLOWSHIP_ROOM_WEIGHT * np.minimum(reach - radius - MARGIN, FELLOWSHIP_ROOM_CAP)
         score -= OUTSIDE_WEIGHT * (1 - self.region.raster.inside_share(*rects))
         for place in placed:
             score -= self.hidden * hidden_share(rects, place.rect(self.scale))

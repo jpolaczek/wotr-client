@@ -117,6 +117,12 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
     drawing, low on its middle (the gate: a fifth of the drawing's height above its lower edge), its three characters
     beside it. The field stands as close to the settlement point as its figures allow without covering the gem, so
     above or beside it; the planned recruits, the six characters and the Fellowship stand around the field.
+    UI-513 (owner, 2026-11-07, a picture of the Fellowship on Dagorlad's southern border): the Fellowship is placed
+    right after the field (and the garrison's characters), before the recruits and the field's characters, and its
+    place weighs open ground up to 30 units (weight 1, against 8 units at 0.5 for the others), so it stands well
+    inside its region where it reads at a glance. The median distance from its feet to the border went from 10 to
+    25.5 units and the nearest from 3.7 to 5 (Helm's Deep); `MapStandSlotsTests.TheFellowshipStandsWellInsideItsRegion`
+    keeps both.
     Characters keep to the army's line: figures that hide one another cost heavily, and only where that leaves the
     group below scale 1 does a lighter cost get its chance. A besieger in the field and the garrison never share more
     than a quarter of either's figure rectangle, so a siege shows both. No figure rectangle covers a settlement gem
