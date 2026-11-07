@@ -112,6 +112,41 @@ namespace Wotr.PlayTests
                 }
         }
 
+        // Owner (2026-11-08): closing the Victory window with a second click on its rail icon flashed it in the top left
+        // corner for a moment. The window fades out where it stood, on both layouts.
+        [UnityTest]
+        public System.Collections.IEnumerator VictoryClosedFromTheRailFadesOutWhereItStood()
+        {
+            var fixture = new Wotr.Fixtures.BoardFixture(false);
+            fixture.View.MatchId = "victory-close";
+            using var client = new MountedMatchClient("http://localhost", fixture.View.MatchId);
+            foreach (var (width, scale) in new[] { (1920, 1f), (1366, 1.25f) })
+            {
+                var texture = new RenderTexture(width, width == 1366 ? 768 : 1080, 24);
+                texture.Create();
+                client.Panel.targetTexture = texture;
+                client.Panel.scale = scale;
+                client.Apply(fixture.View);
+                yield return Frames();
+                var board = client.Board;
+                var panel = board.Victory.Root;
+                CardNetworkTests.Click(board.Victory.RailTab);
+                yield return Frames();
+                var stood = panel.worldBound.position;
+                CardNetworkTests.Click(board.Victory.RailTab);
+                for (var frame = 0; frame < 30 && panel.resolvedStyle.display != DisplayStyle.None; frame++)
+                {
+                    Assert.That(Vector2.Distance(panel.worldBound.position, stood), Is.LessThan(1f),
+                        $"The closing window stays where it stood ({stood}), frame {frame} · {width} {scale:0.00}");
+                    yield return null;
+                }
+                Assert.IsFalse(board.Victory.IsOpen);
+                client.Panel.targetTexture = client.Viewport;
+                texture.Release();
+                Object.Destroy(texture);
+            }
+        }
+
         private static System.Collections.IEnumerator Frames()
         {
             for (var frame = 0; frame < 4; frame++)

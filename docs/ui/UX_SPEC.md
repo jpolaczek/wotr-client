@@ -4829,6 +4829,12 @@ nothing, as the panel is a window of its own, which the board menu also still op
 the political view's button moved into their bottom row, right of the legend and the chat. A reached threshold rims the
 plate in gold. `LeftRailLayoutTests.VictoryTabStandsUnderEffectsAndOpensThePanel` checks the four layouts.
 
+UI-524 (owner, 2026-11-08: closing it with a second click "flashes another Victory tab for a split second in the top
+left corner"): the window, no longer pinned, was put back to its default place in the top left by
+`FloatingWindow.Refresh` while it was still fading out. A floating window that is not kept in place now keeps where it
+stood while it fades and takes its default place only while shown; `LeftRailLayoutTests.VictoryClosedFromTheRailFadesOutWhereItStood`
+checks every frame of the fade at 1920 × 1080 and 1366 × 768 at 125 %.
+
 ## Dice faces after the printed symbols — ART-10 (2026-11-07)
 
 The owner asked for new dice pictures close to the original symbols, so each face reads at once. The faces keep the
