@@ -84,7 +84,12 @@ namespace Wotr.Client
             this.data = data ?? BoardPresentation.Load();
         }
 
-        public void Render(PlayerView view, TurnDraft draft, bool busy, bool uncertain, string pendingProblem = "")
+        // QUAL-22: the words while the board waits — for the server, or for the presentation of what just happened (UI-304's
+        // playback gate), which the Skip control ends; the two used to share 'Waiting for the server…'.
+        public const string ServerWait = "Waiting for the server…";
+        public const string PresentationWait = "Showing what just happened · Skip to go on";
+
+        public void Render(PlayerView view, TurnDraft draft, bool busy, bool uncertain, string pendingProblem = "", bool presenting = false)
         {
             shownView = view;
             shownDraft = draft;
@@ -125,13 +130,15 @@ namespace Wotr.Client
             if (status != null)
             {
                 // UI-273: with Lords and Kings, a step before the first action is numbered.
-                status.text = busy ? "Waiting for the server…" : PreActionSteps.Label(view, StatusHint(view, draft));
+                status.text = busy ? Wait(presenting) : PreActionSteps.Label(view, StatusHint(view, draft));
                 ShowStatus();
                 HintChanged?.Invoke(status.text, status.text);
             }
             else
-                HintChanged?.Invoke(busy ? "Waiting for the server…" : "", "");
+                HintChanged?.Invoke(busy ? Wait(presenting) : "", "");
         }
+
+        private static string Wait(bool presenting) => presenting ? PresentationWait : ServerWait;
 
         // What the step waits for, as the console's hint; empty when its objects say it themselves.
         private string StatusHint(PlayerView view, TurnDraft draft)

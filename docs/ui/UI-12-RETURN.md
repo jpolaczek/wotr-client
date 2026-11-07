@@ -124,3 +124,22 @@ The rest of this document holds in a ranked game: the draft and the map stay usa
 uncertain command is recovered through its receipt, so it applies exactly once. A view read before the socket returns is
 applied at once with no presentation of the steps missed, and the action log lists them. A required update waits for the
 end of the game (RANK-10).
+
+## Waiting for the server, and what it is not — QUAL-22 (2026-11-07)
+
+The owner reported that the client sometimes seems to hang on "Waiting for the server…". Production's request times
+since the 6 November switch say the server is not the cause: commands answer in 0.11 s on average (0.27 s at most),
+views in 0.02 s, with no 429 or 503. Two client causes are fixed:
+
+- **The presentation hold had the server's words.** While what just happened is presented (UI-304's playback gate, which
+  also waits for an own action's history page), the tray and the console's hint said "Waiting for the server…". They
+  now say "Showing what just happened · Skip to go on"; "Waiting for the server…" means a command or the battle policy
+  is with the server. `PresentationHoldWaitTests`.
+- **A correspondence game never noticed a dead socket.** Only a ranked game bounded the socket's silence. After sleep, a
+  network change or a VPN toggle a half-open socket showed Live while no notice arrived, so the opponent's moves came
+  only with a manual refresh. The server sends a notice at least every 5 s, so a correspondence game now ends a socket
+  silent for 15 s (three notices) and an attempt stuck for 20 s, and connects again (`ConnectionPolicy.Standard`,
+  `ConnectionPolicyTests`). A ranked game keeps 8 s and 5 s.
+
+Not changed: a failed command is still retried only when a new view arrives or the connection changes; production
+showed no failed command since the switch.

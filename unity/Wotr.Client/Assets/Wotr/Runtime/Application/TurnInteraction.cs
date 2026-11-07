@@ -1089,7 +1089,9 @@ namespace Wotr.Client
             board.Root.EnableInClassList("character-action-context", CharacterRosterActions.OwnsDecision(view, draft));
             board.RefreshHand(draft);
             policy.Render(view, online, sending || sender.Pending != null || held);
-            tray.Render(view, draft, sending || policy.Busy || held, sender.Pending != null && !sending, pendingProblem);
+            // QUAL-22: held alone is the presentation of what just happened, not a wait for the server.
+            tray.Render(view, draft, sending || policy.Busy || held, sender.Pending != null && !sending, pendingProblem,
+                held && !sending && !policy.Busy && sender.Pending == null);
             console.Refresh(view, draft, online, sending || policy.Busy || held, sender.Pending != null);
             rings.Refresh(view, draft, online && !CommandBusy);
             councilTravel.Refresh(view, draft, online && !CommandBusy);
