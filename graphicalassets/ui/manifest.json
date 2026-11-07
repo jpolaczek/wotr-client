@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "82c15de854bf52b4e1f009f0a92e8985b0923807a24d007b94c38b19341ad2a4",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "d309bffc65713331ea1e7b81f828599067927cdc8527fc9865be31c806bbf70a"
+    "assets.json": "9db33b2c6a464f0cdffdb7423730a71125e9e48cc42d39cdb4d38da643631cf4"
   },
   "assets": [
     {
@@ -1990,6 +1990,22 @@
       "alpha": true,
       "source_sha256": "8bb6af5d667324fc1aa072b2c76fc3a32ff0cc1a6c56ade33e76aa78a81ee1f3",
       "png_sha256": "a59fd8343519f678fc0d1e1e9ab7cec32e498d2cb1b9329c14897115b687444d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/victory.png",
+      "source": "src/icons/victory.svg",
+      "variant": null,
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "ddfc8c1d5e36d7d7f3083d67d78c646ee5af277fb99e9267b200938a90505ff9",
+      "png_sha256": "2203d9eabce9c8b403b7fa8c57877d1918573750c7cb1847a7ecf20051f4101b"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/characters.png",

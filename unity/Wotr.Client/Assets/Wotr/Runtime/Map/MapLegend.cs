@@ -33,8 +33,9 @@ namespace Wotr.Client
                 () => map.SetPoliticalView(!map.PoliticalView));
             PoliticalToggle.name = "map-political-toggle";
             PoliticalToggle.style.position = Position.Absolute;
-            PoliticalToggle.style.left = 12;
-            PoliticalToggle.style.bottom = 52;
+            // UI-518: in the bottom row beside the chat, so the column above the legend is free for the rail's Victory plate.
+            PoliticalToggle.style.left = 92;
+            PoliticalToggle.style.bottom = 12;
             PoliticalToggle.style.width = PoliticalToggle.style.height = 32;
             PoliticalToggle.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
             map.PoliticalViewChanged += SyncPoliticalToggle;

@@ -66,6 +66,58 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0, room.Boundary.Commands, "Rail artwork cannot send game commands.");
         }
 
+        // UI-518 (owner): Victory under Effects in the rail, with its own icon and both sides' points, clear of the map's
+        // corner buttons in the four standard layouts; a click opens the Victory panel and a second click closes it.
+        [UnityTest]
+        public System.Collections.IEnumerator VictoryTabStandsUnderEffectsAndOpensThePanel()
+        {
+            var fixture = new Wotr.Fixtures.BoardFixture(false);
+            fixture.View.MatchId = "victory-rail";
+            using var client = new MountedMatchClient("http://localhost", fixture.View.MatchId);
+            foreach (var width in new[] { 1366, 1920 })
+                foreach (var scale in new[] { 1f, 1.25f })
+                {
+                    var texture = new RenderTexture(width, width == 1366 ? 768 : 1080, 24);
+                    texture.Create();
+                    client.Panel.targetTexture = texture;
+                    client.Panel.scale = scale;
+                    client.Apply(fixture.View);
+                    yield return Frames();
+                    var board = client.Board;
+                    var label = $"{width} {scale:0.00}";
+                    var tab = board.Victory.RailTab;
+                    var rail = board.Edges.Left;
+                    Assert.AreSame(rail, tab.parent, label);
+                    Assert.AreEqual(rail.IndexOf(board.TableEffects.Tab) + 1, rail.IndexOf(tab), "Victory stands right under Effects · " + label);
+                    Assert.Greater(tab.worldBound.yMin, board.TableEffects.Tab.worldBound.yMax - 1, label);
+                    Assert.AreEqual("victory", Texture(tab.Q("edge-tab-icon-victory")), label);
+                    StringAssert.StartsWith("VP ", tab.text, label);
+                    StringAssert.Contains("Free Peoples", tab.tooltip, label);
+                    var text = tab.MeasureTextSize(tab.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                    Assert.LessOrEqual(text.x, tab.contentRect.width + .5f, "The points fit on one line · " + label);
+                    var corners = new[] { board.Root.Q("map-legend-toggle"), board.Root.Q("map-political-toggle"), board.Root.Q(className: "game-chat-icon") };
+                    foreach (var corner in corners.Where(corner => corner != null && Visible(corner)))
+                        Assert.IsFalse(tab.worldBound.Overlaps(corner.worldBound), $"Victory {tab.worldBound} clear of {corner.name} {corner.worldBound} · {label}");
+                    LayoutTests.Save(texture, $"ui518-victory-tab-{width}-{scale:0.00}.png");
+                    CardNetworkTests.Click(tab);
+                    yield return Frames();
+                    Assert.IsTrue(board.Victory.IsOpen, "A click opens the Victory panel · " + label);
+                    LayoutTests.Save(texture, $"ui518-victory-open-{width}-{scale:0.00}.png");
+                    CardNetworkTests.Click(tab);
+                    yield return Frames();
+                    Assert.IsFalse(board.Victory.IsOpen, "A second click closes it · " + label);
+                    client.Panel.targetTexture = client.Viewport;
+                    texture.Release();
+                    Object.Destroy(texture);
+                }
+        }
+
+        private static System.Collections.IEnumerator Frames()
+        {
+            for (var frame = 0; frame < 4; frame++)
+                yield return null;
+        }
+
         private static Button[] Tabs(BoardScreen board) => new[] { board.Nations.Root, board.Characters.Tab, board.TableEffects.Tab };
 
         private static VisualElement[] Panels(BoardScreen board) =>

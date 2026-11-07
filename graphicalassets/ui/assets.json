@@ -1150,6 +1150,10 @@
       "role": "Tab and header: Effects."
     },
     {
+      "source": "icons/victory.svg",
+      "role": "UI-518: left rail tab: Victory points (a gilt tower, the captured settlement, in a laurel wreath)."
+    },
+    {
       "source": "icons/characters.svg",
       "role": "Tab and header: Characters."
     },

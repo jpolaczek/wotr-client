@@ -1309,7 +1309,7 @@ DIST-18 (owner 2026-10-25): from the click on `Restart and update` or `Decline a
 
 ## Political view — UI-218 (2026-10-17)
 
-A folded-map button above the map legend and the P key switch the political view: regions in their nations' colours over a subdued illustration, captured settlements striped in the captor's colour; play continues in the view and the choice is kept on the device. Details: [MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#political-view--ui-218-2026-10-17).
+A folded-map button (since UI-518 in the bottom row, right of the legend and the chat) and the P key switch the political view: regions in their nations' colours over a subdued illustration, captured settlements striped in the captor's colour; play continues in the view and the choice is kept on the device. Details: [MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#political-view--ui-218-2026-10-17).
 
 ## Hide from the Fellowship plaque — UI-220 (2026-10-17)
 
@@ -4817,3 +4817,14 @@ runs a clock, a player may pause three times, leaving concedes, and the result c
 Leaderboards page. It is planned, not implemented (UI-497–UI-504). The interface is in [RANKED_UX](RANKED_UX.md); the
 rules are in `wotr-server:docs/RANKED_PLAY.md`. Two exceptions to rules above: the move clock stands in the top bar only
 in ranked games, and its warning is the one sound reminder.
+
+## Victory in the left rail — UI-518 (2026-11-07)
+
+The owner asked for a victory points icon among the icons on the left. Under Effects the rail ends with a Victory plate:
+the icon (a gilt tower, the settlement a side captures, in a laurel wreath, `graphicalassets/ui/src/icons/victory.svg`)
+and both sides' points, "VP" then the Free Peoples' in blue and the Shadow's in red. Its tooltip names both scores
+with their thresholds (4 and 10). A click opens the Victory panel and a second click closes it; hovering unrolls
+nothing, as the panel is a window of its own, which the board menu also still opens. The plate is 34 points tall, not a
+66-point medallion, so with the four tabs above it it stays clear of the map's corner buttons at 1366×768 and 125 %;
+the political view's button moved into their bottom row, right of the legend and the chat. A reached threshold rims the
+plate in gold. `LeftRailLayoutTests.VictoryTabStandsUnderEffectsAndOpensThePanel` checks the four layouts.

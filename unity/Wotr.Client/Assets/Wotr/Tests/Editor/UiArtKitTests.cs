@@ -132,7 +132,7 @@ namespace Wotr.EditorTests
             ("tokens/ruler-token-shadow", 32, 32, true), ("tokens/ruler-token-shadow-lit", 32, 32, true),
             ("icons/cards", 26, 26, true), ("icons/ring", 26, 26, true), ("icons/ring-captured", 26, 26, true), ("icons/spent", 26, 26, true),
             ("icons/hunt", 26, 26, true), ("icons/out", 26, 26, true), ("icons/log", 20, 20, true),
-            ("icons/politics", 28, 28, true), ("icons/effects", 28, 28, true), ("icons/characters", 28, 28, true),
+            ("icons/politics", 28, 28, true), ("icons/effects", 28, 28, true), ("icons/victory", 28, 28, true), ("icons/characters", 28, 28, true),
             ("icons/fellowship", 28, 28, true),
             ("cards/parchment", 96, 96, true), ("cards/parchment-playable", 96, 96, true), ("cards/parchment-armed", 96, 96, true), ("cards/parchment-discard", 96, 96, true),
             ("cards/back", 96, 96, true), ("cards/back-hover", 96, 96, true),

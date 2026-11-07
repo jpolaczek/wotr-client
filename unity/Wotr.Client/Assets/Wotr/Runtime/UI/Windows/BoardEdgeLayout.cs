@@ -53,6 +53,8 @@ namespace Wotr.Client
             AddTab(board.Reinforcements.Tab, "Reserve", "reinforcements");
             AddTab(board.Characters.Tab, "Characters", "characters");
             AddTab(board.TableEffects.Tab, "Effects", "effects");
+            // UI-518 (owner): Victory under Effects; it opens the Victory panel on click and unrolls nothing on hover.
+            AddTab(board.Victory.RailTab, "Victory", "victory");
             DockLeft(board.Nations.Drawer, "politics");
             DockLeft(board.Reinforcements.Root, "reinforcements");
             DockLeft(board.TableEffects.Root, "effects");

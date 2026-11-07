@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32">
+  <!-- Victory points (UI-518): a gilt tower, the settlement a side captures, in a laurel wreath. -->
+  <g filter="url(#lift)">
+    <g style="stroke: var(--gilt-edge)" stroke-width="0.7" stroke-linecap="round">
+      <path d="M14.39 28.09 A11.6 11.6 0 0 1 7.94 8.26" fill="none"/>
+      <path d="M17.61 28.09 A11.6 11.6 0 0 0 24.06 8.26" fill="none"/>
+    </g>
+    <g fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.4">
+      <ellipse cx="12.42" cy="27.63" rx="1.15" ry="2.55" transform="rotate(-90.0 12.42 27.63)"/>
+      <ellipse cx="9.02" cy="25.86" rx="1.09" ry="2.42" transform="rotate(-71.0 9.02 25.86)"/>
+      <ellipse cx="6.38" cy="23.09" rx="1.03" ry="2.29" transform="rotate(-52.0 6.38 23.09)"/>
+      <ellipse cx="4.80" cy="19.60" rx="0.98" ry="2.17" transform="rotate(-33.0 4.80 19.60)"/>
+      <ellipse cx="4.43" cy="15.79" rx="0.92" ry="2.04" transform="rotate(-14.0 4.43 15.79)"/>
+      <ellipse cx="5.32" cy="12.07" rx="0.86" ry="1.91" transform="rotate(5.0 5.32 12.07)"/>
+      <ellipse cx="7.38" cy="8.84" rx="0.80" ry="1.78" transform="rotate(24.0 7.38 8.84)"/>
+      <ellipse cx="19.58" cy="27.63" rx="1.15" ry="2.55" transform="rotate(90.0 19.58 27.63)"/>
+      <ellipse cx="22.98" cy="25.86" rx="1.09" ry="2.42" transform="rotate(71.0 22.98 25.86)"/>
+      <ellipse cx="25.62" cy="23.09" rx="1.03" ry="2.29" transform="rotate(52.0 25.62 23.09)"/>
+      <ellipse cx="27.20" cy="19.60" rx="0.98" ry="2.17" transform="rotate(33.0 27.20 19.60)"/>
+      <ellipse cx="27.57" cy="15.79" rx="0.92" ry="2.04" transform="rotate(14.0 27.57 15.79)"/>
+      <ellipse cx="26.68" cy="12.07" rx="0.86" ry="1.91" transform="rotate(-5.0 26.68 12.07)"/>
+      <ellipse cx="24.62" cy="8.84" rx="0.80" ry="1.78" transform="rotate(-24.0 24.62 8.84)"/>
+    </g>
+    <path d="M11.6 25.4 L11.6 13.4 L12.9 13.4 L12.9 11.2 L14.5 11.2 L14.5 13.4 L15.2 13.4 L15.2 11.2 L16.8 11.2 L16.8 13.4 L17.5 13.4 L17.5 11.2 L19.1 11.2 L19.1 13.4 L20.4 13.4 L20.4 25.4 Z" fill="url(#gilt)" style="stroke: var(--gilt-edge)" stroke-width="0.6" stroke-linejoin="round"/>
+    <path d="M14.6 25.4 L14.6 22.2 A1.4 1.4 0 0 1 17.4 22.2 L17.4 25.4 Z" fill="#2b1d10"/>
+    <rect x="15.4" y="16.2" width="1.2" height="2.4" rx="0.5" fill="#2b1d10"/>
+    <path d="M12.4 14.2 L19.6 14.2" fill="none" style="stroke: var(--gilt-highlight)" stroke-width="0.5" opacity="0.6"/>
+  </g>
+</svg>
