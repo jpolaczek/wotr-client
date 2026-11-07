@@ -4871,3 +4871,19 @@ action's course:
 - the side still named once: a line of the acting side's own ("Shadow · …", "2× Shadow · …") drops its name.
 
 `ActionFactText.Details`; `ActionCardLayoutTests` checks the numbered steps and the side named once.
+
+## A route the player must choose says so — UI-519 (2026-11-07)
+
+The owner asked that a move of several regions light every destination and move in one click, unless the steps
+matter. Most moves already do (characters by level, separations, card journeys, flights, teleports: UI-105, UI-271).
+Two keep their region-by-region route because the way itself changes the result, and the owner chose to keep them
+("don't change it, but give clear instructions that a route must be chosen when that happens"):
+
+- **A card's march** (Shadows Gather, The Shadow Lengthens, The Shadow is Moving, Through a Day and a Night): each step
+  may capture an empty settlement or rouse a nation. The console reads "Choose the route region by region: on the way
+  the army may capture an empty settlement or rouse a nation · Click the next highlighted region."
+- **The Fellowship's declaration and revelation** (UI-219): "Choose the Fellowship's path region by region", then for a
+  revelation "a Shadow stronghold on it brings an extra Hunt", for a declaration "the path is yours to choose", and
+  "Using all of the Progress moves at once."
+
+`RouteChoiceHintTests`.
