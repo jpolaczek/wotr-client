@@ -163,6 +163,29 @@ namespace Wotr.PlayTests
         }
 
         // Clicks land on laid-out controls.
+        // UI-525 (owner, 2026-11-08: toggling expansions "makes a large part of the layout and the whole menu on the right
+        // blink"): while a rules change is sent the page stays still — every control keeps its state through a prompt
+        // reply; only a slow one greys them out, and the reply restores them.
+        [UnityTest]
+        public IEnumerator ARulesChangeKeepsThePageStillUnlessTheServerIsSlow()
+        {
+            var screen = CreateScreen();
+            screen.Update(Host(1, new MatchConfiguration { Lords = true }));
+            yield return Layout();
+            var before = Enabled(screen);
+            screen.Busy(true);
+            yield return Layout();
+            CollectionAssert.AreEquivalent(before, Enabled(screen), "A prompt reply changes no control.");
+            yield return new UnityEngine.WaitForSecondsRealtime((WaitingRoomScreen.BusyShownAfterMilliseconds + 150) / 1000f);
+            Assert.IsFalse(screen.Root.Q<Button>("waiting-back").enabledSelf, "A slow reply greys the controls out.");
+            Assert.IsFalse(screen.Rules.Medallion("lords").enabledSelf);
+            screen.Busy(false);
+            CollectionAssert.AreEquivalent(before, Enabled(screen), "The reply restores them.");
+        }
+
+        private static List<string> Enabled(WaitingRoomScreen screen) =>
+            screen.Root.Query<Button>().ToList().Select(button => button.name + ":" + button.enabledSelf).ToList();
+
         private static IEnumerator Layout()
         {
             for (var frame = 0; frame < 3; frame++)

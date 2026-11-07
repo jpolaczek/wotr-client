@@ -49,7 +49,13 @@ namespace Wotr.Client
         private readonly Button invite;
         private readonly Button copy;
         private readonly TextField code = new TextField { name = "room-invitation", isReadOnly = true };
+        // UI-525 (owner, 2026-11-08: toggling expansions "makes a large part of the layout and the whole menu on the right
+        // blink"): a request blocks further actions at once (WaitingRoomController.Run ignores them), but the controls grey
+        // out only when the server takes longer than this, so a quick change keeps the page still.
+        public const long BusyShownAfterMilliseconds = 400;
         private bool busy;
+        private bool shownBusy;
+        private IVisualElementScheduledItem showBusy;
 
         public WaitingRoomScreen()
         {
@@ -219,6 +225,23 @@ namespace Wotr.Client
         public void Busy(bool value)
         {
             busy = value;
+            showBusy?.Pause();
+            if (value)
+            {
+                showBusy = Root.schedule.Execute(ShowBusy);
+                showBusy.ExecuteLater(BusyShownAfterMilliseconds);
+                return;
+            }
+            shownBusy = false;
+            UpdateButtons();
+        }
+
+        // A request still running after the moment greys the controls out until it ends.
+        private void ShowBusy()
+        {
+            if (!busy || shownBusy)
+                return;
+            shownBusy = true;
             UpdateButtons();
         }
 
@@ -228,26 +251,26 @@ namespace Wotr.Client
                 return;
             var waiting = Room.Status == RoomStatus.Waiting;
             ready.text = OwnReady ? "Not ready" : "Ready";
-            ready.SetEnabled(!busy && waiting && Player);
+            ready.SetEnabled(!shownBusy && waiting && Player);
             ready.tooltip = ReadyTooltip();
-            back.SetEnabled(!busy);
-            demo.SetEnabled(!busy && waiting && Player);
+            back.SetEnabled(!shownBusy);
+            demo.SetEnabled(!shownBusy && waiting && Player);
             var audienceFull = Room.Observers.Count >= Limit(Room);
-            observe.SetEnabled(!busy && waiting && Player && !audienceFull);
+            observe.SetEnabled(!shownBusy && waiting && Player && !audienceFull);
             observe.tooltip = !Player ? "You are watching this room." : audienceFull ? "All observer places are taken."
                 : "Leave your seat and watch this game.";
-            start.SetEnabled(!busy && waiting && Room.IsHost && Room.FreePeoplesAccepted && Room.ShadowAccepted && Room.StartUnavailableReason.Length == 0);
+            start.SetEnabled(!shownBusy && waiting && Room.IsHost && Room.FreePeoplesAccepted && Room.ShadowAccepted && Room.StartUnavailableReason.Length == 0);
             start.tooltip = !Room.IsHost ? "Only the host starts the game."
                 : Room.StartUnavailableReason.Length == 0 ? "Both players must be ready."
                 : "This server no longer offers an expansion chosen here. " +
                   (OwnReady ? "Press Not ready and change the rules first." : "Change the rules first.");
-            Rules.Show(Room, busy);
-            freePeoples.Enable(Room, busy);
-            shadow.Enable(Room, busy);
-            audience.Enable(Room, busy);
+            Rules.Show(Room, shownBusy);
+            freePeoples.Enable(Room, shownBusy);
+            shadow.Enable(Room, shownBusy);
+            audience.Enable(Room, shownBusy);
             // OBS-04: the code also lets observers in, so the host shows it while the room is open.
-            invite.SetEnabled(!busy && Room.IsHost && Room.Status != RoomStatus.Closed);
-            copy.SetEnabled(!busy && Room.JoinCode.Length > 0);
+            invite.SetEnabled(!shownBusy && Room.IsHost && Room.Status != RoomStatus.Closed);
+            copy.SetEnabled(!shownBusy && Room.JoinCode.Length > 0);
         }
 
         // UI-364: the host's Ready locks the rules strip and Not ready opens it again.
