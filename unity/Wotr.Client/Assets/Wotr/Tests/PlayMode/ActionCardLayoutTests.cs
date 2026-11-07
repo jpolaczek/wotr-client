@@ -65,14 +65,14 @@ namespace Wotr.PlayTests
                     yield return Settle();
                     Assert.That(Vector2.Distance(moved, log.Root.layout.position), Is.LessThan(1));
                     Assert.AreEqual(view.Revision, board.View.Revision);
-                    // UI-106: effects only — no die or cost row, no numbered step headings and no sources; the side
-                    // appears once, in the heading.
+                    // UI-514 (owner, after UI-106): the full record numbers its steps, each with what it was and every
+                    // recorded fact; no separate cost row; the side appears once, in the heading.
                     Assert.IsNull(log.Card.Root.Q(className: "action-cost"));
-                    Assert.IsNull(log.Card.Root.Q(className: "action-step-heading"));
+                    var headings = log.Card.Root.Query<Label>(className: ActionCard.StepHeadingClass).ToList();
+                    Assert.IsNotEmpty(headings, "Numbered steps");
+                    StringAssert.StartsWith("1 · ", headings[0].text);
                     var texts = log.Card.Root.Query<Label>().ToList().Where(l => l.resolvedStyle.display != DisplayStyle.None)
                         .Select(l => l.text).ToList();
-                    Assert.IsFalse(texts.Any(t => t.StartsWith("Source ·")), "No sources on the card");
-                    Assert.IsFalse(texts.Any(t => t.Contains(" die")), "No die on the card");
                     var side = ActionCardText.Actor(group.Action.Initiator);
                     StringAssert.StartsWith(side, log.Card.Root.Q<Label>("action-card-heading").text);
                     Assert.AreEqual(1, texts.Count(t => t.StartsWith(side + " ·")), "The side is named once");

@@ -1117,6 +1117,8 @@
 .action-cost .cost-symbol { width: 24px; -unity-text-align: middle-center; }
 #action-card-steps { flex-grow: 1; min-height: 0; }
 .action-card-step { border-top-width: 1px; border-top-color: rgb(75, 72, 67); padding: 6px 0; flex-shrink: 0; }
+/* UI-514: a step of the full record opens with its number and what it was. */
+.action-card-step > .action-step-heading { margin: 0 0 2px 0; -unity-font-style: bold; white-space: normal; }
 .action-step-heading { color: rgb(231, 209, 160); font-size: 12px; white-space: normal; margin-bottom: 4px; }
 .action-detail { white-space: normal; font-size: 12px; margin: 1px 0; flex-shrink: 1; }
 .action-summary #action-card-message { font-size: 12px; white-space: normal; flex-shrink: 0; }

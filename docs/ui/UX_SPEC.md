@@ -4855,3 +4855,19 @@ Now the Effects panel itself shows every card leave, for both players (`TableCar
 - **Skip animations:** the tile goes at once; the name stands without a fade.
 
 `TableCardLeavingTests` covers the three cases; `OpponentCardPresentationTests` keeps UI-493's.
+
+## The log's full record tells the course and the result — UI-514 (2026-11-07)
+
+The owner: the log needs fuller, more detailed information about how an action went and how it ended, after a click
+on its entry. Since UI-106 (2026-10-12: no sources, no die used, the side once) a step showed its effects only. The
+notices and the compact result card (UI-166) stay as UI-106 left them; the log entry's **full record** now reads as the
+action's course:
+
+- its steps numbered in order, each opening with what it was in its own words ("2 · Moved the army…"), without the side
+  the heading already names; a step that recorded nothing and was automatic bookkeeping stays out;
+- under each, every fact it recorded: moves and who moved, figures, losses with their hits, control, nations, cards,
+  the source, the dice with their faces and where they went, the rolls with the hit target and hits, the Hunt's and the
+  battle's results, the Fellowship's state and route, the budget left, the victory points;
+- the side still named once: a line of the acting side's own ("Shadow · …", "2× Shadow · …") drops its name.
+
+`ActionFactText.Details`; `ActionCardLayoutTests` checks the numbered steps and the side named once.

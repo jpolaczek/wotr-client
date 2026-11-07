@@ -13,6 +13,24 @@ namespace Wotr.Client
         // acting side repeated on every line.
         public static IEnumerable<string> Effects(ActionLogStep step, BoardPresentation data) => Lines(step, data, false);
 
+        // UI-514 (owner, 2026-11-07: "the log needs fuller, more detailed information about how an action went and how it
+        // ended after a click on it"), after UI-106: a log entry's full record — every recorded fact, with the source, the
+        // dice and their faces, the rolls and hits and the budget left — the acting side named once, in the card's heading.
+        public static IEnumerable<string> Details(ActionLogStep step, BoardPresentation data, Side? actor) =>
+            Lines(step, data, true).Select(line => WithoutActor(line, actor));
+
+        // "Shadow · Event · …" reads "Event · …" and "2× Shadow · Army die …" reads "2× Army die …" under a Shadow heading.
+        private static string WithoutActor(string line, Side? actor)
+        {
+            if (!actor.HasValue)
+                return line;
+            var name = ActionCardText.Actor(actor) + " · ";
+            if (line.StartsWith(name, System.StringComparison.Ordinal))
+                return line.Substring(name.Length);
+            var counted = line.IndexOf("× " + name, System.StringComparison.Ordinal);
+            return counted > 0 && counted < 4 ? line.Substring(0, counted + 2) + line.Substring(counted + 2 + name.Length) : line;
+        }
+
         private static IEnumerable<string> Lines(ActionLogStep step, BoardPresentation data, bool record)
         {
             foreach (var move in step.Movements)
