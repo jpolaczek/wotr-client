@@ -530,6 +530,100 @@ namespace Wotr.PlayTests
         // The Free Peoples watch the Shadow's attack on Osgiliath: Sauron's three Regulars, an Elite and the Witch-king from
         // Minas Morgul against Gondor's Regular and Elite. The attack's own step records the battle's opening state.
         // TEST-20: the Shadow may watch instead, Gondor's three Regulars, an Elite and Gimli attacking its Sauron Elite.
+        // UI-511 (owner, 2026-11-07: "it was in the second round of the fight, I think, after the losses"): the Shadow attacks
+        // with the Witch-king and two nations; round one costs it every figure of its main nation; in round two nothing of the
+        // window — no figure, emblem or portrait — stands over the ribbon or a force's heading, while presented or live.
+        [UnityTest]
+        public IEnumerator ANationLostInRoundOneStandsNowhereOverTheHeadingInRoundTwo([Values("witch-king", "saruman")] string commander)
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, Side.FreePeoples);
+            stage.Put(stage.Main, UnitKind.Regular, "minas-morgul", 2);
+            stage.Put(stage.Main, UnitKind.Elite, "minas-morgul", 2);
+            stage.Put("isengard", UnitKind.Regular, "minas-morgul", 4);
+            stage.Put(stage.Own, UnitKind.Elite, "osgiliath", 1);
+            PresentedBoardStage.Character(stage.Before, "base.character." + commander, "base.character." + commander, stage.Opponent, "minas-morgul");
+            var fight = new Fight(stage, 1, Opening(stage));
+            fight.Decide(stage.Opponent);
+            yield return Open(stage, fight);
+            var round = fight.Next();
+            var lost = round.Units(stage.Main, null);
+            round.Record(battle => Roll(battle.Defender, "d", 6, 6, 5, 5));
+            var losses = round.Decide(stage.Opponent);
+            foreach (var id in lost)
+                losses.Facts.LossDetails.Add(new ActionLossFact { Figure = stage.Unit(id), Operation = BattleLossKind.Remove, RegionId = "minas-morgul", Hits = 1 });
+            round.Change(battle =>
+            {
+                battle.Attacker.Units.RemoveAll(u => lost.Contains(u.Id));
+                battle.Attacker.ParticipantIds = battle.Attacker.Units.Select(u => u.Id).ToList();
+            });
+            var afterLosses = round.Latest();
+            PresentedBoardStage.Place(afterLosses, lost, "reserve");
+            stage.Play(afterLosses, null, round.Steps.ToArray());
+            for (var frame = 0; frame < 400 && stage.Playback.Holding; frame++)
+            {
+                NothingOverTheHeadings(stage, "round one, frame " + frame);
+                yield return null;
+            }
+            yield return stage.Released();
+            var second = round.Next();
+            second.Record(battle =>
+            {
+                battle.Round = 2;
+                battle.Stage = "AttackerCard";
+                battle.CardsRevealed = false;
+                foreach (var force in new[] { battle.Attacker, battle.Defender })
+                {
+                    force.CardCommitted = false;
+                    force.CardId = null;
+                    force.Dice.Clear();
+                }
+            });
+            var roundTwo = second.Latest();
+            PresentedBoardStage.Place(roundTwo, lost, "reserve");
+            stage.Play(roundTwo, null, second.Steps.ToArray());
+            for (var frame = 0; frame < 400 && stage.Playback.Holding; frame++)
+            {
+                NothingOverTheHeadings(stage, "round two, frame " + frame);
+                yield return null;
+            }
+            yield return stage.Released();
+            for (var frame = 0; frame < 60; frame++)
+            {
+                NothingOverTheHeadings(stage, "round two live, frame " + frame);
+                yield return null;
+            }
+            stage.Save("ui511-round-two-" + commander + ".png");
+        }
+
+        // Every shown figure, nation emblem and portrait of a battle column stands under that column's heading.
+        private static void NothingOverTheHeadings(PresentedBoardStage stage, string when)
+        {
+            foreach (var role in new[] { "attacker", "defender" })
+                foreach (var column in stage.Board.Battles.Root.Query("battle-" + role).ToList())
+                {
+                    var heading = column.Q(role + "-strength");
+                    if (heading == null || !Visible(column) || float.IsNaN(heading.worldBound.height) || heading.worldBound.height <= 0)
+                        continue;
+                    var parts = column.Query(className: "battle-figure").ToList()
+                        .Concat(column.Query(className: "battle-nation-emblem").ToList())
+                        .Concat(column.Query(className: "portrait-medallion").ToList())
+                        // A struck figure swells for a moment (UI-337's hit); that is the hit, not a figure out of place.
+                        .Where(part => Visible(part) && !part.ClassListContains(BattleHits.HitClass) &&
+                            !float.IsNaN(part.worldBound.height) && part.worldBound.height > 0);
+                    foreach (var part in parts)
+                        Assert.GreaterOrEqual(part.worldBound.yMin + 1, heading.worldBound.yMax,
+                            $"{when}: {role} {part.name} at {part.worldBound} over the heading {heading.worldBound}");
+                }
+        }
+
+        private static bool Visible(VisualElement element)
+        {
+            for (var node = element; node != null; node = node.parent)
+                if (node.resolvedStyle.display == DisplayStyle.None)
+                    return false;
+            return true;
+        }
+
         internal static PresentedBoardStage Attack(out Fight fight, int width = 1366, float scale = 1f, Side viewer = Side.FreePeoples)
         {
             var stage = new PresentedBoardStage(width, scale, false, viewer);
