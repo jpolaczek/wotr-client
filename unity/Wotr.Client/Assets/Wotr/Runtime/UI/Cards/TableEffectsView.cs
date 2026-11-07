@@ -151,8 +151,17 @@ namespace Wotr.Client
             return true;
         }
 
+        // UI-516: the cards whose leaving the presentation has just named beside the tab (UI-493), and when.
+        private readonly Dictionary<string, double> leavingShown = new Dictionary<string, double>();
+        private const double LeavingShownSeconds = 15;
+        private TableCardLeaving leaving;
+
+        // UI-516: the presentation named this card leaving beside the tab, so the panel does not name it again.
+        public void LeavingShown(string sourceId) => leavingShown[sourceId] = Time.realtimeSinceStartupAsDouble;
+
         public void Apply(PlayerView latest)
         {
+            var sameGame = view != null && view.MatchId == latest.MatchId && view.You == latest.You;
             if (view != null && (view.MatchId != latest.MatchId || view.You != latest.You))
             {
                 selected = null;
@@ -165,8 +174,9 @@ namespace Wotr.Client
             {
                 if (unroll.Entry == entries[key])
                     unroll.Hide();
-                entries[key].Root.RemoveFromHierarchy();
+                var gone = entries[key];
                 entries.Remove(key);
+                Leave(gone, sameGame);
             }
             foreach (var source in sources)
             {
@@ -191,6 +201,24 @@ namespace Wotr.Client
             empty.style.display = sources.Count == 0 ? DisplayStyle.Flex : DisplayStyle.None;
             details.Show(preparing ? selected : null, ended, view.Configuration);
             RefreshChoices();
+        }
+
+        // UI-516: in the open panel the tile is struck through and fades; with the panel closed a card's struck-through
+        // name stands beside the tab, unless the presentation already named it there. A new game shows nothing leave.
+        private void Leave(EffectEntry gone, bool sameGame)
+        {
+            leaving ??= new TableCardLeaving(Tab);
+            var id = gone.Source.SourceId;
+            if (sameGame && IsOpen && gone.Root.worldBound.width > 0)
+            {
+                leaving.Tile(gone.Root);
+                return;
+            }
+            gone.Root.RemoveFromHierarchy();
+            var named = leavingShown.TryGetValue(id, out var at) && Time.realtimeSinceStartupAsDouble - at < LeavingShownSeconds;
+            leavingShown.Remove(id);
+            if (sameGame && !named && CardLibrary.Cards.ContainsKey(id))
+                leaving.Notice(gone.Source.Title);
         }
 
         public void Context(IEnumerable<ComponentAction> actions, bool enabled)

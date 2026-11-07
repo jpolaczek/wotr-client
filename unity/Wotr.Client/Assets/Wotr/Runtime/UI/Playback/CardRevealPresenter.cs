@@ -166,12 +166,14 @@ namespace Wotr.Client
             var glow = new ObjectGlow();
             glow.Follow(tab);
             marks.Place(() => marks.Plate(tab, RemovedPlate(id), PlateSide.After));
+            board.TableEffects.LeavingShown(id);
             return new GlowBeat(glow, now, RemovedSeconds, marks.End);
         }
 
         private static Label RemovedPlate(string id)
         {
-            var plate = new Label("− " + CardLibrary.Title(id));
+            // UI-516: struck through, as the Effects panel shows a card leaving.
+            var plate = new Label(TableCardLeaving.Struck(CardLibrary.Title(id)));
             plate.AddToClassList(PoliticsPresenter.CaptionName);
             plate.AddToClassList("presentation-caption-name");
             return plate;

@@ -4839,3 +4839,19 @@ helm, Muster a spiked crown, Army/Muster both, Event a palantír holding an eye,
 `die-shadow` element: the dice panel, the console's menus, the spent-die flight, the cost badges) and the log's action
 icon of a Shadow action wear the Shadow's glyph; anywhere else the Free Peoples' set is the default. The battle notice,
 which used the old Army face, shows the crossed swords of combat.
+
+## A card leaving the table — UI-516 (2026-11-07)
+
+The owner asked that a card leaving the table always be clear, with an animation (it disappears, or is clearly struck
+through) that is seen to belong to the Effects tab. Before, the open panel's tile vanished in one frame, and only the
+presentation of the opponent's action lit the tab with "− name" (UI-493); the player's own removals showed nothing.
+Now the Effects panel itself shows every card leave, for both players (`TableCardLeaving`):
+
+- **Panel open:** the tile stays where it stood, struck through in red with its title dimmed, for 0.9 s, then fades and
+  goes; its neighbours close up after it. It takes no pointer and no query finds it by its old name.
+- **Panel closed:** the card's struck-through name stands beside the Effects tab, level with it, for 2 s, while the tab's
+  count steps down with its pulse. The presentation's own plate (UI-493) is struck through the same way, and the panel
+  does not name a card the presentation has just named.
+- **Skip animations:** the tile goes at once; the name stands without a fade.
+
+`TableCardLeavingTests` covers the three cases; `OpponentCardPresentationTests` keeps UI-493's.
