@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
-  <!-- Character result: a cloaked figure, head and shoulders. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <!-- ART-10: Character result: an upright dagger. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
   <defs>
     <linearGradient id="character-ivory" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#fffaea"/>
@@ -8,9 +8,10 @@
     </linearGradient>
   </defs>
   <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M5.4 29 C5.4 21.4 9.8 17.2 16 17.2 C22.2 17.2 26.6 21.4 26.6 29 Z" fill="url(#character-ivory)" style="stroke: var(--ink)" stroke-width="1.5"/>
-    <path d="M16 17.4 L12.6 29 M16 17.4 L19.4 29" fill="none" style="stroke: var(--ink)" stroke-width="0.8" opacity="0.5"/>
-    <circle cx="16" cy="10.4" r="6.4" fill="url(#character-ivory)" style="stroke: var(--ink)" stroke-width="1.5"/>
-    <circle cx="16" cy="18.4" r="1.7" fill="url(#gilt)" style="stroke: var(--ink)" stroke-width="0.8"/>
+    <path d="M13.40 12.60 L18.60 12.60 L17.90 24.60 L16.00 29.40 L14.10 24.60 Z" fill="url(#character-ivory)" style="stroke: var(--ink)" stroke-width="1.4"/>
+    <path d="M16.00 14.00 L16.00 25.40" fill="none" style="stroke: var(--ink)" stroke-width="0.8" opacity="0.55"/>
+    <rect x="9.00" y="10.00" width="14.00" height="2.80" rx="1.30" fill="url(#character-ivory)" style="stroke: var(--ink)" stroke-width="1.3"/>
+    <rect x="14.50" y="5.20" width="3.00" height="5.00" rx="0.6" fill="url(#character-ivory)" style="stroke: var(--ink)" stroke-width="1.2"/>
+    <circle cx="16.00" cy="3.90" r="2.00" fill="url(#gilt)" style="stroke: var(--ink)" stroke-width="1.1"/>
   </g>
 </svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- ART-10: the Shadow's Character result: a jagged, back-curved Orc blade. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="shadow-character-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M13.6 11.6 C11.6 16.6 12.4 22.4 9.8 29.2 C14.8 25.6 17.2 21.4 17.6 18.6 L19.4 17.6 L17.8 16.4 L19.2 14.6 L17.4 13.8 L18.4 11.6 Z" fill="url(#shadow-character-ivory)" style="stroke: var(--ink)" stroke-width="1.4"/>
+    <path d="M9.4 9.4 L21.8 11.6 L21.2 13.6 L9.0 11.4 Z" fill="url(#shadow-character-ivory)" style="stroke: var(--ink)" stroke-width="1.2"/>
+    <path d="M14.8 9.8 L16.2 3.6 L18.6 4 L17.4 10.4 Z" fill="url(#shadow-character-ivory)" style="stroke: var(--ink)" stroke-width="1.2"/>
+    <circle cx="17.4" cy="3" r="1.7" fill="url(#gilt)" style="stroke: var(--ink)" stroke-width="1"/>
+  </g>
+</svg>

@@ -102,6 +102,8 @@ namespace Wotr.Client
         {
             heading.EnableInClassList("side-free", side == Side.FreePeoples);
             heading.EnableInClassList("side-shadow", side == Side.Shadow);
+            // ART-10: the paying die's face in the acting side's own glyph (DicePanel.uss).
+            icon.EnableInClassList("die-face-shadow", side == Side.Shadow);
         }
 
         // The kind of action at a glance: the card of a played Event, else the face of the die that paid for it.

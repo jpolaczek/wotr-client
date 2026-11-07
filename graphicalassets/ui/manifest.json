@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "82c15de854bf52b4e1f009f0a92e8985b0923807a24d007b94c38b19341ad2a4",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "9db33b2c6a464f0cdffdb7423730a71125e9e48cc42d39cdb4d38da643631cf4"
+    "assets.json": "10b502c17f56d8a5a446ced91583bcbcfc71ba77e94ef49e76bb9218f2300777"
   },
   "assets": [
     {
@@ -1444,8 +1444,8 @@
         48
       ],
       "alpha": true,
-      "source_sha256": "69eeb2de52e4c9ef8d8d3276b977ae14390b96ff6dfb71b91b13cf8495e42b75",
-      "png_sha256": "a3136804593fb919c8da90ab989260cb9e7cfb5ad488d65a71f076c9ce832a91"
+      "source_sha256": "599923b0e890b182b8f405c1dd2f6939f7d8ccea8be08e51248c09c8ca6abaa3",
+      "png_sha256": "20aebb4c4f4a68d01d05bb16ad532b97de98ce5d13c4216baf651fac16bb9e7e"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/army.png",
@@ -1460,8 +1460,8 @@
         48
       ],
       "alpha": true,
-      "source_sha256": "21be2335020efd4434f0a7b9925c126779e008a71c83286fe00beeb8866c5ef1",
-      "png_sha256": "d8911a90456a7971d0029d6f9ac9223a0916e31c59094e87d693bcfc0a8b1f8a"
+      "source_sha256": "8ec106ac8b45657bc9cd7fbc84a75055fbd3cd26d40feaceac98f265e1d987bb",
+      "png_sha256": "4b48ec2e3c76fecc4f67a11cccbfc619d7f5bd0bd361c63801ce92567c2c4244"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/muster.png",
@@ -1476,8 +1476,8 @@
         48
       ],
       "alpha": true,
-      "source_sha256": "610d16c17a98f6ee8d3b5892cb44bf9bb94215ac3004709103c21e798d8505f6",
-      "png_sha256": "2077e1e54208b66a05576f6a0e93254beb854d7b597cfcf84e7c1fa634f1e916"
+      "source_sha256": "dc007a8ebe37ed1d8e11eb0ec2db820292fdf4b6e4826d7d2ab280f1749dcea0",
+      "png_sha256": "63d67373546da9ac435d71cbed81111e2d41bdabc86cc3de069c07af0b0a6dd8"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/army-muster.png",
@@ -1492,8 +1492,8 @@
         48
       ],
       "alpha": true,
-      "source_sha256": "3e0f5bcfeae35f69c61440392a20000684843a7ef79c615f9ccfa4fc41cb50d4",
-      "png_sha256": "3ca5c6a85fd0c6a787ba15accb5e41e6eaa8b268a576404eb6ea19dced59fc29"
+      "source_sha256": "2e25b70d1296773fa5ebf953ad9f5de5c1a16a1d479d00f0a0fb3e34d8b23f65",
+      "png_sha256": "9bb77d3b666c303ff0a0c503fdeb7f9cd1ac5a138fa06930f7ba1198d14de963"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/event.png",
@@ -1508,8 +1508,8 @@
         48
       ],
       "alpha": true,
-      "source_sha256": "660046a4afc39f87024265b1415847a1732ab22dd76eb507f19c2e10664bbff8",
-      "png_sha256": "4b0f8096d21780b691ef99b848b7c2f7ea3d82cab0c0452bb68b3ae0c6abdd23"
+      "source_sha256": "9208ce1f17d52bc0456b8d44baadd30eba30785f09703a5662c7c5f353b7ebeb",
+      "png_sha256": "a738545632e2650d4e3638bfc36a15896288ae9c25a2b08849d20b4bf25e9c63"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/will.png",
@@ -1524,8 +1524,8 @@
         48
       ],
       "alpha": true,
-      "source_sha256": "436760306506b148cae6a21abeae8b62bcd096e7a796aaea937f7ba922edd596",
-      "png_sha256": "d2e25a9c079bfba61fe02a4b2b10925be2bdf561211eacd023047872106aca75"
+      "source_sha256": "209707260c29715f384564eae172512bf3de39481a2f111057ac3b18076091e6",
+      "png_sha256": "174ea509e6b8dcf6b459e630d27b1fa90b12722282a8e55c89ed1ebd99ee6b40"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/eye.png",
@@ -1574,6 +1574,86 @@
       "alpha": true,
       "source_sha256": "31180ea05ff210ef6aa09a863f2e265db52d716c1389dfc98b5b007a185a3474",
       "png_sha256": "9f77797763d91d282358136c63268652fd02a529634843d045b4993ff1fb4669"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/shadow-character.png",
+      "source": "src/dice/faces/shadow-character.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "481ccd33da82dfbbc6206dbe659e4388eb69d6221100d80370b0a0ae4f6a9a3a",
+      "png_sha256": "a07a123b0a109492c3a5404a2e6e18a5ea9a1443669d4e26e0dfd8404e1d5238"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/shadow-army.png",
+      "source": "src/dice/faces/shadow-army.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "1b055375f6160a7ca38be92c20f0c26fa648294afabdb797dda29af7738e7007",
+      "png_sha256": "f7859a344e52dd427a655c8c24b06d0cb202f6fd5fc1001c6716e4248f5d27de"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/shadow-muster.png",
+      "source": "src/dice/faces/shadow-muster.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "bdd7a80672e6294bde92d28b9b21620bf5bf9acf800e86063e540bc1c47c72be",
+      "png_sha256": "a36d9eee510d5577b03b7f1bb91f3e7a32359964e844a51e9c416d47f467e085"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/shadow-event.png",
+      "source": "src/dice/faces/shadow-event.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "afbcc7a4f5a25021c27ace1d77b389497855def084e8548e718c5d9732e26c9c",
+      "png_sha256": "a56666c093929e3efab15262b54727a663e48dd0c9db8eb9589534f1014ec720"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/shadow-army-muster.png",
+      "source": "src/dice/faces/shadow-army-muster.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "609ff68857b278acc5101551f5e8f91c9c72dd44eea28649e90bf060391e024a",
+      "png_sha256": "70b544cb815f68fc79b86da17f7bd0e4df9cee0e186abfe3cf3c5957b69697cc"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-free.png",

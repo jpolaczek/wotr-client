@@ -99,6 +99,14 @@
 .die-face-card-draw { background-image: resource("Wotr/Art/UI/dice/faces/card-draw"); }
 .die-face-use-balrog { background-image: resource("Wotr/Art/UI/dice/faces/use-balrog"); }
 .die-face-unrolled { display: none; }
+/* ART-10 (owner, 2026-11-07): the faces follow the printed dice's motifs, drawn anew. The Free Peoples' set above is the
+   default; a face on a Shadow die (inside any die-shadow element) or marked die-face-shadow (the log's action icon) wears
+   the Shadow's own glyph: a jagged blade, an Orc helm, a spiked crown, both, a palantír with an eye. */
+.die-shadow .die-face-character, .die-face-shadow.die-face-character { background-image: resource("Wotr/Art/UI/dice/faces/shadow-character"); }
+.die-shadow .die-face-army, .die-face-shadow.die-face-army { background-image: resource("Wotr/Art/UI/dice/faces/shadow-army"); }
+.die-shadow .die-face-muster, .die-face-shadow.die-face-muster { background-image: resource("Wotr/Art/UI/dice/faces/shadow-muster"); }
+.die-shadow .die-face-army-muster, .die-face-shadow.die-face-army-muster { background-image: resource("Wotr/Art/UI/dice/faces/shadow-army-muster"); }
+.die-shadow .die-face-event, .die-face-shadow.die-face-event { background-image: resource("Wotr/Art/UI/dice/faces/shadow-event"); }
 
 /* Special dice keep the framed tile with their origin caption under the glyph. */
 .dice-panel .available-dice .die.special-die {

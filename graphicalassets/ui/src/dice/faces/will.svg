@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
-  <!-- Will of the West result: an eight-pointed star. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <!-- ART-10: Will of the West: a staff rune whose two branches rise to the right. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
   <defs>
     <linearGradient id="will-ivory" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#fffaea"/>
@@ -8,7 +8,8 @@
     </linearGradient>
   </defs>
   <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M16.00 2.80 L17.38 12.67 L22.22 9.78 L19.33 14.62 L29.20 16.00 L19.33 17.38 L22.22 22.22 L17.38 19.33 L16.00 29.20 L14.62 19.33 L9.78 22.22 L12.67 17.38 L2.80 16.00 L12.67 14.62 L9.78 9.78 L14.62 12.67 Z" fill="url(#will-ivory)" style="stroke: var(--ink)" stroke-width="1.3"/>
-    <circle cx="16" cy="16" r="3.4" style="fill: var(--elven-stone); stroke: var(--elven-stone-dark)" stroke-width="0.8"/>
+    <path d="M11.6 28.4 V5 M11.6 17.4 C15.6 14.4 18.4 10.6 19.6 4.8 M11.6 23 C17.4 20.4 22.6 14.6 24.8 6.6" fill="none" style="stroke: var(--ink)" stroke-width="5.2"/>
+    <path d="M11.6 28.4 V5 M11.6 17.4 C15.6 14.4 18.4 10.6 19.6 4.8 M11.6 23 C17.4 20.4 22.6 14.6 24.8 6.6" fill="none" stroke="url(#will-ivory)" stroke-width="2.8"/>
+    <circle cx="11.6" cy="28.4" r="1.6" fill="url(#gilt)" style="stroke: var(--ink)" stroke-width="0.9"/>
   </g>
 </svg>

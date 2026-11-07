@@ -4828,3 +4828,14 @@ nothing, as the panel is a window of its own, which the board menu also still op
 66-point medallion, so with the four tabs above it it stays clear of the map's corner buttons at 1366×768 and 125 %;
 the political view's button moved into their bottom row, right of the legend and the chat. A reached threshold rims the
 plate in gold. `LeftRailLayoutTests.VictoryTabStandsUnderEffectsAndOpensThePanel` checks the four layouts.
+
+## Dice faces after the printed symbols — ART-10 (2026-11-07)
+
+The owner asked for new dice pictures close to the original symbols, so each face reads at once. The faces keep the
+kit's style (ivory with an ink outline over the side's enamel) and follow the printed dice's motifs, drawn anew rather
+than copied. The Free Peoples: Character a dagger, Army a banner, Muster a winged helm, Army/Muster the helm and the
+banner, Event a palantír, Will of the West a staff rune. The Shadow has its own: Character a jagged Orc blade, Army an Orc
+helm, Muster a spiked crown, Army/Muster both, Event a palantír holding an eye, and the Eye. A face on a Shadow die (any
+`die-shadow` element: the dice panel, the console's menus, the spent-die flight, the cost badges) and the log's action
+icon of a Shadow action wear the Shadow's glyph; anywhere else the Free Peoples' set is the default. The battle notice,
+which used the old Army face, shows the crossed swords of combat.
