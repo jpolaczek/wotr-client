@@ -202,8 +202,14 @@
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
 }
 
-/* Units: one figure per nation and kind with its count, behind the nation's emblem. */
-.battle-composition { flex-direction: row; flex-wrap: wrap; align-items: flex-end; flex-shrink: 1; min-width: 0; }
+/* Units: one figure per nation and kind with its count, behind the nation's emblem. UI-511: the composition takes the rest
+   of its line in the force row. Sized to its figures alone, it measured a fraction narrower than they lay out once rounded
+   to whole pixels (171.6 for 172 at 100 % on 1920×1080): the last nation broke into a line the force row had not made
+   room for, and the row's bottom alignment lifted the first one over the heading and the stage ribbon. Room inside the
+   composition (a padding) does not help, as it widens both. It does not shrink: the layout gives a row's single growing
+   and shrinking child no basis, so it would squeeze in beside nine portraits instead of taking a line of its own; it is
+   measured within the row's width, so a crowded force still wraps inside it. */
+.battle-composition { flex-direction: row; flex-wrap: wrap; align-items: flex-end; flex-grow: 1; flex-shrink: 0; min-width: 0; }
 .battle-nation-group { flex-direction: row; align-items: flex-end; margin-right: 6px; margin-bottom: 1px; }
 /* UI-207: figures large enough to read at a glance, each on a soft gilt glow. */
 .battle-nation-emblem { width: 20px; height: 20px; margin: 0 3px 6px 0; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
