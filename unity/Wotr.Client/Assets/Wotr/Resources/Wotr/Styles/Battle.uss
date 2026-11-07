@@ -554,6 +554,8 @@
 /* UI-440 (owner): Evil Knowledge, an ability, is its bare skill icon (SkillIcon), centred in the footer's 33-point row. */
 #board-screen .regional-battle .tray .battle-choice-footer .skill-icon.battle-skill-choice { width: 32px; height: 32px; margin: 0 6px; align-self: center; }
 .regional-battle .tray #battle-stay { width: 96px; min-width: 96px; }
+/* UI-515: Advance all, beside Select all and Stay. */
+.regional-battle .tray #battle-advance-all { width: 132px; min-width: 132px; }
 /* UI-146: the advance's select/deselect-all toggle: its fixed square in the footer; on, the warm field (UI-471). */
 .regional-battle .tray .battle-choice-footer #battle-select-all {
     width: 34px;

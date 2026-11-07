@@ -70,6 +70,7 @@ namespace Wotr.Client
             if (draft.Kind == CommandKind.AdvanceBattle)
             {
                 AddSelectAll(footer, option, draft, edit);
+                AddAdvanceAll(footer, view, option, draft, complete, data);
                 var stay = AddDirect(footer, "Stay", "battle-stay", draft.Kind.Value, direct);
                 stay.tooltip = DirectTooltip(view, CommandKind.AdvanceBattle, data);
             }
@@ -104,6 +105,27 @@ namespace Wotr.Client
                 toggle.EnableInClassList("all-selected", all);
                 toggle.tooltip = all ? "Deselect all · Every figure stays" : "Select all · Every figure that can advance";
             });
+        }
+
+        // UI-515 (owner, an exception to UI-430 he asked for): one button advances every figure that can advance into the
+        // battle's region at once — the same command as choosing them all and clicking the region. Choosing figures one by
+        // one and Stay remain.
+        private static void AddAdvanceAll(VisualElement footer, PlayerView view, ActionOption option, TurnDraft draft,
+            Action<Action> complete, BoardPresentation data)
+        {
+            var eligible = option.EligibleIds.ToList();
+            var button = BoardScreen.Button("Advance all", () => complete(() => draft.Change(p =>
+            {
+                p.Ids.Clear();
+                p.Ids.AddRange(eligible);
+            })));
+            button.name = "battle-advance-all";
+            button.AddToClassList("battle-direct");
+            button.Add(DirectIcon("advance"));
+            button.SetEnabled(eligible.Count > 0);
+            var region = view.Battle != null ? ActionCardText.Region(view.Battle.RegionId, data) : "the region";
+            button.tooltip = "Advance all · Every figure that can advance moves into " + region + " at once";
+            footer.Add(button);
         }
 
         // UI-434 (owner, after UI-433): "Click a highlighted figure to extend the siege with it" — one click extends, so no

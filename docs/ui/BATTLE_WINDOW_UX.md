@@ -581,3 +581,13 @@ a roll, its pager, Heroic Death's or Orderly Withdrawal's hit buttons) keeps an 
 under the shorter force row takes the difference, so the rows below line up whatever an ability adds. A replacement's
 chip or marker keeps the card's row height, its top on the card's. Cause, fix and tests:
 [UX_SPEC](UX_SPEC.md#both-sides-rows-stand-level--ui-437).
+
+## Advance all — UI-515 (2026-11-07)
+
+The owner asked for an extra option that moves every unit that took part in the battle into the battle's region at
+once, as a button (an exception to UI-430, which he asked for). When the advance is the player's decision, the footer
+holds Stay, **Advance all** (the advance icon, 132 points) and the Select all toggle. Advance all sends the advance with
+every figure that may advance — the same command as choosing them all and clicking the region — in one click; its
+tooltip names the region. Choosing figures one by one, then the region, and Stay are unchanged; the hint reads
+"Choose figures, then click the destination · Or Advance all, or Stay." `BattleAdvanceAllTests` checks the footer row
+and the command's figures.
