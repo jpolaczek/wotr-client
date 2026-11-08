@@ -46,7 +46,7 @@ namespace Wotr.Client
         {
             if (minimumZoom <= 0)
                 minimumZoom = MapStandSlots.WorstCaseZoom(map.Data.Geometry);
-            Scale = new MapStandScale(map.Camera.Zoom, minimumZoom, MapArmyArtwork.DesignUnit);
+            Scale = new MapStandScale(map.Camera.Zoom, minimumZoom, MapArmyArtwork.DesignUnit, map.FigureSize);
         }
 
         // Figures when the region is focused (inspected, holding a selected force or just reached by a flight), or at the

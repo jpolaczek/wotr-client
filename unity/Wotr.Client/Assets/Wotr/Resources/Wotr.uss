@@ -852,6 +852,15 @@
 .interface-settings-panel .display-choice { height: 34px; min-height: 34px; margin: 0 4px 4px 0; }
 .interface-settings-panel .row { margin-bottom: 8px; }
 .interface-settings-panel .scale-choice { height: 36px; }
+/* UI-529: the four figure sizes share one row, each keeping the 34-point target. */
+.interface-settings-panel .figure-size-choice {
+    width: 86px;
+    height: 34px;
+    min-height: 34px;
+    margin: 0;
+    padding: 0 2px;
+    font-size: 15px;
+}
 .interface-settings-panel .sound-settings { margin-top: 8px; }
 .interface-settings-panel .sound-level { margin: 0 0 2px 0; }
 .interface-settings-panel .unity-toggle { min-height: 34px; margin-bottom: 2px; }

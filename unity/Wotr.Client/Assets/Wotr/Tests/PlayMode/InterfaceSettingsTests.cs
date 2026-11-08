@@ -65,6 +65,52 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-529 (owner, 2026-11-08): Settings' "Figures on the map" starts at 100 %; 150 % draws the map's figures half as
+        // large again round their feet, at once on the board behind Settings, and 100 % draws them exactly as before.
+        [UnityTest]
+        public IEnumerator FiguresOnTheMapGrowRoundTheirFeetAtOnce()
+        {
+            using var client = new MountedMatchClient("http://localhost", "settings-figures");
+            client.Apply(new BoardFixture().View);
+            yield return Settle();
+            var map = client.Board.Map;
+            var stands = map.Stands.Stands("minas-tirith");
+            map.FocusOn(stands.Field, map.FitZoom * 2.2f);
+            yield return Settle();
+            var army = map.Q<Button>("army-minas-tirith-FreePeoples");
+            var before = army.worldBound;
+            var scale = map.Stands.FigureScale;
+            client.Interface.Open();
+            yield return Settle();
+            var settings = client.Interface.Settings.Root;
+            StringAssert.EndsWith("✓", settings.Q<Button>("figure-size-100").text, "The standard size is the default.");
+            Assert.AreEqual(4, settings.Query<Button>(className: "figure-size-choice").ToList().Count);
+            CardNetworkTests.Click(settings.Q<Button>("figure-size-150"));
+            yield return Settle();
+            Assert.AreEqual(1.5f, client.Interface.Preferences.FigureSize);
+            StringAssert.EndsWith("✓", settings.Q<Button>("figure-size-150").text);
+            Assert.AreEqual(scale * 1.5f, map.Stands.FigureScale, .0001f, "Behind Settings the map follows at once.");
+            client.Interface.Settings.Close();
+            yield return Settle();
+            var after = army.worldBound;
+            LayoutTests.Save(client.Viewport, "ui529-figures-150.png");
+            Assert.AreEqual(before.width * 1.5f, after.width, 1.5f, "The army's figures stand half as large again.");
+            Assert.AreEqual(before.height * 1.5f, after.height, 1.5f);
+            // A scale round one point keeps that point: the feet, on the army's place.
+            var fixedX = (1.5f * before.xMax - after.xMax) / .5f;
+            var fixedY = (1.5f * before.yMax - after.yMax) / .5f;
+            var feet = new[] { stands.Field, stands.Garrison ?? stands.Field }
+                .Select(place => map.LocalToWorld(map.Camera.ToScreen(place)))
+                .OrderBy(point => Vector2.Distance(point, new Vector2(fixedX, fixedY))).First();
+            Assert.AreEqual(feet.x, fixedX, 1.5f, "The figures grow round their feet.");
+            Assert.AreEqual(feet.y, fixedY, 1.5f, "The figures grow round their feet.");
+            client.Interface.Preferences.SetFigureSize(1f);
+            yield return Settle();
+            Assert.AreEqual(before.width, army.worldBound.width, .5f, "The standard draws them as before.");
+            Assert.AreEqual(before.center.x, army.worldBound.center.x, .5f);
+            Assert.AreEqual(before.center.y, army.worldBound.center.y, .5f);
+        }
+
         [UnityTest]
         public IEnumerator SettingsFocusAndDenseHeaderFitAtBothSizesAndScales()
         {

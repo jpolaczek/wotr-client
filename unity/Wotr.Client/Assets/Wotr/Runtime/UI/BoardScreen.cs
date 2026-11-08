@@ -157,11 +157,13 @@ namespace Wotr.Client
             Root.EnableInClassList("board-planning", active);
         }
         public WindowLayout Windows { get; }
+        private readonly InterfacePreferences preferences;
         public BoardEdgeLayout Edges { get; }
 
-        public BoardScreen(WindowLayout windows = null)
+        public BoardScreen(WindowLayout windows = null, InterfacePreferences preferences = null)
         {
             Windows = windows ?? new WindowLayout();
+            this.preferences = preferences;
             Presentation = BoardPresentation.Load();
             Presentation.ClearGameState();
             Root.AddToClassList("board-screen");
@@ -177,6 +179,7 @@ namespace Wotr.Client
             stage.AddToClassList("stage");
             stage.Add(TopBar.Shadow);
             Map = new MapCanvas(Presentation);
+            FollowFigureSize();
             Map.Legend.SetOverlayHost(stage);
             stage.Add(GameChat.Root);
             stage.Add(GameChat.Icon);
@@ -850,6 +853,22 @@ namespace Wotr.Client
             TopBar.ShowClock(clock, you);
             Pause.Show(clock?.Paused == true, clock?.PausedBy == you ? "Paused by you" : "Paused by your opponent");
         }
+
+        // UI-529: the figures' size chosen in Settings, followed while the board is shown (Settings opens over it).
+        private void FollowFigureSize()
+        {
+            if (preferences == null)
+                return;
+            ApplyFigureSize();
+            Root.RegisterCallback<AttachToPanelEvent>(_ =>
+            {
+                preferences.Changed += ApplyFigureSize;
+                ApplyFigureSize();
+            });
+            Root.RegisterCallback<DetachFromPanelEvent>(_ => preferences.Changed -= ApplyFigureSize);
+        }
+
+        private void ApplyFigureSize() => Map.FigureSize = preferences.FigureSize;
 
         public bool ReducedMotion()
         {

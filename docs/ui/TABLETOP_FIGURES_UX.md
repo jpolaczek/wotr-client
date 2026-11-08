@@ -197,7 +197,9 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   drawn at the same `p`; on the Mordor track it keeps its UI-283 size (80 or 64 points tall). An army's token is a puck
   about as wide as its base: `clamp(40 × zoom, 32, 44)` points. A king's marker keeps its 30 × 34 points. (Since UI-425
   a field force's token stands on its puck's lower edge, and past the whole map of the worst case tokens and kings'
-  markers keep their board size: "As built (UI-425)".)
+  markers keep their board size: "As built (UI-425)".) Since UI-529 every figure is drawn at `p × s / designUnit`,
+  `s` being Settings' "Figures on the map" (1, 1.25, 1.5 or 1.75; 1 the default): the places, the footprint's scale
+  and capacity, the tokens, gems and kings' markers do not change, so larger figures may overlap.
 - **Level** (`MapStandLayout.Figures`). A focused region (inspected, holding a selected force, or just reached by a
   flight) shows figures; otherwise figures need the Detail level (1.3/1.2 × the fit zoom) and the footprint within the
   region's capacity, and they stay until the footprint exceeds the capacity by the same 1.3/1.2 ratio. With the

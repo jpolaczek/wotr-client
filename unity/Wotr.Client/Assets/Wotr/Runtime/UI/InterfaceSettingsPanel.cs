@@ -14,6 +14,8 @@ namespace Wotr.Client
         private readonly InterfacePreferences preferences;
         private readonly Button normal;
         private readonly Button large;
+        // UI-529: the map's figures at their standard size or larger.
+        private readonly Button[] figureSizes;
         // UI-321 (owner rule): smooth transitions by default; this setting makes every change happen at once.
         private readonly Toggle motion = new Toggle("Skip animations") { name = "reduced-motion" };
         private readonly Button close;
@@ -44,12 +46,14 @@ namespace Wotr.Client
             panel.Add(columns);
             normal = ScaleButton("scale-100", 1f);
             large = ScaleButton("scale-125", 1.25f);
+            figureSizes = Array.ConvertAll(InterfacePreferences.FigureSizes, FigureSizeButton);
             FillInterfaceColumn(resetWindows);
             sound = new SoundSettingsSection(preferences, testSound);
             interfaceColumn.Add(sound.Root);
             columns.Add(interfaceColumn);
             display = new DisplaySettingsSection(preferences, screen ?? new UnityDisplayScreen());
             columns.Add(display.Root);
+            AddFigureSizes(display.Root);
             preferences.Changed += Render;
             Root.RegisterCallback<KeyDownEvent>(KeyDown, TrickleDown.TrickleDown);
             Render();
@@ -96,7 +100,7 @@ namespace Wotr.Client
             var button = BoardScreen.Button("Settings", open);
             button.name = "open-interface";
             button.AddToClassList("interface-button");
-            button.tooltip = "Interface size, motion, sound, window mode and resolution.";
+            button.tooltip = "Interface size, figure size, motion, sound, window mode and resolution.";
             return button;
         }
 
@@ -108,12 +112,41 @@ namespace Wotr.Client
             return button;
         }
 
+        // UI-529: under the resolutions, where the shorter column has room; the interface column would push Settings past
+        // a 1366 × 768 screen at 125 %.
+        private void AddFigureSizes(VisualElement column)
+        {
+            column.Add(new Label("Figures on the map · larger ones may overlap") { name = "figure-size-heading" });
+            var sizes = BoardScreen.Row();
+            sizes.name = "figure-sizes";
+            foreach (var size in figureSizes)
+                sizes.Add(size);
+            column.Add(sizes);
+        }
+
+        private Button FigureSizeButton(float size)
+        {
+            var button = BoardScreen.Button("", () => preferences.SetFigureSize(size));
+            button.name = "figure-size-" + Percent(size);
+            button.AddToClassList("figure-size-choice");
+            return button;
+        }
+
+        private static int Percent(float size) => Mathf.RoundToInt(size * 100);
+
         private void Render()
         {
             normal.text = preferences.Scale == 1f ? "100% ✓" : "100%";
             large.text = preferences.Scale == 1.25f ? "125% ✓" : "125%";
             normal.EnableInClassList("selected", preferences.Scale == 1f);
             large.EnableInClassList("selected", preferences.Scale == 1.25f);
+            for (var i = 0; i < figureSizes.Length; i++)
+            {
+                var size = InterfacePreferences.FigureSizes[i];
+                var chosen = preferences.FigureSize == size;
+                figureSizes[i].text = Percent(size) + "%" + (chosen ? " ✓" : "");
+                figureSizes[i].EnableInClassList("selected", chosen);
+            }
             motion.SetValueWithoutNotify(preferences.ReducedMotion);
             display.Render();
             sound.Render();

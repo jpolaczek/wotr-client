@@ -4901,3 +4901,20 @@ Two keep their region-by-region route because the way itself changes the result,
   "Using all of the Progress moves at once."
 
 `RouteChoiceHintTests`.
+
+## Larger figures on the map — UI-529 (2026-11-08)
+
+The owner: "let's add in the options the possibility to increase the size of the figures on the board, even if a larger
+size will sometimes make them overlap. The smallest and the default is to be as it is now."
+
+Settings' second column, under the resolutions (the interface column would push Settings past a 1366 × 768 screen at
+125 %), has "Figures on the map · larger ones may overlap" with four sizes in one row: 100 % (the
+standard, the default and the smallest), 125 %, 150 % and 175 % (`InterfacePreferences.FigureSize`, saved with the
+other interface choices; an older save, or a size off the list, reads 100 %). Every figure on the map — armies,
+characters, the Fellowship, the planned recruits, a flight, a carried figure — is drawn that much larger round its feet
+(`MapStandScale.Of`); the stand places, the capacity rule that turns a crowded region's figures into tokens, the tokens,
+the gems and the kings' markers stay as they are, so larger figures may overlap one another. The board behind Settings
+follows a change at once (`BoardScreen` follows the preferences while it is shown; `MapCanvas.FigureSize` lays the map
+out again). `InterfacePreferencesTests.FigureSizeStartsAtTheStandardSurvivesReloadAndRefusesOtherSizes`,
+`InterfaceSettingsTests.FiguresOnTheMapGrowRoundTheirFeetAtOnce` and `SettingsFocusAndDenseHeaderFitAtBothSizesAndScales`
+(the row fits at 1366 × 768 and 1920 × 1080, 100 % and 125 %).

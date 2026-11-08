@@ -55,7 +55,7 @@ namespace Wotr.Client
                 ui.Content.Add(AlreadyRunning());
                 return;
             }
-            flow = new ClientFlow(ui.Content, windows: ui.Windows, sounds: ui.Sounds);
+            flow = new ClientFlow(ui.Content, windows: ui.Windows, sounds: ui.Sounds, preferences: ui.Preferences);
             flow.InterfaceRequested += ui.Open;
             ui.Settings.AccountPageRequested += () => Application.OpenURL(GatewayScreen.AccountPage(ServerConfiguration.Address, ""));
             updates = UpdateController.Start(ui, flow);

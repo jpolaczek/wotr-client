@@ -28,12 +28,16 @@ namespace Wotr.Client
 
         public readonly float Zoom;
         public readonly float PointsPerUnit;
+        // UI-529 (Settings, Figures on the map): how much larger than standard every figure stands; 1 is the standard.
+        // Only the drawing grows: the places, the capacity rule and the tokens stay, so larger figures may overlap.
+        public readonly float FigureSize;
         // The worst-case Detail zoom, the footprints' scale 1 and the gems' reference.
         public readonly float Reference;
 
-        public MapStandScale(float zoom, float minimum, float maximum)
+        public MapStandScale(float zoom, float minimum, float maximum, float figureSize = 1)
         {
             Zoom = zoom;
+            FigureSize = figureSize;
             PointsPerUnit = Mathf.Clamp(zoom, minimum, maximum);
             Reference = minimum;
         }
@@ -42,7 +46,7 @@ namespace Wotr.Client
         public float Footprint => Zoom > 0 ? PointsPerUnit / Zoom : float.PositiveInfinity;
 
         // The element scale of something designed at `designUnit` points per board unit.
-        public float Of(float designUnit) => PointsPerUnit / designUnit;
+        public float Of(float designUnit) => PointsPerUnit * FigureSize / designUnit;
 
         // UI-425: the whole map of the worst case, the Detail level's threshold below the worst-case Detail zoom. Zoomed out
         // past it (onto the canvas's margins) the tokens, the medallions, the kings' markers and the gems keep their board

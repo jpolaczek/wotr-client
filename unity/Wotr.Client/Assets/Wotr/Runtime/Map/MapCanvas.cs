@@ -130,6 +130,7 @@ namespace Wotr.Client
         private Vector2 previous;
         private Vector2 lastPan;
         private float lastZoom;
+        private float figureSize = 1;
 
         public MapCanvas(BoardPresentation data)
         {
@@ -634,6 +635,21 @@ namespace Wotr.Client
             MarkerVisibility.InspectedRegion = region ?? "";
             Refresh();
         }
+        // UI-529 (Settings, Figures on the map): how much larger than standard the figures stand; 1 is the standard. A
+        // change lays the map out again at once.
+        public float FigureSize
+        {
+            get => figureSize;
+            set
+            {
+                if (Mathf.Approximately(figureSize, value))
+                    return;
+                figureSize = value;
+                if (panel != null)
+                    Refresh();
+            }
+        }
+
         public void Refresh()
         {
             Camera.Constrain(CanvasBounds, contentRect);

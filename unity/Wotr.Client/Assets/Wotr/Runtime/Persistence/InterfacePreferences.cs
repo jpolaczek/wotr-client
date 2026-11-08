@@ -10,6 +10,9 @@ namespace Wotr.Client
         private const int CurrentVersion = 3;
         public const float DefaultEffects = 0.4f;
         public const float DefaultAlerts = 0.6f;
+        // UI-529 (owner, 2026-11-08): the map's figures may stand larger than their standard size, overlapping where they
+        // must; the standard (1) is the smallest and the default.
+        public static readonly float[] FigureSizes = { 1f, 1.25f, 1.5f, 1.75f };
         private readonly string key;
         public float Scale { get; private set; } = 1f;
         public bool ReducedMotion { get; private set; }
@@ -20,6 +23,7 @@ namespace Wotr.Client
         public float EffectsVolume { get; private set; } = DefaultEffects;
         public float AlertsVolume { get; private set; } = DefaultAlerts;
         public bool BackgroundAlerts { get; private set; } = true;
+        public float FigureSize { get; private set; } = 1f;
         public event Action Changed;
 
         public SoundLevels SoundLevels => new SoundLevels(SoundEnabled, EffectsVolume, AlertsVolume, BackgroundAlerts);
@@ -42,6 +46,7 @@ namespace Wotr.Client
                 Resolution = DisplayOptions.IsPreset(resolution) ? resolution : DisplaySize.Native;
                 if (saved.Version == CurrentVersion)
                     ReadSound(saved);
+                FigureSize = ValidFigureSize(saved.FigureSize) ? saved.FigureSize : 1f;
             }
             catch (ArgumentException) { }
         }
@@ -119,6 +124,16 @@ namespace Wotr.Client
             Save();
         }
 
+        public void SetFigureSize(float value)
+        {
+            if (!ValidFigureSize(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+            if (FigureSize == value)
+                return;
+            FigureSize = value;
+            Save();
+        }
+
         public void SetBackgroundAlerts(bool value)
         {
             if (BackgroundAlerts == value)
@@ -139,6 +154,8 @@ namespace Wotr.Client
 
         private static bool ValidScale(float value) => value == 1f || value == 1.25f;
 
+        private static bool ValidFigureSize(float value) => Array.IndexOf(FigureSizes, value) >= 0;
+
         private static bool ValidMode(int value) => Enum.IsDefined(typeof(WindowMode), value);
 
         private void Save()
@@ -154,7 +171,8 @@ namespace Wotr.Client
                 SoundEnabled = SoundEnabled,
                 EffectsVolume = EffectsVolume,
                 AlertsVolume = AlertsVolume,
-                BackgroundAlerts = BackgroundAlerts
+                BackgroundAlerts = BackgroundAlerts,
+                FigureSize = FigureSize
             };
             PlayerPrefs.SetString(key, JsonUtility.ToJson(settings));
             PlayerPrefs.Save();
@@ -174,6 +192,7 @@ namespace Wotr.Client
             public float EffectsVolume = DefaultEffects;
             public float AlertsVolume = DefaultAlerts;
             public bool BackgroundAlerts = true;
+            public float FigureSize = 1f;
         }
     }
 }

@@ -84,7 +84,7 @@ namespace Wotr.PlayTests
             document.rootVisualElement.style.flexGrow = 1;
             document.rootVisualElement.styleSheets.Add(Resources.Load<StyleSheet>("Wotr"));
             Interface = new InterfaceController(document.rootVisualElement, panel, new InterfacePreferences(preferencesKey));
-            Board = new BoardScreen(Interface.Windows);
+            Board = new BoardScreen(Interface.Windows, Interface.Preferences);
             Interface.Content.Add(Board.Root);
             Board.InterfaceRequested += Interface.Open;
             interaction = new TurnInteraction(Api, Connection, Board, persistence);
