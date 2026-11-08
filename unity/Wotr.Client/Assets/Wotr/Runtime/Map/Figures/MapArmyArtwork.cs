@@ -396,10 +396,13 @@ namespace Wotr.Client
             Stack(i => -Mathf.Abs(i - (shown - 1) / 2f));
         }
 
-        // The figures' drawing order, the nearest last (in front), all behind the plaque and the counts.
+        // The figures' drawing order, the nearest last (in front), all behind the plaque and the counts; the unused ones
+        // after them, so the shown figures stay the first.
         private void Stack(Func<int, float> nearness)
         {
             foreach (var i in Enumerable.Range(0, shown).OrderBy(nearness).ThenBy(i => i))
+                silhouettes[i].PlaceBehind(plaque);
+            for (var i = shown; i < silhouettes.Length; i++)
                 silhouettes[i].PlaceBehind(plaque);
         }
 
