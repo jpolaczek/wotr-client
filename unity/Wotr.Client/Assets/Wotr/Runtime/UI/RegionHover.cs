@@ -99,6 +99,17 @@ namespace Wotr.Client
             Panel.Root.BringToFront();
         }
 
+        // UI-528: a click on figures opens their region's panel and never closes it; a panel already showing the region
+        // (one holding a decision too) stays as it is.
+        public void OpenOrKeep(string region)
+        {
+            pressedOpen = "";
+            if (!Shows(region))
+                Open(region);
+        }
+
+        public bool Shows(string region) => explicitRegion == region && Panel.Root.style.display.value != DisplayStyle.None;
+
         // UI-254: opens the region panel that hosts a decision and keeps it while that decision waits.
         public void OpenDecision(string region, string decisionId)
         {

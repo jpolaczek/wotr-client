@@ -832,8 +832,8 @@ it exactly as its region panel's chip does.
 - **Click.** With a Character die the character's click starts its travel; with an Army die it joins the army (the
   commander-first rule, UI-105); a card, an ability or an order lit on the figure is used — the same command as the
   chip's (`ActionContextInteraction.SelectFigure`). An enemy character's click is its region's (an attack target, or its
-  panel). The player's own character opens no region panel: a click that chooses nothing does what its region's click
-  does, without the panel. A reserve dropped on a character is dropped on its region. The army's click is unchanged: it
+  panel). A click on the player's own character that chooses nothing does what its region's click does and, since
+  UI-528, opens the region panel. A reserve dropped on a character is dropped on its region. The army's click is unchanged: it
   selects every figure that can move, its characters included, and opens the panel.
 - **One set of highlights.** The region panel's chips and the map's miniatures read one model (`FigureChoices`), so a
   context that lights a chip lights the figure, and a selection made on either shows on both. The army's base is marked
@@ -964,3 +964,103 @@ UI-407 matrix's readability defects; the stand places (`stand-slots.json`, `stan
 
 Tests: `TabletopAcceptanceMatrixTests` (`TabletopFrameChecks.AssertReadable` in every static frame),
 `TabletopObjectsTests`, `MapRegionNamesTests`, `MapStandSlotsTests`, `MapStandScaleTests`.
+
+## Every figure, or one of each kind with its count — UI-510 (2026-11-07)
+
+The owner: "with two or three units every figure shows, and then they show as if stacked on one another with one
+number. We don't want that: if there are too many units to show them all, show one of each type and its own count, so
+everything is clear without another click." The miniature (the figures level; the far token is unchanged) now follows
+one rule (`MapArmyArtwork.Figures`):
+
+- **Everything fits (three figures or fewer, a ghost's carried characters counted).** Every unit stands as its own
+  figure, in its own nation's colours, Elites first, then Regulars, the Nazgûl and other Leaders. No figure carries a
+  number; the plaque keeps the nation emblems and the total.
+- **Too many.** One figure of each kind (Elite, Regular, Nazgûl, other Leaders; at most four) stands for all of them,
+  drawn as the nation with the most of that kind, and carries its own count, "×N" (since UI-522 the kinds stand side by
+  side; below). The plaque keeps the emblems and the total, so a 2 Elite, 3 Regular, 1 Leader army
+  reads "×2", "×3", the Leader alone, and 6.
+
+`MapArmyArtworkTests` checks both cases on both sides (the new "crowd" samples), that the counts add up to the army,
+stay inside the marker and clear of the total, and that a token and a small army show none.
+
+## One figure of each kind, side by side — UI-522 (2026-11-07)
+
+The owner, with a picture of Barad-dûr's field army (4 Regulars, 1 Elite, 1 Nazgûl): "the units still stand on top of
+one another and it is not clear what is there". UI-510's figures stood 13 points apart on a stand one figure wide, so
+they covered each other and their counts. The owner chose among three layouts (side by side and smaller on a wider stand;
+one figure with the composition on the plaque; side by side on today's stand) the first, and then, told that reserving
+a full row stand everywhere would leave 42 regions instead of 15 showing tokens until zoomed in, a row as wide as each
+region allows:
+
+- **The row** (`MapArmyArtwork`, `army-row`). An army that shows one figure of each kind with two or more kinds stands
+  them in a row: two thirds of their stature, each centred in a column of its own (28 points, 2 apart) that no other
+  figure enters, a wide painted cell drawn narrower; its count, ×1 too, centred at its feet just above the plaque. The
+  plaque keeps the emblems and the total. The stand, its rim and its contact shadow widen past the holder on either side
+  (`SpreadLeft`, `SpreadRight`); the click shape and the visible part widen with them, and the holder, its feet point
+  and every flight keep their size. Three kinds take 96 points (71 board units), four a narrower column each.
+- **How wide** (`MapArmyRowRoom`, `RegionStands.FieldRow` and `GarrisonRow`). The stand places do not move. Each field
+  and garrison place records how far its row stand may reach before and after its feet, from a round base's 20 units to
+  35.5 a side in half-unit steps: inside the region, off the other force's and the king's marker's bases, on no
+  settlement, other fortress drawing or region name, and on no label of a force it stands in front of
+  (`scripts/export_map_stands.py`, `force_rooms`). The stands that come and go narrow the side they stand on when the
+  map lays its figures out: a character's, the Fellowship's, a planned ghost's or a second force on the planned place
+  keeps UI-422's gap from the row's round end and clear of its figures. The stand is centred on the feet where both
+  sides reach that far, otherwise it leans to the open side, so a Witch-king beside Barad-dûr's army leaves the row its
+  other side. A narrower row draws narrower columns, so its figures are smaller but never cover one another. Of the 121
+  places, 93 reach 50 units or more across, 62 reach 64 and 44 the full 71 (Barad-dûr, Gorgoroth); Minas Morgul and Dol
+  Guldur keep the round stand. A row takes a press anywhere on its band up to its figures' height, so a press where a
+  full army's figures stood still reaches it.
+- **Unchanged.** Every region's places, capacities and names; the 15 regions that show tokens at the worst case; the
+  far token, which shows the total only.
+
+Checks: PlayMode `MapArmyArtworkTests.OneFigureOfEachKindStandsSideBySideWithItsCount` (the owner's army and a Gondor
+garrison on the widest stand, the narrowest and one narrowed on its left, at 100 and 125 %: no figure over another,
+every count at its figure's feet and clear of the others and the total, each figure takes the click) and `MapArmyRowTests` (Barad-dûr on the map
+beside the Witch-king at three zooms on 1366 × 768 at 125 % and 1920 × 1080); EditMode `MapArmyRowRoomTests` (the
+narrowing on either side) and `MapStandSlotsTests.ARowStandAtItsReachStaysInItsRegionAndCoversNothing`.
+
+## Bigger figures in the row — UI-523 (2026-11-08)
+
+The owner, with a picture of the UI-522 rows: "the figures are now clearly apart but very small; they must be decidedly
+bigger so they can be seen clearly". Without overlapping, three kinds stood about 27 points tall in a typical place (a
+single figure stands 54), and even a row twice as wide gave only about 34. The owner chose figures of at least about
+85 % of a single figure, overlapping a little where the row is short:
+
+- **Sizes** (`MapArmyRow`). Each figure stands at its full stature while the row holds them apart (a 2-point gap); else
+  all shrink alike to fit, down to 85 %; below that each overlaps its neighbour at most a third of the narrower one's
+  width, the middle one drawn in front, and only then do they shrink further. The counts stay centred at their
+  figures' feet at least 17 points apart, clear of the plaque's total.
+- **Reach.** A row may now reach 50 board units on either side (100 across, 135 points), and its figures stand as tall
+  as an army's, so the export's row rectangle and the client's narrowing (`MapArmyRowRoom`) use the full 40 units. The
+  places, capacities and names stay as they were; of the 121 places the median row reaches 74 units across and 33
+  reach 90 or more. Barad-dûr's field reaches 50 and 41.5: its three riders stand 46 points tall alone, about 37 with
+  the Witch-king beside them.
+- **Clicks.** The row's band takes a press up to an army's full height.
+
+Checks: EditMode `MapArmyRowLayoutTests` (full size apart, shrinking alike, 85 % with at most a third's overlap, a tight
+row's counts apart), `MapArmyRowRoomTests`, `MapStandSlotsTests`; PlayMode `MapArmyArtworkTests` (85 % on the widest
+stand, at most a third's overlap) and `MapArmyRowTests`.
+
+## Every row figure at full size — UI-526 (2026-11-08)
+
+The owner, with a picture of Minas Morgul's, the Morannon's and Barad-dûr's rows after UI-523: "let's make the figures
+bigger still; some are very, very small (not all are the same)". UI-523 shrank a row's figures where its place was short,
+so Minas Morgul's two kinds stood about half Barad-dûr's size. Now every row figure stands at its full stature, as a
+single army's does, in every region (`MapArmyRow`): apart while the place holds them, else overlapping their neighbours
+up to 40 % of the narrower one (the middle in front, the counts at their feet at least 17 points apart), and where even
+that does not fit the row reaches past its place alike on both sides rather than shrink — in a tight region (Minas
+Morgul, Dol Guldur) it may stand over the edge of its place. It reaches past its place only into free room
+(`MapArmyRowRoom.Limit`, up to 50 units a side): never onto a character, the Fellowship or the planned recruits standing
+anywhere on the map, another force's base or figures in any region, the plaque of a force it stands in front of
+(UI-425), a Mordor track gate or step, or a settlement's gem; only where even that room is short do its figures shrink,
+alike and just enough (`MapArmyRow.Fit` — Barad-dûr's three riders beside the Witch-king stand about 41 points tall).
+The track's marks and the gems keep one size in points, so a row keeps clear of them at their widest on the board, the
+worst-case Detail zoom (`MapCanvas.RowMarks`, built once per board): a row standing over a mark would take its click,
+as the Fellowship's marker did on Minas Morgul's gate (TABLETOP_FIGURES_UX, UI-513). `MapArmyRowLayoutTests`,
+`MapArmyRowRoomTests` (a mark across the row's band stops it a gap short), `MapArmyArtworkTests` (full size on the
+widest, the narrowest and a narrowed stand), `MapArmyRowTests` (the Witch-king's column clear), `MordorNetworkTests` (both
+gates take their click) and the tabletop acceptance matrix (no plaque covered) check it. UI-530 (owner: "some figures
+still show at the side of the region", Erebor's row running on into the Iron Hills): the field place now stands nearer
+its region's middle (TABLETOP_FIGURES_UX, "Places"). A row still reaches past its region's border into free room: kept
+on its region, a row of three kinds would shrink in 17 regions and one of four in 49 (Erebor's to about half).
+

@@ -42,7 +42,9 @@ namespace Wotr.PlayTests
                     // On the whole map a name smaller than 8 points stays hidden; the strongholds and cities, drawn larger,
                     // still show on the smallest screen.
                     Assert.GreaterOrEqual(fit, 5, "The whole map names its strongholds and cities · " + label);
-                    Assert.Greater(near, 8, "The zoomed view names the regions around it · " + label);
+                    // UI-530 (owner: figures in the middle, names giving way): a name pushed aside by the places may be
+                    // smaller and show only closer in (Edoras's and Westemnet's at 1366 × 768 at 125 %), so at least 8.
+                    Assert.GreaterOrEqual(near, 8, "The zoomed view names the regions around it · " + label);
                     // UI-363 (owner report): a small region its forces' zone nearly fills names itself up close.
                     var western = map.Data.Shapes["western-mirkwood"].Anchor;
                     map.FocusOn(new Vector2(western[0], western[1]), map.Camera.MaximumZoom);
@@ -95,7 +97,9 @@ namespace Wotr.PlayTests
                         if (region.Id == "helms-deep")
                             LayoutTests.Save(texture, $"ui426-helms-deep-closest-{width}-{scale:0.00}.png");
                     }
-                    Assert.Greater(shown, 30, "Up close the settlements keep their names · " + label);
+                    // UI-530 (owner: figures in the middle, names giving way): a name the places pushed toward its region's
+                    // edge may lie past the closest view round its gem on the smallest screen, so at least 29.
+                    Assert.GreaterOrEqual(shown, 29, "Up close the settlements keep their names · " + label);
                     client.Panel.targetTexture = client.Viewport;
                     texture.Release();
                     Object.Destroy(texture);

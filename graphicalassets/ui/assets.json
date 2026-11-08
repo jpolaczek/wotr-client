@@ -1019,27 +1019,27 @@
     },
     {
       "source": "dice/faces/character.svg",
-      "role": "Die face glyph · Character result: hooded figure."
+      "role": "Die face glyph · Character result (ART-10, after the printed motif): an upright dagger; the Free Peoples' and the default glyph."
     },
     {
       "source": "dice/faces/army.svg",
-      "role": "Die face glyph · Army result: sword behind a round shield."
+      "role": "Die face glyph · Army result (ART-10): a banner with a swallowtail fly."
     },
     {
       "source": "dice/faces/muster.svg",
-      "role": "Die face glyph · Muster result: banner on its pole."
+      "role": "Die face glyph · Muster result (ART-10): a winged helm."
     },
     {
       "source": "dice/faces/army-muster.svg",
-      "role": "Die face glyph · Army or Muster result: banner beside a sword."
+      "role": "Die face glyph · Army or Muster result (ART-10): the winged helm beside the banner."
     },
     {
       "source": "dice/faces/event.svg",
-      "role": "Die face glyph · Event result: sealed scroll."
+      "role": "Die face glyph · Event result (ART-10): a palantír on its stand."
     },
     {
       "source": "dice/faces/will.svg",
-      "role": "Die face glyph · Will of the West result: eight-pointed star."
+      "role": "Die face glyph · Will of the West result (ART-10): a staff rune whose two branches rise to the right."
     },
     {
       "source": "dice/faces/eye.svg",
@@ -1052,6 +1052,26 @@
     {
       "source": "dice/faces/use-balrog.svg",
       "role": "Die face glyph · Use Balrog result (Lords): flame."
+    },
+    {
+      "source": "dice/faces/shadow-character.svg",
+      "role": "Die face glyph (ART-10) · the Shadow's Character result: a jagged, back-curved Orc blade."
+    },
+    {
+      "source": "dice/faces/shadow-army.svg",
+      "role": "Die face glyph (ART-10) · the Shadow's Army result: a crude spiked Orc helm."
+    },
+    {
+      "source": "dice/faces/shadow-muster.svg",
+      "role": "Die face glyph (ART-10) · the Shadow's Muster result: a tall crown of narrow spikes."
+    },
+    {
+      "source": "dice/faces/shadow-event.svg",
+      "role": "Die face glyph (ART-10) · the Shadow's Event result: a palantír holding an eye."
+    },
+    {
+      "source": "dice/faces/shadow-army-muster.svg",
+      "role": "Die face glyph (ART-10) · the Shadow's Army or Muster result: the spiked crown and the Orc helm."
     },
     {
       "source": "tokens/politics-token.svg",
@@ -1148,6 +1168,10 @@
     {
       "source": "icons/effects.svg",
       "role": "Tab and header: Effects."
+    },
+    {
+      "source": "icons/victory.svg",
+      "role": "UI-518: left rail tab: Victory points (a gilt tower, the captured settlement, in a laurel wreath)."
     },
     {
       "source": "icons/characters.svg",

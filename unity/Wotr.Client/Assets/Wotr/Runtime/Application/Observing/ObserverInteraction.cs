@@ -14,6 +14,7 @@ namespace Wotr.Client
             this.board = board;
             board.Map.RegionSelected += ShowRegion;
             board.Map.ArmySelected += ShowArmy;
+            board.Map.MiniatureSelected += ShowMiniature;
         }
 
         private void ShowRegion(string region)
@@ -22,12 +23,22 @@ namespace Wotr.Client
                 board.Hover.Toggle(region);
         }
 
-        private void ShowArmy(DraftToken army) => ShowRegion(army.Id);
+        // UI-528: a click on figures opens their region's panel and never closes it.
+        private void ShowArmy(DraftToken army) => ShowFigures(army.Id);
+
+        private void ShowMiniature(DraftToken figure) => ShowFigures(figure.RegionId);
+
+        private void ShowFigures(string region)
+        {
+            if (!board.Battles.SelectRegion(region))
+                board.Hover.OpenOrKeep(region);
+        }
 
         public void Dispose()
         {
             board.Map.RegionSelected -= ShowRegion;
             board.Map.ArmySelected -= ShowArmy;
+            board.Map.MiniatureSelected -= ShowMiniature;
         }
     }
 }

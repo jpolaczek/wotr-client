@@ -17,6 +17,11 @@ namespace Wotr.Client
         // Every base is seen at the same angle: its depth is this share of its width.
         public const float Depth = .4f;
         public static readonly StandFootprint Army = new StandFootprint(40, 40, 40);
+        // UI-522: the widest row stand a field force or garrison may stand on (MapArmyArtwork.RowStandWidth at its design
+        // unit), half of it on either side of the feet at most; each place records how far its own may reach on either
+        // side (RegionStands.FieldRow, GarrisonRow). UI-523: 100 units, for figures at least 85 % of their stature.
+        public const float ForceWidest = 100;
+        public const float RowReach = ForceWidest / 2;
         public static readonly StandFootprint Character = new StandFootprint(14, 16, 36);
         public static readonly StandFootprint Fellowship = new StandFootprint(16, 18, 36);
 
@@ -97,6 +102,12 @@ namespace Wotr.Client
         private const float Gap = 2;
 
         [JsonProperty("capacity")] public float Capacity { get; set; }
+        // UI-522: how far (board units) the row stand of its field force and of its garrison may reach on either side of
+        // their feet, [left, right], clear of everything fixed around them (scripts/export_map_stands.py, force_rooms);
+        // the stands that come and go narrow it further (MapArmyRowRoom). A region the export does not cover keeps the
+        // round base.
+        [JsonProperty("fieldRow")] public float[] FieldRow { get; set; } = RoundRow();
+        [JsonProperty("garrisonRow")] public float[] GarrisonRow { get; set; } = RoundRow();
         // A stronghold's drawing and its garrison's figures at the gate: names keep clear of it.
         [JsonProperty("fortress")] public float[] FortressBounds { get; set; }
         [JsonProperty("garrison")] public float[] GarrisonPoint { get; set; }
@@ -107,9 +118,14 @@ namespace Wotr.Client
         [JsonProperty("planned")] public float[] PlannedPoint { get; set; }
         // UI-425: where a corrupted king's marker stands, beside the forces but on none of their labels and no gem.
         [JsonProperty("sovereign")] public float[] SovereignPoint { get; set; }
+        // UI-531 (owner: "a second layout without a siege"): a stronghold's places while no garrison stands in it, laid
+        // out round its middle without the garrison and its characters (scripts/export_map_stands.py, open_stands).
+        [JsonProperty("open")] public RegionStands Open { get; set; }
         private List<StandPlace> places;
 
         [JsonIgnore] public bool HasGarrison => GarrisonPoint != null;
+        [JsonIgnore] public Vector2 FieldReach => Point(FieldRow);
+        [JsonIgnore] public Vector2 GarrisonReach => Point(GarrisonRow);
         // The scale its figures show at in the worst case.
         [JsonIgnore] public float ShownScale => Mathf.Min(1, Capacity);
         [JsonIgnore] public Vector2 Field => Point(FieldPoint);
@@ -203,6 +219,8 @@ namespace Wotr.Client
 
         private static Vector2 Point(float[] point) => new Vector2(point[0], point[1]);
 
+        private static float[] RoundRow() => new[] { StandFootprint.Army.BaseWidth / 2, StandFootprint.Army.BaseWidth / 2 };
+
         private static float[] Coordinates(Vector2 point) => new[] { point.x, point.y };
     }
 
@@ -213,7 +231,7 @@ namespace Wotr.Client
     public sealed class MapStandSlots
     {
         public const string Resource = "MapCanvas/stand-slots";
-        public const string Version = "stand-slots-2";
+        public const string Version = "stand-slots-3";
         // The worst case the footprints are sized for: 1366×768 at 125 % is a 1092.8×614.4 point map.
         public static readonly Vector2 WorstCaseView = new Vector2(1366 / 1.25f, 768 / 1.25f);
         private const float ZoomTolerance = 1e-4f;
@@ -256,6 +274,7 @@ namespace Wotr.Client
                 data.Regions != null && data.Footprints != null, "Unsupported map stand places.");
             RequireSource(data, "map-geometry.json", ResourceHash("map-geometry"));
             RequireSource(data, "MapCanvas/landmarks.json", ResourceHash(MapLandmarks.Resource));
+            RequireSource(data, "MapCanvas/mordor-track.json", ResourceHash(MordorTrackGeometry.Resource));
             RequireSource(data, "base-board.json#regions", RegionsDigest(board));
             MapContourValidation.Require(Mathf.Abs(data.RecordedWorstCaseZoom - WorstCaseZoom(geometry)) < ZoomTolerance,
                 "Stale map stand places: worst-case zoom");
@@ -270,9 +289,12 @@ namespace Wotr.Client
 
         // UI-422: a region's places for its current definition. A region the export does not cover, or a stronghold an
         // expansion module makes of a region without a garrison place, stands beside its settlement and shows tokens.
-        public RegionStands For(RegionGeometry shape, RegionDefinition current)
+        // UI-531: a stronghold no garrison stands in now (`garrisoned` false) takes its open places.
+        public RegionStands For(RegionGeometry shape, RegionDefinition current, bool garrisoned = true)
         {
             Regions.TryGetValue(shape.Id, out var stands);
+            if (stands?.Open != null && !garrisoned && current?.Settlement == "Stronghold")
+                return stands.Open;
             if (stands != null && (stands.HasGarrison || current?.Settlement != "Stronghold"))
                 return stands;
             if (!fallbacks.TryGetValue(shape.Id, out var fallback))
@@ -338,6 +360,7 @@ namespace Wotr.Client
         private static void RequireRegion(MapStandSlots data, string id, bool stronghold)
         {
             var complete = data.Regions.TryGetValue(id, out var stands) && stands != null && stands.Capacity > 0 &&
+                Row(stands.FieldRow) && Row(stands.GarrisonRow) &&
                 MapContourValidation.ValidPoint(stands.FieldPoint) && MapContourValidation.ValidPoint(stands.FellowshipPoint) &&
                 MapContourValidation.ValidPoint(stands.PlannedPoint) && MapContourValidation.ValidPoint(stands.SovereignPoint) &&
                 ValidPoints(stands.CharacterPoints, RegionStands.CharacterPlaces);
@@ -346,7 +369,23 @@ namespace Wotr.Client
                 ValidPoints(stands.GarrisonCharacterPoints, RegionStands.GarrisonCharacterPlaces);
             var none = stands.GarrisonPoint == null && stands.GarrisonCharacterPoints == null && stands.FortressBounds == null;
             MapContourValidation.Require(stronghold ? garrison : none, "Map stand places disagree with the strongholds: " + id);
+            if (stands.Open != null)
+                RequireOpen(id, stands.Open, stronghold);
         }
+
+        // UI-531: a stronghold's open places are complete and hold no garrison.
+        private static void RequireOpen(string id, RegionStands open, bool stronghold)
+        {
+            var complete = stronghold && open.Capacity > 0 && Row(open.FieldRow) &&
+                MapContourValidation.ValidPoint(open.FieldPoint) && MapContourValidation.ValidPoint(open.FellowshipPoint) &&
+                MapContourValidation.ValidPoint(open.PlannedPoint) && MapContourValidation.ValidPoint(open.SovereignPoint) &&
+                ValidPoints(open.CharacterPoints, RegionStands.CharacterPlaces) && open.GarrisonPoint == null &&
+                open.GarrisonCharacterPoints == null && open.FortressBounds == null && open.Open == null;
+            MapContourValidation.Require(complete, "Incomplete open stand places: " + id);
+        }
+
+        private static bool Row(float[] reach) => reach?.Length == 2 &&
+            reach.All(side => side >= StandFootprint.Army.BaseWidth / 2 && side <= StandFootprint.RowReach);
 
         private static bool ValidPoints(float[][] points, int count) =>
             points != null && points.Length == count && points.All(MapContourValidation.ValidPoint);

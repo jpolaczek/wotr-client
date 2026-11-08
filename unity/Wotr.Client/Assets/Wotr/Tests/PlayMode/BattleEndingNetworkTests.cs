@@ -40,6 +40,12 @@ namespace Wotr.PlayTests
             var battle = board.View.Battle.Id;
             var before = board.View.Control["lossarnach"];
             var regular = board.View.Battle.Attacker.Units.First(u => u.Kind == UnitKind.Regular).Id;
+            // UI-527: the advance folds the window into its plaque; picking only some figures unfolds it first.
+            if (board.Battles.Folded)
+            {
+                PointerGestureEvents.ClickAt(board.Battles.Root.Q<Button>("fold-battle"));
+                await room.Settle();
+            }
             PointerGestureEvents.ClickAt(board.Tray.Q<Button>("figure-" + regular));
             await room.Settle();
             Assert.IsNull(board.Tray.Q<Button>("confirm-decision"));

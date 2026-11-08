@@ -44,14 +44,23 @@ namespace Wotr.PlayTests
             Assert.IsTrue(PresentationGlow.IsLit(stage.Board.Hunt.Tab), "The Hunt Box glows.");
             yield return stage.Until(() => Die(stage, "d0") != null);
             Assert.AreEqual(before, progress.text, "The progress waits for the Hunt.");
+            // UI-520: the miss is named under the dice and stays readable before the Hunt moves on.
+            yield return stage.Until(() => Result(stage) != null);
+            var named = Time.realtimeSinceStartup;
+            Assert.AreEqual("No hits", Result(stage).text);
+            Assert.GreaterOrEqual(Result(stage).worldBound.yMin, stage.Board.Hunt.Dice.Root.worldBound.yMax - 1, "Under the dice.");
             yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui310-miss-roll.png");
             yield return stage.Until(() => progress.text != before);
+            Assert.GreaterOrEqual(Time.realtimeSinceStartup - named, PresentationPace.ResultSeconds - .2f, "It holds while it is read.");
             Assert.IsTrue(stage.Playback.Holding, "The progress moves inside the presentation.");
             yield return stage.Released();
             Assert.AreEqual(2, stage.Board.View.Fellowship.Progress);
             Assert.IsFalse(stage.Board.TracksStaged, "Nothing moves twice at the release.");
         }
+
+        private static Label Result(PresentedBoardStage stage) =>
+            stage.Board.Root.Query<Label>(className: PresentationPace.ResultClass).ToList().FirstOrDefault();
 
         // UI-343 (owner 2026-10-26: "once the Hunt reaches its end and the next actions start to animate, the Hunt window is
         // to close; if the user closed it earlier it does not open again, only for a separate new Hunt").

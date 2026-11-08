@@ -128,6 +128,47 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.Flex, stack.Q("character-behind").resolvedStyle.display, "A second figure stands behind.");
         }
 
+        // UI-528 (owner, 2026-11-08): with no die chosen, a click on the player's own character, on their army and on an
+        // enemy character opens the region's panel with every unit's figure and every character's portrait, a second
+        // click keeps it open, and nothing is drafted or sent.
+        [UnityTest]
+        public IEnumerator AClickOnFiguresThatChoosesNothingOpensTheirRegionPanel()
+        {
+            using var client = Mounted(Fixture());
+            yield return Settle();
+            var board = client.Board;
+            var panel = board.Hover.Panel.Root;
+            var revision = board.View.Revision;
+            foreach (var (name, region, portrait) in new[]
+            {
+                ("character-strider", Region, "hover-figure-strider"),
+                ("army-minas-tirith-FreePeoples", Region, "hover-figure-gandalf"),
+                ("character-witch-king", "osgiliath", "hover-figure-witch-king"),
+            })
+            {
+                board.Hover.Close();
+                yield return Settle();
+                var figure = board.Map.Q<Button>(name);
+                var reach = MapContourProbe.ReachMarker(board.Map, figure, region);
+                while (!reach.IsCompleted)
+                    yield return null;
+                Assert.IsNull(reach.Exception, name);
+                PointerGestureEvents.ClickAt(figure);
+                yield return Settle();
+                Assert.AreEqual(DisplayStyle.Flex, panel.resolvedStyle.display, name + " opens its region's panel.");
+                Assert.AreEqual(region, board.Hover.Panel.Region, name);
+                Assert.IsNotNull(panel.Q<Button>(portrait), name + ": the panel shows " + portrait + ".");
+                LayoutTests.Save(client.Viewport, "ui528-" + name + ".png");
+                PointerGestureEvents.ClickAt(figure);
+                yield return Settle();
+                Assert.AreEqual(DisplayStyle.Flex, panel.resolvedStyle.display, "A second click on " + name + " keeps it open.");
+                Assert.AreEqual(region, board.Hover.Panel.Region, name);
+            }
+            Assert.IsFalse(board.Map.Q<Button>("character-strider").ClassListContains(MapCharacterArtwork.SelectedClass),
+                "Nothing is chosen.");
+            Assert.AreEqual(revision, board.View.Revision, "Nothing is sent.");
+        }
+
         private static BoardFixture Fixture()
         {
             var fixture = new BoardFixture();

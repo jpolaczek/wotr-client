@@ -45,6 +45,56 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-522 (owner's picture: Barad-dûr's field army, 4 Regulars, 1 Elite, 1 Nazgûl, its figures on one another): one
+        // figure of each kind stands side by side, none covering another, each with its count at its feet (×1 too), on the
+        // widest row stand, on the narrowest a tight place gives it and on one narrowed on its left only (the row reaches
+        // right), at 100 and 125 %; each figure takes the click.
+        [UnityTest]
+        public IEnumerator OneFigureOfEachKindStandsSideBySideWithItsCount()
+        {
+            using var client = new MountedMatchClient("http://localhost", "army-artwork-row");
+            var gallery = new VisualElement { name = "army-row-gallery" };
+            gallery.style.position = Position.Absolute;
+            gallery.style.left = 160;
+            gallery.style.top = 80;
+            client.Board.Root.Add(gallery);
+            var barad = Army(Side.Shadow, false, ("sauron", UnitKind.Regular, 4), ("sauron", UnitKind.Elite, 1), ("sauron", UnitKind.Nazgul, 1));
+            var gondor = Army(Side.FreePeoples, true, ("gondor", UnitKind.Regular, 3), ("gondor", UnitKind.Elite, 2), ("gondor", UnitKind.Leader, 1));
+            var rows = new List<Sample>();
+            // The widest reach, the narrowest (a round base's), and one side narrowed by a stand beside it.
+            var widest = MapArmyArtwork.RowStandWidth / 2;
+            var round = StandFootprint.Army.BaseWidth * MapArmyArtwork.DesignUnit / 2;
+            foreach (var reach in new[] { new Vector2(widest, widest), new Vector2(round, round), new Vector2(round, widest) })
+                foreach (var marker in new[] { barad, gondor })
+                {
+                    var sample = new Sample($"row-{reach.x:0}-{reach.y:0}", marker, true, "", reach);
+                    sample.Button.style.left = rows.Count * 140;
+                    gallery.Add(sample.Button);
+                    rows.Add(sample);
+                }
+            foreach (var scale in new[] { 1f, 1.25f })
+            {
+                client.Panel.scale = scale;
+                for (var frame = 0; frame < 6; frame++)
+                    yield return null;
+                LayoutTests.Save(client.Viewport, $"ui522-army-row-{scale:0.00}.png");
+                foreach (var sample in rows)
+                {
+                    Assert.IsTrue(sample.Button.ClassListContains(MapArmyArtwork.RowClass), sample.Button.name);
+                    var images = Shown(sample.Button, "army-silhouette");
+                    Assert.AreEqual(3, images.Length, sample.Button.name);
+                    CheckRow(sample, images);
+                    // UI-526: on any stand every figure stands as tall as a single army's.
+                    foreach (var image in images)
+                        Assert.GreaterOrEqual(image.layout.height, 48f, "Full size on any stand: " + sample.Button.name);
+                    foreach (var image in images)
+                        Click(sample, image.worldBound.center);
+                }
+                CollectionAssert.AreEqual(new[] { "×1", "×4", "×1" }, Counts(rows[0]).Select(c => c.text).ToArray(),
+                    "Barad-dûr: an Elite, four Regulars, a Nazgûl");
+            }
+        }
+
         private static List<Sample> AddCases(VisualElement gallery)
         {
             var cases = new List<Sample>();
@@ -60,6 +110,13 @@ namespace Wotr.PlayTests
                     cases.Add(new Sample("garrison", Army(side, true, (nation, UnitKind.Regular, 10)), figures, ""));
                     foreach (var state in States.Skip(1))
                         cases.Add(new Sample("state", Army(side, false, (nation, UnitKind.Elite, 1)), figures, state.Class));
+                    // UI-510: too many to show all — one figure of each kind with its own count (figures only; a token shows
+                    // its total).
+                    if (figures)
+                        cases.Add(new Sample("crowd", side == Side.FreePeoples
+                            ? Army(side, false, (nation, UnitKind.Regular, 3), (ally, UnitKind.Elite, 2), (nation, UnitKind.Leader, 1))
+                            : Army(side, false, (nation, UnitKind.Regular, 4), (ally, UnitKind.Elite, 2), (ally, UnitKind.Nazgul, 2)),
+                            figures, ""));
                 }
             for (var index = 0; index < cases.Count; index++)
             {
@@ -98,22 +155,27 @@ namespace Wotr.PlayTests
             }
             var images = Shown(button, "army-silhouette");
             Assert.AreEqual(sample.Figures ? Expected(sample.Marker) : 0, images.Length, button.name);
+            CheckFigureCounts(sample, images.Length);
+            if (button.ClassListContains(MapArmyArtwork.RowClass))
+                CheckRow(sample, images);
             foreach (var image in images)
             {
-                AssertInside(image, button);
-                Assert.GreaterOrEqual(image.layout.height, 48f, "UI-400: a figure stands about 54 points tall · " + button.name);
+                AssertInside(image, sample);
+                // UI-526: a row's figures stand at full size, as a single army's.
+                var tallest = 48f;
+                Assert.GreaterOrEqual(image.layout.height, tallest, "UI-400: a figure stands about 54 points tall · " + button.name);
                 Assert.IsNotNull(image.sprite, button.name);
                 Click(sample, image.worldBound.center);
             }
             var emblem = button.Q("army-emblem-0");
             Assert.IsTrue(emblem.ClassListContains("nation-emblem-" + sample.Marker.Nations[0].Nation), button.name);
-            AssertInside(emblem, button);
+            AssertInside(emblem, sample);
             var second = button.Q("army-emblem-1");
             var showsSecond = sample.Figures && sample.Marker.Nations.Count > 1;
             Assert.AreEqual(showsSecond ? DisplayStyle.Flex : DisplayStyle.None, second.resolvedStyle.display, button.name);
             var count = button.Q<Label>("army-count");
             Assert.AreEqual(sample.Marker.Total.ToString(), count.text);
-            AssertInside(count, button);
+            AssertInside(count, sample);
             Assert.IsFalse(count.isElided, count.text);
             Assert.IsFalse(count.worldBound.Overlaps(emblem.worldBound), "Count and emblem must not cover each other: " + button.name);
             Click(sample, count.worldBound.center);
@@ -132,7 +194,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.None, button.Q("army-token-rim").resolvedStyle.display, button.name);
             var shadow = button.Q("army-contact-shadow");
             Assert.AreEqual(DisplayStyle.Flex, shadow.resolvedStyle.display, button.name);
-            AssertInside(shadow, button);
+            AssertInside(shadow, sample);
             Assert.GreaterOrEqual(shadow.worldBound.yMax, stand.worldBound.yMax - .5f, "The shadow lies under the stand: " + button.name);
             var rim = States.First(s => s.Class == sample.State).Rim;
             var rimElement = button.Q("army-rim");
@@ -184,14 +246,84 @@ namespace Wotr.PlayTests
         private static Image[] Shown(Button button, string className) => button.Query<Image>(className: className).ToList()
             .Where(image => image.resolvedStyle.display != DisplayStyle.None).ToArray();
 
-        private static int Expected(ArmyMarker marker) => marker.Leaders > 0 && marker.Total > 2 ? 3 : marker.Total > 1 ? 2 : 1;
+        // UI-510: up to three units every one stands; more stand one figure of each kind (Elite, Regular, Nazgûl, Leader).
+        private static int Expected(ArmyMarker marker) => marker.Total <= MapArmyArtwork.AllShown ? marker.Total :
+            new[] { marker.Elite, marker.Regular, marker.Nazgul, marker.Leaders - marker.Nazgul }.Count(count => count > 0);
 
-        private static void AssertInside(VisualElement child, Button button)
+        // UI-510: a figure standing for several of its kind shows their number at its feet, inside the marker and clear of
+        // the total; the figures' numbers add up to the army. A token and a small army show none.
+        private static void CheckFigureCounts(Sample sample, int figures)
         {
+            var button = sample.Button;
+            var counts = button.Query<Label>(className: MapArmyArtwork.FigureCountClass).ToList()
+                .Where(label => label.resolvedStyle.display != DisplayStyle.None).ToList();
+            if (!sample.Figures || sample.Marker.Total <= MapArmyArtwork.AllShown)
+            {
+                Assert.IsEmpty(counts, "No figure counts: " + button.name);
+                return;
+            }
+            Assert.IsNotEmpty(counts, "A big army's figures carry their counts: " + button.name);
+            var total = button.Q<Label>("army-count");
+            var sum = figures - counts.Count;
+            foreach (var count in counts)
+            {
+                StringAssert.StartsWith("×", count.text, button.name);
+                sum += int.Parse(count.text.Substring(1));
+                AssertInside(count, sample);
+                Assert.IsFalse(count.isElided, count.text);
+                Assert.IsFalse(count.worldBound.Overlaps(total.worldBound), "A figure's count clear of the total: " + button.name);
+            }
+            Assert.AreEqual(sample.Marker.Total, sum, "The figures' counts add up to the army: " + button.name);
+        }
+
+        // UI-522: a row's figures stand apart, each in its own column, its count centred at its feet, no count on another
+        // or on the total, and the stand under all of them.
+        private static void CheckRow(Sample sample, Image[] shown)
+        {
+            var button = sample.Button;
+            // UI-523: the middle figure is drawn in front, so the figures pair with their counts from left to right.
+            var images = shown.OrderBy(image => image.worldBound.center.x).ToArray();
+            var counts = Counts(sample).OrderBy(count => count.worldBound.center.x).ToList();
+            Assert.AreEqual(images.Length, counts.Count, "Every figure of a row carries its count, ×1 too: " + button.name);
+            var total = button.Q<Label>("army-count");
+            var stand = button.Q("army-stand").worldBound;
+            for (var i = 0; i < images.Length; i++)
+            {
+                var figure = images[i].worldBound;
+                Assert.That(counts[i].worldBound.center.x, Is.EqualTo(figure.center.x).Within(1f), "The count at its figure's feet: " + button.name);
+                Assert.IsFalse(counts[i].worldBound.Overlaps(total.worldBound), "A figure's count clear of the total: " + button.name);
+                Assert.GreaterOrEqual(figure.xMin, stand.xMin - .5f, "The figure on the stand: " + button.name);
+                Assert.LessOrEqual(figure.xMax, stand.xMax + .5f, "The figure on the stand: " + button.name);
+                for (var j = 0; j < i; j++)
+                {
+                    // UI-523, UI-526: neighbours overlap at most their share of the narrower one.
+                    var share = Mathf.Min(figure.width, images[j].worldBound.width) * MapArmyRow.OverlapShare;
+                    Assert.LessOrEqual(Overlap(figure, images[j].worldBound), share + .5f, $"Figure {i} over figure {j}: " + button.name);
+                    Assert.LessOrEqual(Overlap(counts[i].worldBound, counts[j].worldBound), .01f, $"Count {i} clear of count {j}: " + button.name);
+                }
+            }
+        }
+
+        private static List<Label> Counts(Sample sample) => sample.Button.Query<Label>(className: MapArmyArtwork.FigureCountClass).ToList()
+            .Where(label => label.resolvedStyle.display != DisplayStyle.None).ToList();
+
+        // How far two boxes reach into each other across (0 when they stand apart).
+        private static float Overlap(Rect a, Rect b)
+        {
+            var across = Mathf.Min(a.xMax, b.xMax) - Mathf.Max(a.xMin, b.xMin);
+            var down = Mathf.Min(a.yMax, b.yMax) - Mathf.Max(a.yMin, b.yMin);
+            return across > 0 && down > 0 ? across : 0;
+        }
+
+        // UI-522: inside the marker or, for a row, its stand's reach past the holder on either side.
+        private static void AssertInside(VisualElement child, Sample sample)
+        {
+            var button = sample.Button;
+            var unit = button.worldBound.width / button.resolvedStyle.width;
             var message = button.name + " / " + child.name;
-            Assert.GreaterOrEqual(child.worldBound.xMin, button.worldBound.xMin - .5f, message);
+            Assert.GreaterOrEqual(child.worldBound.xMin, button.worldBound.xMin - sample.Artwork.SpreadLeft * unit - .5f, message);
             Assert.GreaterOrEqual(child.worldBound.yMin, button.worldBound.yMin - .5f, message);
-            Assert.LessOrEqual(child.worldBound.xMax, button.worldBound.xMax + .5f, message);
+            Assert.LessOrEqual(child.worldBound.xMax, button.worldBound.xMax + sample.Artwork.SpreadRight * unit + .5f, message);
             Assert.LessOrEqual(child.worldBound.yMax, button.worldBound.yMax + .5f, message);
         }
 
@@ -218,9 +350,10 @@ namespace Wotr.PlayTests
             public ArmyMarker Marker { get; }
             public bool Figures { get; }
             public string State { get; }
+            public MapArmyArtwork Artwork { get; }
             public int Clicks { get; private set; }
 
-            public Sample(string name, ArmyMarker marker, bool figures, string state)
+            public Sample(string name, ArmyMarker marker, bool figures, string state, Vector2? reach = null)
             {
                 Marker = marker;
                 Figures = figures;
@@ -232,9 +365,11 @@ namespace Wotr.PlayTests
                 Button.EnableInClassList("garrison", marker.Garrison);
                 if (state.Length > 0)
                     Button.AddToClassList(state);
-                var artwork = new MapArmyArtwork(Button);
-                artwork.Apply(marker);
-                artwork.Layout(figures);
+                Artwork = new MapArmyArtwork(Button);
+                if (reach.HasValue)
+                    Artwork.RowReach = reach.Value;
+                Artwork.Apply(marker);
+                Artwork.Layout(figures);
             }
         }
     }

@@ -171,6 +171,8 @@ namespace Wotr.Client
         }
 
         public bool OnTrack => mordor.Active;
+        // UI-522: the region it stands in, empty on the Mordor track or without a Fellowship.
+        public string Region => regionId;
         public float TrackStep => shownStep;
 
         public void Apply(FellowshipView fellowship, HuntView hunt = null)
@@ -191,6 +193,7 @@ namespace Wotr.Client
                 tile.Apply(hunt.Face);
             Stand();
             Layout();
+            map.FitRows();
         }
 
         // UI-428 (TABLETOP_FIGURES_UX, "As built (UI-428)"): the region the figure stands in, where a figure carried onto it

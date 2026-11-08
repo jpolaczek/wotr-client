@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- ART-10: the Shadow's Muster result: a tall crown of narrow spikes. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="shadow-muster-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M9.20 27.80 L9.60 13.60 L9.80 4.40 L12.00 12.00 L13.40 2.40 L14.80 11.40 L16.00 1.20 L17.20 11.40 L18.60 2.40 L20.00 12.00 L22.20 4.40 L22.40 13.60 L22.80 27.80 L19.40 24.60 L16.00 28.60 L12.60 24.60 Z" fill="url(#shadow-muster-ivory)" style="stroke: var(--ink)" stroke-width="1.4"/>
+    <path d="M11.40 15.60 C13.00 14.20 19.00 14.20 20.60 15.60 L20.20 22.60 L16.00 25.60 L11.80 22.60 Z" style="fill: var(--ink)"/>
+    <path d="M13.40 18.40 L15.00 19.20 M18.60 18.40 L17.00 19.20" fill="none" style="stroke: var(--ember-light)" stroke-width="1"/>
+  </g>
+</svg>

@@ -6,11 +6,14 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // The same read-only renderer is used by the log and contextual navigation.
-    // UI-106: a parchment card with only what is needed to understand what happened. The heading names the side
-    // once; steps show their effects without numbers, dice, sources or system bookkeeping, and a played card
-    // shows the text of the part that was used.
+    // UI-106: a parchment card; the heading names the side once, and a played card shows the text of the part that was
+    // used. UI-514 (owner, 2026-11-07, after UI-106's effects-only steps): the full record tells how the action went and
+    // how it ended — its steps numbered in order, each with what it was and every fact it recorded (the source, the dice
+    // and their faces, rolls and hits, moves, losses, control, the Hunt and the battle, the budget left). The compact
+    // card (UI-166) stays a short result.
     public sealed class ActionCard
     {
+        public const string StepHeadingClass = "action-step-heading";
         public VisualElement Root { get; } = new VisualElement { name = "action-card" };
         public ActionLogView Displayed { get; private set; }
         public BattleArchiveSummary Archive { get; }
@@ -102,6 +105,8 @@ namespace Wotr.Client
         {
             heading.EnableInClassList("side-free", side == Side.FreePeoples);
             heading.EnableInClassList("side-shadow", side == Side.Shadow);
+            // ART-10: the paying die's face in the acting side's own glyph (DicePanel.uss).
+            icon.EnableInClassList("die-face-shadow", side == Side.Shadow);
         }
 
         // The kind of action at a glance: the card of a played Event, else the face of the die that paid for it.
@@ -177,12 +182,13 @@ namespace Wotr.Client
             var ids = new HashSet<string>();
             foreach (var step in view.Steps)
             {
-                var lines = Lines(step);
-                if (lines.Length == 0)
+                var lines = Lines(step, view.Action.Initiator);
+                var title = Title(step, view.Action.Initiator);
+                if (lines.Length == 0 && (title.Length == 0 || step.Automatic))
                     continue;
                 ids.Add(step.Id);
                 if (!rendered.TryGetValue(step.Id, out var row))
-                    rendered[step.Id] = row = Step(step, lines);
+                    rendered[step.Id] = row = Step(step, position + 1, title, lines);
                 if (body.IndexOf(row) != position + offset)
                     body.Insert(position + offset, row);
                 position++;
@@ -202,15 +208,21 @@ namespace Wotr.Client
                 summary.RemoveFromHierarchy();
         }
 
-        private string[] Lines(ActionLogStep step) => step.Legacy
-            ? new[] { ReadableText.Of(step.Text, data) }
-            : ActionFactText.Effects(step, data).Distinct().ToArray();
+        private string[] Lines(ActionLogStep step, Side? actor) => step.Legacy
+            ? new string[0]
+            : ActionFactText.Details(step, data, actor).Distinct().ToArray();
 
-        private static VisualElement Step(ActionLogStep step, IEnumerable<string> lines)
+        // What the step was, in its own words, without the side the heading names.
+        private string Title(ActionLogStep step, Side? actor) => step.Text.Length == 0 ? "" :
+            ActionCardText.WithoutSide(ReadableText.Of(step.Text, data), actor ?? step.Actor);
+
+        private static VisualElement Step(ActionLogStep step, int number, string title, IEnumerable<string> lines)
         {
             var row = new VisualElement { name = "action-step-" + step.Id };
             row.AddToClassList("action-card-step");
-            foreach (var line in lines)
+            if (title.Length > 0)
+                row.Add(Text(number + " · " + title, StepHeadingClass));
+            foreach (var line in lines.Where(line => line != title))
                 row.Add(Text(line));
             return row;
         }

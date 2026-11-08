@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 namespace Wotr.PlayTests
 {
     // UI-103: the notices hang by themselves under the top bar, with no strip across the map, and a second click
-    // on a region closes the panel the first click opened.
+    // on a region closes the panel the first click opened; UI-528: a second click on its figures keeps it open.
     public sealed class BoardChromeLayoutTests
     {
         [UnityTest]
@@ -95,7 +95,7 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator SecondClickOnARegionOrItsArmyClosesItsPanel()
+        public IEnumerator SecondClickOnARegionClosesItsPanelButNotOnItsArmy()
         {
             var fixture = new BoardFixture();
             fixture.View.You = Side.Shadow;
@@ -139,7 +139,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual("minas-tirith", board.Hover.Panel.Region);
             PointerGestureEvents.ClickAt(marker);
             yield return Settle();
-            Assert.AreEqual(DisplayStyle.None, panel.resolvedStyle.display, "A second click on the army closes its region panel.");
+            Assert.AreEqual(DisplayStyle.Flex, panel.resolvedStyle.display, "UI-528: a second click on the army keeps its region panel open.");
+            Assert.AreEqual("minas-tirith", board.Hover.Panel.Region);
             Assert.AreEqual(0, board.View.Revision, "Inspection sends no command.");
         }
 

@@ -75,7 +75,10 @@ namespace Wotr.PlayTests
                 Assert.IsNotNull(face, die.name);
                 if (view.Face.HasValue)
                 {
-                    Assert.AreEqual(DieFaceIcon.Key(view.Face), Texture(face), "Readable face glyph · " + die.name);
+                    // ART-10: a Shadow die wears the Shadow's own glyph where it has one.
+                    var key = DieFaceIcon.Key(view.Face);
+                    var shadowOwn = view.Owner == Side.Shadow && key is "character" or "army" or "muster" or "army-muster" or "event";
+                    Assert.AreEqual(shadowOwn ? "shadow-" + key : key, Texture(face), "Readable face glyph · " + die.name);
                     Assert.GreaterOrEqual(face.worldBound.width, 20, "Glyph size · " + label);
                 }
                 var lines = die.tooltip.Split('\n');

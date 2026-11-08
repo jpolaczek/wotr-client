@@ -9,12 +9,16 @@ namespace Wotr.Client
     public sealed class MiniatureButton : Button
     {
         public Func<Vector2, bool> Shape { get; set; }
+        // UI-522: a shape that reaches past the button's box (an army's row stand, wider than its holder) takes a press
+        // there too; the panel finds it through the box that holds its overhanging parts.
+        public bool ShapeOverhangs { get; set; }
 
         public MiniatureButton(Action clicked) : base(clicked)
         {
         }
 
-        public override bool ContainsPoint(Vector2 localPoint) =>
-            base.ContainsPoint(localPoint) && (Shape == null || Shape(localPoint));
+        public override bool ContainsPoint(Vector2 localPoint) => Shape == null
+            ? base.ContainsPoint(localPoint)
+            : (ShapeOverhangs || base.ContainsPoint(localPoint)) && Shape(localPoint);
     }
 }

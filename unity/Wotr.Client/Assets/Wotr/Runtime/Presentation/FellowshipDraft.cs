@@ -145,11 +145,21 @@ namespace Wotr.Client
                         : "Continue the route · This region cannot be the destination.";
                 // UI-219: the last step of the whole Progress moves at once; a shorter route goes with ✓.
                 return route?.Count > 0 && travel != null && TravelDraft.EndAllowed(route, travel)
-                    ? "Continue the route, or ✓ to move here." : "Trace a route · Using all of the Progress moves at once.";
+                    ? "Continue the route, or ✓ to move here." : PathHint(draft.Kind);
             }
             return draft.Payload.DieId.Length == 0 && view.Options.Any(o => o.Kind == draft.Kind && o.EligibleDice.Count > 0)
                 ? "Choose an action die from your pool." : "";
         }
+
+        // UI-519 (owner, 2026-11-07): the Fellowship's path stays the player's, drawn region by region (UI-219); the console says
+        // so plainly and, for a revelation, why it matters: a Shadow stronghold on the path brings an extra Hunt.
+        public const string DeclarePath = "Choose the Fellowship's path region by region: the path is yours to choose · " +
+            "Using all of the Progress moves at once.";
+        public const string RevealPath = "Choose the Fellowship's path region by region: a Shadow stronghold on it brings an extra Hunt · " +
+            "Using all of the Progress moves at once.";
+
+        public static string PathHint(CommandKind? kind) => kind == CommandKind.RevealFellowship ? RevealPath :
+            LocationRoute(kind) ? DeclarePath : "Trace a route · Using all of the Progress moves at once.";
 
         // UI-456 (owner, 2026-11-03): the console names where the figures of the move are chosen — the Fellowship panel's
         // portraits for a separation, the map for the others — instead of "Select figures on the map".

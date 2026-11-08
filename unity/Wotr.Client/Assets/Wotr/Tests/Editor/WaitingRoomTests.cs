@@ -23,8 +23,10 @@ namespace Wotr.EditorTests
             screen.Update(room);
             Assert.IsTrue(screen.Root.Q<Button>("start-game").enabledSelf);
             Assert.AreEqual("Not ready", screen.Root.Q<Button>("room-ready").text);
+            // UI-525: a request leaves the controls as they were for a moment (WaitingRoomBusyTests: then they grey out).
             screen.Busy(true);
-            Assert.IsFalse(screen.Root.Q<Button>("waiting-back").enabledSelf);
+            Assert.IsTrue(screen.Root.Q<Button>("waiting-back").enabledSelf);
+            Assert.IsTrue(screen.Root.Q<Button>("start-game").enabledSelf);
             screen.Busy(false);
             room.IsHost = false;
             screen.Update(room);

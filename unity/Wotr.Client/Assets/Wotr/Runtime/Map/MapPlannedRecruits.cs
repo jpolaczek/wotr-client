@@ -90,6 +90,7 @@ namespace Wotr.Client
                 }
                 ghost.Apply(pair.Value, interactive);
             }
+            map.FitRows();
             map.Stands.Sort();
             KeepFigureIds(regions.Values);
             Layout();
@@ -153,7 +154,8 @@ namespace Wotr.Client
                 marker.AddToClassList("army");
                 marker.AddToClassList(GhostClass);
                 marker.AddToClassList("planned-recruit");
-                artwork = new MapArmyArtwork(marker);
+                // UI-522: a ghost stands on the planned place's round base, so its row keeps to it.
+                artwork = new MapArmyArtwork(marker) { RowReach = MapArmyStand.RoundReach * MapArmyArtwork.DesignUnit };
                 stand = new MapStand(marker, MapArmyArtwork.HolderSize);
                 stand.Design(MapArmyArtwork.Feet(false, true), MapArmyArtwork.Visible(false, true));
                 map.Stands.Add(stand);

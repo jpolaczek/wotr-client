@@ -124,6 +124,16 @@ namespace Wotr.Client
                 Place(gates[entrance.Region], entrance.Gate, detail ? GateDetail : GateToken);
         }
 
+        // UI-526: where the track's steps and gates stand on the board and their size at the Detail level, in points; no
+        // army row reaches over them.
+        public static IEnumerable<(Vector2 Centre, Vector2 Size)> Marks(MordorTrackGeometry geometry)
+        {
+            for (var step = 0; step <= MordorTrackGeometry.LastStep; step++)
+                yield return (geometry.Step(step), step == MordorTrackGeometry.LastStep ? CrackDetail : SlabDetail);
+            foreach (var entrance in geometry.Entrances)
+                yield return (entrance.Gate, GateDetail);
+        }
+
         private void Place(VisualElement element, Vector2 point, Vector2 size)
         {
             var centre = map.Camera.ToScreen(point);

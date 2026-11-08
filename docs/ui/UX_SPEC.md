@@ -796,8 +796,14 @@ UI-274 replaces the hiding rules below: every sovereign keeps a fixed slot in ev
 - Shadow strap falls on the map directly below it, and edge panels begin from its lower edge.
 
 **Panel region.**
-- A click in the region or in the army tag, when its panel is open, closes this panel.
+- A click in the region, when its panel is open, closes this panel.
 - Click in another region switches the panel. The third click opens again.
+- UI-528 (owner, 2026-11-08: "a click on the figures on the board should always open our existing window that presents the exact information and the portraits of all units"): a click on an army's figures or token, or on a
+  character's miniature, opens its region's panel and never closes it. Where the click chooses something (a lit figure:
+  a target sent, a draft changed) it does only that; where it changes nothing — no die chosen, the opponent's turn, a
+  draft whose region click does nothing there — the panel opens. A press that lifts a figure opens nothing; a battle's
+  region opens its battle window. `TurnInteraction.FigureClick`, `RegionHover.OpenOrKeep`; watchers alike
+  (`ObserverInteraction`).
 - Program opening (e.g. decision indicator) does not switch.
 - The legal target has priority so far.
 
@@ -892,8 +898,8 @@ UI-421's decision 5 (owner, 2026-10-28), built 2026-10-30 ([TABLETOP_FIGURES_UX]
   is its portrait in its side's medallion.
 - Its click chooses it exactly as its chip in the region panel does (UI-105): with a Character die it starts its
   travel, with an Army die it joins the army (the commander-first rule), and a card's choice, an ability or an order lit
-  on the figure is used. The player's own character's click opens no region panel; an enemy character's click is its
-  region's. The army's click still selects every figure that can move, its characters included.
+  on the figure is used. An enemy character's click is its region's; since UI-528 the player's own character's click
+  that chooses nothing opens the region panel too. The army's click still selects every figure that can move, its characters included.
 - The chips and the miniatures show one set of choices: a figure lit, selected or marched in the panel is lit, selected
   or marched on the map, and the other way round.
 - A character appears, flies in or leaves on its own (UI-334, UI-338); the opponent's traces light an army together with
@@ -1309,7 +1315,7 @@ DIST-18 (owner 2026-10-25): from the click on `Restart and update` or `Decline a
 
 ## Political view — UI-218 (2026-10-17)
 
-A folded-map button above the map legend and the P key switch the political view: regions in their nations' colours over a subdued illustration, captured settlements striped in the captor's colour; play continues in the view and the choice is kept on the device. Details: [MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#political-view--ui-218-2026-10-17).
+A folded-map button (since UI-518 in the bottom row, right of the legend and the chat) and the P key switch the political view: regions in their nations' colours over a subdued illustration, captured settlements striped in the captor's colour; play continues in the view and the choice is kept on the device. Details: [MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#political-view--ui-218-2026-10-17).
 
 ## Hide from the Fellowship plaque — UI-220 (2026-10-17)
 
@@ -4817,3 +4823,134 @@ runs a clock, a player may pause three times, leaving concedes, and the result c
 Leaderboards page. It is planned, not implemented (UI-497–UI-504). The interface is in [RANKED_UX](RANKED_UX.md); the
 rules are in `wotr-server:docs/RANKED_PLAY.md`. Two exceptions to rules above: the move clock stands in the top bar only
 in ranked games, and its warning is the one sound reminder.
+
+## Victory in the left rail — UI-518 (2026-11-07)
+
+The owner asked for a victory points icon among the icons on the left. Under Effects the rail ends with a Victory plate:
+the icon (a gilt tower, the settlement a side captures, in a laurel wreath, `graphicalassets/ui/src/icons/victory.svg`)
+and both sides' points, "VP" then the Free Peoples' in blue and the Shadow's in red. Its tooltip names both scores
+with their thresholds (4 and 10). A click opens the Victory panel and a second click closes it; hovering unrolls
+nothing, as the panel is a window of its own, which the board menu also still opens. The plate is 34 points tall, not a
+66-point medallion, so with the four tabs above it it stays clear of the map's corner buttons at 1366×768 and 125 %;
+the political view's button moved into their bottom row, right of the legend and the chat. A reached threshold rims the
+plate in gold. `LeftRailLayoutTests.VictoryTabStandsUnderEffectsAndOpensThePanel` checks the four layouts.
+
+UI-524 (owner, 2026-11-08: closing it with a second click "flashes another Victory tab for a split second in the top
+left corner"): the window, no longer pinned, was put back to its default place in the top left by
+`FloatingWindow.Refresh` while it was still fading out. A floating window that is not kept in place now keeps where it
+stood while it fades and takes its default place only while shown; `LeftRailLayoutTests.VictoryClosedFromTheRailFadesOutWhereItStood`
+checks every frame of the fade at 1920 × 1080 and 1366 × 768 at 125 %. Fading out, it goes to the back of its layer, so a
+card or window it was closed over reads and takes the pointer at once (`CardViewportLayoutTests`, release check of
+0.10.0-rc.4).
+
+## Dice faces after the printed symbols — ART-10 (2026-11-07)
+
+The owner asked for new dice pictures close to the original symbols, so each face reads at once. The faces keep the
+kit's style (ivory with an ink outline over the side's enamel) and follow the printed dice's motifs, drawn anew rather
+than copied. The Free Peoples: Character a dagger, Army a banner, Muster a winged helm, Army/Muster the helm and the
+banner, Event a palantír, Will of the West a staff rune. The Shadow has its own: Character a jagged Orc blade, Army an Orc
+helm, Muster a spiked crown, Army/Muster both, Event a palantír holding an eye, and the Eye. A face on a Shadow die (any
+`die-shadow` element: the dice panel, the console's menus, the spent-die flight, the cost badges) and the log's action
+icon of a Shadow action wear the Shadow's glyph; anywhere else the Free Peoples' set is the default. The battle notice,
+which used the old Army face, shows the crossed swords of combat.
+
+## A card leaving the table — UI-516 (2026-11-07)
+
+The owner asked that a card leaving the table always be clear, with an animation (it disappears, or is clearly struck
+through) that is seen to belong to the Effects tab. Before, the open panel's tile vanished in one frame, and only the
+presentation of the opponent's action lit the tab with "− name" (UI-493); the player's own removals showed nothing.
+Now the Effects panel itself shows every card leave, for both players (`TableCardLeaving`):
+
+- **Panel open:** the tile stays where it stood, struck through in red with its title dimmed, for 0.9 s, then fades and
+  goes; its neighbours close up after it. It takes no pointer and no query finds it by its old name.
+- **Panel closed:** the card's struck-through name stands beside the Effects tab, level with it, for 2 s, while the tab's
+  count steps down with its pulse. The presentation's own plate (UI-493) is struck through the same way, and the panel
+  does not name a card the presentation has just named.
+- **Skip animations:** the tile goes at once; the name stands without a fade.
+
+`TableCardLeavingTests` covers the three cases; `OpponentCardPresentationTests` keeps UI-493's.
+
+## The log's full record tells the course and the result — UI-514 (2026-11-07)
+
+The owner: the log needs fuller, more detailed information about how an action went and how it ended, after a click
+on its entry. Since UI-106 (2026-10-12: no sources, no die used, the side once) a step showed its effects only. The
+notices and the compact result card (UI-166) stay as UI-106 left them; the log entry's **full record** now reads as the
+action's course:
+
+- its steps numbered in order, each opening with what it was in its own words ("2 · Moved the army…"), without the side
+  the heading already names; a step that recorded nothing and was automatic bookkeeping stays out;
+- under each, every fact it recorded: moves and who moved, figures, losses with their hits, control, nations, cards,
+  the source, the dice with their faces and where they went, the rolls with the hit target and hits, the Hunt's and the
+  battle's results, the Fellowship's state and route, the budget left, the victory points;
+- the side still named once: a line of the acting side's own ("Shadow · …", "2× Shadow · …") drops its name.
+
+`ActionFactText.Details`; `ActionCardLayoutTests` checks the numbered steps and the side named once.
+
+## A route the player must choose says so — UI-519 (2026-11-07)
+
+The owner asked that a move of several regions light every destination and move in one click, unless the steps
+matter. Most moves already do (characters by level, separations, card journeys, flights, teleports: UI-105, UI-271).
+Two keep their region-by-region route because the way itself changes the result, and the owner chose to keep them
+("don't change it, but give clear instructions that a route must be chosen when that happens"):
+
+- **A card's march** (Shadows Gather, The Shadow Lengthens, The Shadow is Moving, Through a Day and a Night): each step
+  may capture an empty settlement or rouse a nation. The console reads "Choose the route region by region: on the way
+  the army may capture an empty settlement or rouse a nation · Click the next highlighted region."
+- **The Fellowship's declaration and revelation** (UI-219): "Choose the Fellowship's path region by region", then for a
+  revelation "a Shadow stronghold on it brings an extra Hunt", for a declaration "the path is yours to choose", and
+  "Using all of the Progress moves at once."
+
+`RouteChoiceHintTests`.
+
+## Larger figures on the map — UI-529 (2026-11-08)
+
+The owner: "let's add in the options the possibility to increase the size of the figures on the board, even if a larger
+size will sometimes make them overlap. The smallest and the default is to be as it is now."
+
+Settings' second column, under the resolutions (the interface column would push Settings past a 1366 × 768 screen at
+125 %), has "Figures on the map · larger ones may overlap" with four sizes in one row: 100 % (the
+standard and the smallest), 125 %, 150 % and 175 % (`InterfacePreferences.FigureSize`, saved with the other interface
+choices). Later the same day the owner made 150 % the default ("let the figures' default size be 150 %"): settings
+version 4 keeps the choice, and an older save — one a version-3 build wrote with 100 % too — or a size off the list
+reads 150 %. The tests measure and press the figures at the standard size (`MountedMatchClient.StandardPreferences`). Every figure on the map — armies,
+characters, the Fellowship, the planned recruits, a flight, a carried figure — is drawn that much larger round its feet
+(`MapStandScale.Of`); the stand places, the capacity rule that turns a crowded region's figures into tokens, the tokens,
+the gems and the kings' markers stay as they are, so larger figures may overlap one another. The board behind Settings
+follows a change at once (`BoardScreen` follows the preferences while it is shown; `MapCanvas.FigureSize` lays the map
+out again). `InterfacePreferencesTests.FigureSizeStartsAtTheStandardSurvivesReloadAndRefusesOtherSizes`,
+`InterfaceSettingsTests.FiguresOnTheMapGrowRoundTheirFeetAtOnce` and `SettingsFocusAndDenseHeaderFitAtBothSizesAndScales`
+(the row fits at 1366 × 768 and 1920 × 1080, 100 % and 125 %).
+
+## Strongholds without a siege, hand-pinned regions — UI-531 (2026-11-08)
+
+The owner chose "a second layout without a siege" for the strongholds, whose field force stood beside the gem (Erebor's
+at the Iron Hills' border) to keep the open middle for a besieger that would not cover the garrison's plaque, and then
+allowed "problematic regions [to] have their own fixed positions and limits". A stronghold no garrison stands in takes
+its own places round its middle; four regions (Ered Luin, Fords of Bruinen, Forlindon, Vale of the Celduin) stand their
+field on a hand pin near their middle. Details and numbers: TABLETOP_FIGURES_UX, "Places" (UI-530, UI-531).
+`MapStandSlotsTests.AStrongholdWithoutAGarrisonHasOpenPlacesThatPassTheSameChecks`,
+`MapArmyRowTests.EreborWithoutAGarrisonStandsItsArmyInItsOpenMiddle`.
+
+## The region window speaks in symbols — UI-532 (2026-11-08)
+
+The owner: "let's improve the design of the region windows with armies: descriptions using more symbols, add a small
+graphic as in Characters, make it smarter — less text, more useful information and a better arrangement of the whole
+to minimise empty space"; asked which graphic, the owner chose a picture of the place with emblems.
+
+- **Header** (`RegionHeader`): the region's picture (Art/Places, UI-436; 64 × 40, 48 × 30 in the name-only window)
+  beside its name and one line of symbols — the settlement's gem as the map draws it, in its controller's colours,
+  with its kind (Stronghold, City, Town, Fortification, else Wilderness); the nation's emblem with its name; the Victory
+  points as the VP icon and a number, gold once the other side scores them. The line's tooltip holds the words:
+  "Stronghold · Gondor · Free Peoples control" and the Victory points sentence (UI-265).
+- **A force's header**: its side by the section's colour, Field or Garrison (a garrison with the garrison icon), its
+  combat strength (Regulars and Elites, a die each up to five) and its leadership (Leaders, Nazgûl and the characters'
+  Leadership, a re-roll each up to five) as icons and numbers with their meaning in the tooltip; Select all as before.
+- **Each nation's units** start with its emblem, its composition in the tooltip, instead of two letters.
+- **The Fellowship's line** starts with its icon: "Hidden · Progress 2".
+- Every name the tests and the card choices read stays (`hover-figure-*`, `hover-force-*`, `hover-select-all-*`,
+  `hover-region-state`, `hover-fellowship`, `hover-empty`, `hover-effect-*`).
+
+`RegionWindowDesignTests.MinasTirithsWindowSpeaksInSymbolsAtFourLayouts` (1366 × 768 and 1920 × 1080 at 100 and 125 %:
+the picture, the gem, Gondor's emblem, 2 VP, strength and leadership, an emblem before each nation, nothing past the
+window), `RegionNameOnlyTests`, `MapContourAcceptanceTests`.
+

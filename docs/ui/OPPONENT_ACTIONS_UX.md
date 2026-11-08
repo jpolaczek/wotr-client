@@ -1560,3 +1560,22 @@ The owner's decision on the audit (gap 12): the suites watched almost only as th
 - **Recorded.** `muster-recruit` and `event-loss` fixtures for both viewers (server `OpponentActionFixtureRecorder`, EXP-20), used by `OpponentPresentationModelTests`.
 - **What it found.** No wrong scene for either viewer: the presenters are as side-agnostic as the audit read them. One real bug, now fixed: a pennant holds only the opponent's own steps, and a retreat's or an advance's Movement sits on the automatic step after them, so the
   pennant read "Battle at X · Round N" and only the action's card told the retreat. The decision's command now says it too (a stay, with no figures, says nothing). Left as it is: Scouts' withdrawal is an effect choice, so its pennant does not name it (its card and its scene do).
+
+## A roll's result stays readable — UI-520 (2026-11-07)
+
+The owner: the effects of rolls and rerolls must always be shown readably, even with nothing to do and no hits, in a
+battle or the Hunt; they jumped on very fast and were easy to miss. A presented roll held 1 s, and a miss was named only by
+"Hits 0" in the roll's heading (a battle) or by an unmarked dice strip (the Hunt). Both players see these beats: the
+player's own action replays its automatic rolls too (only their own decision step is not replayed).
+
+- **Battle:** a roll or reroll still rings the dice it changed with one dice sound, and each side whose dice changed now
+  shows its result — "No hits", "1 hit", "N hits" — as a plate at the right end of its roll heading's row, clear of the
+  dice and of a quiet decision's caption (UI-491). The beat holds `RollSeconds` (1 s) plus `PresentationPace.ResultSeconds`
+  (1.5 s).
+- **Hunt:** a roll or reroll lights the Hunt window's dice and names its result under them the same way, for the
+  entry's 1 s plus 1.5 s; only then does the Hunt move on.
+- Skip and Esc still end the presentation at once; Skip animations keeps the times (only the dice's lift goes).
+
+`OpponentBattlePresentationTests.AMissedRollIsNamedOnItsHeadingLongEnoughToRead` and
+`OpponentHuntPresentationTests.AMissOpensTheHuntShowsTheRollAndOnlyThenMovesTheProgress` check the words, the place
+and the hold.

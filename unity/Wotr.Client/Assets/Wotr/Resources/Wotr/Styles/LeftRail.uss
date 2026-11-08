@@ -112,6 +112,48 @@
 .edge-tab-icon-effects, .panel-header-icon-effects { background-image: resource("Wotr/Art/UI/icons/effects"); }
 .edge-tab-icon-characters, .panel-header-icon-characters { background-image: resource("Wotr/Art/UI/icons/characters"); }
 .edge-tab-icon-reinforcements, .panel-header-icon-reinforcements { background-image: resource("Wotr/Art/UI/actions/reinforcements"); }
+/* UI-518 (owner): Victory points, a gilt tower in a laurel wreath. The Victory tab is a score plate rather than a panel's
+   medallion: 34 points tall, its icon on the left and both sides' points beside it, so the five rail items stay clear of
+   the map's corner buttons at 1366x768 and 125 %. It keeps the tabs' plate, line, hover and pressed states. */
+.edge-tab-icon-victory { background-image: resource("Wotr/Art/UI/icons/victory"); }
+.board-left-tabs .edge-tab.victory-rail-tab,
+.board-left-tabs .edge-tab.victory-rail-tab:hover,
+.board-left-tabs .edge-tab.victory-rail-tab:focus,
+.board-left-tabs .edge-tab.victory-rail-tab.selected {
+    height: 34px;
+    min-height: 34px;
+    padding: 0 4px 0 33px;
+    -unity-text-align: middle-left;
+    background-image: none;
+}
+.board-left-tabs .edge-tab.victory-rail-tab .edge-tab-icon { left: 5px; top: 4px; }
+.board-left-tabs .edge-tab.victory-rail-tab.pressed { background-color: var(--game-rail-fill-selected); }
+.board-left-tabs .edge-tab.victory-rail-tab.threshold-reached { border-color: rgb(255, 214, 112); }
+
+/* UI-516 (owner): a card leaving the table — its tile struck through in red and dimmed, then faded where it stood; or,
+   with the panel closed, its struck-through name beside the Effects tab (TableCardLeaving). */
+#board-screen .effects-panel .effect-entry.effect-leaving > .effect-source { opacity: 0.6; }
+.effect-leaving-strike {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 50%;
+    height: 3px;
+    margin-top: -1px;
+    border-radius: 1px;
+    background-color: rgb(206, 58, 44);
+    rotate: -5deg;
+}
+.effect-leaving-notice {
+    position: absolute;
+    margin: 0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.94);
+    color: rgb(236, 128, 112);
+    font-size: 13px;
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
 
 /* Panels beside the rail: the thin card of GameChrome.uss (UI-472). */
 #board-screen .edge-left-panel {

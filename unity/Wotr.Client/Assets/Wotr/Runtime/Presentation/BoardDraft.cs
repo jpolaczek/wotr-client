@@ -7,6 +7,12 @@ namespace Wotr.Client
     {
         public static bool UsesBoard(CommandKind? kind) => kind is CommandKind.AttackArmy or CommandKind.MoveArmies or CommandKind.Recruit or CommandKind.AdvancePolitics or CommandKind.RemoveExcess;
 
+        // UI-519 (owner, 2026-11-07: "don't change it, but say clearly that a route must be chosen when that happens"): a
+        // card's march keeps its region-by-region route, since the way itself can capture an empty settlement or rouse a
+        // nation; the console says the route is the player's to choose, and why.
+        public const string MarchRoute = "Choose the route region by region: on the way the army may capture an empty settlement " +
+            "or rouse a nation · Click the next highlighted region.";
+
         public static string Hint(TurnDraft draft, PlayerView view)
         {
             if (!UsesBoard(draft.Kind))
@@ -28,7 +34,7 @@ namespace Wotr.Client
                 if (armyEvent.RouteMovement && draft.Kind == CommandKind.MoveArmies)
                 {
                     if (!EventArmyDraft.Ready(draft, option))
-                        return draft.Payload.Moves.Count < option.Minimum ? "Plan another army on the map." : "Continue to a highlighted final destination.";
+                        return draft.Payload.Moves.Count < option.Minimum ? "Plan another army on the map." : MarchRoute;
                     return "Review the routes · No extra die.";
                 }
                 return "Review the army and destination · No extra die.";

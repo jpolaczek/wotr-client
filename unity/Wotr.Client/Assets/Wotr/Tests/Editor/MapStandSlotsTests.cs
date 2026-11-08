@@ -11,8 +11,9 @@ using Wotr.Contracts;
 namespace Wotr.EditorTests
 {
     // UI-422: every region has fixed stand places. At the worst-case footprint (1366×768 at 125 %, at the lowest zoom
-    // figures show at) they lie inside their own contours, no two bases overlap, and no figures cover a settlement gem,
-    // a fortress drawing or a region name; a garrison stands at its fortress's gate. Checked here with MapContourMath,
+    // figures show at) they lie inside their own contours, no two bases overlap, and no figures cover a settlement gem
+    // or a region name; a garrison stands at its fortress's gate. UI-530 (owner): a city's or fortress's drawing may be
+    // covered; a gem not even by a force's plaque and count below its base. Checked here with MapContourMath,
     // apart from scripts/export_map_stands.py, which lays the places out.
     public sealed class MapStandSlotsTests
     {
@@ -20,9 +21,13 @@ namespace Wotr.EditorTests
         // figures once the zoom shrinks the footprint to their capacity (TABLETOP_FIGURES_UX, "Stand places").
         private static readonly string[] TokenRegions =
         {
-            "ash-mountains", "dol-guldur", "edoras", "gladden-fields", "high-pass", "lorien", "lossarnach", "minas-morgul",
-            "moria", "narrows-of-the-forest", "old-ford", "old-forest-road", "rhosgobel", "south-anduin-vale",
-            "southern-mirkwood", "western-mirkwood", "woodland-realm"
+            // UI-530 (owner: figures in the middle of their region, names giving way down to 70 %): the field aims at the
+            // middle and every two forces of a region keep from hiding more than a quarter of each other, which costs
+            // Buckland, Dimrill Dale, Folde, Goblin's Gate, Narrows of the Forest and North Anduin Vale a little of their
+            // room; Dol Guldur, Southern Mirkwood and Lorien gained it. UI-531's hand pins left Vale of the Celduin room.
+            "ash-mountains", "buckland", "dimrill-dale", "edoras", "folde", "gladden-fields", "goblins-gate", "high-pass",
+            "lossarnach", "minas-morgul", "moria", "narrows-of-the-forest", "north-anduin-vale", "old-ford",
+            "old-forest-road", "rhosgobel", "western-mirkwood", "woodland-realm"
         };
         private const float LowestCapacity = .5f;
 
@@ -92,23 +97,70 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void FiguresCoverNoSettlementDrawingOrName()
+        public void FiguresCoverNoSettlementOrName()
         {
             var gems = data.Regions.Values.Where(r => r.Settlement != null && data.Shapes.ContainsKey(r.Id))
                 .Select(r => (r.Id, Rect: GemRect(data.Shapes[r.Id], r.Settlement))).ToList();
-            var drawings = MapLandmarks.Load().Items.Select(l => (l.Id, l.Rect)).ToList();
             var names = data.Regions.Values.Where(r => data.Shapes.ContainsKey(r.Id)).Select(r => (r.Id, Rect: NameRect(r))).ToList();
             var covered = new List<string>();
             foreach (var stand in Bases())
             {
                 var figures = stand.Place.FigureRect(stand.Scale);
+                var picture = Picture(stand.Place, stand.Scale);
                 var where = stand.Region + " " + stand.Place;
-                covered.AddRange(gems.Where(g => figures.Overlaps(g.Rect)).Select(g => where + " covers the settlement of " + g.Id));
-                covered.AddRange(drawings.Where(d => !(d.Id == stand.Region && stand.Place.AtFortress) && figures.Overlaps(d.Rect))
-                    .Select(d => where + " covers the drawing of " + d.Id));
+                covered.AddRange(gems.Where(g => picture.Overlaps(g.Rect)).Select(g => where + " covers the settlement of " + g.Id));
                 covered.AddRange(names.Where(n => figures.Overlaps(n.Rect)).Select(n => where + " covers the name of " + n.Id));
             }
             CollectionAssert.IsEmpty(covered);
+        }
+
+        // UI-530: a stand's figures, and below a force's base its plaque and count (scripts/export_map_stands.py,
+        // ARMY_PICTURE, 15.6 units below its feet; a character's painted stand 6.3).
+        private static Rect Picture(StandPlace place, float scale)
+        {
+            var figures = place.FigureRect(scale);
+            var army = place.Footprint.BaseWidth == StandFootprint.Army.BaseWidth;
+            var below = (army ? 15.6f : 6.3f) * scale;
+            return Rect.MinMaxRect(figures.xMin, figures.yMin, figures.xMax, Mathf.Max(figures.yMax, place.Feet.y + below));
+        }
+
+        // UI-522: a field force's or garrison's row stand at its place's reach stays inside its region, and its figures
+        // (up to an army's 40 units, UI-523) cover no settlement or name (UI-530: a drawing they may).
+        [Test]
+        public void ARowStandAtItsReachStaysInItsRegionAndCoversNothing()
+        {
+            var gems = data.Regions.Values.Where(r => r.Settlement != null && data.Shapes.ContainsKey(r.Id))
+                .Select(r => (r.Id, Rect: GemRect(data.Shapes[r.Id], r.Settlement))).ToList();
+            var names = data.Regions.Values.Where(r => data.Shapes.ContainsKey(r.Id)).Select(r => (r.Id, Rect: NameRect(r))).ToList();
+            var problems = new List<string>();
+            var wide = 0;
+            foreach (var entry in stands.Regions)
+                foreach (var (kind, feet, reach) in Rows(entry.Value))
+                {
+                    var where = entry.Key + " " + kind;
+                    var round = StandFootprint.Army.BaseWidth / 2;
+                    if (Mathf.Min(reach.x, reach.y) < round || Mathf.Max(reach.x, reach.y) > StandFootprint.RowReach)
+                        problems.Add(where + " has no row reach");
+                    if (reach.x + reach.y <= 2 * round)
+                        continue;
+                    wide++;
+                    var centre = new Vector2(feet.x + (reach.y - reach.x) / 2, feet.y);
+                    if (!BaseInside(data.Shapes[entry.Key], centre, new Vector2(reach.x + reach.y, StandFootprint.Army.BaseDepth) / 2))
+                        problems.Add(where + "'s row leaves the region");
+                    var row = Rect.MinMaxRect(feet.x - reach.x, feet.y - StandFootprint.Army.FigureHeight, feet.x + reach.y,
+                        feet.y + StandFootprint.Army.BaseDepth / 2);
+                    problems.AddRange(gems.Where(g => row.Overlaps(g.Rect)).Select(g => where + " covers the settlement of " + g.Id));
+                    problems.AddRange(names.Where(n => row.Overlaps(n.Rect)).Select(n => where + " covers the name of " + n.Id));
+                }
+            TestContext.WriteLine("Row stands wider than a round base: " + wide);
+            CollectionAssert.IsEmpty(problems);
+        }
+
+        private static IEnumerable<(StandKind Kind, Vector2 Feet, Vector2 Reach)> Rows(RegionStands stands)
+        {
+            yield return (StandKind.Field, stands.Field, stands.FieldReach);
+            if (stands.Garrison is Vector2 gate)
+                yield return (StandKind.Garrison, gate, stands.GarrisonReach);
         }
 
         [Test]
@@ -153,6 +205,20 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEquivalent(TokenRegions, tokens);
             foreach (var entry in stands.Regions)
                 Assert.GreaterOrEqual(entry.Value.Capacity, LowestCapacity, entry.Key + " shows figures once zoomed in");
+        }
+
+        // UI-513 (owner, a picture of Dagorlad): the Fellowship stands well inside its region, nearer its middle than its
+        // border, so where it is reads at a glance. Before, the median place stood 10 board units from the border and the
+        // nearest 3.7.
+        [Test]
+        public void TheFellowshipStandsWellInsideItsRegion()
+        {
+            var distances = stands.Regions.Where(e => e.Value.FellowshipPoint != null && data.Shapes.ContainsKey(e.Key))
+                .Select(e => (Region: e.Key, Distance: BorderDistance(data.Shapes[e.Key], e.Value.Fellowship)))
+                .OrderBy(r => r.Distance).ToList();
+            TestContext.WriteLine("Nearest the border: " + string.Join(", ", distances.Take(6).Select(r => $"{r.Region} {r.Distance:0.0}")));
+            Assert.GreaterOrEqual(distances[0].Distance, 5f, distances[0].Region + " keeps its Fellowship off the border");
+            Assert.GreaterOrEqual(distances[distances.Count / 2].Distance, 20f, "The median Fellowship stands well inside its region.");
         }
 
         // An expansion module's region override always gets a place: a stronghold made of a region without a garrison
@@ -367,6 +433,21 @@ namespace Wotr.EditorTests
 
         // The ellipse lies inside the region when its centre does and no border segment comes into it: scaled to a unit
         // circle, every segment stays at least 1 from its centre.
+        private static float BorderDistance(RegionGeometry shape, Vector2 point)
+        {
+            var best = float.MaxValue;
+            foreach (var ring in shape.Rings)
+                for (var i = 0; i < ring.Points.Length; i++)
+                {
+                    var a = new Vector2(ring.Points[i][0], ring.Points[i][1]);
+                    var next = ring.Points[(i + 1) % ring.Points.Length];
+                    var segment = new Vector2(next[0], next[1]) - a;
+                    var along = segment.sqrMagnitude == 0 ? 0 : Mathf.Clamp01(Vector2.Dot(point - a, segment) / segment.sqrMagnitude);
+                    best = Mathf.Min(best, Vector2.Distance(point, a + along * segment));
+                }
+            return best;
+        }
+
         private static bool BaseInside(RegionGeometry shape, Vector2 centre, Vector2 radii)
         {
             if (!MapContourMath.Contains(shape, centre))
@@ -391,6 +472,61 @@ namespace Wotr.EditorTests
             var length = segment.sqrMagnitude;
             var t = length > 0 ? Mathf.Clamp01(-Vector2.Dot(a, segment) / length) : 0;
             return (a + segment * t).magnitude;
+        }
+
+        // UI-531 (owner: "a second layout without a siege"): a stronghold's places while no garrison stands in it pass a
+        // region's checks — every base inside the region, no two overlapping, no picture on a gem and no figures on a
+        // name — and Erebor's field stands further from its border there than beside its gem.
+        [Test]
+        public void AStrongholdWithoutAGarrisonHasOpenPlacesThatPassTheSameChecks()
+        {
+            var gems = data.Regions.Values.Where(r => r.Settlement != null && data.Shapes.ContainsKey(r.Id))
+                .Select(r => (r.Id, Rect: GemRect(data.Shapes[r.Id], r.Settlement))).ToList();
+            var names = data.Regions.Values.Where(r => data.Shapes.ContainsKey(r.Id)).Select(r => (r.Id, Rect: NameRect(r))).ToList();
+            var strongholds = data.Regions.Values.Count(r => r.Settlement == "Stronghold" && data.Shapes.ContainsKey(r.Id));
+            var problems = new List<string>();
+            var opens = 0;
+            foreach (var entry in stands.Regions.Where(e => e.Value.Open != null))
+            {
+                opens++;
+                var open = entry.Value.Open;
+                var scale = open.ShownScale;
+                Assert.IsFalse(open.HasGarrison, entry.Key + " holds no garrison while open");
+                var places = open.Places;
+                for (var i = 0; i < places.Count; i++)
+                {
+                    var place = places[i];
+                    var where = entry.Key + " open " + place;
+                    if (!BaseInside(data.Shapes[entry.Key], place.Feet, place.Footprint.BaseRadii(scale)))
+                        problems.Add(where + " leaves the region");
+                    var picture = Picture(place, scale);
+                    problems.AddRange(gems.Where(g => picture.Overlaps(g.Rect)).Select(g => where + " covers the settlement of " + g.Id));
+                    problems.AddRange(names.Where(n => place.FigureRect(scale).Overlaps(n.Rect)).Select(n => where + " covers the name of " + n.Id));
+                    for (var j = 0; j < i; j++)
+                        if (BasesOverlap((entry.Key, place, scale), (entry.Key, places[j], scale)))
+                            problems.Add(where + " overlaps " + places[j]);
+                }
+            }
+            TestContext.WriteLine($"Strongholds with open places: {opens} of {strongholds}");
+            Assert.Greater(opens, strongholds / 2, "Most strongholds have open places.");
+            CollectionAssert.IsEmpty(problems);
+            var erebor = stands.Regions["erebor"];
+            Assert.IsNotNull(erebor.Open, "Erebor has open places");
+            Assert.Greater(SideRoom(data.Shapes["erebor"], erebor.Open.Field), SideRoom(data.Shapes["erebor"], erebor.Field),
+                "Without a garrison Erebor's field stands further from its border.");
+        }
+
+        // How far a point is from its region's border along its row's line, the nearer side.
+        private static float SideRoom(RegionGeometry shape, Vector2 point)
+        {
+            float Side(float direction)
+            {
+                var reach = 0f;
+                while (reach < 200 && MapContourMath.Contains(shape, point + new Vector2(direction * (reach + 1), 0)))
+                    reach += 1;
+                return reach;
+            }
+            return Mathf.Min(Side(-1), Side(1));
         }
 
         // Every place of every region, at the scale its region shows figures at in the worst case.

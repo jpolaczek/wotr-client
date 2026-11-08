@@ -1029,8 +1029,13 @@ namespace Wotr.PlayTests
         {
             using var test = new Harness();
             yield return Settle();
+            // UI-518: the Victory plate is no medallion; its icon stands at its left, centred on its height.
+            var plate = test.Board.Victory.RailTab;
+            var plateIcon = plate.Q(className: "edge-tab-icon").worldBound;
+            Assert.AreEqual(plate.worldBound.center.y, plateIcon.center.y, 1f, "The Victory plate's icon is centred on its height.");
+            Assert.Less(plateIcon.xMax, plate.worldBound.center.x, "It stands at the plate's left.");
             var tabs = test.Board.Root.Query<Button>(className: "edge-tab").ToList()
-                .Where(tab => tab.Q(className: "edge-tab-icon") != null && tab.resolvedStyle.display == DisplayStyle.Flex).ToList();
+                .Where(tab => tab != plate && tab.Q(className: "edge-tab-icon") != null && tab.resolvedStyle.display == DisplayStyle.Flex).ToList();
             Assert.IsNotEmpty(tabs);
             foreach (var available in new[] { false, true })
             {

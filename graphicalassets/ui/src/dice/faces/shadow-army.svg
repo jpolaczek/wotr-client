@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- ART-10: the Shadow's Army result: a crude spiked Orc helm. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="shadow-army-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M8.40 14.00 L9.60 6.20 L11.60 11.00 L13.40 4.40 L15.20 10.20 L16.80 3.20 L18.40 10.20 L20.40 4.60 L21.60 11.00 L23.40 6.60 L23.60 14.00 C24.40 20.00 22.40 25.60 19.40 28.60 L18.20 25.60 L16.80 28.80 L15.40 25.60 L14.00 28.60 L12.80 25.60 C9.60 23.60 7.80 19.60 8.40 14.00 Z" fill="url(#shadow-army-ivory)" style="stroke: var(--ink)" stroke-width="1.4"/>
+    <path d="M10.60 16.60 L14.60 18.40 L10.80 19.40 Z M21.40 16.60 L17.40 18.40 L21.20 19.40 Z" style="fill: var(--ink)"/>
+    <path d="M16.00 15.40 V22.20" fill="none" style="stroke: var(--ink)" stroke-width="1"/>
+  </g>
+</svg>

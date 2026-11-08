@@ -13,6 +13,8 @@ namespace Wotr.Client
     {
         private readonly VisualElement root;
         private readonly WindowLayout windows;
+        // UI-529: Settings' figure size, which every board follows.
+        private readonly InterfacePreferences preferences;
         private GameApi api;
         private CancellationTokenSource screenLifetime = new CancellationTokenSource();
         private readonly string storageRoot;
@@ -64,8 +66,10 @@ namespace Wotr.Client
 
         // MENU-14: quit closes the game after a confirmed Quit game (ApplicationQuit unless a test replaces it).
         public ClientFlow(VisualElement root, GameApi authenticatedApi = null, string storageRoot = null, WindowLayout windows = null,
-            Func<string, string, string, ILocalMatchStorage> localStorage = null, Action quit = null, SoundModule sounds = null)
+            Func<string, string, string, ILocalMatchStorage> localStorage = null, Action quit = null, SoundModule sounds = null,
+            InterfacePreferences preferences = null)
         {
+            this.preferences = preferences;
             this.sounds = sounds;
             this.root = root;
             this.quit = quit ?? ApplicationQuit.Exit;
@@ -400,7 +404,7 @@ namespace Wotr.Client
             }
             libraryScroll = mainMenu?.Replays.ScrollOffset ?? libraryScroll;
             ChangeScreen();
-            var board = new BoardScreen(windows);
+            var board = new BoardScreen(windows, preferences);
             Board = board;
             errorLabel = board.Connection;
             root.Add(board.Root);
@@ -437,7 +441,7 @@ namespace Wotr.Client
         private Task ObserveMatch(RoomView room)
         {
             ChangeScreen();
-            var board = new BoardScreen(windows);
+            var board = new BoardScreen(windows, preferences);
             Board = board;
             errorLabel = board.Connection;
             root.Add(board.Root);
@@ -486,7 +490,7 @@ namespace Wotr.Client
         {
             ChangeScreen();
             var cancellation = screenLifetime.Token;
-            var board = new BoardScreen(windows);
+            var board = new BoardScreen(windows, preferences);
             Board = board;
             errorLabel = board.Connection;
             root.Add(board.Root);

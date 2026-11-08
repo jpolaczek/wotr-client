@@ -130,6 +130,8 @@ namespace Wotr.Client
         private Vector2 previous;
         private Vector2 lastPan;
         private float lastZoom;
+        private float figureSize = 1;
+        private readonly HashSet<string> garrisoned = new HashSet<string>();
 
         public MapCanvas(BoardPresentation data)
         {
@@ -634,6 +636,21 @@ namespace Wotr.Client
             MarkerVisibility.InspectedRegion = region ?? "";
             Refresh();
         }
+        // UI-529 (Settings, Figures on the map): how much larger than standard the figures stand; 1 is the standard. A
+        // change lays the map out again at once.
+        public float FigureSize
+        {
+            get => figureSize;
+            set
+            {
+                if (Mathf.Approximately(figureSize, value))
+                    return;
+                figureSize = value;
+                if (panel != null)
+                    Refresh();
+            }
+        }
+
         public void Refresh()
         {
             Camera.Constrain(CanvasBounds, contentRect);
@@ -840,8 +857,15 @@ namespace Wotr.Client
         }
 
         // UI-401, UI-402: every force and character on its region's place; the characters beside their side's army.
+        // UI-531: the regions a garrison stands in now — an army's or a character's; a stronghold without one takes its
+        // open places.
+        internal bool Garrisoned(string region) => garrisoned.Contains(region);
+
         private void AssignPlaces()
         {
+            garrisoned.Clear();
+            garrisoned.UnionWith(Data.Armies.Where(army => army.Garrison).Select(army => army.RegionId));
+            garrisoned.UnionWith(Data.Characters.Where(character => character.Garrison).Select(character => character.RegionId));
             regionMarkers.Clear();
             var fieldSides = new Dictionary<string, Side?>();
             foreach (var group in markers.Values.GroupBy(m => m.Army.RegionId))
@@ -851,8 +875,54 @@ namespace Wotr.Client
                 fieldSides[group.Key] = Stands.Assign(group.Key, forces);
             }
             Characters.Assign(region => fieldSides.TryGetValue(region, out var side) ? side : null);
+            FitRows();
             Stands.Sort();
         }
+
+        // UI-522: every force's row stand as wide as the stands beside it now allow; again whenever the Fellowship or a
+        // planned ghost comes or goes.
+        internal void FitRows()
+        {
+            var standing = Data.Shapes.Keys.SelectMany(Standing).ToList();
+            var forces = regionMarkers.Values.SelectMany(group => group).ToList();
+            var marks = RowMarks();
+            foreach (var pair in regionMarkers)
+                Stands.FitRows(pair.Value, Standing(pair.Key), standing, marks, forces);
+        }
+
+        // UI-526: the marks no row reaches over past its place: the Mordor track's gates and steps (a stand over a gate
+        // takes the gate's click) and the settlements' gems, at their widest on the board (the worst-case Detail zoom, as
+        // they keep their size in points). They change only with the board.
+        private IReadOnlyList<Rect> RowMarks()
+        {
+            if (rowMarksFor == Data)
+                return rowMarks;
+            var zoom = MapStandSlots.WorstCaseZoom(Data.Geometry);
+            rowMarks.Clear();
+            if (Data.MordorTrack != null)
+                rowMarks.AddRange(MapMordorTrack.Marks(Data.MordorTrack).Select(mark => MapArmyRowRoom.Mark(mark.Centre, mark.Size, zoom)));
+            foreach (var region in Data.Regions.Values)
+                if (region.Settlement != null && Data.Shapes.TryGetValue(region.Id, out var shape))
+                    rowMarks.Add(MapArmyRowRoom.Mark(new Vector2(shape.Anchor[0], shape.Anchor[1]), MapSettlementGems.Box, zoom));
+            rowMarksFor = Data;
+            return rowMarks;
+        }
+
+        private IEnumerable<(Vector2 Feet, StandFootprint Footprint)> Standing(string region)
+        {
+            foreach (var feet in Characters.Standing(region))
+                yield return (feet, StandFootprint.Character);
+            if (FellowshipMarker?.Region == region)
+                yield return (Stands.Stands(region).Fellowship, StandFootprint.Fellowship);
+            if (PlannedIn(region))
+                yield return (Stands.Stands(region).Planned, StandFootprint.Army);
+        }
+
+        private readonly List<Rect> rowMarks = new List<Rect>();
+        private BoardPresentation rowMarksFor;
+
+        private bool PlannedIn(string region) =>
+            new[] { PlannedRecruits, PlannedFlights, PlannedJourneys }.Any(ghosts => ghosts?.Regions.Contains(region) == true);
 
         // UI-274: a force holding a king that a decision or the selected die lights glows, and its click chooses the
         // king, unless the force is itself a source for the selected die (then the king's portrait chooses him).

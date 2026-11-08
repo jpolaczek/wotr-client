@@ -21,6 +21,8 @@ namespace Wotr.Client
         private readonly PresentationSoundSink sounds;
         private readonly PresentationMark mark;
         private readonly FellowshipJoin join;
+        // UI-520: a roll's result named under the Hunt's dice.
+        private readonly PresentationMarks plates;
 
         public HuntPresenter(BoardScreen board, StagedBoard staged, PresentationLayer layer, FellowshipReading reading,
             PresentationSoundSink sounds)
@@ -30,6 +32,7 @@ namespace Wotr.Client
             this.reading = reading;
             this.sounds = sounds;
             mark = new PresentationMark(layer);
+            plates = new PresentationMarks(layer, "presentation-hunt-plate");
             join = new FellowshipJoin(board, staged, reading, mark);
         }
 
@@ -48,6 +51,7 @@ namespace Wotr.Client
             var entry = cue.Hunt;
             if (cue.Kind != PresentationCueKind.Hunt || entry == null || cue.HuntChainId.Length == 0)
                 return null;
+            plates.End();
             staged.Hunt(cue.HuntChainId, entry);
             board.StageHunt(staged.View);
             if (entry.Kind == HuntReportKind.GuideChanged && join.Joins(entry.Outcome.GuideId))
@@ -60,6 +64,7 @@ namespace Wotr.Client
         {
             join.End();
             EndRing();
+            plates.End();
         }
 
         private List<(Action Start, double Seconds)> Steps(PresentationCue cue, HuntReportEntryView entry)
@@ -74,7 +79,8 @@ namespace Wotr.Client
                     steps.Add((() => mark.Show(() => board.Hunt.Tab), seconds));
                     break;
                 case HuntReportKind.Rolled or HuntReportKind.Rerolled:
-                    steps.Add((() => sounds.Play(SoundCue.DiceRoll, "presented/" + cue.Id), seconds));
+                    // UI-520 (owner): the dice light and their result stands named under them long enough to read.
+                    steps.Add((() => Rolled(cue, entry), seconds + PresentationPace.ResultSeconds));
                     break;
                 case HuntReportKind.CompanionLeft or HuntReportKind.CharacterEliminated:
                     steps.Add((() => reading.Open(), PresentationPace.PanelSettleSeconds));
@@ -136,5 +142,19 @@ namespace Wotr.Client
         }
 
         private void EndRing() => mark.End();
+
+        private void Rolled(PresentationCue cue, HuntReportEntryView entry)
+        {
+            sounds.Play(SoundCue.DiceRoll, "presented/" + cue.Id);
+            mark.Show(() => board.Hunt.Dice.Root);
+            var hits = entry.Hunt?.Dice.Count(die => die.Success) ?? 0;
+            plates.Place(() =>
+            {
+                var plate = new Label(PresentationPace.ResultText(hits));
+                plate.AddToClassList(PoliticsPresenter.CaptionName);
+                plate.AddToClassList(PresentationPace.ResultClass);
+                plates.Plate(board.Hunt.Dice.Root, plate, PlateSide.Under);
+            });
+        }
     }
 }

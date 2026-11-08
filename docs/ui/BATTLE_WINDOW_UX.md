@@ -581,3 +581,50 @@ a roll, its pager, Heroic Death's or Orderly Withdrawal's hit buttons) keeps an 
 under the shorter force row takes the difference, so the rows below line up whatever an ability adds. A replacement's
 chip or marker keeps the card's row height, its top on the card's. Cause, fix and tests:
 [UX_SPEC](UX_SPEC.md#both-sides-rows-stand-level--ui-437).
+
+## Advance all — UI-515 (2026-11-07)
+
+The owner asked for an extra option that moves every unit that took part in the battle into the battle's region at
+once, as a button (an exception to UI-430, which the owner asked for). When the advance is the player's decision, the footer
+holds Stay, **Advance all** (the advance icon, 132 points) and the Select all toggle. Advance all sends the advance with
+every figure that may advance — the same command as choosing them all and clicking the region — in one click; its
+tooltip names the region. Choosing figures one by one, then the region, and Stay are unchanged; the hint reads
+"Choose figures, then click the destination · Or Advance all, or Stay." (since UI-527, the window folded for the step, "Advance all or
+Stay · Or pick figures, then click the region."). `BattleAdvanceAllTests` checks the footer row
+and the command's figures.
+
+## The window folds into a plaque that keeps its buttons — UI-521 (2026-11-07)
+
+From UI-517's plan the owner chose the first direction: "fold it into a small plaque, but keep the clickable buttons".
+The window's header gains a fold button (`collapse`, then `expand`) before ×. Folded, the window is a 480-point plaque
+where it stood: its header (the battle, its mode and round, the Ask for cards setting, unfold and close), the step's
+decision ("You · Continue or stop the attack") and the footer's buttons, which keep working (Continue / Stop, No card,
+Keep roll, Stay / Advance all, Hold / Retreat with its region clicked on the map, Fight in field / Retreat inside, Extend
+siege), and a Combat choice's cards. The scene strip, the stage ribbon, both forces and a presented round wait for the
+unfold. A decision that needs a pick inside the window — the player's own losses or reroll — unfolds it; a new battle
+opens unfolded. `BattleFoldTests` checks the four layouts, a folded button's command and the losses' unfold.
+
+## A nation never stands over its column's heading — UI-511 (2026-11-07)
+
+The owner's pictures from a production game (Saruman's field battle at the Fords of Isen and the Witch-king's siege of
+Minas Tirith in round two, after a siege extension): the Sauron group with its Nazgûl stood one row too high, over the
+force heading and the stage ribbon. The recorded battle states, replayed in the window (read with the owner's consent,
+not kept), lifted it from the extension on, at 100 % on 1920×1080 only. Cause: the composition, sized to its figures
+alone, measured a fraction of a point narrower than its figures lay out once rounded to whole pixels (171.6 for 172);
+its last nation broke into a second line the force row had not made room for, and the row's bottom alignment lifted the
+first nation over the heading. The composition now takes the rest of its line in the force row (it grows but does not
+shrink), so it wraps only when its figures do not fit; with nine portraits it still takes a line of its own (UI-437).
+`BattleCrowdedForceTests` checks the owner's two forces in eight laptop layouts and three Shadow forces in 58 window
+sizes from 1104 to 2560 pixels wide at 100 and 125 % (a sweep every 4 pixels had found 858 of 2196 windows lifting a nation
+before the fix, none after).
+
+## The window folds itself for a step chosen on the map — UI-527 (2026-11-08)
+
+The owner: choosing where the army advances after a battle, "the description is clear, but the battle window does not
+minimise to the bar, which could be unfolded and lets you see the map better". The player's own step chosen on the map —
+the advance after a battle or the retreat — now folds the window into its UI-521 plaque once, as the step begins; its
+buttons keep working (Advance all, Stay; Hold, Retreat), and the region is clicked on the map. Unfolding it (to pick only
+some figures) holds while that step lasts; the next such step folds it again, and a pick inside the window (the
+player's losses or reroll) still unfolds it. `BattleFoldTests.AnAdvanceFoldsTheWindowAndAnUnfoldHoldsForTheStep` checks
+it.
+

@@ -9,6 +9,8 @@ namespace Wotr.Client
     {
         public VisualElement Root { get; } = new VisualElement { name = "victory-panel" };
         public Button Tab { get; }
+        // UI-518 (owner): the left rail's Victory tab, under Effects: both sides' points; a click opens or closes the panel.
+        public Button RailTab { get; }
         public Label Banner { get; } = new Label { name = "victory-reason" };
         public FloatingWindow Window { get; set; }
         public bool IsOpen => hover.Visible;
@@ -38,6 +40,9 @@ namespace Wotr.Client
             Tab.AddToClassList(RuntimeTooltip.RichHoverClass);
             Tab.style.display = DisplayStyle.None;
             shortcut = new VictoryShortcut(Tab);
+            RailTab = BoardScreen.Button("VP", ToggleFromRail);
+            RailTab.name = "victory-rail-tab";
+            RailTab.AddToClassList("victory-rail-tab");
             Banner.AddToClassList("victory-result");
             Banner.pickingMode = PickingMode.Ignore;
             Banner.style.display = DisplayStyle.None;
@@ -89,7 +94,11 @@ namespace Wotr.Client
             ExpansionCrests.Show(crests, view.Configuration);
             Tab.style.display = MenuOnly ? DisplayStyle.None : DisplayStyle.Flex;
             Tab.text = VictoryPresentation.Summary(view);
-            Tab.EnableInClassList("threshold-reached", !view.Winner.HasValue && view.MilitaryVictory.Exists(score => score.ThresholdReached));
+            var reached = !view.Winner.HasValue && view.MilitaryVictory.Exists(score => score.ThresholdReached);
+            Tab.EnableInClassList("threshold-reached", reached);
+            RailTab.text = VictoryPresentation.RailText(view);
+            RailTab.tooltip = VictoryPresentation.RailTooltip(view);
+            RailTab.EnableInClassList("threshold-reached", reached);
             timing.text = VictoryPresentation.MilitaryTiming(view);
             timing.tooltip = "Military victory is checked in phase 6, after Ring victories. If both military thresholds are reached, Shadow wins. BASE p.44.";
             freePeoples.Apply(view);
@@ -106,6 +115,14 @@ namespace Wotr.Client
         }
 
         public void Close() => hover.Close();
+
+        private void ToggleFromRail()
+        {
+            if (IsOpen)
+                Close();
+            else
+                Open();
+        }
         public void CloseTransient() => hover.CloseTransient();
 
         public void Hide()
@@ -147,6 +164,12 @@ namespace Wotr.Client
                 {
                     Opening?.Invoke();
                     Root.BringToFront();
+                }
+                else
+                {
+                    // UI-524: closing, the window fades out where it stood beneath the rest of the board, so what lies
+                    // under it reads and takes the pointer at once.
+                    Root.SendToBack();
                 }
             }
             Position();

@@ -373,7 +373,8 @@ clear of them instead of the fixed forces' box around the settlement (`InForcesZ
 
 The owner's request: a map mode that marks clearly which nation each region belongs to. The button with the
 folded-map icon above the legend's `?` (or the P key, unless a text field has focus) switches it; the choice is
-kept on the device (`wotr.map-view.v1`).
+kept on the device (`wotr.map-view.v1`). Since UI-518 (2026-11-07) the button stands in the bottom row, right of the
+legend and the chat, which leaves the column above the legend to the left rail's Victory plate.
 
 - Every region with a nation is filled with its nation's palette colour (`map-style.json`, alpha 0.5); regions
   without a nation stay plain. The nation is the current one, so Fate of Erebor and the White Hand

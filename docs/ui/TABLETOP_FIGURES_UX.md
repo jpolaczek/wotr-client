@@ -117,6 +117,63 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
     drawing, low on its middle (the gate: a fifth of the drawing's height above its lower edge), its three characters
     beside it. The field stands as close to the settlement point as its figures allow without covering the gem, so
     above or beside it; the planned recruits, the six characters and the Fellowship stand around the field.
+    UI-513 (owner, 2026-11-07, a picture of the Fellowship on Dagorlad's southern border): the Fellowship is placed
+    right after the field (and the garrison's characters), before the recruits and the field's characters, and its
+    place weighs open ground up to 30 units (weight 1, against 8 units at 0.5 for the others), so it stands well
+    inside its region where it reads at a glance. The median distance from its feet to the border went from 10 to
+    25.5 units and the nearest from 3.7 to 5 (Helm's Deep); `MapStandSlotsTests.TheFellowshipStandsWellInsideItsRegion`
+    keeps both. The release check of 0.10.0-rc.4 found that it had stood Minas Morgul's Fellowship on its gate of the
+    Mordor track: the marker takes clicks over its whole box (64 × 80 design points at 1.8 a unit, its plaque grown to
+    86 at the worst case), so a click on the glowing gate went to the Fellowship and it could not enter Mordor there
+    (`MordorNetworkTests`). Where the Fellowship stands in a region, the track offers both gates and its first step; the
+    Fellowship's marker box now keeps clear of each as large as it is at the figures' design zoom (1.35 points a unit;
+    the marks keep their size in points, so at every zoom that shows figures at least that middle of a mark shows and
+    takes its click). The export reads `MapCanvas/mordor-track.json` and records its hash; only Minas Morgul's
+    Fellowship (back to 1235, 893) and Morannon's (1207, 779, its box had covered the gate's upper half) moved, with
+    their characters around them.
+    UI-530 (owner, 2026-11-08, pictures of Ered Luin's Dwarves at its western border and Erebor's running on into the
+    Iron Hills: "some figures still show at the side of the region … more centrally for every region, even if they
+    cover some city's drawing; what matters is that they do not cover the blue/red markers"). Measured on the export,
+    most gems stand in their region's middle and the field force, drawn to the settlement point, stood beside the gem,
+    often at the border; the region's own name, placed first, and the fortress drawings were hard obstacles. Now:
+    - the field aims at the region's middle (`Raster.middle`, the lattice point with the most room) and weighs open
+      ground as the Fellowship does (`FIELD_ROOM_CAP`, `FIELD_ROOM_WEIGHT`, 30 units at 1);
+    - a drawing keeps no figure away (the garrison still stands at its gate);
+    - a region's places come first and its name searches round them and round the places already laid out
+      (`places_first`), unless the older order shows figures at a larger scale or the name would keep less than 70 % of
+      its width or height (`NAME_KEPT`); a shared name stays where it was shared. The owner chose this among measured
+      variants: names give way to figures, but not below 70 %;
+    - no stand's picture — its plaque and count below the base included (`figure_picture`) — covers a gem; none, at
+      full size or as a token at the Detail level, covers the middle of a Mordor track gate or step (`on_track`; Minas
+      Morgul's field covered its gate once centred), nor does a row;
+    - every two forces of a region (field, garrison and the planned place, which holds the other side's force beside
+      an army) keep from hiding more than a quarter of each other by their pictures where the region still fits at
+      scale 1, else the garrison and the planned place are left free as before (`ALL_FORCE_PAIRS`, `FIELD_FORCE_PAIRS`,
+      `Place.pairs`; Helm's Deep);
+    - a king's marker keeps 4 units off the Fellowship's whole box at every zoom where its region leaves room
+      (Minas Tirith's had moved onto it far out; Rhosgobel has no such room).
+    Against the export before: fields within 25 units of their border 28 → 18, the median distance of a field from its
+    region's middle over the middle's room 0.52 → 0.33; 25 names smaller, 3 below 60 % (Erebor, Minas Morgul, South
+    Downs), so a few show only closer in; regions that show tokens at the worst case 15 → 20. Erebor's field stays right
+    of its gem: between the fortress's gate and the gem there are 58 units, and a field's figures and plaque need 56
+    without covering the garrison's plaque (UI-425) — UI-531 gives strongholds without a garrison a layout of their own.
+    A row still reaches past its region's border into free room (kept on its region, a row of three kinds would shrink
+    in 17 regions).
+    UI-531 (owner, choosing "a second layout without a siege", then: "problematic regions may have their own fixed
+    positions and limits; no more regions will appear"). Every stronghold has a second set of places for while no
+    garrison — an army's or a character's — stands in it (`open` in stand-slots.json, `RegionStands.Open`,
+    `MapStandSlots.For(…, garrisoned)`, `MapCanvas.Garrisoned`): its field, characters, Fellowship, planned recruits and
+    king's marker laid out round its middle without the garrison group, round the final names (which stay where they
+    are) and the neighbours' forces, under every rule above, with its own capacity and row reach (`open_stands`,
+    `verify_open`). A garrison brings the siege places back. Erebor's army without a garrison stands at 1166, 131, in
+    the open middle above its gem, with a row reaching 50 units either way, instead of beside the gem at the Iron Hills'
+    border (1185, 167). Four regions are pinned by hand (`scripts/map-stands-overrides.json`), each at the point nearest
+    its middle with 28 units of room whose picture covers no gem and leaves the region's name at least 70 % of its size:
+    Ered Luin 224, 244 (from 156, 246 at its western border), Fords of Bruinen 688, 349, Forlindon 88, 258 and Vale of the
+    Celduin 1259, 399. A pinned region lays its places out first and its name round them on the empty board; that name
+    is shared from the start (`pinned_names`). Old Ford, Fords of Isen, Eagles' Eyrie and Vale of the Carnen have no such
+    point (their names would keep under half). With the pins: fields within 25 units of their border 15 (28 before
+    UI-530), the median 0.29; 31 names smaller, 3 below 60 %; 18 regions show tokens at the worst case.
     Characters keep to the army's line: figures that hide one another cost heavily, and only where that leaves the
     group below scale 1 does a lighter cost get its chance. A besieger in the field and the garrison never share more
     than a quarter of either's figure rectangle, so a siege shows both. No figure rectangle covers a settlement gem
@@ -183,7 +240,9 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   drawn at the same `p`; on the Mordor track it keeps its UI-283 size (80 or 64 points tall). An army's token is a puck
   about as wide as its base: `clamp(40 × zoom, 32, 44)` points. A king's marker keeps its 30 × 34 points. (Since UI-425
   a field force's token stands on its puck's lower edge, and past the whole map of the worst case tokens and kings'
-  markers keep their board size: "As built (UI-425)".)
+  markers keep their board size: "As built (UI-425)".) Since UI-529 every figure is drawn at `p × s / designUnit`,
+  `s` being Settings' "Figures on the map" (1, 1.25, 1.5 or 1.75; 1 the default): the places, the footprint's scale
+  and capacity, the tokens, gems and kings' markers do not change, so larger figures may overlap.
 - **Level** (`MapStandLayout.Figures`). A focused region (inspected, holding a selected force, or just reached by a
   flight) shows figures; otherwise figures need the Detail level (1.3/1.2 × the fit zoom) and the footprint within the
   region's capacity, and they stay until the footprint exceeds the capacity by the same 1.3/1.2 ratio. With the
@@ -253,7 +312,7 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   so the commands are the chip's — with a Character die it starts travel (`TravelContextInteraction.Figure` through
   `FigureSelector`), with an Army die it joins the army (the commander-first rule), and a card's figure choice, the
   Balrog's order or the Chief's reaction lit on the figure is used. A click that chooses nothing does what its region's
-  click does but never opens the region panel. A drop on a miniature is a drop on its region
+  click does, and since UI-528 opens the region panel (it never closes it). A drop on a miniature is a drop on its region
   (`DraftToken.AsRegion`). The army base's click is unchanged; a press on a character holds the open panel as a press on
   an army does, and its right click reads its region.
 - **Shared highlights.** `FigureChoices` (Eligible, Selected, Moved, by figure id) is owned by the map and is the region
@@ -708,7 +767,17 @@ flight per destination marker, rendered with the same miniature.
   (0.97), South Anduin Vale 0.85 (0.96), Ash Mountains 0.85 (0.86), Moria 0.85 (0.87), High Pass 0.92, Old Ford 0.95, Edoras
   0.96 (0.98), Lorien 0.96 (≥ 1), Narrows of the Forest 0.96 (≥ 1), Old Forest Road 0.96; every region still shows figures
   before the closest zoom. 90 of the 105 regions' places moved; capacities above 1 now stop at 1.0–1.02 in many regions.
-- **Format.** `stand-slots-2` (the `sovereign` point; `MapStandSlots.Validate` rejects a region without it).
+- **Format.** `stand-slots-2` (the `sovereign` point; `MapStandSlots.Validate` rejects a region without it); since UI-522
+  `stand-slots-3`, which adds each region's `fieldRow` and, for a stronghold, `garrisonRow`.
+- **Row reach** (UI-522, 2026-11-07, ARMY_MAP_UX). A force that shows one figure of each kind stands them side by side on
+  a row stand up to 100 units wide (71 before UI-523, whose figures stand at least 85 % of an army's height). The places
+  stay as laid out; each field and garrison place records how far its row stand may reach before and after its feet (20
+  to 50 units a side, in half-unit steps, its figures up to 40 units tall): inside the region (a stadium,
+  its round ends an army's, along its spine), off the other force's and the king's marker's bases, on no gem, other
+  fortress drawing or name, and on no label of a force it stands in front of. The client narrows the side a character,
+  the Fellowship or the planned recruits stand on at the moment (`MapArmyRowRoom`). Reserving a full row in the layout
+  itself left 42 regions below capacity 1 instead of 15, and re-laying each region around a row widened barely a
+  quarter of them; the owner chose a row as wide as each place allows.
 - **Checks.** `python3 scripts/export_map_stands.py --check` lays everything out again, runs UI-422's checks and UI-425's
   (`verify_readability`: tokens off the gems, labels clear within a region and across neighbours, kings' markers) and
   compares the result with the file; it now takes about 3 minutes. EditMode `MapStandSlotsTests`
@@ -843,7 +912,8 @@ flight per destination marker, rendered with the same miniature.
 ## Defaults the owner can change at review
 
 - A character click opens no region panel. As built (UI-402): a click on the player's own character that chooses
-  nothing does what its region's click does, without the panel; an enemy character's click is its region's.
+  nothing does what its region's click does, without the panel; an enemy character's click is its region's. Changed by
+  the owner (UI-528): a click on figures that chooses nothing always opens the region panel and never closes it.
 - A stacked pair's click chooses its front character (UI-402).
 - Far out a character is its portrait in its side's medallion (UI-402); since UI-406 the medallion is a thick coin with
   a contact shadow.

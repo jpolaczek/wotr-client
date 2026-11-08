@@ -159,6 +159,10 @@ namespace Wotr.Client
             var ownPlacement = anchor != null || defaultAnchor.HasValue;
             if (!persistent())
             {
+                // A window fading out keeps where it stood until it is gone (owner, 2026-11-08: closing Victory from its rail
+                // icon flashed the window in the top left corner); its default place applies while it is shown.
+                if (Appearance.Closed(root))
+                    return;
                 if (ownPlacement || !Centre())
                     DefaultPosition();
                 return;

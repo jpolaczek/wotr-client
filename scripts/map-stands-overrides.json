@@ -6,5 +6,30 @@
     "iron-hills": "City",
     "south-rhun": "City"
   },
-  "pins": {}
+  "pins": {
+    "ered-luin": {
+      "field": [
+        224.0,
+        244.0
+      ]
+    },
+    "fords-of-bruinen": {
+      "field": [
+        688.0,
+        349.0
+      ]
+    },
+    "forlindon": {
+      "field": [
+        88.0,
+        258.0
+      ]
+    },
+    "vale-of-the-celduin": {
+      "field": [
+        1259.0,
+        399.0
+      ]
+    }
+  }
 }

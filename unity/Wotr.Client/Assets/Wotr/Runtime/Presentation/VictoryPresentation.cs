@@ -11,12 +11,23 @@ namespace Wotr.Client
         public static string Summary(PlayerView view) =>
             "FP " + ScoreText(view, Side.FreePeoples) + " · SH " + ScoreText(view, Side.Shadow);
 
-        public static string ScoreText(PlayerView view, Side side)
+        public static string ScoreText(PlayerView view, Side side) => Points(view, side) + "/" + Threshold(view, side);
+
+        // UI-518: the left rail's Victory tab — each side's points in its colour — and its tooltip with the thresholds.
+        public static string RailText(PlayerView view) =>
+            "VP <color=#92C4EC>" + Points(view, Side.FreePeoples) + "</color> · <color=#EC8070>" + Points(view, Side.Shadow) + "</color>";
+
+        public static string RailTooltip(PlayerView view) => TooltipText.Lines(
+            "Victory points · Free Peoples " + ScoreText(view, Side.FreePeoples) + " · Shadow " + ScoreText(view, Side.Shadow),
+            "Click for the captured settlements and the victory conditions");
+
+        private static string Points(PlayerView view, Side side) =>
+            (Score(view, side)?.Points ?? view?.Players.FirstOrDefault(player => player.Side == side)?.VictoryPoints)?.ToString() ?? "—";
+
+        private static int Threshold(PlayerView view, Side side)
         {
             var score = Score(view, side);
-            var points = score?.Points ?? view?.Players.FirstOrDefault(player => player.Side == side)?.VictoryPoints;
-            var threshold = score?.Threshold > 0 ? score.Threshold : side == Side.FreePeoples ? 4 : 10;
-            return (points?.ToString() ?? "—") + "/" + threshold;
+            return score?.Threshold > 0 ? score.Threshold : side == Side.FreePeoples ? 4 : 10;
         }
 
         public static string MilitaryTiming(PlayerView view)

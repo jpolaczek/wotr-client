@@ -214,3 +214,12 @@ Each seat shows its player's avatar to the left of the name, at the largest size
 seat holds without growing), and the observer chips and the room's chat show it at 16 px. A row keeps its height. A change made
 in the browser appears on the next refresh and leaves everyone's readiness as it was, since a room's version does not move. An
 empty seat shows no picture.
+
+## The page stays still while a change is sent — UI-525 (owner, 2026-11-08)
+
+The owner: toggling expansions "makes a large part of the layout and the whole menu on the right blink". Each toggle
+sends the configuration to the server, and while it waited the room disabled every control — the action column, the
+rules strip, the seats and the audience — which greyed them out and back within a moment. A request now blocks further
+actions at once (`WaitingRoomController.Run` ignores them), and the controls grey out only when the server takes longer
+than 400 ms (`WaitingRoomScreen.BusyShownAfterMilliseconds`); the reply restores them.
+`WaitingRoomRulesTests.ARulesChangeKeepsThePageStillUnlessTheServerIsSlow` checks both.

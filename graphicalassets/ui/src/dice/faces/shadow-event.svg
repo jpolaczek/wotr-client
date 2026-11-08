@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- ART-10: the Shadow's Event result: a palantír holding an eye. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="shadow-event-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+  </defs>
+  <defs>
+    <radialGradient id="shadow-event-fire" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0" style="stop-color: var(--ember-light)"/>
+      <stop offset="0.55" style="stop-color: var(--ember)"/>
+      <stop offset="1" style="stop-color: var(--ember-dark)"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M9.4 28.6 L11.6 22 L20.4 22 L22.6 28.6 Z" fill="url(#shadow-event-ivory)" style="stroke: var(--ink)" stroke-width="1.4"/>
+    <path d="M8.2 28.6 H23.8" fill="none" style="stroke: var(--ink)" stroke-width="2.2"/>
+    <circle cx="16" cy="13.4" r="9.4" fill="url(#shadow-event-ivory)" style="stroke: var(--ink)" stroke-width="1.5"/>
+    <circle cx="16" cy="13.4" r="6.6" fill="none" style="stroke: var(--ink)" stroke-width="0.7" opacity="0.3"/>
+    <path d="M9.6 13.4 C12.6 9.2 19.4 9.2 22.4 13.4 C19.4 17.6 12.6 17.6 9.6 13.4 Z" fill="url(#shadow-event-fire)" style="stroke: var(--ink)" stroke-width="1.1"/>
+    <ellipse cx="16" cy="13.4" rx="1.2" ry="3.4" style="fill: var(--ink)"/>
+  </g>
+</svg>

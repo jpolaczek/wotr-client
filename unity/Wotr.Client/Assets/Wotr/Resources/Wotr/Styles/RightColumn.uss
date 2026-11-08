@@ -315,7 +315,19 @@
    Fellowship's condition only; the state row keeps the footprint its control had. The Fellowship's marker on its track
    is the Hide control: a plain picture until hiding is legal, then the shared ChoiceGlow rim, plate and pulse mark it
    where it stands. */
-#board-screen .fellowship-locate .fellowship-state-row > .fellowship-state-symbol { width: 18px; height: 18px; margin: 3px 6px 3px 3px; }
+/* UI-512: the map marker's symbol fills its marker (Armies.uss, absolute); in the state row it is a flow item, so it stands
+   before Hidden/Revealed instead of over the word. */
+#board-screen .fellowship-locate .fellowship-state-row > .fellowship-state-symbol {
+    position: relative;
+    left: auto;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin: 3px 6px 3px 3px;
+}
 #board-screen .fellowship-track-marker.choice-glow {
     border-width: 2px;
     border-color: rgb(255, 214, 112);

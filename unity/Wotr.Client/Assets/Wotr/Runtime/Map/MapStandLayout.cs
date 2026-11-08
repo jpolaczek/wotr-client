@@ -38,7 +38,7 @@ namespace Wotr.Client
         public RegionStands Stands(string region)
         {
             map.Data.Regions.TryGetValue(region, out var current);
-            return MapStandSlots.Load(map.Data).For(map.Data.Shapes[region], current);
+            return MapStandSlots.Load(map.Data).For(map.Data.Shapes[region], current, map.Garrisoned(region));
         }
 
         // Once per layout: the scale every stand is drawn at for the camera's zoom.
@@ -46,7 +46,7 @@ namespace Wotr.Client
         {
             if (minimumZoom <= 0)
                 minimumZoom = MapStandSlots.WorstCaseZoom(map.Data.Geometry);
-            Scale = new MapStandScale(map.Camera.Zoom, minimumZoom, MapArmyArtwork.DesignUnit);
+            Scale = new MapStandScale(map.Camera.Zoom, minimumZoom, MapArmyArtwork.DesignUnit, map.FigureSize);
         }
 
         // Figures when the region is focused (inspected, holding a selected force or just reached by a flight), or at the
@@ -118,9 +118,33 @@ namespace Wotr.Client
                 var gate = force.Army.Garrison ? stands.Garrison : null;
                 if (gate == null && field == 0)
                     fieldSide = force.Army.Side;
+                // UI-522: the gate and the field have their place's row reach; the planned place an army's round base,
+                // which narrows the field's row like any stand beside it (FitRows).
+                force.AtPlanned = gate == null && field > 0;
+                force.PlaceReach = gate != null ? stands.GarrisonReach : force.AtPlanned ? MapArmyStand.RoundReach : stands.FieldReach;
                 Stand(force.Stand, gate ?? (field++ == 0 ? stands.Field : stands.Planned));
             }
             return fieldSide;
+        }
+
+        // UI-522: each of a region's forces on a row stand as wide as its place's room and the stands beside it now allow:
+        // its characters', the Fellowship's, a planned ghost's and a force on the planned place.
+        // UI-526: past its place a row stops short of whatever stands anywhere on the map (`standingAnywhere`, `everyForce`),
+        // not only in its region, and of the board's marks (`marks`).
+        internal void FitRows(IReadOnlyList<MapArmyStand> forces, IEnumerable<(Vector2 Feet, StandFootprint Footprint)> standing,
+            IReadOnlyList<(Vector2 Feet, StandFootprint Footprint)> standingAnywhere, IReadOnlyList<Rect> marks,
+            IReadOnlyList<MapArmyStand> everyForce)
+        {
+            var beside = standing.ToList();
+            beside.AddRange(forces.Where(force => force.AtPlanned).Select(force => (force.Stand.Feet, StandFootprint.Army)));
+            var around = beside.Concat(standingAnywhere).ToList();
+            foreach (var force in forces.Where(force => !force.AtPlanned))
+            {
+                var feet = force.Stand.Feet;
+                var room = MapArmyRowRoom.Narrow(feet, force.PlaceReach, beside);
+                var others = everyForce.Where(other => other != force).Select(other => other.Stand.Feet);
+                force.Room(room, Vector2.Max(room, MapArmyRowRoom.Limit(feet, around, others, marks)));
+            }
         }
 
         // The army pass: every force on its place at its region's level; the bounds of the shown ones are reserved, so

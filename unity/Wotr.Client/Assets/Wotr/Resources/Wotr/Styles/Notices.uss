@@ -39,7 +39,8 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 .notice-log-icon { background-image: resource("Wotr/Art/UI/icons/log"); }
-.notice-battle-icon { width: 18px; height: 18px; background-image: resource("Wotr/Art/UI/dice/faces/army"); }
+/* ART-10: the Army face became a banner, so the battle notice wears the crossed swords of combat. */
+.notice-battle-icon { width: 18px; height: 18px; background-image: resource("Wotr/Art/UI/characters/combat"); }
 
 /* UI-254: a decision the game waits on (excess units, losses, Hunt damage, excess cards) stays red, with one thin warm line
    (UI-478) and a "!" in front of its text, apart from the plain decision notice; under .motion-enabled it pulses in the
