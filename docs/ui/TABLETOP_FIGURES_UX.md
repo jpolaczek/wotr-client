@@ -267,7 +267,7 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   so the commands are the chip's — with a Character die it starts travel (`TravelContextInteraction.Figure` through
   `FigureSelector`), with an Army die it joins the army (the commander-first rule), and a card's figure choice, the
   Balrog's order or the Chief's reaction lit on the figure is used. A click that chooses nothing does what its region's
-  click does but never opens the region panel. A drop on a miniature is a drop on its region
+  click does, and since UI-528 opens the region panel (it never closes it). A drop on a miniature is a drop on its region
   (`DraftToken.AsRegion`). The army base's click is unchanged; a press on a character holds the open panel as a press on
   an army does, and its right click reads its region.
 - **Shared highlights.** `FigureChoices` (Eligible, Selected, Moved, by figure id) is owned by the map and is the region
@@ -867,7 +867,8 @@ flight per destination marker, rendered with the same miniature.
 ## Defaults the owner can change at review
 
 - A character click opens no region panel. As built (UI-402): a click on the player's own character that chooses
-  nothing does what its region's click does, without the panel; an enemy character's click is its region's.
+  nothing does what its region's click does, without the panel; an enemy character's click is its region's. Changed by
+  the owner (UI-528): a click on figures that chooses nothing always opens the region panel and never closes it.
 - A stacked pair's click chooses its front character (UI-402).
 - Far out a character is its portrait in its side's medallion (UI-402); since UI-406 the medallion is a thick coin with
   a contact shadow.

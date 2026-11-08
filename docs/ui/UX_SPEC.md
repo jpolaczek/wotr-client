@@ -796,8 +796,14 @@ UI-274 replaces the hiding rules below: every sovereign keeps a fixed slot in ev
 - Shadow strap falls on the map directly below it, and edge panels begin from its lower edge.
 
 **Panel region.**
-- A click in the region or in the army tag, when its panel is open, closes this panel.
+- A click in the region, when its panel is open, closes this panel.
 - Click in another region switches the panel. The third click opens again.
+- UI-528 (owner, 2026-11-08: "a click on the figures on the board should always open our existing window that presents the exact information and the portraits of all units"): a click on an army's figures or token, or on a
+  character's miniature, opens its region's panel and never closes it. Where the click chooses something (a lit figure:
+  a target sent, a draft changed) it does only that; where it changes nothing — no die chosen, the opponent's turn, a
+  draft whose region click does nothing there — the panel opens. A press that lifts a figure opens nothing; a battle's
+  region opens its battle window. `TurnInteraction.FigureClick`, `RegionHover.OpenOrKeep`; watchers alike
+  (`ObserverInteraction`).
 - Program opening (e.g. decision indicator) does not switch.
 - The legal target has priority so far.
 
@@ -892,8 +898,8 @@ UI-421's decision 5 (owner, 2026-10-28), built 2026-10-30 ([TABLETOP_FIGURES_UX]
   is its portrait in its side's medallion.
 - Its click chooses it exactly as its chip in the region panel does (UI-105): with a Character die it starts its
   travel, with an Army die it joins the army (the commander-first rule), and a card's choice, an ability or an order lit
-  on the figure is used. The player's own character's click opens no region panel; an enemy character's click is its
-  region's. The army's click still selects every figure that can move, its characters included.
+  on the figure is used. An enemy character's click is its region's; since UI-528 the player's own character's click
+  that chooses nothing opens the region panel too. The army's click still selects every figure that can move, its characters included.
 - The chips and the miniatures show one set of choices: a figure lit, selected or marched in the panel is lit, selected
   or marched on the map, and the other way round.
 - A character appears, flies in or leaves on its own (UI-334, UI-338); the opponent's traces light an army together with

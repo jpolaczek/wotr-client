@@ -832,8 +832,8 @@ it exactly as its region panel's chip does.
 - **Click.** With a Character die the character's click starts its travel; with an Army die it joins the army (the
   commander-first rule, UI-105); a card, an ability or an order lit on the figure is used — the same command as the
   chip's (`ActionContextInteraction.SelectFigure`). An enemy character's click is its region's (an attack target, or its
-  panel). The player's own character opens no region panel: a click that chooses nothing does what its region's click
-  does, without the panel. A reserve dropped on a character is dropped on its region. The army's click is unchanged: it
+  panel). A click on the player's own character that chooses nothing does what its region's click does and, since
+  UI-528, opens the region panel. A reserve dropped on a character is dropped on its region. The army's click is unchanged: it
   selects every figure that can move, its characters included, and opens the panel.
 - **One set of highlights.** The region panel's chips and the map's miniatures read one model (`FigureChoices`), so a
   context that lights a chip lights the figure, and a selection made on either shows on both. The army's base is marked

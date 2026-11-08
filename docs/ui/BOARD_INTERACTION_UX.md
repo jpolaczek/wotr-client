@@ -265,6 +265,9 @@ The window of the ruler.
 **Panel region.**
 - `RegionHover` remembers when pressing the map (`pressedOpen`) region of the open panel. Pressing
   the site closes the panel before clicking.
+- UI-528: a click on figures (an army, a character's miniature) calls `RegionHover.OpenOrKeep`, never `Toggle`: it
+  opens the region's panel or leaves the one already showing it (a decision's too) as it is.
+  `TurnInteraction.FigureClick` opens it as well after a click that changed neither the draft nor what is being sent.
 - `Toggle(region)` closes the panel when the click hits the region open at press or still open (the
   army tag does not close it) or opens it.
 - `TurnInteraction.ChooseRegion` and `ChooseArmy` use `Toggle` where clicks are not a legitimate

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Wotr.Contracts;
 using UnityEngine.UIElements;
 
@@ -78,8 +79,8 @@ namespace Wotr.Client
         // UI-278 (D15): the object a Kings card branch's click carries into the card's next step.
         private readonly BranchCarry branchCarry = new BranchCarry();
         private bool held;
-        // UI-402: a character's own click acts as its region's click without opening the region panel.
-        private bool quietPanel;
+        // UI-528: while a click on figures is handled, the region panel it would toggle opens (or stays open).
+        private bool figureClick;
         private bool online;
         private bool previewLegal;
         private int generation;
@@ -319,24 +320,60 @@ namespace Wotr.Client
             // UI-417: the Balrog's lit army moves with him on A Balrog is Come!.
             if (figureAbilities.Army(army))
                 return;
+            FigureClick(army.Id, () => ChooseArmyFigures(army));
+        }
+
+        private void ChooseArmyFigures(DraftToken army)
+        {
             if (context.ArmyActive || view?.Decision?.Kind == DecisionKind.Action && !draft.Kind.HasValue)
             {
                 if (army.Side != view.You)
                     ChooseRegion(army.Id);
-                else if (context.SelectArmy(army))
-                    board.Hover.Open(army.Id);
                 else
-                    board.Hover.Toggle(army.Id);
+                {
+                    context.SelectArmy(army);
+                    board.Hover.OpenOrKeep(army.Id);
+                }
                 return;
             }
             ChooseRegion(army.Id);
         }
 
+        // UI-528 (owner, 2026-11-08: "a click on the figures on the board should always open our existing window that
+        // presents the exact information and the portraits of all units"): a click on an army's figures or a character's
+        // miniature opens its region's panel — every unit's figure, every character's portrait — and never closes it
+        // (UI-103's toggle stays for the region's ground). Where the click chose something (a target sent, a draft
+        // changed) it does only that, as before; where it changed nothing — no die chosen, the opponent's turn, a draft
+        // whose region click does nothing there — the panel opens. A press that lifts a figure still opens no panel
+        // (RegionHover.Quiet); a battle's region still opens its battle window.
+        private void FigureClick(string region, Action click)
+        {
+            var before = DraftSignature();
+            figureClick = true;
+            try
+            {
+                click();
+            }
+            finally
+            {
+                figureClick = false;
+            }
+            if (DraftSignature() == before && !board.Battles.IsRegion(region))
+                board.Hover.OpenOrKeep(region);
+        }
+
+        // What a click may change: the draft and whether a command is on its way.
+        private string DraftSignature() => JsonConvert.SerializeObject(new object[]
+        {
+            draft.Kind, draft.Payload, draft.MoveFocus, draft.ReserveId, draft.CompanionFocus, draft.HuntChoice,
+            draft.ArmedSource, CommandBusy
+        });
+
         // UI-402 (TABLETOP_FIGURES_UX): a character's own miniature is chosen as its region panel's chip is
         // (ActionContextInteraction.SelectFigure, UI-105): with a Character die the click starts its travel, with an Army
         // die it joins the army (the commander-first rule), and an ability lit on the figure is used. A lit Awakened king's
         // figure chooses the king. An enemy character counts as its region; so does the player's own one whose click
-        // chooses nothing, except that it opens no region panel.
+        // chooses nothing, and since UI-528 both open the region panel (FigureClick).
         private void ChooseMiniature(DraftToken figure)
         {
             if (board.Map.LitSovereign(figure) is { } king)
@@ -346,22 +383,9 @@ namespace Wotr.Client
             }
             if (view == null)
                 return;
-            if (figure.Side != view.You)
-            {
-                ChooseRegion(figure.RegionId);
+            if (figure.Side == view.You && context.SelectFigure(figure.Id))
                 return;
-            }
-            if (context.SelectFigure(figure.Id))
-                return;
-            quietPanel = true;
-            try
-            {
-                ChooseRegion(figure.RegionId);
-            }
-            finally
-            {
-                quietPanel = false;
-            }
+            FigureClick(figure.RegionId, () => ChooseRegion(figure.RegionId));
         }
 
         // UI-405: a press that lifts a figure to carry it makes that figure's click without opening a panel; a click that
@@ -399,7 +423,9 @@ namespace Wotr.Client
         // A region click opens or closes its panel, but a character's own click never does (UI-402).
         private void TogglePanel(string region)
         {
-            if (!quietPanel)
+            if (figureClick)
+                board.Hover.OpenOrKeep(region);
+            else
                 board.Hover.Toggle(region);
         }
 
