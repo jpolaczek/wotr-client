@@ -4920,3 +4920,13 @@ follows a change at once (`BoardScreen` follows the preferences while it is show
 out again). `InterfacePreferencesTests.FigureSizeStartsAtTheStandardSurvivesReloadAndRefusesOtherSizes`,
 `InterfaceSettingsTests.FiguresOnTheMapGrowRoundTheirFeetAtOnce` and `SettingsFocusAndDenseHeaderFitAtBothSizesAndScales`
 (the row fits at 1366 × 768 and 1920 × 1080, 100 % and 125 %).
+
+## Strongholds without a siege, hand-pinned regions — UI-531 (2026-11-08)
+
+The owner chose "a second layout without a siege" for the strongholds, whose field force stood beside the gem (Erebor's
+at the Iron Hills' border) to keep the open middle for a besieger that would not cover the garrison's plaque, and then
+allowed "problematic regions [to] have their own fixed positions and limits". A stronghold no garrison stands in takes
+its own places round its middle; four regions (Ered Luin, Fords of Bruinen, Forlindon, Vale of the Celduin) stand their
+field on a hand pin near their middle. Details and numbers: TABLETOP_FIGURES_UX, "Places" (UI-530, UI-531).
+`MapStandSlotsTests.AStrongholdWithoutAGarrisonHasOpenPlacesThatPassTheSameChecks`,
+`MapArmyRowTests.EreborWithoutAGarrisonStandsItsArmyInItsOpenMiddle`.

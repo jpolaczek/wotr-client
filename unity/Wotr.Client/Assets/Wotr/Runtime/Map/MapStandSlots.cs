@@ -118,6 +118,9 @@ namespace Wotr.Client
         [JsonProperty("planned")] public float[] PlannedPoint { get; set; }
         // UI-425: where a corrupted king's marker stands, beside the forces but on none of their labels and no gem.
         [JsonProperty("sovereign")] public float[] SovereignPoint { get; set; }
+        // UI-531 (owner: "a second layout without a siege"): a stronghold's places while no garrison stands in it, laid
+        // out round its middle without the garrison and its characters (scripts/export_map_stands.py, open_stands).
+        [JsonProperty("open")] public RegionStands Open { get; set; }
         private List<StandPlace> places;
 
         [JsonIgnore] public bool HasGarrison => GarrisonPoint != null;
@@ -286,9 +289,12 @@ namespace Wotr.Client
 
         // UI-422: a region's places for its current definition. A region the export does not cover, or a stronghold an
         // expansion module makes of a region without a garrison place, stands beside its settlement and shows tokens.
-        public RegionStands For(RegionGeometry shape, RegionDefinition current)
+        // UI-531: a stronghold no garrison stands in now (`garrisoned` false) takes its open places.
+        public RegionStands For(RegionGeometry shape, RegionDefinition current, bool garrisoned = true)
         {
             Regions.TryGetValue(shape.Id, out var stands);
+            if (stands?.Open != null && !garrisoned && current?.Settlement == "Stronghold")
+                return stands.Open;
             if (stands != null && (stands.HasGarrison || current?.Settlement != "Stronghold"))
                 return stands;
             if (!fallbacks.TryGetValue(shape.Id, out var fallback))
@@ -363,6 +369,19 @@ namespace Wotr.Client
                 ValidPoints(stands.GarrisonCharacterPoints, RegionStands.GarrisonCharacterPlaces);
             var none = stands.GarrisonPoint == null && stands.GarrisonCharacterPoints == null && stands.FortressBounds == null;
             MapContourValidation.Require(stronghold ? garrison : none, "Map stand places disagree with the strongholds: " + id);
+            if (stands.Open != null)
+                RequireOpen(id, stands.Open, stronghold);
+        }
+
+        // UI-531: a stronghold's open places are complete and hold no garrison.
+        private static void RequireOpen(string id, RegionStands open, bool stronghold)
+        {
+            var complete = stronghold && open.Capacity > 0 && Row(open.FieldRow) &&
+                MapContourValidation.ValidPoint(open.FieldPoint) && MapContourValidation.ValidPoint(open.FellowshipPoint) &&
+                MapContourValidation.ValidPoint(open.PlannedPoint) && MapContourValidation.ValidPoint(open.SovereignPoint) &&
+                ValidPoints(open.CharacterPoints, RegionStands.CharacterPlaces) && open.GarrisonPoint == null &&
+                open.GarrisonCharacterPoints == null && open.FortressBounds == null && open.Open == null;
+            MapContourValidation.Require(complete, "Incomplete open stand places: " + id);
         }
 
         private static bool Row(float[] reach) => reach?.Length == 2 &&

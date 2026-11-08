@@ -159,6 +159,21 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
     without covering the garrison's plaque (UI-425) — UI-531 gives strongholds without a garrison a layout of their own.
     A row still reaches past its region's border into free room (kept on its region, a row of three kinds would shrink
     in 17 regions).
+    UI-531 (owner, choosing "a second layout without a siege", then: "problematic regions may have their own fixed
+    positions and limits; no more regions will appear"). Every stronghold has a second set of places for while no
+    garrison — an army's or a character's — stands in it (`open` in stand-slots.json, `RegionStands.Open`,
+    `MapStandSlots.For(…, garrisoned)`, `MapCanvas.Garrisoned`): its field, characters, Fellowship, planned recruits and
+    king's marker laid out round its middle without the garrison group, round the final names (which stay where they
+    are) and the neighbours' forces, under every rule above, with its own capacity and row reach (`open_stands`,
+    `verify_open`). A garrison brings the siege places back. Erebor's army without a garrison stands at 1166, 131, in
+    the open middle above its gem, with a row reaching 50 units either way, instead of beside the gem at the Iron Hills'
+    border (1185, 167). Four regions are pinned by hand (`scripts/map-stands-overrides.json`), each at the point nearest
+    its middle with 28 units of room whose picture covers no gem and leaves the region's name at least 70 % of its size:
+    Ered Luin 224, 244 (from 156, 246 at its western border), Fords of Bruinen 688, 349, Forlindon 88, 258 and Vale of the
+    Celduin 1259, 399. A pinned region lays its places out first and its name round them on the empty board; that name
+    is shared from the start (`pinned_names`). Old Ford, Fords of Isen, Eagles' Eyrie and Vale of the Carnen have no such
+    point (their names would keep under half). With the pins: fields within 25 units of their border 15 (28 before
+    UI-530), the median 0.29; 31 names smaller, 3 below 60 %; 18 regions show tokens at the worst case.
     Characters keep to the army's line: figures that hide one another cost heavily, and only where that leaves the
     group below scale 1 does a lighter cost get its chance. A besieger in the field and the garrison never share more
     than a quarter of either's figure rectangle, so a siege shows both. No figure rectangle covers a settlement gem

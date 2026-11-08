@@ -38,7 +38,7 @@ namespace Wotr.Client
         public RegionStands Stands(string region)
         {
             map.Data.Regions.TryGetValue(region, out var current);
-            return MapStandSlots.Load(map.Data).For(map.Data.Shapes[region], current);
+            return MapStandSlots.Load(map.Data).For(map.Data.Shapes[region], current, map.Garrisoned(region));
         }
 
         // Once per layout: the scale every stand is drawn at for the camera's zoom.

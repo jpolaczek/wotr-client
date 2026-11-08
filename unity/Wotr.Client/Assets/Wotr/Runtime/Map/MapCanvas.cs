@@ -131,6 +131,7 @@ namespace Wotr.Client
         private Vector2 lastPan;
         private float lastZoom;
         private float figureSize = 1;
+        private readonly HashSet<string> garrisoned = new HashSet<string>();
 
         public MapCanvas(BoardPresentation data)
         {
@@ -856,8 +857,15 @@ namespace Wotr.Client
         }
 
         // UI-401, UI-402: every force and character on its region's place; the characters beside their side's army.
+        // UI-531: the regions a garrison stands in now — an army's or a character's; a stronghold without one takes its
+        // open places.
+        internal bool Garrisoned(string region) => garrisoned.Contains(region);
+
         private void AssignPlaces()
         {
+            garrisoned.Clear();
+            garrisoned.UnionWith(Data.Armies.Where(army => army.Garrison).Select(army => army.RegionId));
+            garrisoned.UnionWith(Data.Characters.Where(character => character.Garrison).Select(character => character.RegionId));
             regionMarkers.Clear();
             var fieldSides = new Dictionary<string, Side?>();
             foreach (var group in markers.Values.GroupBy(m => m.Army.RegionId))

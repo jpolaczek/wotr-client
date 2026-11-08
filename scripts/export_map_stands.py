@@ -25,6 +25,7 @@ replace the search for those places. Output: Resources/MapCanvas/stand-slots.jso
 over the contours for review. Requires Pillow, NumPy and SciPy (scripts/requirements-map-canvas.txt).
 """
 import argparse
+import copy
 import hashlib
 import json
 import math
@@ -1273,6 +1274,21 @@ def name_spots(region, taken):
     return spots
 
 
+def pinned_names(regions, fortresses):
+    """UI-531 (owner: "problematic regions may have their own fixed positions and limits"): a region pinned by hand lays
+    its places out first and its name searches round them on its own; that name is shared from the start, so every
+    other region keeps clear of it and the region keeps its pinned places round it."""
+    result = {}
+    for region in regions:
+        if not region.pins:
+            continue
+        free = places_first(region, regions, {}, fortresses, ())
+        if free is None:
+            raise ValueError(f'The pins of {region.id} leave its name no clear spot; move them in {OVERRIDES.relative_to(ROOT)}')
+        result[region.id] = free[2]
+    return result
+
+
 def export(regions):
     """The places and the names. Since UI-530 a region's places come first, round its middle, and its name searches
     round them (else the older order: the places keep clear of the name's empty-board search path, so the run-time
@@ -1284,7 +1300,10 @@ def export(regions):
     that keeps more of its capacity is laid out again around the other's forces, and stays bound to its neighbours'."""
     fortresses = name_obstacles(regions)
     empty = {region.id: place_name(region, fortresses) for region in regions}
+    pinned = pinned_names(regions, fortresses)
+    empty.update(pinned)
     rounds = Rounds(regions, fortresses, empty)
+    rounds.shared.update(pinned)
     pending = regions
     for _ in range(NAME_ROUNDS):
         for region in pending:
@@ -1389,6 +1408,56 @@ def place_sovereigns(regions, layouts):
     return {region.id: place_sovereign(region, layouts[region.id], layouts, regions) for region in regions}
 
 
+# ---- Strongholds without a garrison (UI-531) -------------------------------------------------------------
+
+def open_region(region):
+    """A stronghold as its places stand while no garrison does: its slots without the garrison and its characters."""
+    proxy = copy.copy(region)
+    proxy.stronghold = False
+    return proxy
+
+
+def open_stands(regions, layouts, names):
+    """UI-531 (owner: "a second layout without a siege"): every stronghold laid out again without its garrison group,
+    round the final names (which stay where they are) and the neighbours' forces, with its own king's marker and its
+    field's row reach: (layout, capacity, sovereign, rooms) by region id. A stronghold none fits keeps its siege places."""
+    reserved = {key: [rect] for key, rect in names.items()}
+    covers = [('gem', r.id, r.gem) for r in regions if r.gem]
+    covers += [('track middle', 'mordor-track', core) for core in track_cores()]
+    result = {}
+    for region in regions:
+        if not region.stronghold:
+            continue
+        proxy = open_region(region)
+        neighbours = armies_near(region, layouts)
+        trial = lay_out(proxy, Obstacles(regions, reserved), neighbours)
+        if trial is None:
+            continue
+        layout, fitted = trial
+        sovereign = place_sovereign(proxy, layout, layouts, regions)
+        field = next(place for place in layout if place.slot.kind == 'field')
+        rooms = {}
+        rooms['field'] = row_reach(field, (proxy, layout, covers, names, sovereign, neighbours, rooms))
+        result[region.id] = (layout, fitted, sovereign, rooms)
+    return result
+
+
+def verify_open(regions, opens, names):
+    """The open places pass a region's checks and cover no region's final name."""
+    covers = [('gem', r.id, r.gem) for r in regions if r.gem]
+    covers += [('track', owner, fellowship_reach(rect)) for owner, rect in track_marks()]
+    covers += [('track middle', 'mordor-track', core) for core in track_cores()]
+    problems = []
+    by_id = {region.id: region for region in regions}
+    for key, (layout, fitted, _, _) in opens.items():
+        scale = min(1.0, fitted)
+        problems += [key + ' open: ' + p for p in verify_places(open_region(by_id[key]), layout, scale, covers)]
+        for place in layout:
+            problems += [f'{key} open {place.slot.key}: covers the name of {other}'
+                         for other, name in names.items() if overlaps(place.rect(scale), name)]
+    return problems
+
+
 def region_json(region, layout, capacity_value, sovereign, rooms):
     """A region's capacity, its places in a fixed order, the place of a corrupted king's marker, the room of its forces'
     row stands (UI-522) and, for a stronghold, the fortress its name keeps clear of."""
@@ -1407,8 +1476,10 @@ def region_json(region, layout, capacity_value, sovereign, rooms):
     return result
 
 
-def document(regions, layouts, capacities, sovereigns, rooms):
-    return {
+def document(regions, layouts, capacities, sovereigns, rooms, opens=None):
+    opens = opens or {}
+    by_id = {region.id: region for region in regions}
+    result = {
         'version': VERSION,
         'task': 'UI-422, UI-425, UI-522',
         'sourceHashes': source_hashes(),
@@ -1418,6 +1489,10 @@ def document(regions, layouts, capacities, sovereigns, rooms):
                                            rooms[region.id])
                     for region in sorted(regions, key=lambda r: r.id)},
     }
+    # UI-531: a stronghold's places while no garrison stands in it.
+    for key, (layout, fitted, sovereign, open_rooms) in opens.items():
+        result['regions'][key]['open'] = region_json(open_region(by_id[key]), layout, fitted, sovereign, open_rooms)
+    return result
 
 
 def serialise(data):
@@ -1684,11 +1759,13 @@ def main():
     layouts, capacities, names = export(regions)
     sovereigns = place_sovereigns(regions, layouts)
     rooms = force_rooms(regions, layouts, names, sovereigns)
+    opens = open_stands(regions, layouts, names)
     problems = verify(regions, layouts, capacities, names)
     problems += verify_readability(regions, layouts, capacities, sovereigns)
+    problems += verify_open(regions, opens, names)
     if problems:
         raise ValueError('Stand places fail the acceptance checks:\n' + '\n'.join(problems))
-    text = serialise(document(regions, layouts, capacities, sovereigns, rooms))
+    text = serialise(document(regions, layouts, capacities, sovereigns, rooms, opens))
     if args.preview:
         preview(regions, layouts, capacities, names, sovereigns, args.preview)
     if args.check:

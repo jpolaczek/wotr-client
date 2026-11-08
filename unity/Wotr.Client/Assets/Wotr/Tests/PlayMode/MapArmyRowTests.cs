@@ -17,6 +17,49 @@ namespace Wotr.PlayTests
     {
         private static readonly float[] Zooms = { 1.4f, 2.2f, 4f };
 
+        // UI-531 (owner: "a second layout without a siege"; Erebor's Dwarves stood beside the gem at the Iron Hills'
+        // border): without a garrison Erebor takes its open places round its middle; a garrison brings the siege places
+        // back.
+        [UnityTest]
+        public IEnumerator EreborWithoutAGarrisonStandsItsArmyInItsOpenMiddle()
+        {
+            var fixture = new BoardFixture();
+            foreach (var unit in fixture.View.Units.Where(u => u.Location == "erebor"))
+                unit.Location = "reserve";
+            fixture.Put("dwarves", UnitKind.Elite, "erebor", 2);
+            fixture.Put("dwarves", UnitKind.Regular, "erebor", 1);
+            fixture.Put("dwarves", UnitKind.Leader, "erebor", 1);
+            fixture.Refresh();
+            var slots = MapStandSlots.Load(BoardPresentation.Load()).Regions["erebor"];
+            Assert.IsNotNull(slots.Open, "Erebor has open places");
+            using (var client = new MountedMatchClient("http://localhost", fixture.View.MatchId))
+            {
+                client.Apply(fixture.View);
+                yield return Settle();
+                client.Board.Hover.Close();
+                var map = client.Board.Map;
+                Assert.AreEqual(slots.Open.Field, map.Stands.Stands("erebor").Field, "No garrison: the open field");
+                map.FocusOn(slots.Open.Field, map.FitZoom * 2.2f);
+                yield return Settle();
+                LayoutTests.Save(client.Viewport, "ui531-erebor-open.png");
+                client.Interface.Preferences.SetFigureSize(InterfacePreferences.DefaultFigureSize);
+                yield return Settle();
+                LayoutTests.Save(client.Viewport, "ui531-erebor-open-150.png");
+            }
+            foreach (var unit in fixture.View.Units.Where(u => u.Location == "erebor"))
+                unit.Garrison = true;
+            fixture.Put("sauron", UnitKind.Regular, "erebor", 2);
+            fixture.Refresh();
+            using (var client = new MountedMatchClient("http://localhost", fixture.View.MatchId))
+            {
+                client.Apply(fixture.View);
+                yield return Settle();
+                var stands = client.Board.Map.Stands.Stands("erebor");
+                Assert.AreEqual(slots.Garrison, stands.Garrison, "A siege: the siege places");
+                Assert.AreEqual(slots.Field, stands.Field);
+            }
+        }
+
         [UnityTest]
         public IEnumerator BaradDursArmyStandsItsKindsSideBySideOnItsRegionsRowStand()
         {
