@@ -589,7 +589,8 @@ once, as a button (an exception to UI-430, which the owner asked for). When the 
 holds Stay, **Advance all** (the advance icon, 132 points) and the Select all toggle. Advance all sends the advance with
 every figure that may advance — the same command as choosing them all and clicking the region — in one click; its
 tooltip names the region. Choosing figures one by one, then the region, and Stay are unchanged; the hint reads
-"Choose figures, then click the destination · Or Advance all, or Stay." `BattleAdvanceAllTests` checks the footer row
+"Choose figures, then click the destination · Or Advance all, or Stay." (since UI-527, the window folded for the step, "Advance all or
+Stay · Or pick figures, then click the region."). `BattleAdvanceAllTests` checks the footer row
 and the command's figures.
 
 ## The window folds into a plaque that keeps its buttons — UI-521 (2026-11-07)
@@ -616,3 +617,14 @@ shrink), so it wraps only when its figures do not fit; with nine portraits it st
 `BattleCrowdedForceTests` checks the owner's two forces in eight laptop layouts and three Shadow forces in 58 window
 sizes from 1104 to 2560 pixels wide at 100 and 125 % (a sweep every 4 pixels had found 858 of 2196 windows lifting a nation
 before the fix, none after).
+
+## The window folds itself for a step chosen on the map — UI-527 (2026-11-08)
+
+The owner: choosing where the army advances after a battle, "the description is clear, but the battle window does not
+minimise to the bar, which could be unfolded and lets you see the map better". The player's own step chosen on the map —
+the advance after a battle or the retreat — now folds the window into its UI-521 plaque once, as the step begins; its
+buttons keep working (Advance all, Stay; Hold, Retreat), and the region is clicked on the map. Unfolding it (to pick only
+some figures) holds while that step lasts; the next such step folds it again, and a pick inside the window (the
+player's losses or reroll) still unfolds it. `BattleFoldTests.AnAdvanceFoldsTheWindowAndAnUnfoldHoldsForTheStep` checks
+it.
+

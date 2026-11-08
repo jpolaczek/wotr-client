@@ -66,6 +66,8 @@ namespace Wotr.Client
         public const string FoldedClass = "battle-folded";
         public const float FoldedWidth = 480;
         public bool Folded { get; private set; }
+        // UI-527: the player's step on the map the window last folded itself for (its decision), so an unfold holds.
+        private string foldedForStep = "";
         private readonly Button fold;
         private readonly Label foldedStep = new Label { name = "battle-folded-step", enableRichText = false };
 
@@ -188,6 +190,7 @@ namespace Wotr.Client
             // UI-521: a new battle opens unfolded; a pick the plaque does not show unfolds it.
             if (started || Folded && NeedsTheWindow(view))
                 SetFolded(false);
+            FoldForTheMap(view);
             // UI-149: a new battle opens its window for both players; a window closed during the battle stays closed.
             if (started)
                 Open();
@@ -355,6 +358,26 @@ namespace Wotr.Client
             fold.tooltip = value ? UnfoldTooltip : FoldTooltip;
             Position();
         }
+
+        // UI-527 (owner, 2026-11-08: choosing where the army advances "the window does not minimise to the bar, which could be
+        // unfolded and lets you see the map better"): the player's own step chosen on the map — the advance after a battle
+        // or the retreat — folds the window into its plaque once, as the step begins; its buttons keep working, and an
+        // unfold (to pick only some figures) holds for that step.
+        private void FoldForTheMap(PlayerView view)
+        {
+            var step = MapStep(view);
+            if (step == foldedForStep)
+                return;
+            foldedForStep = step;
+            if (step.Length > 0)
+                SetFolded(true);
+        }
+
+        private static string MapStep(PlayerView view) =>
+            view.Decision != null && view.DecisionOwner == view.You &&
+            view.Options.Any(option => option.Kind is CommandKind.AdvanceBattle or CommandKind.RetreatBattle)
+                ? view.Decision.Id ?? "map-step"
+                : "";
 
         // The player's losses and reroll are picked on figures and dice inside the window.
         private static bool NeedsTheWindow(PlayerView view) => view.Decision != null && view.DecisionOwner == view.You &&

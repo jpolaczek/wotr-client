@@ -86,7 +86,8 @@ namespace Wotr.Client
                 CommandKind.RerollBattle => "Rerolls " + draft.Payload.Ids.Count + " / " + option.Maximum + " · Select failed dice above.",
                 CommandKind.TakeBattleLosses when view.Battle.VoluntaryLosses => "Sacrifice up to " + new string('●', option.Maximum) + " · Chosen " + new string('●', Damage(draft, view)),
                 CommandKind.TakeBattleLosses or CommandKind.TakeEventLosses => "Resolve " + (view.EventLoss?.Hits ?? view.Battle.PendingHits) + " hits · Selected " + Damage(draft, view) + ".",
-                CommandKind.AdvanceBattle => "Choose figures, then click the destination · Or Advance all, or Stay.",
+                // UI-527: the window folds for this step, so the hint names the plaque's buttons first.
+                CommandKind.AdvanceBattle => "Advance all or Stay · Or pick figures, then click the region.",
                 CommandKind.RetreatBattle => draft.Payload.RegionId.Length == 0 ? "Choose a highlighted retreat region." : "The surviving defenders retreat together.",
                 CommandKind.ExtendSiege => "Click a highlighted figure to extend the siege with it.",
                 _ => ""

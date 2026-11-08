@@ -18,9 +18,52 @@ namespace Wotr.PlayTests
 {
     // UI-521 (owner, choosing UI-517's first direction: "fold it into a small plaque, keeping the clickable buttons"): the
     // battle window folds into a small plaque — its header, the step and the footer's buttons, which keep working; the scene,
-    // the ribbon and the forces wait for the unfold; the player's own losses unfold it.
+    // the ribbon and the forces wait for the unfold; the player's own losses unfold it. UI-527: a step chosen on the map
+    // folds it.
     public sealed class BattleFoldTests
     {
+        // UI-527 (owner, 2026-11-08): choosing where the army advances, the window folds into its plaque so the map shows;
+        // Advance all stays on it, an unfold holds while the step lasts, and the next such step folds it again.
+        [UnityTest]
+        public IEnumerator AnAdvanceFoldsTheWindowAndAnUnfoldHoldsForTheStep()
+        {
+            var view = BattleScreenFixture.Create(CommandKind.AdvanceBattle);
+            var backend = new RecordingBackend(view);
+            using var client = new MountedMatchClient("http://localhost", view.MatchId, backend);
+            var target = new RenderTexture(1366, 768, 24);
+            target.Create();
+            client.Panel.targetTexture = target;
+            client.Panel.scale = 1.25f;
+            client.Apply(view);
+            client.SetOnline();
+            yield return Frames(4);
+            var battles = client.Board.Battles;
+            if (!battles.IsOpen)
+                CardNetworkTests.Click(client.Board.Console.Status.Plaque);
+            yield return Frames(6);
+            Assert.IsTrue(battles.Folded, "The advance is chosen on the map: the window folds.");
+            var all = battles.Root.Q<Button>("battle-advance-all");
+            Assert.IsTrue(battles.Root.worldBound.Contains(all.worldBound.center), "Advance all stays on the plaque.");
+            LayoutTests.Save(target, "ui527-advance-folded.png");
+            CardNetworkTests.Click(battles.Root.Q<Button>("fold-battle"));
+            yield return Frames(4);
+            Assert.IsFalse(battles.Folded);
+            var again = JsonConvert.DeserializeObject<PlayerView>(JsonConvert.SerializeObject(view));
+            again.Revision = view.Revision + 1;
+            client.Apply(again);
+            yield return Frames(4);
+            Assert.IsFalse(battles.Folded, "An unfold holds while the step lasts.");
+            var next = JsonConvert.DeserializeObject<PlayerView>(JsonConvert.SerializeObject(again));
+            next.Revision = again.Revision + 1;
+            next.Decision.Id += "-next";
+            client.Apply(next);
+            yield return Frames(4);
+            Assert.IsTrue(battles.Folded, "The next step on the map folds it again.");
+            client.Panel.targetTexture = client.Viewport;
+            target.Release();
+            Object.Destroy(target);
+        }
+
         [UnityTest]
         public IEnumerator TheFoldedPlaqueKeepsItsButtonsInFourLayouts()
         {
