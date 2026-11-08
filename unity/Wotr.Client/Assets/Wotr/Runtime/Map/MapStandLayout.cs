@@ -134,7 +134,12 @@ namespace Wotr.Client
             var beside = standing.ToList();
             beside.AddRange(forces.Where(force => force.AtPlanned).Select(force => (force.Stand.Feet, StandFootprint.Army)));
             foreach (var force in forces.Where(force => !force.AtPlanned))
-                force.Room(MapArmyRowRoom.Narrow(force.Stand.Feet, force.PlaceReach, beside));
+            {
+                var feet = force.Stand.Feet;
+                var room = MapArmyRowRoom.Narrow(feet, force.PlaceReach, beside);
+                var others = forces.Where(other => other != force).Select(other => other.Stand.Feet);
+                force.Room(room, Vector2.Max(room, MapArmyRowRoom.Limit(feet, beside, others)));
+            }
         }
 
         // The army pass: every force on its place at its region's level; the bounds of the shown ones are reserved, so

@@ -1041,3 +1041,19 @@ Checks: EditMode `MapArmyRowLayoutTests` (full size apart, shrinking alike, 85 %
 row's counts apart), `MapArmyRowRoomTests`, `MapStandSlotsTests`; PlayMode `MapArmyArtworkTests` (85 % on the widest
 stand, at most a third's overlap) and `MapArmyRowTests`.
 
+## Every row figure at full size — UI-526 (2026-11-08)
+
+The owner, with a picture of Minas Morgul's, the Morannon's and Barad-dûr's rows after UI-523: "let's make the figures
+bigger still; some are very, very small (not all are the same)". UI-523 shrank a row's figures where its place was short,
+so Minas Morgul's two kinds stood about half Barad-dûr's size. Now every row figure stands at its full stature, as a
+single army's does, in every region (`MapArmyRow`): apart while the place holds them, else overlapping their neighbours
+up to 40 % of the narrower one (the middle in front, the counts at their feet at least 17 points apart), and where even
+that does not fit the row reaches past its place alike on both sides rather than shrink — in a tight region (Minas
+Morgul, Dol Guldur) it may stand over the edge of its place. It reaches past its place only into free room
+(`MapArmyRowRoom.Limit`, up to 50 units a side): never onto a character, the Fellowship or the planned recruits standing
+beside it, another force's base or figures, or the plaque of a force it stands in front of (UI-425); only where even
+that room is short do its figures shrink, alike and just enough (`MapArmyRow.Fit` — Barad-dûr's three riders beside the
+Witch-king stand about 41 points tall). `MapArmyRowLayoutTests`, `MapArmyRowRoomTests`, `MapArmyArtworkTests` (full size
+on the widest, the narrowest and a narrowed stand), `MapArmyRowTests` (the Witch-king's column clear) and the tabletop
+acceptance matrix (no plaque covered) check it.
+

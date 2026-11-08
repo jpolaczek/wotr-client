@@ -66,32 +66,29 @@ namespace Wotr.PlayTests
                         Assert.That(counts[i].worldBound.center.x, Is.EqualTo(figures[i].worldBound.center.x).Within(1f), label);
                         for (var j = 0; j < i; j++)
                         {
-                            var third = Mathf.Min(figures[i].worldBound.width, figures[j].worldBound.width) * MapArmyRow.OverlapShare;
-                            Assert.LessOrEqual(Overlap(figures[i].worldBound, figures[j].worldBound), third + .5f, $"Figures {j} and {i} overlap at most a third: {label}");
+                            var share = Mathf.Min(figures[i].worldBound.width, figures[j].worldBound.width) * MapArmyRow.OverlapShare;
+                            Assert.LessOrEqual(Overlap(figures[i].worldBound, figures[j].worldBound), share + .5f, $"Figures {j} and {i} overlap at most their share: {label}");
                             Assert.LessOrEqual(Overlap(counts[i].worldBound, counts[j].worldBound), .01f, $"Counts {j} and {i} apart: {label}");
                         }
                     }
-                    // The stand is as wide as Barad-dûr's field room, narrowed for the Witch-king beside it, allows.
+                    // UI-526: the figures stand nearly as tall as a single army's, on a stand wider than a round one; the
+                    // Witch-king beside them keeps the row from reaching past him, so it may shrink a little.
                     var unit = button.worldBound.width / MapArmyArtwork.HolderSize.x;
                     var stand = button.Q("army-stand").worldBound.width / unit;
-                    var witchKing = map.Q<Button>("character-witch-king");
-                    var reach = MapArmyRowRoom.Narrow(stands.Field, stands.FieldReach, new[] { (KingFeet(map, witchKing), StandFootprint.Character) });
-                    Assert.LessOrEqual(stand, (reach.x + reach.y) * MapArmyArtwork.DesignUnit + .5f, "Within what the place and the Witch-king leave: " + label);
-                    Assert.Greater(reach.x + reach.y, StandFootprint.Army.BaseWidth, "Barad-dûr's field has room for a row stand beside the Witch-king");
+                    foreach (var figure in figures)
+                        Assert.GreaterOrEqual(figure.layout.height, .7f * 54, "Nearly full size beside the Witch-king: " + label);
+                    // The Witch-king's column (StandFootprint.Character, 16 units round his figure's middle) stays clear.
+                    var king = map.Q<Button>("character-witch-king").Q("character-figure").worldBound;
+                    var half = StandFootprint.Character.FigureWidth / 2 * MapArmyArtwork.DesignUnit * unit;
+                    var column = Rect.MinMaxRect(king.center.x - half, king.yMin, king.center.x + half, king.yMax);
+                    foreach (var figure in figures)
+                        Assert.AreEqual(0, Overlap(figure.worldBound, column), .5f, "The row stops short of the Witch-king: " + label);
                     Assert.Greater(stand, StandFootprint.Army.BaseWidth * MapArmyArtwork.DesignUnit, "Wider than a round stand: " + label);
                 }
                 client.Panel.targetTexture = client.Viewport;
                 texture.Release();
                 Object.Destroy(texture);
             }
-        }
-
-        // The Witch-king's place: the region's character place his feet stand on.
-        private static Vector2 KingFeet(MapCanvas map, VisualElement king)
-        {
-            var feet = map.Camera.ToBoard(map.WorldToLocal(king.LocalToWorld(MapCharacterArtwork.Feet(true))));
-            var places = map.Stands.Stands("barad-dur").Places.Where(p => p.Kind == StandKind.Character).Select(p => p.Feet);
-            return places.OrderBy(place => Vector2.Distance(place, feet)).First();
         }
 
         private static float Overlap(Rect a, Rect b)

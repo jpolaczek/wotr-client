@@ -47,8 +47,9 @@ namespace Wotr.Client
         // UI-522 (owner, 2026-11-07: "the units still stand on top of one another and it is not clear what is there"): those
         // figures stand side by side instead, each with its count (×1 too) at its feet, on a stand widened to hold the row
         // as far as its place reaches (RowReach: up to StandFootprint.ForceWidest, 100 units: 135 points; MapArmyRowRoom).
-        // UI-523 (owner, 2026-11-08: "decidedly bigger"): at least 85 % of their stature, overlapping a little where the
-        // row is short (MapArmyRow). The plaque keeps the emblems and the total in the middle.
+        // UI-523, UI-526 (owner, 2026-11-08: "bigger still … not all the same"): every figure at its full stature, as a
+        // single army's, overlapping a little where the row is short and reaching past its place where even that does not
+        // fit (MapArmyRow). The plaque keeps the emblems and the total in the middle.
         public const string RowClass = "army-row";
         public const float RowStandWidth = StandFootprint.ForceWidest * DesignUnit;
         private const float RowStandMargin = 4;
@@ -200,6 +201,9 @@ namespace Wotr.Client
         // narrows that side only); a flight or a hand piece has the most.
         public Vector2 RowReach { get; set; } = Vector2.one * RowStandWidth / 2;
 
+        // UI-526: how far past that the row may reach where nothing stands in its way, in design points (MapArmyRowRoom.Limit).
+        public Vector2 RowLimit { get; set; } = Vector2.one * RowStandWidth / 2;
+
         public void Apply(ArmyMarker army)
         {
             var figures = Figures(army);
@@ -332,7 +336,7 @@ namespace Wotr.Client
         private const float FigureCountHeight = 12;
 
         // UI-522: the row's stand, centred on the feet where both sides reach that far, otherwise against the nearer limit;
-        // UI-523: its figures laid out by MapArmyRow within what the stand may reach.
+        // UI-523, UI-526: its figures laid out by MapArmyRow in what the stand may reach.
         private void MeasureRow()
         {
             SpreadLeft = 0;
@@ -344,12 +348,29 @@ namespace Wotr.Client
                 full[i] = FigureSize(statures[i], Aspect(silhouettes[i].sprite));
             var available = Mathf.Max(BaseWidth, RowReach.x + RowReach.y) - 2 * RowStandMargin;
             (rowBoxes, rowWidth) = MapArmyRow.Lay(full, available);
+            var limit = Vector2.Max(RowLimit, RowReach);
+            if (rowWidth + 2 * RowStandMargin > limit.x + limit.y)
+                (rowBoxes, rowWidth) = MapArmyRow.Fit(full, Mathf.Max(BaseWidth, limit.x + limit.y) - 2 * RowStandMargin);
             var stand = Mathf.Max(BaseWidth, rowWidth + 2 * RowStandMargin);
-            var left = Mathf.Min(stand / 2, RowReach.x);
-            var right = Mathf.Min(stand - left, RowReach.y);
-            left = stand - right;
+            var (left, right) = Spread(stand, RowReach, limit);
             SpreadLeft = left - BaseWidth / 2;
             SpreadRight = right - BaseWidth / 2;
+        }
+
+        // UI-526: how far the stand reaches before and after the feet: centred within its place where it fits, else
+        // leaning to the place's open side; wider than its place, past it alike on both sides as far as each side's limit.
+        private static (float Left, float Right) Spread(float stand, Vector2 room, Vector2 limit)
+        {
+            if (stand <= room.x + room.y)
+            {
+                var near = Mathf.Min(stand / 2, room.x);
+                var far = Mathf.Min(stand - near, room.y);
+                return (stand - far, far);
+            }
+            var past = (stand - room.x - room.y) / 2;
+            var left = Mathf.Min(room.x + past, limit.x);
+            var right = Mathf.Min(stand - left, limit.y);
+            return (stand - right, right);
         }
 
         // The middle of the row stand, in design points.

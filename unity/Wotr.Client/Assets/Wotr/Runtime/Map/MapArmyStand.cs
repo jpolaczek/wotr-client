@@ -47,13 +47,16 @@ namespace Wotr.Client
             Stand.Design(MapArmyArtwork.Feet(Army.Garrison, figures), visible);
         }
 
-        // UI-522: how far its row stand may reach on either side now, in board units; a new reach lays its row out again.
-        public void Room(Vector2 reach)
+        // UI-522: how far its row stand may reach on either side now, in board units; UI-526: and how far past that it may
+        // reach where nothing stands in its way. A new reach lays its row out again.
+        public void Room(Vector2 reach, Vector2 limit)
         {
             var points = reach * MapArmyArtwork.DesignUnit;
-            if (Vector2.Distance(Artwork.RowReach, points) < .01f)
+            var furthest = limit * MapArmyArtwork.DesignUnit;
+            if (Vector2.Distance(Artwork.RowReach, points) < .01f && Vector2.Distance(Artwork.RowLimit, furthest) < .01f)
                 return;
             Artwork.RowReach = points;
+            Artwork.RowLimit = furthest;
             ShowArmy();
         }
 

@@ -5,51 +5,60 @@ using Wotr.Client;
 
 namespace Wotr.EditorTests
 {
-    // UI-523 (owner, 2026-11-08: the row's figures "must be decidedly bigger"): figures stand at full size while the row
-    // holds them apart, shrink alike down to 85 %, then overlap their neighbours at most a third of the narrower one with
-    // their counts still apart, and only then shrink further — never past the row's width.
+    // UI-523, UI-526 (owner, 2026-11-08: "bigger still; some are very, very small — not all are the same"): every figure
+    // of a row stands at its full size; they stand apart while the place holds them, else overlap their neighbours at most
+    // 40 % of the narrower one with their counts still apart, and where even that does not fit the row is wider than its
+    // place rather than smaller.
     public sealed class MapArmyRowLayoutTests
     {
         private static readonly Vector2 Free = new Vector2(38, 54);
         private static readonly Vector2 Rider = new Vector2(54, 54);
 
         [Test]
-        public void WithRoomEveryFigureStandsFullSizeApart()
+        public void WithRoomEveryFigureStandsApart()
         {
             var (boxes, width) = MapArmyRow.Lay(new[] { Free, Free, Free }, 127);
-            Assert.That(boxes.Select(box => box.height), Is.All.EqualTo(54).Within(.01f));
+            AssertFullSize(boxes, Free);
             for (var i = 1; i < boxes.Length; i++)
                 Assert.AreEqual(MapArmyRow.Gap, boxes[i].xMin - boxes[i - 1].xMax, .01f, "A gap between neighbours");
             Assert.AreEqual(3 * 38 + 2 * MapArmyRow.Gap, width, .01f);
         }
 
+        // The owner's Barad-dûr army: three wide riders keep their size and overlap a little to fit the place.
         [Test]
-        public void ARowALittleShortShrinksTheFiguresAlikeWithoutOverlap()
-        {
-            var (boxes, width) = MapArmyRow.Lay(new[] { Rider, Rider, Rider }, 150);
-            Assert.That(boxes[0].height, Is.GreaterThanOrEqualTo(MapArmyRow.MinimumScale * 54).And.LessThan(54));
-            for (var i = 1; i < boxes.Length; i++)
-                Assert.GreaterOrEqual(boxes[i].xMin - boxes[i - 1].xMax, MapArmyRow.Gap - .01f);
-            Assert.LessOrEqual(width, 150 + .01f);
-        }
-
-        // The owner's Barad-dûr army on the widest row stand: three wide riders keep 85 % and overlap a little.
-        [Test]
-        public void ThreeRidersKeepEightyFivePercentAndOverlapAtMostAThird()
+        public void AShortPlaceOverlapsTheFiguresWithinTheirShare()
         {
             var (boxes, width) = MapArmyRow.Lay(new[] { Rider, Rider, Rider }, 127);
-            Assert.That(boxes.Select(box => box.height), Is.All.EqualTo(MapArmyRow.MinimumScale * 54).Within(.01f));
+            AssertFullSize(boxes, Rider);
             AssertNeighbours(boxes);
-            Assert.LessOrEqual(width, 127 + .01f);
+            Assert.AreEqual(127, width, .01f);
         }
 
         [Test]
-        public void ATightRowShrinksFurtherButKeepsItsCountsApart()
+        public void ATightPlaceGetsAWiderRowNotSmallerFigures()
         {
             var (boxes, width) = MapArmyRow.Lay(new[] { Rider, Free, Rider }, 46);
-            Assert.Less(boxes[0].height, MapArmyRow.MinimumScale * 54);
+            Assert.AreEqual(54, boxes[0].height, .01f);
+            Assert.AreEqual(54, boxes[1].height, .01f);
             AssertNeighbours(boxes);
-            Assert.LessOrEqual(width, 46 + .01f);
+            Assert.Greater(width, 46, "The row reaches past its place");
+        }
+
+        // UI-526: where a row may not reach past its place far enough, its figures shrink alike just enough to fit.
+        [Test]
+        public void ARowThatMayNotReachFurtherShrinksJustEnough()
+        {
+            var (boxes, width) = MapArmyRow.Fit(new[] { Rider, Rider, Rider }, 90);
+            Assert.LessOrEqual(width, 90 + .01f);
+            Assert.Less(boxes[0].height, 54);
+            Assert.Greater(boxes[0].height, 40, "No smaller than it takes");
+            AssertNeighbours(boxes);
+        }
+
+        private static void AssertFullSize(Rect[] boxes, Vector2 size)
+        {
+            foreach (var box in boxes)
+                Assert.AreEqual(size, box.size);
         }
 
         private static void AssertNeighbours(Rect[] boxes)
@@ -57,7 +66,7 @@ namespace Wotr.EditorTests
             for (var i = 1; i < boxes.Length; i++)
             {
                 var overlap = boxes[i - 1].xMax - boxes[i].xMin;
-                Assert.LessOrEqual(overlap, MapArmyRow.OverlapShare * Mathf.Min(boxes[i].width, boxes[i - 1].width) + .01f, "At most a third");
+                Assert.LessOrEqual(overlap, MapArmyRow.OverlapShare * Mathf.Min(boxes[i].width, boxes[i - 1].width) + .01f, "At most its share");
                 Assert.GreaterOrEqual(boxes[i].center.x - boxes[i - 1].center.x, MapArmyRow.CountWidth, "Their counts apart");
             }
         }

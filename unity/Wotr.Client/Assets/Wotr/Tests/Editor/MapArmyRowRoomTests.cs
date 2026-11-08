@@ -38,6 +38,18 @@ namespace Wotr.EditorTests
             Assert.AreEqual(Widest, reach);
         }
 
+        // UI-526: past its place a row reaches as far as the widest row goes where nothing stands, but stops short of a
+        // force behind it whose plaque it would cover.
+        [Test]
+        public void PastItsPlaceARowStopsShortOfAPlaqueBehindIt()
+        {
+            var nothing = new (Vector2, StandFootprint)[0];
+            Assert.AreEqual(Widest, MapArmyRowRoom.Limit(Feet, nothing, new Vector2[0]));
+            var limit = MapArmyRowRoom.Limit(Feet, nothing, new[] { Feet + new Vector2(30, -5) });
+            Assert.AreEqual(StandFootprint.RowReach, limit.x, .01f, "The open side reaches the widest");
+            Assert.AreEqual(StandFootprint.Army.BaseWidth / 2, limit.y, .01f, "The force's side keeps a round base's half");
+        }
+
         [Test]
         public void EachSideStaysBetweenARoundBaseAndItsReach()
         {

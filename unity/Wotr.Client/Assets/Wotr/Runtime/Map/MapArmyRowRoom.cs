@@ -12,6 +12,8 @@ namespace Wotr.Client
         // scripts/export_map_stands.py: GAP between bases; UI-523: a row's figures as tall as an army's 40 units.
         private const float Gap = 1.5f;
         private const float RowHeight = 40;
+        private const float PlaqueTop = 2.2f;
+        private const float PlaqueBottom = 14.8f;
 
         // (left, right): how far the row reaches before and after its feet.
         public static Vector2 Narrow(Vector2 feet, Vector2 reach, IEnumerable<(Vector2 Feet, StandFootprint Footprint)> standing)
@@ -29,6 +31,41 @@ namespace Wotr.Client
             var round = StandFootprint.Army.BaseWidth / 2;
             return new Vector2(Mathf.Clamp(left, round, Mathf.Max(round, reach.x)), Mathf.Clamp(right, round, Mathf.Max(round, reach.y)));
         }
+
+        // UI-526: how far a row may reach past its place where nothing stands in its way — the widest a row goes, narrowed
+        // for the stands beside it and for its region's other forces: their bases keep clear of it, and it covers neither
+        // their figures nor the plaque of a force it stands in front of (UI-425).
+        public static Vector2 Limit(Vector2 feet, IEnumerable<(Vector2 Feet, StandFootprint Footprint)> standing, IEnumerable<Vector2> forces)
+        {
+            var limit = Narrow(feet, Vector2.one * StandFootprint.RowReach, standing);
+            foreach (var other in forces)
+            {
+                var side = Reach(feet, other, StandFootprint.Army);
+                if (InFront(feet, other))
+                    side = Mathf.Min(side, PlaqueReach(feet, other));
+                if (other.x >= feet.x)
+                    limit.y = Mathf.Min(limit.y, side);
+                if (other.x <= feet.x)
+                    limit.x = Mathf.Min(limit.x, side);
+            }
+            var round = StandFootprint.Army.BaseWidth / 2;
+            return Vector2.Max(limit, Vector2.one * round);
+        }
+
+        // How far the row may reach towards a force behind it before it covers that force's plaque (the round base's width,
+        // 2.2 to 14.8 units below its feet; scripts/export_map_stands.py, PLAQUE).
+        private static float PlaqueReach(Vector2 feet, Vector2 other)
+        {
+            var army = StandFootprint.Army;
+            var rowTop = feet.y - RowHeight;
+            var rowFront = feet.y + army.BaseDepth / 2;
+            var plaqueTop = other.y + PlaqueTop;
+            var plaqueBottom = other.y + PlaqueBottom;
+            return plaqueTop < rowFront && plaqueBottom > rowTop ? Mathf.Abs(other.x - feet.x) - army.BaseWidth / 2 : float.PositiveInfinity;
+        }
+
+        // MapStand.CompareDepth: the lower feet, then the one further right, stand in front.
+        private static bool InFront(Vector2 a, Vector2 b) => a.y > b.y || Mathf.Approximately(a.y, b.y) && a.x > b.x;
 
         // How far the row may reach towards one stand.
         private static float Reach(Vector2 feet, Vector2 other, StandFootprint footprint)

@@ -84,10 +84,9 @@ namespace Wotr.PlayTests
                     var images = Shown(sample.Button, "army-silhouette");
                     Assert.AreEqual(3, images.Length, sample.Button.name);
                     CheckRow(sample, images);
-                    // UI-523: on the widest stand every figure keeps at least 85 % of an army's height.
-                    if (sample.Artwork.RowReach.x >= widest - .5f && sample.Artwork.RowReach.y >= widest - .5f)
-                        foreach (var image in images)
-                            Assert.GreaterOrEqual(image.layout.height, MapArmyRow.MinimumScale * 54 - .5f, "Decidedly big: " + sample.Button.name);
+                    // UI-526: on any stand every figure stands as tall as a single army's.
+                    foreach (var image in images)
+                        Assert.GreaterOrEqual(image.layout.height, 48f, "Full size on any stand: " + sample.Button.name);
                     foreach (var image in images)
                         Click(sample, image.worldBound.center);
                 }
@@ -162,8 +161,8 @@ namespace Wotr.PlayTests
             foreach (var image in images)
             {
                 AssertInside(image, sample);
-                // UI-522, UI-523: a row's figures stand at least 85 % of their stature where the row's reach allows.
-                var tallest = button.ClassListContains(MapArmyArtwork.RowClass) ? 20f : 48f;
+                // UI-526: a row's figures stand at full size, as a single army's.
+                var tallest = 48f;
                 Assert.GreaterOrEqual(image.layout.height, tallest, "UI-400: a figure stands about 54 points tall · " + button.name);
                 Assert.IsNotNull(image.sprite, button.name);
                 Click(sample, image.worldBound.center);
@@ -297,9 +296,9 @@ namespace Wotr.PlayTests
                 Assert.LessOrEqual(figure.xMax, stand.xMax + .5f, "The figure on the stand: " + button.name);
                 for (var j = 0; j < i; j++)
                 {
-                    // UI-523: neighbours overlap at most a third of the narrower one.
-                    var third = Mathf.Min(figure.width, images[j].worldBound.width) * MapArmyRow.OverlapShare;
-                    Assert.LessOrEqual(Overlap(figure, images[j].worldBound), third + .5f, $"Figure {i} over figure {j}: " + button.name);
+                    // UI-523, UI-526: neighbours overlap at most their share of the narrower one.
+                    var share = Mathf.Min(figure.width, images[j].worldBound.width) * MapArmyRow.OverlapShare;
+                    Assert.LessOrEqual(Overlap(figure, images[j].worldBound), share + .5f, $"Figure {i} over figure {j}: " + button.name);
                     Assert.LessOrEqual(Overlap(counts[i].worldBound, counts[j].worldBound), .01f, $"Count {i} clear of count {j}: " + button.name);
                 }
             }
