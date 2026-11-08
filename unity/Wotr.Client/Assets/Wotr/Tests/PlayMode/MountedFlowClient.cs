@@ -34,7 +34,7 @@ namespace Wotr.PlayTests
             Root = document.rootVisualElement;
             Root.style.flexGrow = 1;
             Root.styleSheets.Add(Resources.Load<StyleSheet>("Wotr"));
-            Interface = new InterfaceController(Root, Panel, new InterfacePreferences(preferencesKey));
+            Interface = new InterfaceController(Root, Panel, MountedMatchClient.StandardPreferences(preferencesKey));
             Flow = new ClientFlow(Interface.Content, api, storageRoot, Interface.Windows, localStorage, () => Quits++, Interface.Sounds,
                 Interface.Preferences);
             Flow.InterfaceRequested += Interface.Open;

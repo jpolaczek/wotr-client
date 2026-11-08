@@ -65,8 +65,9 @@ namespace Wotr.PlayTests
             }
         }
 
-        // UI-529 (owner, 2026-11-08): Settings' "Figures on the map" starts at 100 %; 150 % draws the map's figures half as
-        // large again round their feet, at once on the board behind Settings, and 100 % draws them exactly as before.
+        // UI-529 (owner, 2026-11-08): Settings' "Figures on the map" (the test client stands at the standard 100 %); 150 %,
+        // the players' default, draws the map's figures half as large again round their feet, at once on the board behind
+        // Settings, and 100 % draws them exactly as before.
         [UnityTest]
         public IEnumerator FiguresOnTheMapGrowRoundTheirFeetAtOnce()
         {
@@ -83,7 +84,7 @@ namespace Wotr.PlayTests
             client.Interface.Open();
             yield return Settle();
             var settings = client.Interface.Settings.Root;
-            StringAssert.EndsWith("✓", settings.Q<Button>("figure-size-100").text, "The standard size is the default.");
+            StringAssert.EndsWith("✓", settings.Q<Button>("figure-size-100").text, "The test client stands at the standard.");
             Assert.AreEqual(4, settings.Query<Button>(className: "figure-size-choice").ToList().Count);
             CardNetworkTests.Click(settings.Q<Button>("figure-size-150"));
             yield return Settle();

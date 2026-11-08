@@ -6,13 +6,15 @@ namespace Wotr.Client
     public sealed class InterfacePreferences
     {
         // MENU-17: version 2 starts settings of version 1 in Fullscreen. AUDIO-03: version 3 adds the sound settings;
-        // older settings keep everything else and take the sound defaults.
-        private const int CurrentVersion = 3;
+        // older settings keep everything else and take the sound defaults. UI-529: version 4 keeps the figures' size;
+        // older settings take its default (150 %), also those a build of version 3 saved with 100 %.
+        private const int CurrentVersion = 4;
         public const float DefaultEffects = 0.4f;
         public const float DefaultAlerts = 0.6f;
         // UI-529 (owner, 2026-11-08): the map's figures may stand larger than their standard size, overlapping where they
-        // must; the standard (1) is the smallest and the default.
+        // must; the standard (1) is the smallest. Later the same day the owner made 150 % the default.
         public static readonly float[] FigureSizes = { 1f, 1.25f, 1.5f, 1.75f };
+        public const float DefaultFigureSize = 1.5f;
         private readonly string key;
         public float Scale { get; private set; } = 1f;
         public bool ReducedMotion { get; private set; }
@@ -23,7 +25,7 @@ namespace Wotr.Client
         public float EffectsVolume { get; private set; } = DefaultEffects;
         public float AlertsVolume { get; private set; } = DefaultAlerts;
         public bool BackgroundAlerts { get; private set; } = true;
-        public float FigureSize { get; private set; } = 1f;
+        public float FigureSize { get; private set; } = DefaultFigureSize;
         public event Action Changed;
 
         public SoundLevels SoundLevels => new SoundLevels(SoundEnabled, EffectsVolume, AlertsVolume, BackgroundAlerts);
@@ -34,7 +36,7 @@ namespace Wotr.Client
             try
             {
                 var saved = JsonUtility.FromJson<Settings>(PlayerPrefs.GetString(key, "{}"));
-                if (saved?.Version is not (1 or 2 or CurrentVersion))
+                if (saved?.Version is not (1 or 2 or 3 or CurrentVersion))
                     return;
                 Scale = ValidScale(saved.Scale) ? saved.Scale : 1f;
                 ReducedMotion = saved.ReducedMotion;
@@ -44,9 +46,10 @@ namespace Wotr.Client
                     WindowMode = (WindowMode)saved.WindowMode;
                 var resolution = new DisplaySize(saved.Width, saved.Height);
                 Resolution = DisplayOptions.IsPreset(resolution) ? resolution : DisplaySize.Native;
-                if (saved.Version == CurrentVersion)
+                if (saved.Version >= 3)
                     ReadSound(saved);
-                FigureSize = ValidFigureSize(saved.FigureSize) ? saved.FigureSize : 1f;
+                if (saved.Version == CurrentVersion && ValidFigureSize(saved.FigureSize))
+                    FigureSize = saved.FigureSize;
             }
             catch (ArgumentException) { }
         }
@@ -192,7 +195,7 @@ namespace Wotr.Client
             public float EffectsVolume = DefaultEffects;
             public float AlertsVolume = DefaultAlerts;
             public bool BackgroundAlerts = true;
-            public float FigureSize = 1f;
+            public float FigureSize = DefaultFigureSize;
         }
     }
 }

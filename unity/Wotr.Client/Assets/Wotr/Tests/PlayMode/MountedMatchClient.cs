@@ -83,7 +83,7 @@ namespace Wotr.PlayTests
             document.panelSettings = panel;
             document.rootVisualElement.style.flexGrow = 1;
             document.rootVisualElement.styleSheets.Add(Resources.Load<StyleSheet>("Wotr"));
-            Interface = new InterfaceController(document.rootVisualElement, panel, new InterfacePreferences(preferencesKey));
+            Interface = new InterfaceController(document.rootVisualElement, panel, StandardPreferences(preferencesKey));
             Board = new BoardScreen(Interface.Windows, Interface.Preferences);
             Interface.Content.Add(Board.Root);
             Board.InterfaceRequested += Interface.Open;
@@ -115,6 +115,15 @@ namespace Wotr.PlayTests
             Sounds = new GameSounds(Interface.Sounds, Board, interaction);
             if (Presenters != null)
                 Presenters.Sounds.Target = Sounds;
+        }
+
+        // UI-529: the tests measure and press the map's figures at their standard size; Settings' default (150 %) is
+        // InterfacePreferencesTests' and InterfaceSettingsTests'.
+        internal static InterfacePreferences StandardPreferences(string key)
+        {
+            var preferences = new InterfacePreferences(key);
+            preferences.SetFigureSize(1f);
+            return preferences;
         }
 
         public void Dispose()

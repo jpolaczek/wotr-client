@@ -28,7 +28,8 @@ namespace Wotr.Client
 
         public readonly float Zoom;
         public readonly float PointsPerUnit;
-        // UI-529 (Settings, Figures on the map): how much larger than standard every figure stands; 1 is the standard.
+        // UI-529 (Settings, Figures on the map): how much larger than standard every figure stands; 1 is the standard
+        // (the players' default is 1.5, InterfacePreferences.DefaultFigureSize).
         // Only the drawing grows: the places, the capacity rule and the tokens stay, so larger figures may overlap.
         public readonly float FigureSize;
         // The worst-case Detail zoom, the footprints' scale 1 and the gems' reference.

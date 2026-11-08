@@ -17,7 +17,7 @@ namespace Wotr.Tests
 
         [TestCase("not json")]
         [TestCase("{}")]
-        [TestCase("{\"Version\":4,\"Scale\":1.25,\"ReducedMotion\":true}")]
+        [TestCase("{\"Version\":5,\"Scale\":1.25,\"ReducedMotion\":true}")]
         [TestCase("{\"Version\":1,\"Scale\":99}")]
         public void UnknownOrInvalidSettingsKeepReadableDefaults(string saved)
         {
@@ -115,27 +115,30 @@ namespace Wotr.Tests
             Assert.AreEqual(1.25f, preferences.Scale);
         }
 
-        // UI-529 (owner, 2026-11-08): the figures' size starts at the standard, which is also the smallest; a choice
-        // survives a reload and notifies once; a size off the list is refused; an older save reads the standard.
+        // UI-529 (owner, 2026-11-08): the figures' size starts at 150 % (the owner's default) and goes down to the
+        // standard; a choice survives a reload and notifies once; a size off the list is refused; an older save, even one
+        // a version-3 build wrote with 100 %, reads the default.
         [Test]
-        public void FigureSizeStartsAtTheStandardSurvivesReloadAndRefusesOtherSizes()
+        public void FigureSizeStartsAtTheDefaultSurvivesReloadAndRefusesOtherSizes()
         {
             var preferences = new InterfacePreferences(key);
-            Assert.AreEqual(1f, preferences.FigureSize, "The standard is the default.");
+            Assert.AreEqual(1.5f, preferences.FigureSize, "150 % is the default.");
             CollectionAssert.AreEqual(new[] { 1f, 1.25f, 1.5f, 1.75f }, InterfacePreferences.FigureSizes, "The standard is the smallest.");
             var changes = 0;
             preferences.Changed += () => changes++;
-            preferences.SetFigureSize(1.5f);
-            preferences.SetFigureSize(1.5f);
+            preferences.SetFigureSize(1f);
+            preferences.SetFigureSize(1f);
             Assert.AreEqual(1, changes);
-            Assert.AreEqual(1.5f, new InterfacePreferences(key).FigureSize);
+            Assert.AreEqual(1f, new InterfacePreferences(key).FigureSize, "The standard survives a reload.");
             Assert.Throws<ArgumentOutOfRangeException>(() => preferences.SetFigureSize(.75f));
             Assert.Throws<ArgumentOutOfRangeException>(() => preferences.SetFigureSize(3f));
-            Assert.AreEqual(1.5f, preferences.FigureSize);
-            PlayerPrefs.SetString(key, "{\"Version\":3,\"Scale\":1.25}");
-            Assert.AreEqual(1f, new InterfacePreferences(key).FigureSize, "An older save reads the standard.");
-            PlayerPrefs.SetString(key, "{\"Version\":3,\"FigureSize\":9}");
-            Assert.AreEqual(1f, new InterfacePreferences(key).FigureSize, "A size off the list reads the standard.");
+            Assert.AreEqual(1f, preferences.FigureSize);
+            PlayerPrefs.SetString(key, "{\"Version\":3,\"Scale\":1.25,\"FigureSize\":1}");
+            var older = new InterfacePreferences(key);
+            Assert.AreEqual(1.5f, older.FigureSize, "A version-3 save reads the default.");
+            Assert.AreEqual(1.25f, older.Scale, "and keeps the rest.");
+            PlayerPrefs.SetString(key, "{\"Version\":4,\"FigureSize\":9}");
+            Assert.AreEqual(1.5f, new InterfacePreferences(key).FigureSize, "A size off the list reads the default.");
         }
     }
 }

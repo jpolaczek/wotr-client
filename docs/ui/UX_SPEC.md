@@ -4909,8 +4909,10 @@ size will sometimes make them overlap. The smallest and the default is to be as 
 
 Settings' second column, under the resolutions (the interface column would push Settings past a 1366 × 768 screen at
 125 %), has "Figures on the map · larger ones may overlap" with four sizes in one row: 100 % (the
-standard, the default and the smallest), 125 %, 150 % and 175 % (`InterfacePreferences.FigureSize`, saved with the
-other interface choices; an older save, or a size off the list, reads 100 %). Every figure on the map — armies,
+standard and the smallest), 125 %, 150 % and 175 % (`InterfacePreferences.FigureSize`, saved with the other interface
+choices). Later the same day the owner made 150 % the default ("let the figures' default size be 150 %"): settings
+version 4 keeps the choice, and an older save — one a version-3 build wrote with 100 % too — or a size off the list
+reads 150 %. The tests measure and press the figures at the standard size (`MountedMatchClient.StandardPreferences`). Every figure on the map — armies,
 characters, the Fellowship, the planned recruits, a flight, a carried figure — is drawn that much larger round its feet
 (`MapStandScale.Of`); the stand places, the capacity rule that turns a crowded region's figures into tokens, the tokens,
 the gems and the kings' markers stay as they are, so larger figures may overlap one another. The board behind Settings
