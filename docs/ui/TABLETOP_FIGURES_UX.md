@@ -131,6 +131,34 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
     takes its click). The export reads `MapCanvas/mordor-track.json` and records its hash; only Minas Morgul's
     Fellowship (back to 1235, 893) and Morannon's (1207, 779, its box had covered the gate's upper half) moved, with
     their characters around them.
+    UI-530 (owner, 2026-11-08, pictures of Ered Luin's Dwarves at its western border and Erebor's running on into the
+    Iron Hills: "some figures still show at the side of the region … more centrally for every region, even if they
+    cover some city's drawing; what matters is that they do not cover the blue/red markers"). Measured on the export,
+    most gems stand in their region's middle and the field force, drawn to the settlement point, stood beside the gem,
+    often at the border; the region's own name, placed first, and the fortress drawings were hard obstacles. Now:
+    - the field aims at the region's middle (`Raster.middle`, the lattice point with the most room) and weighs open
+      ground as the Fellowship does (`FIELD_ROOM_CAP`, `FIELD_ROOM_WEIGHT`, 30 units at 1);
+    - a drawing keeps no figure away (the garrison still stands at its gate);
+    - a region's places come first and its name searches round them and round the places already laid out
+      (`places_first`), unless the older order shows figures at a larger scale or the name would keep less than 70 % of
+      its width or height (`NAME_KEPT`); a shared name stays where it was shared. The owner chose this among measured
+      variants: names give way to figures, but not below 70 %;
+    - no stand's picture — its plaque and count below the base included (`figure_picture`) — covers a gem; none, at
+      full size or as a token at the Detail level, covers the middle of a Mordor track gate or step (`on_track`; Minas
+      Morgul's field covered its gate once centred), nor does a row;
+    - every two forces of a region (field, garrison and the planned place, which holds the other side's force beside
+      an army) keep from hiding more than a quarter of each other by their pictures where the region still fits at
+      scale 1, else the garrison and the planned place are left free as before (`ALL_FORCE_PAIRS`, `FIELD_FORCE_PAIRS`,
+      `Place.pairs`; Helm's Deep);
+    - a king's marker keeps 4 units off the Fellowship's whole box at every zoom where its region leaves room
+      (Minas Tirith's had moved onto it far out; Rhosgobel has no such room).
+    Against the export before: fields within 25 units of their border 28 → 18, the median distance of a field from its
+    region's middle over the middle's room 0.52 → 0.33; 25 names smaller, 3 below 60 % (Erebor, Minas Morgul, South
+    Downs), so a few show only closer in; regions that show tokens at the worst case 15 → 20. Erebor's field stays right
+    of its gem: between the fortress's gate and the gem there are 58 units, and a field's figures and plaque need 56
+    without covering the garrison's plaque (UI-425) — UI-531 gives strongholds without a garrison a layout of their own.
+    A row still reaches past its region's border into free room (kept on its region, a row of three kinds would shrink
+    in 17 regions).
     Characters keep to the army's line: figures that hide one another cost heavily, and only where that leaves the
     group below scale 1 does a lighter cost get its chance. A besieger in the field and the garrison never share more
     than a quarter of either's figure rectangle, so a siege shows both. No figure rectangle covers a settlement gem

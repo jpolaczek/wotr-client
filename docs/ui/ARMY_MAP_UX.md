@@ -1059,5 +1059,8 @@ worst-case Detail zoom (`MapCanvas.RowMarks`, built once per board): a row stand
 as the Fellowship's marker did on Minas Morgul's gate (TABLETOP_FIGURES_UX, UI-513). `MapArmyRowLayoutTests`,
 `MapArmyRowRoomTests` (a mark across the row's band stops it a gap short), `MapArmyArtworkTests` (full size on the
 widest, the narrowest and a narrowed stand), `MapArmyRowTests` (the Witch-king's column clear), `MordorNetworkTests` (both
-gates take their click) and the tabletop acceptance matrix (no plaque covered) check it.
+gates take their click) and the tabletop acceptance matrix (no plaque covered) check it. UI-530 (owner: "some figures
+still show at the side of the region", Erebor's row running on into the Iron Hills): the field place now stands nearer
+its region's middle (TABLETOP_FIGURES_UX, "Places"). A row still reaches past its region's border into free room: kept
+on its region, a row of three kinds would shrink in 17 regions and one of four in 49 (Erebor's to about half).
 

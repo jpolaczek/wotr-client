@@ -94,10 +94,10 @@ namespace Wotr.PlayTests
         public static void AssertBasesApart(MapCanvas map, string label)
         {
             var bases = Shown(map).Where(shown => Figures(shown.Stand))
-                .Select(shown => (shown.Name, Ellipse: Base(map, shown.Stand))).Where(shown => shown.Ellipse.HasValue).ToList();
+                .Select(shown => (shown.Name, Ellipses: Base(map, shown.Stand))).Where(shown => shown.Ellipses.Count > 0).ToList();
             for (var i = 0; i < bases.Count; i++)
                 for (var j = i + 1; j < bases.Count; j++)
-                    Assert.IsFalse(Overlap(bases[i].Ellipse.Value, bases[j].Ellipse.Value),
+                    Assert.IsFalse(bases[i].Ellipses.Any(a => bases[j].Ellipses.Any(b => Overlap(a, b))),
                         $"The bases of {bases[i].Name} and {bases[j].Name} run into each other · {label}");
         }
 
@@ -310,16 +310,32 @@ namespace Wotr.PlayTests
             stand.Content.Q("character-stand") is { } face && Visible(face);
 
         // The top face of a stand's base (world): centred under its feet, as wide as the drawn base.
-        private static Rect? Base(MapCanvas map, MapStand stand)
+        // A base's top face: one ellipse round the feet; UI-530: a row stand (UI-522), which may reach further to one side
+        // than the other (UI-526), as round bases strung along the face it is drawn on, from end to end.
+        private static List<Rect> Base(MapCanvas map, MapStand stand)
         {
-            var face = stand.Content.Q("army-stand") ?? stand.Content.Q("character-stand");
+            var army = stand.Content.Q("army-stand");
+            var face = army ?? stand.Content.Q("character-stand");
             if (face == null || !Visible(face))
-                return null;
+                return new List<Rect>();
             var feet = map.LocalToWorld(map.Camera.ToScreen(stand.Feet));
             var width = face.worldBound.width - 2 * Pixel;
-            var depth = width * BaseDepth;
-            return new Rect(feet.x - width / 2, feet.y - depth / 2, width, depth);
+            var round = army == null ? width : Mathf.Min(width, RoundWidth(face, stand.Content.ClassListContains("garrison")));
+            var depth = round * BaseDepth;
+            var ellipses = new List<Rect>();
+            var left = face.worldBound.xMin + Pixel;
+            var right = face.worldBound.xMax - Pixel - round;
+            for (var x = left; x < right + .01f; x += Mathf.Max(1, round / 4))
+                ellipses.Add(new Rect(x, feet.y - depth / 2, round, depth));
+            if (ellipses.Count == 0 || ellipses[ellipses.Count - 1].x < right)
+                ellipses.Add(new Rect(right, feet.y - depth / 2, round, depth));
+            return ellipses;
         }
+
+        // A round army stand's width where the face is drawn: its art is the holder less 6 points either side, 21 tall (a
+        // garrison's 23; Armies.uss).
+        private static float RoundWidth(VisualElement face, bool garrison) =>
+            face.worldBound.height * (MapArmyArtwork.HolderSize.x - 12) / (garrison ? 23 : 21);
 
         // Whether two ellipses (inscribed in their rectangles) share any point, sampled on a polar grid of the first.
         private static bool Overlap(Rect a, Rect b)

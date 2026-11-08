@@ -116,6 +116,10 @@ ROOM_CAP, ROOM_WEIGHT = 8.0, 0.5
 # UI-513 (owner): the Fellowship stands well inside its region, nearer its middle than its border, so where it is reads
 # at a glance; its place weighs open ground far more, and further, than the other places do.
 FELLOWSHIP_ROOM_CAP, FELLOWSHIP_ROOM_WEIGHT = 30.0, 1.0
+# UI-530 (owner: "some figures still show at the side of the region"): the field force, too, aims at its region's
+# middle and weighs open ground as the Fellowship does, so where its settlement's gem takes the very middle it stands
+# where the region is open round it rather than beside the gem at the border.
+FIELD_ROOM_CAP, FIELD_ROOM_WEIGHT = 30.0, 1.0
 # UI-526 (release check of 0.10.0-rc.4): UI-513 stood Minas Morgul's Fellowship on its gate of the Mordor track, and
 # its marker took the gate's click. Where the Fellowship stands in a region, the track offers both gates and its first
 # step (MapMordorTrack: 46 and 68 x 50 points at the Detail level, a constant size on screen); the Fellowship's marker
@@ -128,10 +132,18 @@ DESIGN_ZOOM = 1.35
 GATE_POINTS = (46.0, 46.0)
 FIRST_STEP_POINTS = (68.0, 50.0)
 FELLOWSHIP_BOX = (-17.8, -35.6, 17.8, 12.4)
+# UI-530: once the field stood in Minas Morgul's middle its figures covered the Minas Morgul gate; every stand's picture
+# (and every row) keeps clear of the middle of each gate and step of the track, this far either way, so a click there is
+# the track's.
+TRACK_CORE = 3.0
 OUTSIDE_WEIGHT, ROOM_FOR_NAME_WEIGHT = 40.0, 25.0
 HIDDEN_WEIGHTS = (200.0, 30.0)
-# In a siege the besieger in the field and the garrison never hide more of each other than this.
-SIEGE = {'field', 'garrison'}
+# In a siege the besieger in the field and the garrison never hide more of each other than this; UI-530: nor does any
+# other pair of a region's forces (the planned place holds the other side's force beside an army, UI-401), by their
+# pictures, plaques included. Where every pair cannot keep that at scale 1, the garrison and the planned place are left
+# free, as before (Helm's Deep's overlap by half). Each place records the pairs its layout kept (`Place.pairs`).
+ALL_FORCE_PAIRS = ({'field', 'garrison'}, {'field', 'planned'}, {'garrison', 'planned'})
+FIELD_FORCE_PAIRS = ({'field', 'garrison'}, {'field', 'planned'})
 ARMIES_HIDDEN = 0.25
 # The gate: this share of the drawing's height above its lower edge.
 GATE_INSET = 0.2
@@ -306,6 +318,7 @@ class Region:
         ys = [p[1] for p in self.rings[0]]
         self.bounds = (min(xs), min(ys), max(xs), max(ys))
         self.raster = Raster(self.rings, self.holes)
+        self.middle = self.raster.middle()
 
     def gem_kinds(self, overrides):
         kinds = [self.settlement, overrides.get('settlements', {}).get(self.id)]
@@ -402,6 +415,12 @@ class Raster:
         rows, cols = rows * step, cols * step
         return self.x0 + cols / RESOLUTION, self.y0 + rows / RESOLUTION, self.reach[rows, cols]
 
+    def middle(self):
+        """UI-530: the region's middle, the point of the lattice with the most room (the first of equals)."""
+        xs, ys, reach = self.lattice()
+        best = int(np.argmax(reach))
+        return float(xs[best]), float(ys[best])
+
     def reach_at(self, x, y):
         """The room at the pixel nearest to a point; the minimum filter already covers a pixel's step either way."""
         col = int(round((x - self.x0) * RESOLUTION))
@@ -448,6 +467,7 @@ class Place:
         self.x = x
         self.y = y
         self.score = score
+        self.pairs = ALL_FORCE_PAIRS
 
     def rect(self, scale):
         return self.slot.footprint.rect(self.x, self.y, scale)
@@ -675,12 +695,32 @@ def place_sovereign(region, layout, layouts, regions):
     for owner in king_forces(region, layout, layouts):
         feasible &= ~king_hides_label(owner, xs, ys)
     feasible &= clear(king_on_gem(xs, ys, regions))
+    # UI-530: off the Fellowship too, where the region leaves room for that (Rhosgobel does not).
+    clear_of_fellowship = feasible & clear(king_on_fellowship(xs, ys, layout))
+    if clear_of_fellowship.any():
+        feasible = clear_of_fellowship
     last = next(place for place in layout if place.slot.key == 'characters[5]')
     score = np.where(feasible, -np.hypot(xs - last.x, ys - last.y), -np.inf)
     best = int(np.argmax(score))
     if not feasible[best]:
         raise ValueError(f"No place for a king's marker fits {region.id}")
     return round(float(xs[best]), 1), round(float(ys[best]), 1)
+
+
+# UI-530: a king's marker keeps this far off the Fellowship's box (its Hidden/Revealed plaque at the bottom is clicked).
+KING_FELLOWSHIP_GAP = 4.0
+
+
+def king_on_fellowship(xs, ys, layout):
+    """UI-530: whether a king's marker on these points lies on the Fellowship's figure (its whole click box) at any zoom
+    from the whole map to the closest; once Minas Tirith's marker moved, it covered the Fellowship far out."""
+    fellowship = next(place for place in layout if place.slot.kind == 'fellowship')
+    hit = False
+    for zoom in king_zooms():
+        marker = KING_MARKER.shapes(xs, ys, zoom)
+        footprint = min(max(zoom, worst_case_zoom()), 1.35) / zoom
+        hit = hit | touches(marker, offset(FELLOWSHIP_BOX, fellowship.x, fellowship.y, footprint), KING_FELLOWSHIP_GAP)
+    return hit
 
 
 def on_army_base(xs, ys, layout):
@@ -697,8 +737,9 @@ def on_army_base(xs, ys, layout):
 # ---- Layout -------------------------------------------------------------------------------------------
 
 class Obstacles:
-    """Gems, fortress drawings and reserved names that no figure rectangle may cover, and the room a name would like
-    to keep, which figures only avoid where they can."""
+    """Gems and reserved names that no figure rectangle may cover, and the room a name would like to keep, which
+    figures only avoid where they can. UI-530 (owner): a city's or fortress's drawing no longer keeps figures away;
+    it is kept for the garrison's gate and the names."""
 
     def __init__(self, regions, reserved=None, rooms=None):
         self.items = []
@@ -722,12 +763,12 @@ class Obstacles:
 
     @staticmethod
     def applies(item, region, slot):
-        """Whether a hard obstacle binds a slot: a garrison group stands at its own drawing; the track's marks bind the
+        """Whether a hard obstacle binds a slot: gems and reserved names bind every slot, the track's marks the
         Fellowship only."""
-        kind, owner, _ = item
+        kind, _, _ = item
         if kind == 'track':
             return slot.kind == 'fellowship'
-        return kind in ('gem', 'drawing', 'name') and not (kind == 'drawing' and owner == region.id and slot.garrison_group)
+        return kind in ('gem', 'name')
 
 
 def track_marks():
@@ -741,6 +782,13 @@ def track_marks():
         half_width, half_height = width / DESIGN_ZOOM / 2, height / DESIGN_ZOOM / 2
         result.append((owner, (x - half_width, y - half_height, x + half_width, y + half_height)))
     return result
+
+
+def track_cores():
+    """UI-530: the middle of each of the track's gates and steps, as a small square no stand's picture may cover."""
+    track = json.loads(TRACK.read_text())
+    points = [entrance['path'][0] for entrance in track['entrances']] + track['steps']
+    return [(x - TRACK_CORE, y - TRACK_CORE, x + TRACK_CORE, y + TRACK_CORE) for x, y in points]
 
 
 def fellowship_reach(mark):
@@ -761,7 +809,8 @@ def target(region, slot, placed):
         garrison = by_kind['garrison']
         return (garrison.x, garrison.y), 2.5, 1.0
     if slot.kind == 'field':
-        return region.anchor, 1.0, 1.0
+        # UI-530 (owner): the field force stands in the middle of its region, not beside its settlement's gem.
+        return region.middle, 1.0, 1.0
     field = by_kind['field']
     if slot.kind == 'characters':
         return (field.x, field.y), 2.5, 1.0
@@ -794,14 +843,17 @@ def total(layout):
 class Search:
     """One attempt to lay a region's slots out at one scale, with one weight against figures hiding each other."""
 
-    def __init__(self, region, candidates, obstacles, scale, hidden, neighbours=()):
+    def __init__(self, region, candidates, obstacles, scale, hidden, neighbours=(), pairs=ALL_FORCE_PAIRS):
         self.region = region
+        self.pairs = pairs
         self.candidates = candidates
         self.obstacles = obstacles
         self.scale = scale
         self.hidden = hidden
         self.neighbours = neighbours
         self.stones = [item[2] for item in obstacles if item[0] == 'stone']
+        self.gems = [item[2] for item in obstacles if item[0] == 'gem']
+        self.cores = track_cores()
 
     def solve(self):
         """The best layout: a short beam over the garrison and the field, the rest greedy."""
@@ -861,6 +913,8 @@ class Search:
         score += ROOM_WEIGHT * np.minimum(reach - radius - MARGIN, ROOM_CAP)
         if slot.kind == 'fellowship':
             score += FELLOWSHIP_ROOM_WEIGHT * np.minimum(reach - radius - MARGIN, FELLOWSHIP_ROOM_CAP)
+        if slot.kind == 'field':
+            score += FIELD_ROOM_WEIGHT * np.minimum(reach - radius - MARGIN, FIELD_ROOM_CAP)
         score -= OUTSIDE_WEIGHT * (1 - self.region.raster.inside_share(*rects))
         for place in placed:
             score -= self.hidden * hidden_share(rects, place.rect(self.scale))
@@ -874,22 +928,47 @@ class Search:
         its token covers no gem and no force's label lies under another stand of its region drawn in front of it."""
         xs, ys, reach = self.candidates
         mover = (slot.kind, xs, ys)
+        # UI-530: the stand's picture, its plaque and count below a force's base included.
+        picture = figure_picture(slot.kind, xs, ys, self.scale)[0][1]
         feasible = reach >= radius + MARGIN
         for place in placed:
             distance = np.hypot(xs - place.x, (ys - place.y) / DEPTH)
             feasible &= distance >= radius + place.slot.footprint.radius(self.scale) + GAP
-            if {slot.kind, place.slot.kind} == SIEGE:
-                feasible &= hidden_share(rects, place.rect(self.scale)) <= ARMIES_HIDDEN
+            if {slot.kind, place.slot.kind} in self.pairs:
+                # UI-530: by the forces' pictures, plaques included, now that a drawing no longer keeps them apart.
+                feasible &= hidden_share(picture, place_picture(place, self.scale)) <= ARMIES_HIDDEN
             feasible &= clear(label_conflict(mover, place, self.scale))
         for item in self.obstacles:
             if Obstacles.applies(item, self.region, slot):
                 feasible &= ~covers(rects, item[2], CLEARANCE)
+        # UI-530 (owner): no gem lies under the stand's picture; no middle of a Mordor track mark under its picture at
+        # full size or its token at the Detail level, whatever scale the region is laid out at.
+        for gem in self.gems:
+            feasible &= ~covers(picture, gem, CLEARANCE)
+        feasible &= clear(on_track(slot.kind, xs, ys, self.cores))
         feasible &= clear(token_on_gem(slot.kind, xs, ys, self.stones))
         feasible &= clear(neighbour_conflict(mover, self.neighbours))
         if slot.kind == 'garrison':
             dx0, dy0, dx1, dy1 = self.region.drawing
             feasible &= (xs > dx0 + 1) & (xs < dx1 - 1) & (ys > dy0 + 1) & (ys < dy1 - 1)
         return feasible
+
+
+def on_track(kind, x, y, cores):
+    """UI-530: whether a stand on these points lies on the middle of a Mordor track mark: its picture at full size, or
+    its token or medallion at the Detail level's lowest zoom."""
+    picture = figure_picture(kind, x, y, 1.0)[0][1]
+    hit = False
+    for core in cores:
+        hit = hit | covers(picture, core, CLEARANCE)
+        if kind in TOKENS:
+            hit = hit | touches(PICTURES[TOKENS[kind]].shapes(x, y, worst_case_zoom()), core, CLEARANCE)
+    return hit
+
+
+def place_picture(place, scale):
+    """A placed stand's picture: its figures and, for a force, its plaque and count."""
+    return figure_picture(place.slot.kind, place.x, place.y, scale)[0][1]
 
 
 def clear(conflict):
@@ -904,22 +983,24 @@ def lay_out(region, obstacles, neighbours=()):
     near = obstacles.near(region)
     candidates = region.raster.lattice()
     best = None
-    for hidden in HIDDEN_WEIGHTS:
-        result = lay_out_with(region, candidates, near, hidden, neighbours)
-        if result and (best is None or result[1] > best[1]):
-            best = result
-        if best and best[1] >= 1:
-            break
+    for pairs in (ALL_FORCE_PAIRS, FIELD_FORCE_PAIRS):
+        for hidden in HIDDEN_WEIGHTS:
+            result = lay_out_with(region, candidates, near, hidden, neighbours, pairs)
+            if result and (best is None or result[1] > best[1]):
+                best = result
+            if best and best[1] >= 1:
+                return best
     return best
 
 
-def lay_out_with(region, candidates, obstacles, hidden, neighbours):
+def lay_out_with(region, candidates, obstacles, hidden, neighbours, pairs=ALL_FORCE_PAIRS):
     for scale in SCALES:
-        layout = Search(region, candidates, obstacles, scale, hidden, neighbours).solve()
+        layout = Search(region, candidates, obstacles, scale, hidden, neighbours, pairs).solve()
         if layout:
             for place in layout:
                 place.x = round(place.x, 1)
                 place.y = round(place.y, 1)
+                place.pairs = pairs
             return layout, capacity(region, layout, obstacles, scale)
     return None
 
@@ -936,6 +1017,14 @@ def fits(region, layout, obstacles, scale):
                 return False
         rect = place.rect(scale)
         if any(Obstacles.applies(item, region, place.slot) and overlaps(rect, item[2]) for item in obstacles):
+            return False
+        picture = place_picture(place, scale)
+        if any(item[0] == 'gem' and overlaps(picture, item[2]) for item in obstacles):
+            return False
+        if any({place.slot.kind, other.slot.kind} in place.pairs and
+               hidden_share(picture, place_picture(other, scale)) > ARMIES_HIDDEN for other in layout[:i]):
+            return False
+        if bool(np.any(on_track(place.slot.kind, place.x, place.y, track_cores()))):
             return False
         mover = (place.slot.kind, place.x, place.y)
         if any(bool(label_conflict(mover, other, scale)) for other in layout[:i]):
@@ -1093,14 +1182,32 @@ def place_name(region, rects):
 
 # ---- Export -------------------------------------------------------------------------------------------
 
-def lay_out_region(region, regions, shared, path, fortresses, alternatives, neighbours=()):
-    """A region's places and the search path of its name. First around the name's path. Where the group does not fit
-    at scale 1 that way and alternatives are allowed, the places may come first, around another spot the name can be
-    read at or around none, as long as the name's search still ends on a clear point it can be read at; the largest
-    capacity wins. Its forces' labels keep clear of the `neighbours`' forces (UI-425)."""
+def lay_out_region(region, regions, shared, path, fortresses, alternatives, neighbours=(), taken=()):
+    """A region's places and the search path of its name. UI-530 (owner): where alternatives are allowed the places
+    come first, round the region's middle, and the name searches round them, as long as its search ends on a point
+    they leave clear; that wins unless the older order below shows figures at a larger scale (up to 1). The older
+    order (and the only one for a shared name): first around the name's path; where the group does not fit at scale 1
+    that way and alternatives are allowed, the places may come first, around another spot the name can be read at or
+    around none, as long as the name's search still ends on a clear point it can be read at; the largest capacity
+    wins. Its forces' labels keep clear of the `neighbours`' forces (UI-425)."""
+    free = places_first(region, regions, shared, fortresses, neighbours, taken) if alternatives else None
+    if free is not None and shrinks(free[2][-1], path[-1]):
+        free = None
+    if free is not None and free[1] >= 1:
+        return free
+    older = name_first(region, regions, shared, path, fortresses, alternatives, neighbours)
+    if free is not None and (older is None or min(1.0, free[1]) >= min(1.0, older[1])):
+        return free
+    if older is None:
+        raise ValueError(f'No stand places fit {region.id}; pin them in {OVERRIDES.relative_to(ROOT)}')
+    return older
+
+
+def name_first(region, regions, shared, path, fortresses, alternatives, neighbours):
+    """The places around the name's path, else (in a tight region) around another spot or none; None if none fit."""
     first = lay_out(region, Obstacles(regions, {**shared, region.id: path}), neighbours)
     if first is None:
-        raise ValueError(f'No stand places fit {region.id}; pin them in {OVERRIDES.relative_to(ROOT)}')
+        return None
     best = first + (path,)
     if best[1] >= 1 or not alternatives:
         return best
@@ -1116,6 +1223,32 @@ def lay_out_region(region, regions, shared, path, fortresses, alternatives, neig
         if not any(overlaps(rect, around[-1]) for rect in rects):
             best = layout, fitted, around
     return best
+
+
+# UI-530 (owner, choosing among measured variants: figures in the middle, names giving way, but each keeping at least
+# 70 % of its width and height): places first only where the name it pushes aside keeps this share of its rectangle.
+NAME_KEPT = 0.7
+
+
+def shrinks(name, reference):
+    """Whether a name's rectangle is narrower or lower than NAME_KEPT of another's."""
+    width, height = name[2] - name[0], name[3] - name[1]
+    return width < NAME_KEPT * (reference[2] - reference[0]) or height < NAME_KEPT * (reference[3] - reference[1])
+
+
+def places_first(region, regions, shared, fortresses, neighbours, taken=()):
+    """UI-530: the places laid out with the region's own name out of their way, and the name's search round them and
+    round the other regions' places laid out so far (`taken`); None where nothing fits or the name then ends on a point
+    a place covers. A name pushed aside may be smaller and show only closer in (NAME_KEPT bounds it)."""
+    trial = lay_out(region, Obstacles(regions, shared), neighbours)
+    if trial is None:
+        return None
+    layout, fitted = trial
+    rects = fortresses + list(taken) + [place.rect(min(1.0, fitted)) for place in layout]
+    around = place_name(region, rects)
+    if any(overlaps(rect, around[-1]) for rect in rects):
+        return None
+    return layout, fitted, around
 
 
 def name_spots(region, taken):
@@ -1141,13 +1274,13 @@ def name_spots(region, taken):
 
 
 def export(regions):
-    """The names, then the places. A region's places keep clear of its own name's search path, so the run-time
-    search, which keeps a name's point unless a stand covers it, leaves the name there; in a tight region the name
-    may instead search around the places (lay_out_region). A neighbour's figures may still cover a name; the name then
-    searches around them. Where it finds no clear point it can be read at, the name is shared: every region's places
-    keep clear of its path from then on, and the regions that covered it are laid out again. A shared name whose own
-    places must move goes back to its empty-board path for good. Shared names only accumulate and each stays clear,
-    so the rounds end. UI-425: where two neighbouring regions' forces then cover each other's labels, the one of the two
+    """The places and the names. Since UI-530 a region's places come first, round its middle, and its name searches
+    round them (else the older order: the places keep clear of the name's empty-board search path, so the run-time
+    search, which keeps a name's point unless a stand covers it, leaves the name there; lay_out_region). A neighbour's
+    figures may still cover a name; the name then searches around them. Where it finds no clear point it can be read
+    at, the name is shared: every region's places keep clear of its path from then on, and the regions that covered it
+    are laid out again. A shared name stays where it was shared; its own places, laid out again, keep clear of it too.
+    Shared names only accumulate and each stays clear, so the rounds end. UI-425: where two neighbouring regions' forces then cover each other's labels, the one of the two
     that keeps more of its capacity is laid out again around the other's forces, and stays bound to its neighbours'."""
     fortresses = name_obstacles(regions)
     empty = {region.id: place_name(region, fortresses) for region in regions}
@@ -1191,11 +1324,19 @@ class Rounds:
 
     def trial(self, region):
         """A region laid out around the others as they stand now, without keeping the result."""
-        path = self.empty[region.id] if region.id in self.shared else self.paths[region.id]
+        # UI-530: a shared name stays where it was shared — where its region's places left it — which every region
+        # already keeps clear of; its own places, laid out again, keep clear of it too.
+        path = self.paths[region.id]
         others = {key: self.paths[key] for key in self.shared if key != region.id}
         neighbours = armies_near(region, self.layouts) if region.id in self.bound else ()
         return lay_out_region(region, self.regions, others, path, self.fortresses, region.id not in self.shared,
-                              neighbours)
+                              neighbours, self.taken(region))
+
+    def taken(self, region):
+        """UI-530: the figure rectangles of the other regions laid out so far, which a name moved by its own region's
+        places keeps clear of too."""
+        return [place.rect(min(1.0, self.capacities[key])) for key, layout in self.layouts.items() if key != region.id
+                for place in layout]
 
     def settle(self, clashes):
         """Each clash once: the region that keeps more of its capacity around the other's forces moves."""
@@ -1332,7 +1473,8 @@ def row_distance(x, y, reach, px, py, other=None):
 
 def force_rooms(regions, layouts, names, sovereigns):
     """Each region's field and garrison row reach (left, right): the garrison's first, the field's clear of it."""
-    covers = [('gem', r.id, r.gem) for r in regions if r.gem] + [('drawing', r.id, r.drawing) for r in regions if r.drawing]
+    covers = [('gem', r.id, r.gem) for r in regions if r.gem]
+    covers += [('track middle', 'mordor-track', core) for core in track_cores()]
     rooms = {}
     for region in regions:
         layout = layouts[region.id]
@@ -1376,10 +1518,8 @@ def row_fits(place, reach, region, layout, covers, names, sovereign, neighbours,
     if row_distance(x, y, reach, *sovereign) < radius + CHARACTER.radius(1.0) + GAP:
         return False
     rect = row_rect(x, y, left, right)
-    for kind, owner, box in covers:
-        exempt = kind == 'drawing' and owner == region.id and place.slot.garrison_group
-        if not exempt and covers_rect(rect, box):
-            return False
+    if any(covers_rect(rect, box) for _, _, box in covers):
+        return False
     if any(covers_rect(rect, name) for name in names.values()):
         return False
     for other in layout:
@@ -1421,8 +1561,8 @@ def verify(regions, layouts, capacities, names):
     """The acceptance checks of MapStandSlotsTests, run on the export before it is written."""
     obstacles = name_obstacles(regions, layouts, capacities)
     covers = [('gem', r.id, r.gem) for r in regions if r.gem]
-    covers += [('drawing', r.id, r.drawing) for r in regions if r.drawing]
     covers += [('track', owner, fellowship_reach(rect)) for owner, rect in track_marks()]
+    covers += [('track middle', 'mordor-track', core) for core in track_cores()]
     problems = []
     for region in regions:
         name = names[region.id]
@@ -1441,17 +1581,21 @@ def verify_places(region, layout, scale, covers):
             if math.hypot(place.x - other.x, (place.y - other.y) / DEPTH) < a + other.slot.footprint.radius(scale):
                 problems.append(f'{region.id} {place.slot.key}: base overlaps {other.slot.key}')
         for kind, owner, rect in covers:
-            exempt = kind == 'drawing' and owner == region.id and place.slot.garrison_group
-            exempt = exempt or kind == 'track' and place.slot.kind != 'fellowship'
-            if not exempt and overlaps(place.rect(scale), rect):
+            if kind == 'track' and place.slot.kind != 'fellowship':
+                continue
+            shape = place_picture(place, 1.0 if kind == 'track middle' else scale) if kind in ('gem', 'track middle') \
+                else place.rect(scale)
+            if overlaps(shape, rect):
                 problems.append(f'{region.id} {place.slot.key}: covers the {kind} of {owner}')
         if place.slot.kind == 'garrison':
             x0, y0, x1, y1 = region.drawing
             if not (x0 < place.x < x1 and y0 < place.y < y1):
                 problems.append(f'{region.id}: garrison feet outside the drawing')
-    armies = [place.rect(scale) for place in layout if place.slot.kind in SIEGE]
-    if len(armies) == 2 and hidden_share(armies[0], armies[1]) > ARMIES_HIDDEN:
-        problems.append(f'{region.id}: the besieger and the garrison hide each other')
+    armies = [(place.slot.kind, place_picture(place, scale)) for place in layout]
+    for i, (kind, picture) in enumerate(armies):
+        for other, other_picture in armies[:i]:
+            if {kind, other} in layout[0].pairs and hidden_share(picture, other_picture) > ARMIES_HIDDEN:
+                problems.append(f'{region.id}: the {other} and the {kind} forces hide each other')
     return problems
 
 

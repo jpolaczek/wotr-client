@@ -11,8 +11,9 @@ using Wotr.Contracts;
 namespace Wotr.EditorTests
 {
     // UI-422: every region has fixed stand places. At the worst-case footprint (1366×768 at 125 %, at the lowest zoom
-    // figures show at) they lie inside their own contours, no two bases overlap, and no figures cover a settlement gem,
-    // a fortress drawing or a region name; a garrison stands at its fortress's gate. Checked here with MapContourMath,
+    // figures show at) they lie inside their own contours, no two bases overlap, and no figures cover a settlement gem
+    // or a region name; a garrison stands at its fortress's gate. UI-530 (owner): a city's or fortress's drawing may be
+    // covered; a gem not even by a force's plaque and count below its base. Checked here with MapContourMath,
     // apart from scripts/export_map_stands.py, which lays the places out.
     public sealed class MapStandSlotsTests
     {
@@ -20,10 +21,13 @@ namespace Wotr.EditorTests
         // figures once the zoom shrinks the footprint to their capacity (TABLETOP_FIGURES_UX, "Stand places").
         private static readonly string[] TokenRegions =
         {
-            // UI-513: placing the Fellowship before the field's recruits and characters left Narrows of the Forest and South
-            // Anduin Vale room for every figure.
-            "ash-mountains", "dol-guldur", "edoras", "gladden-fields", "high-pass", "lorien", "lossarnach", "minas-morgul",
-            "moria", "old-ford", "old-forest-road", "rhosgobel", "southern-mirkwood", "western-mirkwood", "woodland-realm"
+            // UI-530 (owner: figures in the middle of their region, names giving way down to 70 %): the field aims at the
+            // middle and every two forces of a region keep from hiding more than a quarter of each other, which costs
+            // Buckland, Dimrill Dale, Folde, Goblin's Gate, Narrows of the Forest, North Anduin Vale and Vale of the Celduin
+            // a little of their room; Dol Guldur and Southern Mirkwood gained it.
+            "ash-mountains", "buckland", "dimrill-dale", "edoras", "folde", "gladden-fields", "goblins-gate", "high-pass",
+            "lorien", "lossarnach", "minas-morgul", "moria", "narrows-of-the-forest", "north-anduin-vale", "old-ford",
+            "old-forest-road", "rhosgobel", "vale-of-the-celduin", "western-mirkwood", "woodland-realm"
         };
         private const float LowestCapacity = .5f;
 
@@ -93,33 +97,40 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void FiguresCoverNoSettlementDrawingOrName()
+        public void FiguresCoverNoSettlementOrName()
         {
             var gems = data.Regions.Values.Where(r => r.Settlement != null && data.Shapes.ContainsKey(r.Id))
                 .Select(r => (r.Id, Rect: GemRect(data.Shapes[r.Id], r.Settlement))).ToList();
-            var drawings = MapLandmarks.Load().Items.Select(l => (l.Id, l.Rect)).ToList();
             var names = data.Regions.Values.Where(r => data.Shapes.ContainsKey(r.Id)).Select(r => (r.Id, Rect: NameRect(r))).ToList();
             var covered = new List<string>();
             foreach (var stand in Bases())
             {
                 var figures = stand.Place.FigureRect(stand.Scale);
+                var picture = Picture(stand.Place, stand.Scale);
                 var where = stand.Region + " " + stand.Place;
-                covered.AddRange(gems.Where(g => figures.Overlaps(g.Rect)).Select(g => where + " covers the settlement of " + g.Id));
-                covered.AddRange(drawings.Where(d => !(d.Id == stand.Region && stand.Place.AtFortress) && figures.Overlaps(d.Rect))
-                    .Select(d => where + " covers the drawing of " + d.Id));
+                covered.AddRange(gems.Where(g => picture.Overlaps(g.Rect)).Select(g => where + " covers the settlement of " + g.Id));
                 covered.AddRange(names.Where(n => figures.Overlaps(n.Rect)).Select(n => where + " covers the name of " + n.Id));
             }
             CollectionAssert.IsEmpty(covered);
         }
 
+        // UI-530: a stand's figures, and below a force's base its plaque and count (scripts/export_map_stands.py,
+        // ARMY_PICTURE, 15.6 units below its feet; a character's painted stand 6.3).
+        private static Rect Picture(StandPlace place, float scale)
+        {
+            var figures = place.FigureRect(scale);
+            var army = place.Footprint.BaseWidth == StandFootprint.Army.BaseWidth;
+            var below = (army ? 15.6f : 6.3f) * scale;
+            return Rect.MinMaxRect(figures.xMin, figures.yMin, figures.xMax, Mathf.Max(figures.yMax, place.Feet.y + below));
+        }
+
         // UI-522: a field force's or garrison's row stand at its place's reach stays inside its region, and its figures
-        // (up to an army's 40 units, UI-523) cover no settlement, other fortress drawing or name.
+        // (up to an army's 40 units, UI-523) cover no settlement or name (UI-530: a drawing they may).
         [Test]
         public void ARowStandAtItsReachStaysInItsRegionAndCoversNothing()
         {
             var gems = data.Regions.Values.Where(r => r.Settlement != null && data.Shapes.ContainsKey(r.Id))
                 .Select(r => (r.Id, Rect: GemRect(data.Shapes[r.Id], r.Settlement))).ToList();
-            var drawings = MapLandmarks.Load().Items.Select(l => (l.Id, l.Rect)).ToList();
             var names = data.Regions.Values.Where(r => data.Shapes.ContainsKey(r.Id)).Select(r => (r.Id, Rect: NameRect(r))).ToList();
             var problems = new List<string>();
             var wide = 0;
@@ -139,8 +150,6 @@ namespace Wotr.EditorTests
                     var row = Rect.MinMaxRect(feet.x - reach.x, feet.y - StandFootprint.Army.FigureHeight, feet.x + reach.y,
                         feet.y + StandFootprint.Army.BaseDepth / 2);
                     problems.AddRange(gems.Where(g => row.Overlaps(g.Rect)).Select(g => where + " covers the settlement of " + g.Id));
-                    problems.AddRange(drawings.Where(d => !(d.Id == entry.Key && kind == StandKind.Garrison) && row.Overlaps(d.Rect))
-                        .Select(d => where + " covers the drawing of " + d.Id));
                     problems.AddRange(names.Where(n => row.Overlaps(n.Rect)).Select(n => where + " covers the name of " + n.Id));
                 }
             TestContext.WriteLine("Row stands wider than a round base: " + wide);
