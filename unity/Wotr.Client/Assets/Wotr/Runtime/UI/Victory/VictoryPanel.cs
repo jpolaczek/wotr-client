@@ -165,6 +165,12 @@ namespace Wotr.Client
                     Opening?.Invoke();
                     Root.BringToFront();
                 }
+                else
+                {
+                    // UI-524: closing, the window fades out where it stood beneath the rest of the board, so what lies
+                    // under it reads and takes the pointer at once.
+                    Root.SendToBack();
+                }
             }
             Position();
             Window?.Refresh();

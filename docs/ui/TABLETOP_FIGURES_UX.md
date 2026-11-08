@@ -122,7 +122,15 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
     place weighs open ground up to 30 units (weight 1, against 8 units at 0.5 for the others), so it stands well
     inside its region where it reads at a glance. The median distance from its feet to the border went from 10 to
     25.5 units and the nearest from 3.7 to 5 (Helm's Deep); `MapStandSlotsTests.TheFellowshipStandsWellInsideItsRegion`
-    keeps both.
+    keeps both. The release check of 0.10.0-rc.4 found that it had stood Minas Morgul's Fellowship on its gate of the
+    Mordor track: the marker takes clicks over its whole box (64 × 80 design points at 1.8 a unit, its plaque grown to
+    86 at the worst case), so a click on the glowing gate went to the Fellowship and it could not enter Mordor there
+    (`MordorNetworkTests`). Where the Fellowship stands in a region, the track offers both gates and its first step; the
+    Fellowship's marker box now keeps clear of each as large as it is at the figures' design zoom (1.35 points a unit;
+    the marks keep their size in points, so at every zoom that shows figures at least that middle of a mark shows and
+    takes its click). The export reads `MapCanvas/mordor-track.json` and records its hash; only Minas Morgul's
+    Fellowship (back to 1235, 893) and Morannon's (1207, 779, its box had covered the gate's upper half) moved, with
+    their characters around them.
     Characters keep to the army's line: figures that hide one another cost heavily, and only where that leaves the
     group below scale 1 does a lighter cost get its chance. A besieger in the field and the garrison never share more
     than a quarter of either's figure rectangle, so a siege shows both. No figure rectangle covers a settlement gem

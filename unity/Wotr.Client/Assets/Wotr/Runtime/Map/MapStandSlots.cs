@@ -271,6 +271,7 @@ namespace Wotr.Client
                 data.Regions != null && data.Footprints != null, "Unsupported map stand places.");
             RequireSource(data, "map-geometry.json", ResourceHash("map-geometry"));
             RequireSource(data, "MapCanvas/landmarks.json", ResourceHash(MapLandmarks.Resource));
+            RequireSource(data, "MapCanvas/mordor-track.json", ResourceHash(MordorTrackGeometry.Resource));
             RequireSource(data, "base-board.json#regions", RegionsDigest(board));
             MapContourValidation.Require(Mathf.Abs(data.RecordedWorstCaseZoom - WorstCaseZoom(geometry)) < ZoomTolerance,
                 "Stale map stand places: worst-case zoom");

@@ -4833,7 +4833,9 @@ UI-524 (owner, 2026-11-08: closing it with a second click "flashes another Victo
 left corner"): the window, no longer pinned, was put back to its default place in the top left by
 `FloatingWindow.Refresh` while it was still fading out. A floating window that is not kept in place now keeps where it
 stood while it fades and takes its default place only while shown; `LeftRailLayoutTests.VictoryClosedFromTheRailFadesOutWhereItStood`
-checks every frame of the fade at 1920 × 1080 and 1366 × 768 at 125 %.
+checks every frame of the fade at 1920 × 1080 and 1366 × 768 at 125 %. Fading out, it goes to the back of its layer, so a
+card or window it was closed over reads and takes the pointer at once (`CardViewportLayoutTests`, release check of
+0.10.0-rc.4).
 
 ## Dice faces after the printed symbols — ART-10 (2026-11-07)
 

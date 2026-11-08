@@ -13,10 +13,11 @@ region shows tokens at the worst-case zoom (1366x768 at 125 %).
 UI-425: no map object hides a force's label or covers a settlement. The field force's and the garrison's plaque (at
 the footprint scale) and token count (on the whole map of the worst case, where tokens are largest on the board) stay
 clear of every other stand of their region drawn in front of them and of the neighbouring regions' forces; no token
-or medallion lies on a gem; and every region gets a `sovereign` place for a Corrupted king's marker that lies on no
-label and no gem at any zoom.
+or medallion lies on a gem; the Fellowship's marker leaves the Mordor track's gates and first step clickable; and
+every region gets a `sovereign` place for a Corrupted king's marker that lies on no label and no gem at any zoom.
 
-Inputs: map-geometry.json, MapCanvas/landmarks.json and the size of its drawings, the regions of base-board.json
+Inputs: map-geometry.json, MapCanvas/landmarks.json and the size of its drawings, MapCanvas/mordor-track.json (its
+gates and first step), the regions of base-board.json
 (names and settlements) and scripts/map-stands-overrides.json: the settlements expansion modules give regions (their
 gems are kept clear too) and hand pins, {"pins": {"<region>": {"field": [x, y], "characters[2]": [x, y]}}}, which
 replace the search for those places. Output: Resources/MapCanvas/stand-slots.json with the hashes of its sources;
@@ -37,6 +38,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RESOURCES = ROOT / 'unity/Wotr.Client/Assets/Wotr/Resources'
 GEOMETRY = RESOURCES / 'map-geometry.json'
 LANDMARKS = RESOURCES / 'MapCanvas/landmarks.json'
+TRACK = RESOURCES / 'MapCanvas/mordor-track.json'
 BOARD = RESOURCES / 'base-board.json'
 OVERRIDES = ROOT / 'scripts/map-stands-overrides.json'
 OUTPUT = RESOURCES / 'MapCanvas/stand-slots.json'
@@ -114,6 +116,18 @@ ROOM_CAP, ROOM_WEIGHT = 8.0, 0.5
 # UI-513 (owner): the Fellowship stands well inside its region, nearer its middle than its border, so where it is reads
 # at a glance; its place weighs open ground far more, and further, than the other places do.
 FELLOWSHIP_ROOM_CAP, FELLOWSHIP_ROOM_WEIGHT = 30.0, 1.0
+# UI-526 (release check of 0.10.0-rc.4): UI-513 stood Minas Morgul's Fellowship on its gate of the Mordor track, and
+# its marker took the gate's click. Where the Fellowship stands in a region, the track offers both gates and its first
+# step (MapMordorTrack: 46 and 68 x 50 points at the Detail level, a constant size on screen); the Fellowship's marker
+# keeps clear of each as large as it is at the figures' design zoom (MapArmyArtwork.DesignUnit, points a unit), so at
+# every zoom that shows figures at least that middle of the mark shows and takes its click. The marker takes clicks
+# over its whole box (MapFellowshipMarker: 64 x 80 design points at 1.8 a unit, feet at 32, 64; its plaque grown to 86
+# points at the worst case, FellowshipStateBadge), wider and deeper than its footprint: (left, top, right, bottom)
+# round its feet at scale 1.
+DESIGN_ZOOM = 1.35
+GATE_POINTS = (46.0, 46.0)
+FIRST_STEP_POINTS = (68.0, 50.0)
+FELLOWSHIP_BOX = (-17.8, -35.6, 17.8, 12.4)
 OUTSIDE_WEIGHT, ROOM_FOR_NAME_WEIGHT = 40.0, 25.0
 HIDDEN_WEIGHTS = (200.0, 30.0)
 # In a siege the besieger in the field and the garrison never hide more of each other than this.
@@ -180,6 +194,7 @@ def source_hashes():
     return {
         'map-geometry.json': sha(GEOMETRY.read_bytes()),
         'MapCanvas/landmarks.json': sha(LANDMARKS.read_bytes()),
+        'MapCanvas/mordor-track.json': sha(TRACK.read_bytes()),
         'base-board.json#regions': regions_digest(),
         'scripts/map-stands-overrides.json': sha(OVERRIDES.read_bytes()),
         'scripts/export_map_stands.py': sha(Path(__file__).read_bytes()),
@@ -697,6 +712,7 @@ class Obstacles:
             self.items += [('name', region_id, rect) for rect in rects]
         for region_id, rects in (rooms or {}).items():
             self.items += [('room', region_id, rect) for rect in rects]
+        self.items += [('track', owner, fellowship_reach(rect)) for owner, rect in track_marks()]
 
     def near(self, region):
         x0, y0, x1, y1 = region.bounds
@@ -706,9 +722,34 @@ class Obstacles:
 
     @staticmethod
     def applies(item, region, slot):
-        """Whether a hard obstacle binds a slot: a garrison group stands at its own drawing."""
+        """Whether a hard obstacle binds a slot: a garrison group stands at its own drawing; the track's marks bind the
+        Fellowship only."""
         kind, owner, _ = item
+        if kind == 'track':
+            return slot.kind == 'fellowship'
         return kind in ('gem', 'drawing', 'name') and not (kind == 'drawing' and owner == region.id and slot.garrison_group)
+
+
+def track_marks():
+    """The Mordor track's marks offered while the Fellowship stands in a region, both gates and the first step, as
+    board rectangles at the figures' design zoom: (owner, rect)."""
+    track = json.loads(TRACK.read_text())
+    marks = [(entrance['region'], entrance['path'][0], GATE_POINTS) for entrance in track['entrances']]
+    marks.append(('mordor-track', track['steps'][0], FIRST_STEP_POINTS))
+    result = []
+    for owner, (x, y), (width, height) in marks:
+        half_width, half_height = width / DESIGN_ZOOM / 2, height / DESIGN_ZOOM / 2
+        result.append((owner, (x - half_width, y - half_height, x + half_width, y + half_height)))
+    return result
+
+
+def fellowship_reach(mark):
+    """A mark grown by what the Fellowship's marker box adds to its footprint, so the footprint keeps clear of the
+    grown mark exactly where the marker's box keeps clear of the mark."""
+    fx0, fy0, fx1, fy1 = FELLOWSHIP.rect(0.0, 0.0, 1.0)
+    bx0, by0, bx1, by1 = FELLOWSHIP_BOX
+    x0, y0, x1, y1 = mark
+    return x0 - max(0.0, fx0 - bx0), y0 - max(0.0, by1 - fy1), x1 + max(0.0, bx1 - fx1), y1 + max(0.0, fy0 - by0)
 
 
 def target(region, slot, placed):
@@ -1381,6 +1422,7 @@ def verify(regions, layouts, capacities, names):
     obstacles = name_obstacles(regions, layouts, capacities)
     covers = [('gem', r.id, r.gem) for r in regions if r.gem]
     covers += [('drawing', r.id, r.drawing) for r in regions if r.drawing]
+    covers += [('track', owner, fellowship_reach(rect)) for owner, rect in track_marks()]
     problems = []
     for region in regions:
         name = names[region.id]
@@ -1400,6 +1442,7 @@ def verify_places(region, layout, scale, covers):
                 problems.append(f'{region.id} {place.slot.key}: base overlaps {other.slot.key}')
         for kind, owner, rect in covers:
             exempt = kind == 'drawing' and owner == region.id and place.slot.garrison_group
+            exempt = exempt or kind == 'track' and place.slot.kind != 'fellowship'
             if not exempt and overlaps(place.rect(scale), rect):
                 problems.append(f'{region.id} {place.slot.key}: covers the {kind} of {owner}')
         if place.slot.kind == 'garrison':

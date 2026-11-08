@@ -859,8 +859,29 @@ namespace Wotr.Client
         // planned ghost comes or goes.
         internal void FitRows()
         {
+            var standing = Data.Shapes.Keys.SelectMany(Standing).ToList();
+            var forces = regionMarkers.Values.SelectMany(group => group).ToList();
+            var marks = RowMarks();
             foreach (var pair in regionMarkers)
-                Stands.FitRows(pair.Value, Standing(pair.Key));
+                Stands.FitRows(pair.Value, Standing(pair.Key), standing, marks, forces);
+        }
+
+        // UI-526: the marks no row reaches over past its place: the Mordor track's gates and steps (a stand over a gate
+        // takes the gate's click) and the settlements' gems, at their widest on the board (the worst-case Detail zoom, as
+        // they keep their size in points). They change only with the board.
+        private IReadOnlyList<Rect> RowMarks()
+        {
+            if (rowMarksFor == Data)
+                return rowMarks;
+            var zoom = MapStandSlots.WorstCaseZoom(Data.Geometry);
+            rowMarks.Clear();
+            if (Data.MordorTrack != null)
+                rowMarks.AddRange(MapMordorTrack.Marks(Data.MordorTrack).Select(mark => MapArmyRowRoom.Mark(mark.Centre, mark.Size, zoom)));
+            foreach (var region in Data.Regions.Values)
+                if (region.Settlement != null && Data.Shapes.TryGetValue(region.Id, out var shape))
+                    rowMarks.Add(MapArmyRowRoom.Mark(new Vector2(shape.Anchor[0], shape.Anchor[1]), MapSettlementGems.Box, zoom));
+            rowMarksFor = Data;
+            return rowMarks;
         }
 
         private IEnumerable<(Vector2 Feet, StandFootprint Footprint)> Standing(string region)
@@ -872,6 +893,9 @@ namespace Wotr.Client
             if (PlannedIn(region))
                 yield return (Stands.Stands(region).Planned, StandFootprint.Army);
         }
+
+        private readonly List<Rect> rowMarks = new List<Rect>();
+        private BoardPresentation rowMarksFor;
 
         private bool PlannedIn(string region) =>
             new[] { PlannedRecruits, PlannedFlights, PlannedJourneys }.Any(ghosts => ghosts?.Regions.Contains(region) == true);

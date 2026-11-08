@@ -129,16 +129,21 @@ namespace Wotr.Client
 
         // UI-522: each of a region's forces on a row stand as wide as its place's room and the stands beside it now allow:
         // its characters', the Fellowship's, a planned ghost's and a force on the planned place.
-        internal void FitRows(IReadOnlyList<MapArmyStand> forces, IEnumerable<(Vector2 Feet, StandFootprint Footprint)> standing)
+        // UI-526: past its place a row stops short of whatever stands anywhere on the map (`standingAnywhere`, `everyForce`),
+        // not only in its region, and of the board's marks (`marks`).
+        internal void FitRows(IReadOnlyList<MapArmyStand> forces, IEnumerable<(Vector2 Feet, StandFootprint Footprint)> standing,
+            IReadOnlyList<(Vector2 Feet, StandFootprint Footprint)> standingAnywhere, IReadOnlyList<Rect> marks,
+            IReadOnlyList<MapArmyStand> everyForce)
         {
             var beside = standing.ToList();
             beside.AddRange(forces.Where(force => force.AtPlanned).Select(force => (force.Stand.Feet, StandFootprint.Army)));
+            var around = beside.Concat(standingAnywhere).ToList();
             foreach (var force in forces.Where(force => !force.AtPlanned))
             {
                 var feet = force.Stand.Feet;
                 var room = MapArmyRowRoom.Narrow(feet, force.PlaceReach, beside);
-                var others = forces.Where(other => other != force).Select(other => other.Stand.Feet);
-                force.Room(room, Vector2.Max(room, MapArmyRowRoom.Limit(feet, beside, others)));
+                var others = everyForce.Where(other => other != force).Select(other => other.Stand.Feet);
+                force.Room(room, Vector2.Max(room, MapArmyRowRoom.Limit(feet, around, others, marks)));
             }
         }
 

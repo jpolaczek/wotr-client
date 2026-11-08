@@ -32,10 +32,18 @@ namespace Wotr.Client
             return new Vector2(Mathf.Clamp(left, round, Mathf.Max(round, reach.x)), Mathf.Clamp(right, round, Mathf.Max(round, reach.y)));
         }
 
+        // UI-526: a mark drawn round a board point at a constant size in points, as a board rect at `zoom` points a unit.
+        public static Rect Mark(Vector2 centre, Vector2 points, float zoom)
+        {
+            var size = points / zoom;
+            return new Rect(centre - size / 2, size);
+        }
+
         // UI-526: how far a row may reach past its place where nothing stands in its way — the widest a row goes, narrowed
-        // for the stands beside it and for its region's other forces: their bases keep clear of it, and it covers neither
-        // their figures nor the plaque of a force it stands in front of (UI-425).
-        public static Vector2 Limit(Vector2 feet, IEnumerable<(Vector2 Feet, StandFootprint Footprint)> standing, IEnumerable<Vector2> forces)
+        // for the stands around it and for the other forces: their bases keep clear of it, and it covers neither their
+        // figures nor the plaque of a force it stands in front of (UI-425), nor a mark on the board (`marks`).
+        public static Vector2 Limit(Vector2 feet, IEnumerable<(Vector2 Feet, StandFootprint Footprint)> standing, IEnumerable<Vector2> forces,
+            IEnumerable<Rect> marks = null)
         {
             var limit = Narrow(feet, Vector2.one * StandFootprint.RowReach, standing);
             foreach (var other in forces)
@@ -48,9 +56,22 @@ namespace Wotr.Client
                 if (other.x <= feet.x)
                     limit.x = Mathf.Min(limit.x, side);
             }
+            foreach (var mark in marks ?? new Rect[0])
+            {
+                if (!AcrossRow(feet, mark.yMin, mark.yMax))
+                    continue;
+                if (mark.xMax > feet.x)
+                    limit.y = Mathf.Min(limit.y, mark.xMin - feet.x - Gap);
+                if (mark.xMin < feet.x)
+                    limit.x = Mathf.Min(limit.x, feet.x - mark.xMax - Gap);
+            }
             var round = StandFootprint.Army.BaseWidth / 2;
             return Vector2.Max(limit, Vector2.one * round);
         }
+
+        // Whether something between `top` and `bottom` on the board lies across a row's band: its figures up to its front.
+        private static bool AcrossRow(Vector2 feet, float top, float bottom) =>
+            top < feet.y + StandFootprint.Army.BaseDepth / 2 && bottom > feet.y - RowHeight;
 
         // How far the row may reach towards a force behind it before it covers that force's plaque (the round base's width,
         // 2.2 to 14.8 units below its feet; scripts/export_map_stands.py, PLAQUE).

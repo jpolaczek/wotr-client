@@ -1051,9 +1051,13 @@ up to 40 % of the narrower one (the middle in front, the counts at their feet at
 that does not fit the row reaches past its place alike on both sides rather than shrink — in a tight region (Minas
 Morgul, Dol Guldur) it may stand over the edge of its place. It reaches past its place only into free room
 (`MapArmyRowRoom.Limit`, up to 50 units a side): never onto a character, the Fellowship or the planned recruits standing
-beside it, another force's base or figures, or the plaque of a force it stands in front of (UI-425); only where even
-that room is short do its figures shrink, alike and just enough (`MapArmyRow.Fit` — Barad-dûr's three riders beside the
-Witch-king stand about 41 points tall). `MapArmyRowLayoutTests`, `MapArmyRowRoomTests`, `MapArmyArtworkTests` (full size
-on the widest, the narrowest and a narrowed stand), `MapArmyRowTests` (the Witch-king's column clear) and the tabletop
-acceptance matrix (no plaque covered) check it.
+anywhere on the map, another force's base or figures in any region, the plaque of a force it stands in front of
+(UI-425), a Mordor track gate or step, or a settlement's gem; only where even that room is short do its figures shrink,
+alike and just enough (`MapArmyRow.Fit` — Barad-dûr's three riders beside the Witch-king stand about 41 points tall).
+The track's marks and the gems keep one size in points, so a row keeps clear of them at their widest on the board, the
+worst-case Detail zoom (`MapCanvas.RowMarks`, built once per board): a row standing over a mark would take its click,
+as the Fellowship's marker did on Minas Morgul's gate (TABLETOP_FIGURES_UX, UI-513). `MapArmyRowLayoutTests`,
+`MapArmyRowRoomTests` (a mark across the row's band stops it a gap short), `MapArmyArtworkTests` (full size on the
+widest, the narrowest and a narrowed stand), `MapArmyRowTests` (the Witch-king's column clear), `MordorNetworkTests` (both
+gates take their click) and the tabletop acceptance matrix (no plaque covered) check it.
 

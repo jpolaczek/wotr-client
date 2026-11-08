@@ -50,6 +50,23 @@ namespace Wotr.EditorTests
             Assert.AreEqual(StandFootprint.Army.BaseWidth / 2, limit.y, .01f, "The force's side keeps a round base's half");
         }
 
+        // UI-526 (release check): a Minas Morgul row reached over its Mordor gate and took the gate's click. A mark across
+        // the row's band (its figures down to its front) stops the row a gap short of it; one above the figures does not.
+        [Test]
+        public void PastItsPlaceARowStopsShortOfAMarkOnTheBoard()
+        {
+            var nothing = new (Vector2, StandFootprint)[0];
+            var gate = MapArmyRowRoom.Mark(Feet + new Vector2(50, -10), new Vector2(40, 40), 1);
+            var limit = MapArmyRowRoom.Limit(Feet, nothing, new Vector2[0], new[] { gate });
+            // The gate spans 30 to 70 units right of the feet: 30 - 1.5.
+            Assert.AreEqual(28.5f, limit.y, .01f);
+            Assert.AreEqual(StandFootprint.RowReach, limit.x, .01f, "The other side keeps the widest reach.");
+            var above = MapArmyRowRoom.Mark(Feet + new Vector2(50, -90), new Vector2(40, 40), 1);
+            Assert.AreEqual(Widest, MapArmyRowRoom.Limit(Feet, nothing, new Vector2[0], new[] { above }));
+            Assert.AreEqual(57.5f, MapArmyRowRoom.Mark(Feet, new Vector2(46, 46), .8f).width, .01f,
+                "A mark of 46 points at .8 points a unit covers 57.5 units.");
+        }
+
         [Test]
         public void EachSideStaysBetweenARoundBaseAndItsReach()
         {
