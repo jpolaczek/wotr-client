@@ -113,7 +113,7 @@ namespace Wotr.EditorTests
         }
 
         // UI-522: a field force's or garrison's row stand at its place's reach stays inside its region, and its figures
-        // (two thirds of an army's 40 units) cover no settlement, other fortress drawing or name.
+        // (up to an army's 40 units, UI-523) cover no settlement, other fortress drawing or name.
         [Test]
         public void ARowStandAtItsReachStaysInItsRegionAndCoversNothing()
         {
@@ -136,7 +136,8 @@ namespace Wotr.EditorTests
                     var centre = new Vector2(feet.x + (reach.y - reach.x) / 2, feet.y);
                     if (!BaseInside(data.Shapes[entry.Key], centre, new Vector2(reach.x + reach.y, StandFootprint.Army.BaseDepth) / 2))
                         problems.Add(where + "'s row leaves the region");
-                    var row = Rect.MinMaxRect(feet.x - reach.x, feet.y - 27, feet.x + reach.y, feet.y + StandFootprint.Army.BaseDepth / 2);
+                    var row = Rect.MinMaxRect(feet.x - reach.x, feet.y - StandFootprint.Army.FigureHeight, feet.x + reach.y,
+                        feet.y + StandFootprint.Army.BaseDepth / 2);
                     problems.AddRange(gems.Where(g => row.Overlaps(g.Rect)).Select(g => where + " covers the settlement of " + g.Id));
                     problems.AddRange(drawings.Where(d => !(d.Id == entry.Key && kind == StandKind.Garrison) && row.Overlaps(d.Rect))
                         .Select(d => where + " covers the drawing of " + d.Id));

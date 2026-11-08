@@ -717,8 +717,9 @@ flight per destination marker, rendered with the same miniature.
 - **Format.** `stand-slots-2` (the `sovereign` point; `MapStandSlots.Validate` rejects a region without it); since UI-522
   `stand-slots-3`, which adds each region's `fieldRow` and, for a stronghold, `garrisonRow`.
 - **Row reach** (UI-522, 2026-11-07, ARMY_MAP_UX). A force that shows one figure of each kind stands them side by side on
-  a row stand up to 71 units wide. The places stay as laid out; each field and garrison place records how far its row
-  stand may reach before and after its feet (20 to 35.5 units a side, in half-unit steps): inside the region (a stadium,
+  a row stand up to 100 units wide (71 before UI-523, whose figures stand at least 85 % of an army's height). The places
+  stay as laid out; each field and garrison place records how far its row stand may reach before and after its feet (20
+  to 50 units a side, in half-unit steps, its figures up to 40 units tall): inside the region (a stadium,
   its round ends an army's, along its spine), off the other force's and the king's marker's bases, on no gem, other
   fortress drawing or name, and on no label of a force it stands in front of. The client narrows the side a character,
   the Fellowship or the planned recruits stand on at the moment (`MapArmyRowRoom`). Reserving a full row in the layout

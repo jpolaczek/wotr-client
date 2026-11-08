@@ -9,9 +9,9 @@ namespace Wotr.Client
     // narrowed so their bases keep clear of the row's (UI-422's gap) and the row's figures cover none of theirs.
     public static class MapArmyRowRoom
     {
-        // scripts/export_map_stands.py: GAP between bases, and a row's figures two thirds as tall as an army's 40 units.
+        // scripts/export_map_stands.py: GAP between bases; UI-523: a row's figures as tall as an army's 40 units.
         private const float Gap = 1.5f;
-        private const float RowHeight = 27;
+        private const float RowHeight = 40;
 
         // (left, right): how far the row reaches before and after its feet.
         public static Vector2 Narrow(Vector2 feet, Vector2 reach, IEnumerable<(Vector2 Feet, StandFootprint Footprint)> standing)

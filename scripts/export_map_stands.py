@@ -1256,19 +1256,20 @@ def compact(value):
 
 # ---- Row stands (UI-522) ------------------------------------------------------------------------------
 
-# UI-522 (owner, 2026-11-07): a force of more units than all stand shows one figure of each kind side by side, two thirds
-# of their stature, on a stand as wide as the row (MapArmyArtwork, up to 96 points: 71 units) and as deep as an army's.
+# UI-522 (owner, 2026-11-07): a force of more units than all stand shows one figure of each kind side by side on a stand
+# as wide as the row and as deep as an army's; UI-523 (owner, 2026-11-08: "decidedly bigger"): its figures stand at least
+# 85 % of an army's height, overlapping a little where the row is short (MapArmyArtwork), so the row may reach further.
 # The places keep their layout; each field and garrison place records how far its row stand may reach on either side of
-# its feet — from a round base's half (20 units) up to 35.5, in half-unit steps — keeping inside the region, off the
+# its feet — from a round base's half (20 units) up to 50, in half-unit steps — keeping inside the region, off the
 # other force's and the king's marker's bases, on no gem, other fortress drawing or region name, and on no label of a
 # force it stands in front of (its region's other force or a neighbour's). The owner chose this over a row stand
 # reserved everywhere, which left 42 regions instead of 15 showing tokens at the worst case. The characters, the
 # Fellowship and the planned recruits come and go, so the client narrows the side a stand of theirs stands on
 # (MapArmyRowRoom); the row then reaches further on the open side.
-ROW_REACH = 35.5
+ROW_REACH = 50.0
 ROW_STEP = 0.5
-# A row's figures stand two thirds as tall as an army's (MapArmyArtwork.RowScale).
-ROW_TOP = -27.0
+# UI-523: a row's figures may stand as tall as an army's.
+ROW_TOP = -40.0
 
 
 def row_rect(x, y, left, right):

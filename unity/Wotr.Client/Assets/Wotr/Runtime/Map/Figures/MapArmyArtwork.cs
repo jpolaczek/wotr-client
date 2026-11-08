@@ -45,19 +45,13 @@ namespace Wotr.Client
         public const int MaximumFigures = 4;
         public const string FigureCountClass = "army-figure-count";
         // UI-522 (owner, 2026-11-07: "the units still stand on top of one another and it is not clear what is there"): those
-        // figures stand side by side instead — two thirds of their stature, each in a column of its own that no other
-        // figure enters, its count (×1 too) at its feet — on a stand widened to hold the row, as wide as its place's room
-        // (RowReach: up to StandFootprint.ForceWidest, 71 units: 96 points; MapArmyRowRoom). The plaque keeps the emblems
-        // and the total in the middle.
+        // figures stand side by side instead, each with its count (×1 too) at its feet, on a stand widened to hold the row
+        // as far as its place reaches (RowReach: up to StandFootprint.ForceWidest, 100 units: 135 points; MapArmyRowRoom).
+        // UI-523 (owner, 2026-11-08: "decidedly bigger"): at least 85 % of their stature, overlapping a little where the
+        // row is short (MapArmyRow). The plaque keeps the emblems and the total in the middle.
         public const string RowClass = "army-row";
-        public const float RowScale = 2f / 3;
         public const float RowStandWidth = StandFootprint.ForceWidest * DesignUnit;
-        private const float RowColumn = 28;
-        private const float RowGap = 2;
         private const float RowStandMargin = 4;
-        // A figure may reach this far past its column, over the gap's transparent edge of its painted cell.
-        private const float RowOverhang = 1;
-        private const float RowCountWidth = 16;
         // A row's count stands this far over its figure's feet, down to the plaque's top edge, so the emblems and the total
         // stay clear.
         private const float RowCountRise = 10;
@@ -118,6 +112,9 @@ namespace Wotr.Client
         private readonly VisualElement rim = Ignored("army-rim");
         private readonly Button button;
         private bool row;
+        // UI-523: the row's figure boxes from its left edge, and its width.
+        private Rect[] rowBoxes = new Rect[0];
+        private float rowWidth;
         // UI-322: the flare joins the marker only while it shows and leaves once it has faded, so a resting marker carries
         // nothing of it.
         private readonly VisualElement flare = Ignored("army-flare");
@@ -226,7 +223,10 @@ namespace Wotr.Client
             if (row)
                 PlaceRow();
             else
+            {
                 PlaceSilhouettes();
+                Stack(i => i);
+            }
             for (var i = 0; i < emblems.Length; i++)
                 ShowEmblem(emblems[i], i < army.Nations.Count ? army.Nations[i].Nation : null);
             more.EnableInClassList(UnusedClass, army.Nations.Count <= emblems.Length);
@@ -331,14 +331,20 @@ namespace Wotr.Client
 
         private const float FigureCountHeight = 12;
 
-        // UI-522: the row's stand, centred on the feet where both sides reach that far, otherwise against the nearer limit.
+        // UI-522: the row's stand, centred on the feet where both sides reach that far, otherwise against the nearer limit;
+        // UI-523: its figures laid out by MapArmyRow within what the stand may reach.
         private void MeasureRow()
         {
             SpreadLeft = 0;
             SpreadRight = 0;
             if (!row)
                 return;
-            var stand = Mathf.Max(BaseWidth, RowWidth(shown, RowReach) + 2 * RowStandMargin);
+            var full = new Vector2[shown];
+            for (var i = 0; i < shown; i++)
+                full[i] = FigureSize(statures[i], Aspect(silhouettes[i].sprite));
+            var available = Mathf.Max(BaseWidth, RowReach.x + RowReach.y) - 2 * RowStandMargin;
+            (rowBoxes, rowWidth) = MapArmyRow.Lay(full, available);
+            var stand = Mathf.Max(BaseWidth, rowWidth + 2 * RowStandMargin);
             var left = Mathf.Min(stand / 2, RowReach.x);
             var right = Mathf.Min(stand - left, RowReach.y);
             left = stand - right;
@@ -349,24 +355,31 @@ namespace Wotr.Client
         // The middle of the row stand, in design points.
         private float RowCentre => StandFeet.x + (SpreadRight - SpreadLeft) / 2;
 
-        // UI-522: the row's figures on the stand's feet line, each centred in its column, its count centred at its feet.
+        // UI-522: the row's figures on the stand's feet line, each count centred at its figure's feet; UI-523: where they
+        // overlap, the middle one stands in front.
         private void PlaceRow()
         {
-            var column = RowColumnWidth(shown, RowReach);
-            var left = RowCentre - RowWidth(shown, RowReach) / 2;
+            var left = RowCentre - rowWidth / 2;
             var feet = StandFeet.y + FrontFeet;
             for (var i = 0; i < shown; i++)
             {
-                var size = RowFigureSize(statures[i], Aspect(silhouettes[i].sprite), column);
-                var centre = left + column / 2 + i * (column + RowGap);
-                silhouettes[i].style.width = size.x;
-                silhouettes[i].style.height = size.y;
-                silhouettes[i].style.left = centre - size.x / 2;
-                silhouettes[i].style.top = feet - size.y;
-                figureCounts[i].style.width = RowCountWidth;
-                figureCounts[i].style.left = centre - RowCountWidth / 2;
+                var box = rowBoxes[i];
+                silhouettes[i].style.width = box.width;
+                silhouettes[i].style.height = box.height;
+                silhouettes[i].style.left = left + box.x;
+                silhouettes[i].style.top = feet - box.height;
+                figureCounts[i].style.width = MapArmyRow.CountWidth;
+                figureCounts[i].style.left = left + box.center.x - MapArmyRow.CountWidth / 2;
                 figureCounts[i].style.top = feet - RowCountRise;
             }
+            Stack(i => -Mathf.Abs(i - (shown - 1) / 2f));
+        }
+
+        // The figures' drawing order, the nearest last (in front), all behind the plaque and the counts.
+        private void Stack(Func<int, float> nearness)
+        {
+            foreach (var i in Enumerable.Range(0, shown).OrderBy(nearness).ThenBy(i => i))
+                silhouettes[i].PlaceBehind(plaque);
         }
 
         // The stand, its rim and its shadow reach past the holder by the spreads; a token's shadow keeps its own place.
@@ -383,20 +396,6 @@ namespace Wotr.Client
                     label.style.width = StyleKeyword.Null;
         }
 
-        // Each of `count` columns is as wide as a figure at two thirds of its stature needs, narrower when a stand reaching
-        // this far would not hold them.
-        private static float RowColumnWidth(int count, Vector2 reach) =>
-            Mathf.Min(RowColumn, (Mathf.Max(reach.x + reach.y, BaseWidth) - 2 * RowStandMargin - RowGap * (count - 1)) / count);
-
-        private static float RowWidth(int count, Vector2 reach) => count * RowColumnWidth(count, reach) + RowGap * (count - 1);
-
-        // A row's figure: two thirds of its stature, a cell wider than its column drawn smaller, its feet on the line.
-        private static Vector2 RowFigureSize(float stature, float aspect, float column)
-        {
-            var height = FigureHeight * stature * RowScale;
-            var width = Mathf.Min(height * aspect, column + 2 * RowOverhang);
-            return new Vector2(width, width / aspect);
-        }
 
         // UI-454 (owner, 2026-11-03): where a lone figure's box stands on its base, in the holder's design points — what a
         // recruit flying from its Reserve slot matches to the slot's own picture of it.
@@ -436,7 +435,7 @@ namespace Wotr.Client
             var feet = StandFeet.y + FrontFeet;
             var rowLeft = StandFeet.x - BaseWidth / 2 - SpreadLeft;
             var rowRight = StandFeet.x + BaseWidth / 2 + SpreadRight;
-            if (row && local.y >= feet - FigureHeight * RowScale && local.y <= feet && local.x >= rowLeft && local.x <= rowRight)
+            if (row && local.y >= feet - FigureHeight && local.y <= feet && local.x >= rowLeft && local.x <= rowRight)
                 return true;
             var depth = button.ClassListContains("garrison") ? GarrisonStand : FieldStand;
             var centre = new Vector2(RowCentre, StandFeet.y - depth * FeetOnTopFace + depth / 2);

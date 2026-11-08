@@ -1018,3 +1018,26 @@ garrison on the widest stand, the narrowest and one narrowed on its left, at 100
 every count at its figure's feet and clear of the others and the total, each figure takes the click) and `MapArmyRowTests` (Barad-dûr on the map
 beside the Witch-king at three zooms on 1366 × 768 at 125 % and 1920 × 1080); EditMode `MapArmyRowRoomTests` (the
 narrowing on either side) and `MapStandSlotsTests.ARowStandAtItsReachStaysInItsRegionAndCoversNothing`.
+
+## Bigger figures in the row — UI-523 (2026-11-08)
+
+The owner, with a picture of the UI-522 rows: "the figures are now clearly apart but very small; they must be decidedly
+bigger so they can be seen clearly". Without overlapping, three kinds stood about 27 points tall in a typical place (a
+single figure stands 54), and even a row twice as wide gave only about 34. The owner chose figures of at least about
+85 % of a single figure, overlapping a little where the row is short:
+
+- **Sizes** (`MapArmyRow`). Each figure stands at its full stature while the row holds them apart (a 2-point gap); else
+  all shrink alike to fit, down to 85 %; below that each overlaps its neighbour at most a third of the narrower one's
+  width, the middle one drawn in front, and only then do they shrink further. The counts stay centred at their
+  figures' feet at least 17 points apart, clear of the plaque's total.
+- **Reach.** A row may now reach 50 board units on either side (100 across, 135 points), and its figures stand as tall
+  as an army's, so the export's row rectangle and the client's narrowing (`MapArmyRowRoom`) use the full 40 units. The
+  places, capacities and names stay as they were; of the 121 places the median row reaches 74 units across and 33
+  reach 90 or more. Barad-dûr's field reaches 50 and 41.5: its three riders stand 46 points tall alone, about 37 with
+  the Witch-king beside them.
+- **Clicks.** The row's band takes a press up to an army's full height.
+
+Checks: EditMode `MapArmyRowLayoutTests` (full size apart, shrinking alike, 85 % with at most a third's overlap, a tight
+row's counts apart), `MapArmyRowRoomTests`, `MapStandSlotsTests`; PlayMode `MapArmyArtworkTests` (85 % on the widest
+stand, at most a third's overlap) and `MapArmyRowTests`.
+

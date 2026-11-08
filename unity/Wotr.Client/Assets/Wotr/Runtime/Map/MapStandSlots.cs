@@ -19,8 +19,8 @@ namespace Wotr.Client
         public static readonly StandFootprint Army = new StandFootprint(40, 40, 40);
         // UI-522: the widest row stand a field force or garrison may stand on (MapArmyArtwork.RowStandWidth at its design
         // unit), half of it on either side of the feet at most; each place records how far its own may reach on either
-        // side (RegionStands.FieldRow, GarrisonRow).
-        public const float ForceWidest = 71;
+        // side (RegionStands.FieldRow, GarrisonRow). UI-523: 100 units, for figures at least 85 % of their stature.
+        public const float ForceWidest = 100;
         public const float RowReach = ForceWidest / 2;
         public static readonly StandFootprint Character = new StandFootprint(14, 16, 36);
         public static readonly StandFootprint Fellowship = new StandFootprint(16, 18, 36);

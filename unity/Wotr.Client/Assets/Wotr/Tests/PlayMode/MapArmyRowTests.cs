@@ -54,10 +54,11 @@ namespace Wotr.PlayTests
                     if (!button.ClassListContains(MapArmyArtwork.FiguresClass))
                         continue;
                     Assert.IsTrue(button.ClassListContains(MapArmyArtwork.RowClass), "A row: " + label);
+                    // UI-523: the middle figure is drawn in front, so figures and counts pair from left to right.
                     var figures = button.Query<Image>(className: "army-silhouette").ToList()
-                        .Where(image => image.resolvedStyle.display != DisplayStyle.None).ToList();
+                        .Where(image => image.resolvedStyle.display != DisplayStyle.None).OrderBy(image => image.worldBound.center.x).ToList();
                     var counts = button.Query<Label>(className: MapArmyArtwork.FigureCountClass).ToList()
-                        .Where(count => count.resolvedStyle.display != DisplayStyle.None).ToList();
+                        .Where(count => count.resolvedStyle.display != DisplayStyle.None).OrderBy(count => count.worldBound.center.x).ToList();
                     Assert.AreEqual(3, figures.Count, label);
                     CollectionAssert.AreEqual(new[] { "×1", "×4", "×1" }, counts.Select(c => c.text).ToArray(), label);
                     for (var i = 0; i < figures.Count; i++)
@@ -65,7 +66,8 @@ namespace Wotr.PlayTests
                         Assert.That(counts[i].worldBound.center.x, Is.EqualTo(figures[i].worldBound.center.x).Within(1f), label);
                         for (var j = 0; j < i; j++)
                         {
-                            Assert.LessOrEqual(Overlap(figures[i].worldBound, figures[j].worldBound), .5f, $"Figures {j} and {i} apart: {label}");
+                            var third = Mathf.Min(figures[i].worldBound.width, figures[j].worldBound.width) * MapArmyRow.OverlapShare;
+                            Assert.LessOrEqual(Overlap(figures[i].worldBound, figures[j].worldBound), third + .5f, $"Figures {j} and {i} overlap at most a third: {label}");
                             Assert.LessOrEqual(Overlap(counts[i].worldBound, counts[j].worldBound), .01f, $"Counts {j} and {i} apart: {label}");
                         }
                     }

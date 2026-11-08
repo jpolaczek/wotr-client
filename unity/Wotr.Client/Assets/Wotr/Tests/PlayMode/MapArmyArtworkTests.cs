@@ -84,6 +84,10 @@ namespace Wotr.PlayTests
                     var images = Shown(sample.Button, "army-silhouette");
                     Assert.AreEqual(3, images.Length, sample.Button.name);
                     CheckRow(sample, images);
+                    // UI-523: on the widest stand every figure keeps at least 85 % of an army's height.
+                    if (sample.Artwork.RowReach.x >= widest - .5f && sample.Artwork.RowReach.y >= widest - .5f)
+                        foreach (var image in images)
+                            Assert.GreaterOrEqual(image.layout.height, MapArmyRow.MinimumScale * 54 - .5f, "Decidedly big: " + sample.Button.name);
                     foreach (var image in images)
                         Click(sample, image.worldBound.center);
                 }
@@ -158,8 +162,8 @@ namespace Wotr.PlayTests
             foreach (var image in images)
             {
                 AssertInside(image, sample);
-                // UI-522: a row's figures stand at two thirds of their stature, a wide one narrowed to its column.
-                var tallest = button.ClassListContains(MapArmyArtwork.RowClass) ? 26f : 48f;
+                // UI-522, UI-523: a row's figures stand at least 85 % of their stature where the row's reach allows.
+                var tallest = button.ClassListContains(MapArmyArtwork.RowClass) ? 20f : 48f;
                 Assert.GreaterOrEqual(image.layout.height, tallest, "UI-400: a figure stands about 54 points tall · " + button.name);
                 Assert.IsNotNull(image.sprite, button.name);
                 Click(sample, image.worldBound.center);
@@ -275,10 +279,12 @@ namespace Wotr.PlayTests
 
         // UI-522: a row's figures stand apart, each in its own column, its count centred at its feet, no count on another
         // or on the total, and the stand under all of them.
-        private static void CheckRow(Sample sample, Image[] images)
+        private static void CheckRow(Sample sample, Image[] shown)
         {
             var button = sample.Button;
-            var counts = Counts(sample);
+            // UI-523: the middle figure is drawn in front, so the figures pair with their counts from left to right.
+            var images = shown.OrderBy(image => image.worldBound.center.x).ToArray();
+            var counts = Counts(sample).OrderBy(count => count.worldBound.center.x).ToList();
             Assert.AreEqual(images.Length, counts.Count, "Every figure of a row carries its count, ×1 too: " + button.name);
             var total = button.Q<Label>("army-count");
             var stand = button.Q("army-stand").worldBound;
@@ -291,7 +297,9 @@ namespace Wotr.PlayTests
                 Assert.LessOrEqual(figure.xMax, stand.xMax + .5f, "The figure on the stand: " + button.name);
                 for (var j = 0; j < i; j++)
                 {
-                    Assert.LessOrEqual(Overlap(figure, images[j].worldBound), .5f, $"Figure {i} clear of figure {j}: " + button.name);
+                    // UI-523: neighbours overlap at most a third of the narrower one.
+                    var third = Mathf.Min(figure.width, images[j].worldBound.width) * MapArmyRow.OverlapShare;
+                    Assert.LessOrEqual(Overlap(figure, images[j].worldBound), third + .5f, $"Figure {i} over figure {j}: " + button.name);
                     Assert.LessOrEqual(Overlap(counts[i].worldBound, counts[j].worldBound), .01f, $"Count {i} clear of count {j}: " + button.name);
                 }
             }
