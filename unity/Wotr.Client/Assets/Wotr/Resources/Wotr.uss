@@ -929,6 +929,45 @@
 .region-hover.name-only .title { font-size: 15px; margin: 0; padding: 0; }
 .region-hover.name-only #hover-region-state { margin: 0; padding: 0; font-size: 11px; white-space: nowrap; }
 .region-hover.name-only #hover-empty, .region-hover.name-only .hover-effects { display: none; }
+/* UI-532 (owner): the header — the place's picture beside the name and one line of symbols — the force headers' strength
+   and leadership, nation emblems in place of two letters, tighter spacing. */
+.region-hover #hover-header { flex-direction: row; align-items: center; margin: 0 0 3px 0; }
+.region-hover #hover-place {
+    width: 64px;
+    height: 40px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgba(222, 182, 96, 0.55);
+    -unity-background-scale-mode: scale-and-crop;
+}
+.region-hover #hover-heading { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.region-hover #hover-heading > .title { margin: 0; }
+.region-hover #hover-region-facts { flex-direction: row; align-items: center; }
+.region-hover #hover-region-facts > .unity-label { font-size: 12px; margin: 0 7px 0 3px; padding: 0; white-space: nowrap; }
+.region-hover .hover-emblem { width: 17px; height: 17px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
+.region-hover #hover-region-points, .region-hover .hover-stat { flex-direction: row; align-items: center; }
+.region-hover #hover-region-points > .unity-label, .region-hover .hover-stat > .unity-label {
+    margin: 0 0 0 2px;
+    padding: 0;
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+.region-hover #hover-region-points.scored > .unity-label { color: rgb(247, 213, 120); }
+.region-hover .hover-stat { margin-right: 8px; }
+.region-hover .hover-icon { width: 15px; height: 15px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
+.region-hover .hover-points-icon { background-image: resource("Wotr/Art/UI/icons/victory"); }
+.region-hover .hover-strength-icon { background-image: resource("Wotr/Art/UI/battle/strength"); }
+.region-hover .hover-leadership-icon { background-image: resource("Wotr/Art/UI/battle/leadership"); }
+.region-hover .hover-garrison-icon { background-image: resource("Wotr/Art/UI/battle/garrison"); margin-right: 3px; }
+.region-hover .hover-fellowship-icon { background-image: resource("Wotr/Art/UI/icons/fellowship"); margin-right: 4px; }
+.region-hover .hover-force-header { justify-content: flex-start; }
+.region-hover .hover-force-header > #hover-force-place { margin: 0 8px 0 0; padding: 0; font-size: 12px; }
+.region-hover .hover-spacer { flex-grow: 1; }
+.region-hover .hover-fellowship-row { flex-direction: row; align-items: center; margin-top: 4px; }
+.region-hover .hover-unit-row > .hover-emblem { margin: 0 3px 0 1px; }
+.region-hover.name-only #hover-place { width: 48px; height: 30px; margin-right: 6px; }
 
 .direct-army .tray { justify-content: center; }
 .direct-army .draft-status { white-space: normal; }

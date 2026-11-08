@@ -4930,3 +4930,27 @@ its own places round its middle; four regions (Ered Luin, Fords of Bruinen, Forl
 field on a hand pin near their middle. Details and numbers: TABLETOP_FIGURES_UX, "Places" (UI-530, UI-531).
 `MapStandSlotsTests.AStrongholdWithoutAGarrisonHasOpenPlacesThatPassTheSameChecks`,
 `MapArmyRowTests.EreborWithoutAGarrisonStandsItsArmyInItsOpenMiddle`.
+
+## The region window speaks in symbols — UI-532 (2026-11-08)
+
+The owner: "let's improve the design of the region windows with armies: descriptions using more symbols, add a small
+graphic as in Characters, make it smarter — less text, more useful information and a better arrangement of the whole
+to minimise empty space"; asked which graphic, the owner chose a picture of the place with emblems.
+
+- **Header** (`RegionHeader`): the region's picture (Art/Places, UI-436; 64 × 40, 48 × 30 in the name-only window)
+  beside its name and one line of symbols — the settlement's gem as the map draws it, in its controller's colours,
+  with its kind (Stronghold, City, Town, Fortification, else Wilderness); the nation's emblem with its name; the Victory
+  points as the VP icon and a number, gold once the other side scores them. The line's tooltip holds the words:
+  "Stronghold · Gondor · Free Peoples control" and the Victory points sentence (UI-265).
+- **A force's header**: its side by the section's colour, Field or Garrison (a garrison with the garrison icon), its
+  combat strength (Regulars and Elites, a die each up to five) and its leadership (Leaders, Nazgûl and the characters'
+  Leadership, a re-roll each up to five) as icons and numbers with their meaning in the tooltip; Select all as before.
+- **Each nation's units** start with its emblem, its composition in the tooltip, instead of two letters.
+- **The Fellowship's line** starts with its icon: "Hidden · Progress 2".
+- Every name the tests and the card choices read stays (`hover-figure-*`, `hover-force-*`, `hover-select-all-*`,
+  `hover-region-state`, `hover-fellowship`, `hover-empty`, `hover-effect-*`).
+
+`RegionWindowDesignTests.MinasTirithsWindowSpeaksInSymbolsAtFourLayouts` (1366 × 768 and 1920 × 1080 at 100 and 125 %:
+the picture, the gem, Gondor's emblem, 2 VP, strength and leadership, an emblem before each nation, nothing past the
+window), `RegionNameOnlyTests`, `MapContourAcceptanceTests`.
+

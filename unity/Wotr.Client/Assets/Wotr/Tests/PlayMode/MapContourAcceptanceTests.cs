@@ -149,8 +149,9 @@ namespace Wotr.PlayTests
             Assert.AreEqual("helms-deep", board.Hover.Panel.Region);
             var forces = hover.Query<VisualElement>(className: "hover-force").ToList();
             Assert.AreEqual(2, forces.Count);
-            Assert.IsTrue(forces.Any(force => force.Q<Label>().text == "FP · Garrison"));
-            Assert.IsTrue(forces.Any(force => force.Q<Label>().text == "SH · Field"));
+            // UI-532: the side by the section's colour, the place as a word.
+            Assert.IsTrue(forces.Any(force => force.ClassListContains("fp") && force.Q<Label>("hover-force-place").text == "Garrison"));
+            Assert.IsTrue(forces.Any(force => force.ClassListContains("sh") && force.Q<Label>("hover-force-place").text == "Field"));
             var figures = hover.Query<Button>().ToList().Where(button => button.name.StartsWith("hover-figure-")).ToArray();
             Assert.AreEqual(23, figures.Length); // 7 FP units + 3 companions, 13 SH units.
             foreach (var figure in figures)

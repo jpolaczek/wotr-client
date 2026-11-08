@@ -132,24 +132,14 @@ namespace Wotr.Client
             abilities.Clear();
             forceToggles.Clear();
             forceSections.Clear();
-            Root.Add(BoardScreen.Title(region.Name));
-            Root.Add(new Label((region.Settlement ?? "Wilderness") + " · " +
-                (region.Nation == null ? "Neutral" : FigureGrid.Name(region.Nation)) + " · " +
-                (control.HasValue ? BoardScreen.SideName(control.Value) : "Uncontrolled")) { name = "hover-region-state" });
-            var points = RegionVictoryText.For(region, control);
-            if (points.Length > 0)
-                Root.Add(new Label(points) { name = "hover-region-points" });
+            // UI-532: the place's picture beside the name and a line of symbols (RegionHeader).
+            Root.Add(RegionHeader.Create(region, control));
             var forces = contents.Units.Select(u => (u.Side, u.Garrison))
                 .Concat(contents.Characters.Select(c => (c.Side, c.Garrison))).Distinct().OrderBy(f => f.Side).ThenBy(f => f.Garrison);
             foreach (var force in forces)
                 Force(contents, force.Side, force.Garrison);
             if (contents.Fellowship != null)
-                Root.Add(new Label("Fellowship · " + (contents.Fellowship.Hidden ? "Hidden" : "Revealed") +
-                    " · Progress " + contents.Fellowship.Progress)
-                {
-                    name = "hover-fellowship",
-                    tooltip = "Last known position · The Fellowship’s progress does not reveal a route."
-                });
+                Root.Add(FellowshipLine(contents.Fellowship.Hidden, contents.Fellowship.Progress));
             if (figures.Count == 0 && contents.Fellowship == null)
                 Root.Add(new Label("No forces") { name = "hover-empty" });
             var effects = BoardScreen.Row("hover-effects");
@@ -167,6 +157,33 @@ namespace Wotr.Client
             quiet = figures.Count == 0 && contents.Fellowship == null && !contents.Effects.Any();
         }
 
+        // UI-532: the Fellowship's icon, its state and its Progress, in one line.
+        private static VisualElement FellowshipLine(bool hidden, int progress)
+        {
+            var line = BoardScreen.Row("hover-fellowship-row");
+            line.name = "hover-fellowship-row";
+            line.tooltip = "The Fellowship · Last known position · The Fellowship’s progress does not reveal a route.";
+            line.Add(RegionHeader.Icon("hover-fellowship-icon"));
+            line.Add(new Label((hidden ? "Hidden" : "Revealed") + " · Progress " + progress)
+            {
+                name = "hover-fellowship",
+                pickingMode = PickingMode.Ignore
+            });
+            return line;
+        }
+
+        // UI-532: a force's combat strength (its Regulars and Elites, a die each up to five) and its leadership (its
+        // Leaders, Nazgûl and characters' Leadership, a re-roll each up to five), each as an icon and a number.
+        private static VisualElement Stat(string kind, int value, string tooltip)
+        {
+            var stat = BoardScreen.Row("hover-stat");
+            stat.name = "hover-stat-" + kind;
+            stat.tooltip = tooltip;
+            stat.Add(RegionHeader.Icon("hover-" + kind + "-icon"));
+            stat.Add(new Label(value.ToString()) { pickingMode = PickingMode.Ignore });
+            return stat;
+        }
+
         private void Force(RegionContents contents, Side side, bool garrison)
         {
             var units = contents.Units.Where(u => u.Side == side && u.Garrison == garrison).ToArray();
@@ -179,7 +196,26 @@ namespace Wotr.Client
             force.AddToClassList("hover-force");
             force.AddToClassList(side == Side.FreePeoples ? "fp" : "sh");
             var header = BoardScreen.Row("hover-force-header");
-            header.Add(new Label((side == Side.FreePeoples ? "FP" : "SH") + (garrison ? " · Garrison" : " · Field")));
+            // UI-532: the side by the section's colour, the place as a word (a garrison with its icon), then the force's
+            // strength and leadership.
+            if (garrison)
+                header.Add(RegionHeader.Icon("hover-garrison-icon"));
+            header.Add(new Label(garrison ? "Garrison" : "Field")
+            {
+                name = "hover-force-place",
+                tooltip = BoardScreen.SideName(side) + (garrison ? " · Garrison" : " · Field")
+            });
+            var strength = units.Count(u => u.Kind == UnitKind.Regular || u.Kind == UnitKind.Elite);
+            var leadership = units.Count(u => u.Kind == UnitKind.Leader || u.Kind == UnitKind.Nazgul) + characters.Sum(c => c.Leadership);
+            if (strength > 0)
+                header.Add(Stat("strength", strength, "Combat strength " + strength + " · rolls " + Math.Min(5, strength) +
+                    (Math.Min(5, strength) == 1 ? " die" : " dice")));
+            if (leadership > 0)
+                header.Add(Stat("leadership", leadership, "Leadership " + leadership + " · re-rolls up to " + Math.Min(5, leadership) +
+                    (Math.Min(5, leadership) == 1 ? " miss" : " misses")));
+            var spacer = new VisualElement { pickingMode = PickingMode.Ignore };
+            spacer.AddToClassList("hover-spacer");
+            header.Add(spacer);
             header.Add(SelectAllToggle(side, garrison, units.Select(u => u.Id).Concat(characters.Select(c => c.Id)).ToArray()));
             header.AddManipulator(new Clickable(() =>
             {
@@ -192,10 +228,14 @@ namespace Wotr.Client
             var row = BoardScreen.Row("hover-unit-row");
             foreach (var nation in units.GroupBy(u => u.Nation))
             {
-                var name = FigureGrid.Name(nation.Key);
                 // UI-420 (owner): the nation's figures as on its army marker, each figure as printed ("Rohan Elite", "Nazgûl").
                 var composition = ArmyMarkerText.Composition(nation.Key, nation.Select(u => u.Kind).ToList());
-                row.Add(new Label(name.Substring(0, Math.Min(2, name.Length))) { tooltip = composition });
+                // UI-532: the nation's emblem in place of its first two letters.
+                var emblem = RegionHeader.Emblem(nation.Key);
+                emblem.pickingMode = PickingMode.Position;
+                emblem.tooltip = composition;
+                emblem.name = "hover-nation-" + nation.Key;
+                row.Add(emblem);
                 foreach (var unit in nation.OrderBy(u => u.Kind))
                 {
                     AddFigure(row, unit.Id, FigureGrid.Symbol(unit.Kind), TooltipText.Unit(unit.Nation, unit.Kind), false);

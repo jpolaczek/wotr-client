@@ -34,8 +34,9 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(panel.ClassListContains(RegionHoverPanel.NameOnlyClass), label);
                 var title = panel.Q<Label>(className: "title");
                 var state = panel.Q<Label>("hover-region-state");
-                var text = Mathf.Max(title.layout.width, state.layout.width);
-                Assert.LessOrEqual(panel.layout.width, text + 24, "The window is as wide as its text · " + label);
+                // UI-532: the header holds the place's picture beside the name and the line of symbols.
+                var header = panel.Q("hover-header");
+                Assert.LessOrEqual(panel.layout.width, header.layout.width + 24, "The window is as wide as its header · " + label);
                 Assert.Less(panel.layout.width, 240, "Smaller than the old fixed window · " + label);
                 var parts = string.Join(", ", panel.Children().Where(c => c.resolvedStyle.display == DisplayStyle.Flex)
                     .Select(c => (c.name.Length > 0 ? c.name : string.Join(".", c.GetClasses())) + ":" + c.layout.height + "+" +
