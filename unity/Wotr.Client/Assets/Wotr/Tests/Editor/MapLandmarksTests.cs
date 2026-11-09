@@ -14,8 +14,10 @@ namespace Wotr.EditorTests
         private const float NameHalfWidth = 36;
         private const float NameHalfHeight = 9;
 
+        // UI-530 (owner, 2026-11-08: figures stand in their region's middle "even if they cover some city's drawing"): a
+        // drawing no longer keeps the stand places away; it keeps clear of its region's name.
         [Test]
-        public void FortressDrawingsStandInTheirRegionsClearOfForcesAndNames()
+        public void FortressDrawingsStandInTheirRegionsClearOfTheirNames()
         {
             var data = BoardPresentation.Load();
             var landmarks = MapLandmarks.Load();
@@ -28,10 +30,6 @@ namespace Wotr.EditorTests
                 var shape = data.Shapes[landmark.Id];
                 var rect = landmark.Rect;
                 Assert.IsTrue(MapContourMath.Contains(shape, rect.center), landmark.Id + " stands in its region");
-                foreach (var entry in stands.Regions)
-                    foreach (var place in entry.Value.Places.Where(p => !(entry.Key == landmark.Id && p.AtFortress)))
-                        Assert.IsFalse(place.FigureRect(entry.Value.ShownScale).Overlaps(rect),
-                            landmark.Id + " keeps clear of the " + place + " of " + entry.Key);
                 var name = MapRegionNames.Point(data.Regions[landmark.Id], shape, stands).Point;
                 var label = new Rect(name.x - NameHalfWidth, name.y - NameHalfHeight, NameHalfWidth * 2, NameHalfHeight * 2);
                 Assert.IsFalse(rect.Overlaps(label), landmark.Id + " keeps clear of its name at " + name);
