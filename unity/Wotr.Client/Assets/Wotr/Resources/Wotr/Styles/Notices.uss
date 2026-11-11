@@ -11,11 +11,11 @@
     top: var(--game-topbar-height);
     left: 0;
     right: auto;
-    height: 34px;
-    min-height: 34px;
-    max-height: 34px;
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
     margin: 0;
-    padding: 1px 8px;
+    padding: 3px 8px;
     background-color: rgba(0, 0, 0, 0);
 }
 
@@ -70,54 +70,103 @@
 }
 
 /* The stack: the newest pennant in front, up to two pennants of older notices peeking out behind it,
-   and a wax seal with the count. Fixed-size icons, no text: the tooltip names the newest action. */
+   and a wax seal with the count. Fixed-size icons, no text: the tooltip names the newest action.
+   Owner (2026-11-11): larger, on the dark plate of the strip's other icons so the map never swallows it, the seal always
+   counting; an arrival drops the newest pennant in while a gold halo (console/status-glow, a texture and its opacity, no
+   filter) pulses three times and the seal swells once (ActionNoticeStack.Arrive). */
 #board-screen .notification-bar .notice-stack {
     position: relative;
-    width: 42px;
-    min-width: 42px;
-    height: 30px;
-    min-height: 30px;
+    width: 58px;
+    min-width: 58px;
+    height: 36px;
+    min-height: 36px;
     flex-shrink: 0;
     margin: 0 4px 0 2px;
     padding: 0;
-    background-color: rgba(0, 0, 0, 0);
+    background-color: var(--game-button-fill-over-map);
     background-image: none;
-    border-width: 0;
-    border-radius: 0;
+    /* A transparent 2-point border, so the arrival's gold border moves nothing inside. */
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 3px;
+    /* The halo stands outside the plate; the older .action-notice rule (Wotr.uss) clips its children. */
+    overflow: visible;
 }
+#board-screen .notification-bar .notice-stack.notice-arriving { border-color: rgb(255, 205, 96); }
+.motion-enabled #board-screen .notification-bar .notice-stack {
+    transition-property: border-color;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .notification-bar .notice-stack.notice-arriving.notice-halo-dim { border-color: rgba(255, 205, 96, 0.35); }
+.notice-halo {
+    position: absolute;
+    left: -8px;
+    top: -8px;
+    right: -8px;
+    bottom: -8px;
+    -unity-background-image-tint-color: rgb(255, 196, 70);
+    display: none;
+    background-image: resource("Wotr/Art/UI/console/status-glow");
+    -unity-slice-top: 32;
+    -unity-slice-right: 32;
+    -unity-slice-bottom: 32;
+    -unity-slice-left: 32;
+    -unity-slice-scale: 0.5px;
+    opacity: 1;
+}
+.notice-arriving > .notice-halo { display: flex; }
+.motion-enabled .notice-halo {
+    transition-property: opacity;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .notice-arriving.notice-halo-dim > .notice-halo { opacity: 0.25; }
 .notice-pennant,
 .notice-layer {
     position: absolute;
-    left: 0;
+    left: 2px;
     top: 0;
-    width: 22px;
-    height: 28px;
+    width: 26px;
+    height: 32px;
     background-image: resource("Wotr/Art/UI/frames/pennant-shadow");
     -unity-background-scale-mode: stretch-to-fill;
 }
+.motion-enabled .notice-pennant {
+    transition-property: translate, opacity;
+    transition-duration: 280ms, 200ms;
+    transition-timing-function: ease-out-back, ease-out;
+}
+.motion-enabled .notice-drop-start > .notice-pennant { translate: 0 -18px; opacity: 0; transition-duration: 0s, 0s; }
 .notice-free .notice-pennant,
 .notice-free .notice-layer { background-image: resource("Wotr/Art/UI/frames/pennant-free"); }
 .notice-shadow:hover .notice-pennant,
 .notice-shadow:focus .notice-pennant { background-image: resource("Wotr/Art/UI/frames/pennant-shadow-hover"); }
 .notice-free:hover .notice-pennant,
 .notice-free:focus .notice-pennant { background-image: resource("Wotr/Art/UI/frames/pennant-free-hover"); }
-.notice-layer-1 { left: 5px; top: 1px; -unity-background-image-tint-color: rgb(176, 164, 150); }
-.notice-layer-2 { left: 10px; top: 2px; -unity-background-image-tint-color: rgb(122, 113, 104); }
+.notice-layer-1 { left: 8px; top: 1px; -unity-background-image-tint-color: rgb(176, 164, 150); }
+.notice-layer-2 { left: 14px; top: 2px; -unity-background-image-tint-color: rgb(122, 113, 104); }
 .notice-seal {
     position: absolute;
-    left: 25px;
-    top: 13px;
-    width: 16px;
-    height: 16px;
+    left: 31px;
+    top: 10px;
+    width: 22px;
+    height: 22px;
     background-image: resource("Wotr/Art/UI/ornaments/wax-seal");
     -unity-background-scale-mode: stretch-to-fill;
 }
+.motion-enabled .notice-seal {
+    transition-property: scale;
+    transition-duration: 320ms;
+    transition-timing-function: ease-out-back;
+}
+.motion-enabled .notice-drop-start > .notice-seal { scale: 1.45 1.45; transition-duration: 0s; }
 #board-screen .notice-seal > #notice-count {
-    width: 16px;
-    height: 16px;
+    width: 22px;
+    height: 22px;
     margin: 0;
     padding: 0;
-    font-size: 9px;
+    font-size: 12px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     color: rgb(250, 228, 205);

@@ -171,6 +171,28 @@ playback (UI-304) will consume; its contract is [OPPONENT_ACTIONS_UX §9.1](OPPO
 - Tests: EditMode `OpponentPresentationModelTests` (18 cases) on fixtures recorded from the real engine; PlayMode
   `LiveActivityNetworkTests` compares both clients' cues with each other and with their final boards.
 
+<a id="widoczne-proporce-i-ich-przybycie-2026-11-11"></a>
+## Visible pennants and their arrival (owner, 2026-11-11)
+
+The owner: "poprawmy w kliencie widoczność notyfikacji (flagi) i sygnalizujmy wyraźniej, gdy pojawiają się nowe". The
+pennants (UI-99/UI-100) were 22 × 28 on the bare map and a new one came without a sign. Decision 1 above stands (no
+toast, no text on the pennant), and the pennants stay quiet ([AUDIO_UX](AUDIO_UX.md): opponent flags make no sound).
+
+- **Visibility.** The notice strip is 42 high; the stack is 58 × 36 on the dark plate of the strip's other icons
+  (`--game-button-fill-over-map`), the pennant 26 × 32 with two older pennants peeking 6 apart, and the wax seal is
+  22 with a 12 count that shows for every unread notice, one included.
+- **Arrival.** A pennant that arrives while the game is open (a newer page of the feed after the first load, including a
+  later step of the same action or battle) drops in from the top bar (280 ms), the seal swells once and a gold halo
+  (`console/status-glow`, a texture and its opacity, no filter) pulses three times in the shared 750 ms rhythm
+  (`ActionNoticeStack.ArrivalMilliseconds`), then goes; the seal keeps the count. Reduced motion: no drop, no swell, the
+  halo shows still for the same time.
+- **Never signalled:** the history's first load or a reload after a discarded cursor, a read, an observer (no
+  pennants). Opening the notice ends its signal at once.
+- Tests: PlayMode `ActionNoticeNetworkTests` (the first load signals nothing; the attack's arrival with motion, the next
+  step's under reduced motion; render-target pictures `notice-arrival-motion.png`, `notice-arrival-settled.png`,
+  `notice-arrival-reduced.png`); `ActionNoticeLayoutTests` keeps the stack an icon (at most 60 wide) with a pennant of
+  at least 31 and a count of at least 12.
+
 <a id="b-sygnał-twoja-tura--ui-167"></a>
 ## B. Signal ‘Your turn’ — UI-167
 

@@ -167,7 +167,8 @@ namespace Wotr.Client
 
         private void Notice(ActionLogPage page)
         {
-            if (!observer && Model.Merge(page)) board.Notifications.Apply(Model.Groups);
+            // After the first load a newer page is live: its unread pennants are signalled as they arrive.
+            if (!observer && Model.Merge(page)) board.Notifications.Apply(Model.Groups, Loaded);
         }
 
         private void Publish(IReadOnlyList<PresentationCue> cues)

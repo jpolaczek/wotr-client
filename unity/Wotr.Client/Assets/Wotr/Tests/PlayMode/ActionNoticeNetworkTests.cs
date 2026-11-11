@@ -29,7 +29,20 @@ namespace Wotr.PlayTests
                 await Loaded(room);
                 var fp = room.Fp.Board;
                 var sh = room.Sh.Board;
+                // Owner (2026-11-11, SIGNALS_UX): the history's first load signals nothing; the opponent's attack arrives with a
+                // drop, a pulsing halo and a swell, then the halo goes and the seal keeps the count.
+                var stack = sh.Notifications.Stack;
+                Assert.AreEqual(0, stack.Arrivals, "The history's first load signals nothing.");
+                var arrival = Watch(room, stack, room.Sh.Viewport, "notice-arrival-motion.png");
                 await room.Attack(room.Fp, "minas-tirith", "lossarnach");
+                var seen = await arrival;
+                Assert.AreEqual(1, stack.Arrivals, "One arrival for the attack.");
+                Assert.IsTrue(seen.Halo && seen.Dimmed && stack.Moving, $"The arrival moves: halo {seen.Halo}, pulse {seen.Dimmed}, drop {stack.Moving}.");
+                Assert.IsFalse(stack.Arriving, "The signal ends by itself.");
+                await room.Settle();
+                Assert.AreEqual(DisplayStyle.None, stack.Halo.resolvedStyle.display, "The halo goes.");
+                Assert.AreEqual(stack.Count.ToString(), stack.Root.Q<Label>("notice-count").text, "The seal keeps the count.");
+                LayoutTests.Save(room.Sh.Viewport, "notice-arrival-settled.png");
                 // UI-305 (OPPONENT_ACTIONS_UX §4, §6.5): the Shadow's camera may frame the opponent's attack while it is
                 // presented; from then on neither the notice, its hover nor the battle window moves it.
                 await room.Until(() => room.Sh.Activity.Model.StepCount > 0 && !room.Sh.Playback.Holding);
@@ -65,8 +78,16 @@ namespace Wotr.PlayTests
                 fp.Battles.Close();
                 await room.Settle();
                 Assert.AreEqual(DisplayStyle.Flex, fp.Notice.Button.style.display.value);
+                // Reduced motion: the next step's pennant shows the halo still, with no drop, swell or pulse.
+                room.Sh.Interface.Preferences.SetReducedMotion(true);
+                await room.Settle();
+                var still = Watch(room, stack, room.Sh.Viewport, "notice-arrival-reduced.png");
                 await NoCard(room, room.Fp);
                 await room.Until(() => room.Sh.Activity.Model.StepCount > 0);
+                var quiet = await still;
+                room.Sh.Interface.Preferences.SetReducedMotion(false);
+                Assert.AreEqual(2, stack.Arrivals, "The battle's next step is a new pennant.");
+                Assert.IsTrue(quiet.Halo && !quiet.Dimmed && !stack.Moving, $"Reduced motion keeps it still: halo {quiet.Halo}, pulse {quiet.Dimmed}, drop {stack.Moving}.");
                 await NoCard(room, room.Sh);
                 await room.Until(() => room.Fp.Activity.Model.StepCount > 0);
                 var revision = fp.View.Revision;
@@ -131,6 +152,38 @@ namespace Wotr.PlayTests
             Assert.AreEqual(revision, board.View.Revision);
         }
 
+        internal sealed class Sight { public bool Arrived, Halo, Dimmed; }
+
+        // Watches the stack from before an opponent's action until its arrival ends (the signal lasts 2.25 s, shorter than
+        // some actions' helpers), saving one picture 200 ms into the arrival.
+        internal static async Task<Sight> Watch(MatchTestRoom room, ActionNoticeStack stack, RenderTexture viewport, string picture)
+        {
+            var sight = new Sight();
+            var before = stack.Arrivals;
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            long first = -1;
+            while (clock.ElapsedMilliseconds < 45000)
+            {
+                sight.Arrived |= stack.Arrivals > before;
+                if (sight.Arrived && stack.Arriving)
+                {
+                    if (first < 0)
+                        first = clock.ElapsedMilliseconds;
+                    sight.Halo |= stack.Halo.resolvedStyle.display == DisplayStyle.Flex;
+                    sight.Dimmed |= stack.Root.ClassListContains("notice-halo-dim");
+                    if (picture != null && clock.ElapsedMilliseconds - first >= 200)
+                    {
+                        LayoutTests.Save(viewport, picture);
+                        picture = null;
+                    }
+                }
+                else if (sight.Arrived)
+                    break;
+                await Task.Delay(30, room.Token);
+            }
+            return sight;
+        }
+
         internal static async Task Loaded(MatchTestRoom room) =>
             await room.Until(() => room.Fp.Activity.Loaded && room.Sh.Activity.Loaded);
 
@@ -159,7 +212,7 @@ namespace Wotr.PlayTests
             await room.Settle();
         }
 
-        private static async Task NoCard(MatchTestRoom room, MountedMatchClient client)
+        internal static async Task NoCard(MatchTestRoom room, MountedMatchClient client)
         {
             var revision = client.Board.View.Revision;
             PointerGestureEvents.ClickAt(client.Board.Notice.Button);
