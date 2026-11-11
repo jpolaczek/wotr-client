@@ -69,6 +69,7 @@ namespace Wotr.PlayTests
                             screen.Root.Q<Button>("seat-" + key + "-take").worldBound.xMin, "The status cannot overlap seat actions.");
                         Assert.LessOrEqual(state.MeasureTextSize(state.text, 0, VisualElement.MeasureMode.Undefined, 0,
                             VisualElement.MeasureMode.Undefined).x, state.contentRect.width + 1);
+                        AssertThePaceStandsClear(screen, seat, key, scale);
                         LayoutTests.Save(target, $"bot13-room-{human}-{status}-{width}-{scale:0.00}.png");
                     }
                 }
@@ -77,6 +78,27 @@ namespace Wotr.PlayTests
                 Object.Destroy(target);
             }
         }
+        // Owner (2026-11-11): the CPU's pace covered its status and Take seat. It stays inside the seat and clear of the
+        // side's name, the player's name and status (as far as their text reaches) and the seat's buttons.
+        private static void AssertThePaceStandsClear(WaitingRoomScreen screen, VisualElement seat, string key, float scale)
+        {
+            var pace = screen.Root.Q<Button>("seat-" + key + "-pace");
+            Assert.AreEqual(DisplayStyle.Flex, pace.resolvedStyle.display, "The CPU's seat shows its pace.");
+            var bound = pace.worldBound;
+            Assert.IsTrue(seat.worldBound.Contains(bound.min) && seat.worldBound.Contains(bound.max), "The pace stays in its seat.");
+            foreach (var name in new[] { "-take", "-remove" })
+                Assert.IsFalse(bound.Overlaps(screen.Root.Q<Button>("seat-" + key + name).worldBound), "The pace overlaps " + name);
+            foreach (var label in seat.Query<Label>().ToList())
+            {
+                if (label.parent == pace || string.IsNullOrEmpty(label.text) || label.resolvedStyle.display == DisplayStyle.None)
+                    continue;
+                var text = label.MeasureTextSize(label.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                var reach = new Rect(label.worldBound.xMin, label.worldBound.yMin,
+                    Mathf.Min(label.worldBound.width, text.x * scale), label.worldBound.height);
+                Assert.IsFalse(bound.Overlaps(reach), $"The pace covers '{label.text}'.");
+            }
+        }
+
         private static IEnumerator Settle()
         {
             yield return null;

@@ -724,3 +724,17 @@ stand at their objects): the result of a Will die has no object of its own.
 Tests: EditMode `WillFaceTests`, `DieOptionsTests`, `ContextInteractionTests`, `CardActionTests`, `FellowshipDraftTests`,
 `TravelActionTests`, `PoliticalActionTests`; PlayMode `WillOfTheWestFaceNetworkTests` (`lords-fp-balrog-deactivate`: the
 menu at 1366 × 768 and 1920 × 1080, scale 1 and 1.25), `MultiUseDiceNetworkTests`, `BoardInteractionTests`.
+
+<a id="the-cpu-thinks--owner-2026-11-11"></a>
+## The CPU thinks — owner, 2026-11-11
+
+The owner: a CPU that thinks for a while must not look like a frozen game. In a match against the CPU (opened from a
+CPU room or a saved PvE game, `BoardScreen.CpuOpponent`), while the CPU holds the decision of a live, connected match and
+nothing of the player's is being sent or presented, the start of the console's line shows the One Ring turning (one turn
+in 1.6 s) beside *CPU is thinking…*; the hint gives way to it and returns with the player's turn
+(`ConsoleThinking`). The indicator never takes a click. With reduced motion the ring stands still and the dots after the
+words change every half second. Only the ring rotates; no filter is used (unity-uitk-filter-crash).
+
+Tests: EditMode `ConsoleThinkingTests`; PlayMode `CpuThinkingLayoutTests` (`effects-inspection`: the ring turns inside the
+console and clear of its actions at 1366 × 768 at 125 % and 1920 × 1080 at 100 %; reduced motion keeps it still).
+

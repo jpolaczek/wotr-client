@@ -247,5 +247,7 @@
 .waiting-room .room-chat-line { height: 34px; margin-top: 3px; }
 .waiting-room .room-chat-input { height: 32px; }
 .waiting-room .room-chat-send { width: 96px; height: 32px; min-height: 32px; font-size: 14px; }
-/* BOT-37: the CPU's pace at the foot of its seat, left of Take seat and Remove. */
-.waiting-room .waiting-pace { position: absolute; left: 12px; bottom: 6px; width: 150px; height: 28px; min-height: 28px; font-size: 14px; }
+/* BOT-37: the CPU's pace. Owner (2026-11-11): at the foot of the seat it covered the CPU's status and Take seat, so it
+   stands in the seat's top right corner, beside the side's name, above the Remove column. */
+.waiting-room .waiting-pace { position: absolute; right: 10px; top: 6px; width: 132px; height: 26px; min-height: 26px;
+    margin: 0; font-size: 14px; }

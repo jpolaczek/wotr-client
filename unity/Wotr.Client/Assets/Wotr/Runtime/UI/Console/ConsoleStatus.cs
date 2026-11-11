@@ -21,6 +21,8 @@ namespace Wotr.Client
         public VisualElement Trail { get; } = new VisualElement { name = "console-trail" };
         // UI-461 (owner, 2026-11-03): the Will of the West face menu at the start of the hint's line.
         public ConsoleFaceMenu Faces { get; } = new ConsoleFaceMenu();
+        // Owner (2026-11-11): the turning ring while the CPU opponent decides, at the start of the hint's line.
+        public ConsoleThinking Thinking { get; } = new ConsoleThinking();
         private readonly VisualElement line = new VisualElement { name = "console-line" };
         private string trailKey = "";
         private Button presented;
@@ -60,6 +62,7 @@ namespace Wotr.Client
             Trail.style.display = DisplayStyle.None;
             line.Add(Trail);
             line.Add(Faces.Root);
+            line.Add(Thinking.Root);
             Hint.AddToClassList("console-hint");
             line.Add(Hint);
             Options.AddToClassList("console-options");
@@ -181,7 +184,17 @@ namespace Wotr.Client
             Options.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;
             // The hint gives its place to the options wherever they stand, so the line's content — and the console's
             // width — never depends on where they stand (ConsoleOptionsFit measures that width).
-            Hint.style.display = shown ? DisplayStyle.None : DisplayStyle.Flex;
+            Hint.style.display = shown || Thinking.Shown ? DisplayStyle.None : DisplayStyle.Flex;
+            fit.Refit();
+        }
+
+        // The indicator takes the hint's place while the CPU thinks; the hint returns with the player's turn.
+        public void SetThinking(bool value)
+        {
+            if (value == Thinking.Shown)
+                return;
+            Thinking.Show(value);
+            Hint.style.display = value || Options.style.display == DisplayStyle.Flex ? DisplayStyle.None : DisplayStyle.Flex;
             fit.Refit();
         }
 

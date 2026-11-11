@@ -239,3 +239,11 @@ Ready and Start remain explicit human clicks. CPU acceptance must match the
 current configuration; Start is disabled while CPU is joining or unavailable.
 The server validates every race and command. Outage never triggers a fallback
 demo or a human decision. Play vs CPU opens this same room after choosing a side.
+
+## The CPU's pace stands clear — owner, 2026-11-11
+
+At the foot of the CPU's seat *Pace: Fast / Thorough* covered the CPU's status and the seat's Take seat. It now stands in
+the seat's top right corner, beside the side's name and above the Remove column (132 × 26 points, `.waiting-pace`).
+`PveRoomLayoutTests` checks in all four layouts that it stays in its seat, clear of the seat's buttons and of every
+label's text.
+

@@ -62,6 +62,9 @@ namespace Wotr.Client
         public ComponentActionView Components { get; } = new ComponentActionView();
         // UI-160: the turn console in the bottom row and the decision window that hosts choices without an object.
         public TurnConsole Console { get; } = new TurnConsole();
+        // Owner (2026-11-11): a match against the CPU (opened from a CPU room or a saved PvE game); while the CPU decides,
+        // the console shows that it thinks (ConsoleThinking).
+        public bool CpuOpponent { get; set; }
         public TurnRibbon Ribbon { get; } = new TurnRibbon();
         public GameEndScreen GameEnd { get; } = new GameEndScreen();
         // CHAT-01: the board's chat at the bottom left, beside the map legend.

@@ -184,7 +184,7 @@ namespace Wotr.Client
             lobby.JoinPublic += (id, role) => Perform(async () => ShowRoom(await api.Post<RoomView>(
                 $"api/rooms/{id}/join" + (role == RoomRole.Observer ? "?role=Observer" : ""), null, screenLifetime.Token)));
             lobby.Open += ShowRoom;
-            lobby.OpenMatch += match => Perform(() => ShowMatch(match.MatchId));
+            lobby.OpenMatch += match => Perform(() => ShowMatch(match.MatchId, match.IsPve));
             lobby.Logout += () => Perform(async () => { try { await api.Logout(screenLifetime.Token); } finally { ShowLogin(); } });
             lobby.QuitRequested += quit;
             lobby.StartScenario += id =>
@@ -340,7 +340,7 @@ namespace Wotr.Client
             errorLabel = waiting.Status;
             root.Add(waiting.Root);
             waiting.InterfaceRequested += OpenInterface;
-            waitingRoom = new WaitingRoomController(api, waiting, room, ShowMatch, ShowLobby, () =>
+            waitingRoom = new WaitingRoomController(api, waiting, room, id => ShowMatch(id, waiting.Room?.Bot != null), ShowLobby, () =>
             {
                 api?.Dispose();
                 api = null;
@@ -449,9 +449,13 @@ namespace Wotr.Client
                 await ShowLobby();
         }
 
-        private Task ShowMatch(string matchId) =>
+        private Task ShowMatch(string matchId) => ShowMatch(matchId, false);
+
+        // Owner (2026-11-11): a match against the CPU shows when the CPU thinks.
+        private Task ShowMatch(string matchId, bool cpuOpponent) =>
             OpenBoard(matchId, api, board =>
             {
+                board.CpuOpponent = cpuOpponent;
                 board.Menu.GamesRequested += retry => RequestLeaveMatch(board, retry, false);
                 board.Menu.QuitRequested += retry => RequestLeaveMatch(board, retry, true);
                 board.Menu.ConcedeRequested += quitting => RequestConcede(board, quitting);
