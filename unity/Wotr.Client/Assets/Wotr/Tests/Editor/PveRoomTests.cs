@@ -157,8 +157,10 @@ namespace Wotr.EditorTests
             controller.InviteCpu();
             Assert.AreEqual(1, handler.Calls);
             handler.Response.SetResult(true);
-            await Until(() => screen.Root.Q<Button>("seat-shadow-remove").enabledSelf);
-            Assert.AreEqual("Unavailable", screen.Root.Q<Label>("seat-shadow-state").text);
+            // UI-525: the controls grey out only after 400 ms, so the seat's status and the room's error message, not
+            // the seat's button, mark the lost reply's end (the message is shown in the same step that ends the request).
+            await Until(() => screen.Root.Q<Label>("seat-shadow-state").text == "Unavailable" && screen.Status.text.Length > 0);
+            Assert.IsTrue(screen.Root.Q<Button>("seat-shadow-remove").enabledSelf);
             controller.InviteCpu();
             await Until(() => screen.Room.Bot != null);
             Assert.AreEqual(2, handler.Calls);
