@@ -1,7 +1,7 @@
 <a id="t22--graniczne-decyzje-polowania-twierdzy-i-zwycięstwa"></a>
 # T22 — Border Decisions Hunt, Stronghold and Victory
 
-The document describes the separate part of acceptance T22. Sources: [B11–B14, B18 and B20](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/rules/LOGIC.md), BASE p. 28–32, 40–42 and 44; requirements R09–R11 and R15–R21. We do not change the interpretation of the rules or production randomness.
+The document describes the separate part of acceptance T22. Sources: [B11–B14, B18 and B20](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/rules/LOGIC.md), BASE p. 28–32, 40–42 and 44; requirements R09–R11 and R15–R21. We do not change the interpretation of the rules or production randomness.
 
 <a id="kontrakt-przed-implementacją"></a>
 ## Contract before implementation

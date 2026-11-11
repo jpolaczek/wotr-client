@@ -470,3 +470,15 @@ The opponent's presentation never acknowledges a notice ([OPPONENT_ACTIONS_UX §
   card backs with a signed count at the opponent's hand count, never an identity.
 - **Quiet events.** A pass, a decline, "No card" and a technical completion play no scene.
 - **Not choices.** Every mark is an observed trace, never a choice.
+
+## CPU room status and gameplay — BOT-13
+
+The CPU seat reuses its ordinary player name and readiness line: Joining, Ready,
+or Unavailable. Unavailable uses the existing warm warning palette; status text
+remains readable without color. No toast sequence or extra status panel is added.
+A pending invitation shows Joining immediately; a lost response shows Unavailable
+and the same Add CPU action retries the same request. Authoritative roster/version
+updates resolve that state. Start is disabled unless CPU is currently ready.
+My games identifies saved PvE as CPU; a human decision takes precedence over CPU
+availability. Ordinary opponent events use the shared presentation queue, including
+private card backs until reveal. There is no CPU animation protocol or thought feed.

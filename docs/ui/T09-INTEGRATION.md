@@ -27,7 +27,7 @@ The client only refers to Contracts, never Domain/Server. HTTP uses system certi
 
 Two sessions have different tokens, roles and hands. The same public map comes from server `PlayerView.Units` and `Control` Transport never accepts a full domain snapshot. WSS always precede GET view; message with the same revision does not rebuild UI The change of data does not change pan/zoom. Session Error Leaves Last board to view and allow you to return to login.
 
-card have temporary type/decks/number labels, without imaginary texts and effects. T10 added the decisions of the turn cycle described in [Rule Report](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/rules/T10-TURNS.md); movement, combat and full card remain the next tasks. This is not a complete batch of the database.
+card have temporary type/decks/number labels, without imaginary texts and effects. T10 added the decisions of the turn cycle described in [Rule Report](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/rules/T10-TURNS.md); movement, combat and full card remain the next tasks. This is not a complete batch of the database.
 
 <a id="wykonane-sprawdzenia"></a>
 ## Checks carried out

@@ -4,7 +4,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 980px;
+    width: 980px;
+    max-width: 100%;
 }
 
 .waiting-room .waiting-seats {
@@ -194,6 +195,7 @@
 .waiting-room .room-chat-input { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 34px; margin: 0 6px 0 0; }
 .waiting-room .room-chat-send { width: 100px; height: 34px; min-height: 34px; flex-shrink: 0; }
 
+.waiting-room .waiting-seat-state.unavailable { color: rgb(230, 166, 126); }
 /* UI-263: under the seats the window splits in two: the audience, the invitation and the chat on the left, and the
    rules on the right (236 px): a column of three medallions (56 px art drawn at 44 px, the crest inside, a caption
    below) beside a column of six variant chips. Fixed sizes; nothing moves when a rule changes. 3 x 58 px = 6 x 29 px = 174 px
@@ -245,3 +247,5 @@
 .waiting-room .room-chat-line { height: 34px; margin-top: 3px; }
 .waiting-room .room-chat-input { height: 32px; }
 .waiting-room .room-chat-send { width: 96px; height: 32px; min-height: 32px; font-size: 14px; }
+/* BOT-37: the CPU's pace at the foot of its seat, left of Take seat and Remove. */
+.waiting-room .waiting-pace { position: absolute; left: 12px; bottom: 6px; width: 150px; height: 28px; min-height: 28px; font-size: 14px; }

@@ -175,11 +175,10 @@ namespace Wotr.Client
             root.Add(lobby.Root);
             lobby.InterfaceRequested += OpenInterface;
             lobby.Create += request => Perform(async () => ShowRoom(await api.Post<RoomView>("api/rooms", request, screenLifetime.Token)));
-            lobby.Demo += (side, configuration) => Perform(() => StartDemo(side, configuration));
-            lobby.DemoOpened += () => _ = LoadDemoModules(lobby, screenLifetime.Token);
             lobby.FindOpened += () => _ = LoadFindGame(lobby, screenLifetime.Token);
             rankedSearch = new RankedSearchController(api, lobby, id => Perform(() => ShowMatch(id)), ErrorText, sounds);
             leaderboards = new LeaderboardController(api, lobby);
+            lobby.PlayCpu += side => Perform(() => CreatePveRoom(side));
             lobby.Join += (code, role) => Perform(async () => ShowRoom(await api.Post<RoomView>("api/rooms/join",
                 new JoinRoomRequest { Code = code, Role = role }, screenLifetime.Token)));
             lobby.JoinPublic += (id, role) => Perform(async () => ShowRoom(await api.Post<RoomView>(
@@ -204,41 +203,15 @@ namespace Wotr.Client
             return Task.CompletedTask;
         }
 
-        // MENU-31: the menu's demo makes a private room on the chosen side, starts the demo against the CPU from it (DEMO-04)
-        // and lets the room go: an empty room is deleted (MENU-32), and the demo opens like any started game.
-        // DEMO-06: the room takes the page's rules first, so the demo plays with them.
-        private async Task StartDemo(Side side, MatchConfiguration configuration)
+        // A side click opens the ordinary waiting room. Ready and Start remain separate human choices.
+        private async Task CreatePveRoom(Side side)
         {
             var token = screenLifetime.Token;
             var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest
-                { Name = "Demo", Side = side, Visibility = RoomVisibility.Private }, token);
-            DemoMatchView demo;
-            try
-            {
-                if (!RulesChoices.IsBase(configuration))
-                    room = await api.Put<RoomView>("api/rooms/" + room.Id + "/configuration",
-                        new ConfigureRoomRequest { ExpectedVersion = room.Version, Configuration = configuration }, token);
-                demo = await api.Post<DemoMatchView>("api/rooms/" + room.Id + "/demo", null, token);
-            }
-            finally
-            {
-                await LeaveRoomQuietly(room.Id, token);
-            }
-            await ShowMatch(demo.MatchId);
-        }
-
-        // DEMO-06: the released modules for the demo page's rules; a server without the route offers the base game only.
-        private async Task LoadDemoModules(MainMenuScreen lobby, CancellationToken token)
-        {
-            try
-            {
-                var offered = await api.Get<OfferedModulesView>("api/rooms/offered-modules", token);
-                if (!token.IsCancellationRequested)
-                    lobby.ShowDemoModules(offered.Modules);
-            }
-            catch (ApiException) { }
-            catch (HttpRequestException) { }
-            catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+                { Name = "Play vs CPU", Side = side, Visibility = RoomVisibility.Private }, token);
+            token.ThrowIfCancellationRequested();
+            ShowRoom(room);
+            waitingRoom.InviteCpu();
         }
 
         // UI-497: the released modules and the rating of the Find game page. Without an answer the expansions stay Off, which

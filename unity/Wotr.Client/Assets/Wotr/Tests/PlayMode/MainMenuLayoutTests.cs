@@ -141,7 +141,7 @@ namespace Wotr.PlayTests
                         Fits(menu.Root.Q<Button>(name), menu.Root.Q("replay-long"));
                     Fits(menu.Root.Q<Button>("replay-import"), menu.Root.Q("menu-window"));
                     Fits(menu.Root.Q("replay-long"), menu.Root.Q("menu-window"));
-                    foreach (var name in new[] { "show-public-games", "show-my-games", "show-replays", "host-game", "menu-demo", "join-invitation", "observe-invitation", "open-interface", "sign-out", "quit-game" })
+                    foreach (var name in new[] { "show-public-games", "show-my-games", "show-replays", "host-game", "menu-cpu", "join-invitation", "observe-invitation", "open-interface", "sign-out", "quit-game" })
                     {
                         Fits(menu.Root.Q<Button>(name), content);
                         Fits(menu.Root.Q<Button>(name), menu.Root.Q("menu-actions"));
@@ -262,20 +262,13 @@ namespace Wotr.PlayTests
                     // UI-470 (owner, 2026-11-03): the Host a game page itself.
                     LayoutTests.Save(target, $"ui470-host-form-{width}-{scale:0.00}.png");
                     // MENU-31: the demo page asks only for the side, with its cards in the same window.
-                    ReturnTestFixture.Click(menu.Root.Q<Button>("menu-demo"));
+                    ReturnTestFixture.Click(menu.Root.Q<Button>("menu-cpu"));
                     yield return Settle();
-                    Assert.AreEqual("Demo vs CPU", menu.Root.Q<Label>("menu-window-title").text);
-                    foreach (var part in new[] { "demo-fp", "demo-shadow", "cancel-demo" })
+                    Assert.AreEqual("Play vs CPU", menu.Root.Q<Label>("menu-window-title").text);
+                    foreach (var part in new[] { "cpu-fp", "cpu-shadow", "cancel-cpu" })
                         Fits(menu.Root.Q<Button>(part), window);
-                    // DEMO-06: the rules above the side cards, every module offered and every rule on.
-                    menu.ShowDemoModules(new[] { "fate", "lords", "kings" });
-                    yield return Settle();
-                    foreach (var control in menu.DemoPage.Rules.Root.Query<Button>().ToList())
-                        Fits(control, window);
-                    Assert.IsFalse(menu.DemoPage.Rules.Root.Q<Button>("rules-module-lords").worldBound.Overlaps(
-                        menu.Root.Q<Button>("demo-fp").worldBound), "The rules stand above the side cards.");
                     Assert.AreEqual(size, window.worldBound.size);
-                    Fits(menu.Root.Q<Button>("menu-demo"), menu.Root.Q("menu-actions"));
+                    Fits(menu.Root.Q<Button>("menu-cpu"), menu.Root.Q("menu-actions"));
                     Fits(menu.Root.Q<Button>("quit-game"), menu.Root.Q("menu-actions"));
                     Assert.AreEqual(size, window.worldBound.size);
                     LayoutTests.Save(target, $"menu09-host-{width}-{scale:0.00}.png");

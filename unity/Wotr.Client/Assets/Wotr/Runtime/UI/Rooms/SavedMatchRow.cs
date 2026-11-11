@@ -39,12 +39,13 @@ namespace Wotr.Client
         public void Apply(MatchSummary match)
         {
             current = match;
-            var key = $"{match.Revision}/{match.LastSeenRevision}/{match.Status}/{match.Opponent}/{match.OpponentAvatar}/{match.Name}/{match.Ranked}";
+            var key = $"{match.Revision}/{match.LastSeenRevision}/{match.Status}/{match.Opponent}/{match.OpponentAvatar}/{match.Name}/{match.Ranked}/{match.IsPve}/{match.Bot?.Status}";
             if (key == version)
                 return;
             version = key;
-            heading.text = string.IsNullOrEmpty(match.Name) ? "With " + match.Opponent : match.Name;
-            detail.text = (string.IsNullOrEmpty(match.Name) ? "" : "With " + match.Opponent + " · ") + BoardScreen.SideName(match.You) + " · Turn " + match.Turn + " · " + Modules(match.Configuration);
+            var opponent = match.IsPve ? "CPU" : match.Opponent;
+            heading.text = string.IsNullOrEmpty(match.Name) ? "With " + opponent : match.Name;
+            detail.text = (string.IsNullOrEmpty(match.Name) ? "" : "With " + opponent + " · ") + BoardScreen.SideName(match.You) + " · Turn " + match.Turn + " · " + Modules(match.Configuration);
             // UI-505: the picture stands before the line that names the opponent.
             var unnamed = string.IsNullOrEmpty(match.Name);
             AvatarImage.Show(headingAvatar, unnamed ? match.OpponentAvatar : "");
@@ -54,10 +55,16 @@ namespace Wotr.Client
             ExpansionCrests.Show(crests, match.Configuration);
         }
 
-        public static string Status(MatchSummary match) => match.Status == MatchStatus.Finished
-            ? (match.Winner == match.You ? "Victory" : "Defeat") + " · " + (GameEndState.Personal(match.Victory, match.Winner == match.You) ?? Victory(match.Victory))
-            : match.Status == MatchStatus.Waiting ? "Waiting for opponent"
-            : "Your decision · " + Decision(match.YourDecision);
+        public static string Status(MatchSummary match)
+        {
+            if (match.Status == MatchStatus.Finished)
+                return (match.Winner == match.You ? "Victory" : "Defeat") + " · " + (GameEndState.Personal(match.Victory, match.Winner == match.You) ?? Victory(match.Victory));
+            if (match.Status != MatchStatus.Waiting)
+                return "Your decision · " + Decision(match.YourDecision);
+            if (!match.IsPve)
+                return "Waiting for opponent";
+            return match.Bot?.Status == BotSeatStatus.Unavailable ? "CPU unavailable" : "Waiting for CPU";
+        }
 
         private static string Decision(DecisionKind? kind) => kind switch
         {

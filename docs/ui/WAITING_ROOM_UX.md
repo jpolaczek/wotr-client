@@ -223,3 +223,19 @@ rules strip, the seats and the audience — which greyed them out and back withi
 actions at once (`WaitingRoomController.Run` ignores them), and the controls grey out only when the server takes longer
 than 400 ms (`WaitingRoomScreen.BusyShownAfterMilliseconds`); the reply restores them.
 `WaitingRoomRulesTests.ARulesChangeKeepsThePageStillUnlessTheServerIsSlow` checks both.
+
+## CPU seat (BOT-13)
+
+The seated host invites CPU with **Add CPU** in the empty opposing seat’s existing
+Remove slot. Take seat keeps its own slot. Both controls retain their geometry;
+Add CPU becomes Remove once occupied. The seat uses the ordinary faction emblem,
+CPU name and short Joining / Ready / Unavailable status. No extra board controls,
+service settings or private client component are introduced.
+
+The client keeps one request ID and expected room version while an invitation is
+uncertain. A retry uses that same request. A newer room version or authoritative
+occupant resolves it; removed reservations cannot be revived by late replies.
+Ready and Start remain explicit human clicks. CPU acceptance must match the
+current configuration; Start is disabled while CPU is joining or unavailable.
+The server validates every race and command. Outage never triggers a fallback
+demo or a human decision. Play vs CPU opens this same room after choosing a side.

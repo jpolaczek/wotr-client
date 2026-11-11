@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -30,7 +31,7 @@ namespace Wotr.PlayTests
             listener.Stop();
         }
 
-        public async Task Start(CancellationToken token)
+        public async Task Start(CancellationToken token, IReadOnlyDictionary<string, string> settings = null)
         {
             var start = new ProcessStartInfo
             {
@@ -42,6 +43,8 @@ namespace Wotr.PlayTests
                 RedirectStandardError = true,
                 CreateNoWindow = true
             };
+            if (settings != null)
+                foreach (var setting in settings) start.EnvironmentVariables[setting.Key] = setting.Value;
             process = Process.Start(start);
             process.OutputDataReceived += (_, _) => { };
             process.ErrorDataReceived += (_, _) => { };

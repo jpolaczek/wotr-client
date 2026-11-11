@@ -4,7 +4,7 @@
 <a id="przepływ-i-odpowiedzialności"></a>
 ## Flow and responsibility
 
-Sources of rules and domain cases: [T18](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/rules/T18-BATTLES.md), [T19](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/rules/T19-SIEGES.md), BASE p. 26–32. UI uses `BattleView`, options and server preview. It does not draw, does not discover someone else's card and does not calculate the authoritative result.
+Sources of rules and domain cases: [T18](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/rules/T18-BATTLES.md), [T19](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/rules/T19-SIEGES.md), BASE p. 26–32. UI uses `BattleView`, options and server preview. It does not draw, does not discover someone else's card and does not calculate the authoritative result.
 
 The attack is a separate intention: die → army → participants → highlighted target → one approval. The default marked all available army; the player himself improves the composition when rear guard is needed. The attack does not transfer figures in preview. The Field/Siege/Sortie/Relief mode comes from the server option; the garrison remains a separate layer of the map.
 

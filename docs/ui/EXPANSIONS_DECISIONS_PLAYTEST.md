@@ -7,7 +7,7 @@ took its recommended option; D14 adds an explicit console instruction.
 How to use it:
 
 - **Try** names a scenario of the in-game Test scenarios list (catalog in the server's
-  [TEST_SCENARIOS](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/TEST_SCENARIOS.md)) where one exists;
+  [TEST_SCENARIOS](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/TEST_SCENARIOS.md)) where one exists;
   "no scenario yet" means reaching the situation in a game. An opponent's action is watched from the other side (a second
   client in the room, or Replay).
 - **Expect** is what must happen; anything that jumps, opens by itself or needs an extra click is a finding. "Skip

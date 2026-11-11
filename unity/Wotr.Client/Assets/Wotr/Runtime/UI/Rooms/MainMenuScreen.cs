@@ -32,7 +32,7 @@ namespace Wotr.Client
         private int yourTurns;
         private int unseenResults;
         private readonly HostGameForm host;
-        private readonly DemoStartPage demo = new DemoStartPage();
+        private readonly CpuStartPage cpu = new CpuStartPage();
         // UI-497: the ranked search's page; opening it asks the flow for the released modules and the rating.
         private readonly FindGameForm find = new FindGameForm();
         public event Action FindOpened;
@@ -53,10 +53,8 @@ namespace Wotr.Client
         private readonly Label myTurns = new Label { name = "my-games-turns", pickingMode = PickingMode.Ignore };
         private readonly Button testButton;
         public event Action<CreateRoomRequest> Create;
-        // MENU-31: the side chosen on the demo page; the flow starts a demo against the CPU at once.
-        public event Action<Side, MatchConfiguration> Demo;
-        // DEMO-06: the demo page opened; the flow answers with the released modules (ShowDemoModules).
-        public event Action DemoOpened;
+        // The chosen side opens a private CPU waiting room; it does not start the game.
+        public event Action<Side> PlayCpu;
         // OBS-04: a public game is joined to play or to observe.
         public event Action<string, RoomRole> JoinPublic;
         public event Action MorePublic;
@@ -108,10 +106,10 @@ namespace Wotr.Client
             host.Cancel += ShowPublicGames;
             host.Root.style.display = DisplayStyle.None;
             panel.Add(host.Root);
-            demo.Start += (side, configuration) => Demo?.Invoke(side, configuration);
-            demo.Back += ShowPublicGames;
-            demo.Root.style.display = DisplayStyle.None;
-            panel.Add(demo.Root);
+            cpu.Start += side => PlayCpu?.Invoke(side);
+            cpu.Back += ShowPublicGames;
+            cpu.Root.style.display = DisplayStyle.None;
+            panel.Add(cpu.Root);
             find.Back += ShowPublicGames;
             find.Root.style.display = DisplayStyle.None;
             panel.Add(find.Root);
@@ -218,7 +216,7 @@ namespace Wotr.Client
             column.Add(Action("find-game", "Find game", ShowFindGame));
             column.Add(showLeaderboards);
             column.Add(Action("host-game", "Host a game", ShowHostForm));
-            column.Add(Action("menu-demo", "Demo vs CPU", ShowDemo));
+            column.Add(Action("menu-cpu", "Play vs CPU", ShowCpu));
             column.Add(JoinBox());
             column.Add(testButton);
             var settings = InterfaceSettingsPanel.OpenButton(() => InterfaceRequested?.Invoke());
@@ -226,7 +224,7 @@ namespace Wotr.Client
             updateHint = new SettingsUpdateHint(settings);
             column.Add(settings);
             column.Add(Ignored("menu-actions-spacer"));
-            // MENU-31: Sign out and Quit game share the column's last row, so Demo vs CPU fits above them.
+            // MENU-31: Sign out and Quit game share the column's last row, so Play vs CPU fits above them.
             var footer = new VisualElement { name = "menu-actions-footer" };
             footer.AddToClassList("menu-actions-footer");
             var signOut = Action("sign-out", "Sign out", () => Logout?.Invoke());
@@ -323,7 +321,7 @@ namespace Wotr.Client
             tables.style.display = shown == tables ? DisplayStyle.Flex : DisplayStyle.None;
             games.style.display = shown == games ? DisplayStyle.Flex : DisplayStyle.None;
             host.Root.style.display = shown == host.Root ? DisplayStyle.Flex : DisplayStyle.None;
-            demo.Root.style.display = shown == demo.Root ? DisplayStyle.Flex : DisplayStyle.None;
+            cpu.Root.style.display = shown == cpu.Root ? DisplayStyle.Flex : DisplayStyle.None;
             find.Root.style.display = shown == find.Root ? DisplayStyle.Flex : DisplayStyle.None;
             Leaderboards.Root.style.display = shown == Leaderboards.Root ? DisplayStyle.Flex : DisplayStyle.None;
             showLeaderboards.EnableInClassList("selected", shown == Leaderboards.Root);
@@ -346,12 +344,6 @@ namespace Wotr.Client
         }
 
         private void ShowHostForm() => ShowPage("Host a game", host.Root);
-
-        private void ShowDemo()
-        {
-            ShowPage("Demo vs CPU", demo.Root);
-            DemoOpened?.Invoke();
-        }
 
         private void ShowFindGame()
         {
@@ -379,9 +371,7 @@ namespace Wotr.Client
             find.ShowSearching(value);
         }
 
-        public DemoStartPage DemoPage => demo;
-
-        public void ShowDemoModules(IEnumerable<string> modules) => demo.Offer(modules);
+        private void ShowCpu() => ShowPage("Play vs CPU", cpu.Root);
 
         private static void RequestMore(ScrollView scroll, float value, Action more)
         {
