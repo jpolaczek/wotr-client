@@ -419,9 +419,11 @@ namespace Wotr.Client
                 pace.SetEnabled(!busy && waiting && room.IsHost && cpu);
                 pace.tooltip = !cpu ? "" : !waiting ? "The CPU's pace is saved with the game."
                     : !room.IsHost ? "Only the host chooses the CPU's pace."
+                    // The paces' times belong to the server's CPU (a new CPU may change them without a client release), so
+                    // the text names no seconds.
                     : mode == BotThinkingMode.Fast
-                        ? "Fast: the CPU answers in about 3 seconds. Press for Thorough: it looks further ahead and takes about 10. Both players get ready again."
-                        : "Thorough: the CPU looks further ahead and takes about 10 seconds. Press for Fast: about 3. Both players get ready again.";
+                        ? "Fast: the CPU answers quickly. Press for Thorough: it looks further ahead and takes longer. Both players get ready again."
+                        : "Thorough: the CPU looks further ahead and takes longer. Press for Fast: it answers quickly. Both players get ready again.";
             }
         }
 

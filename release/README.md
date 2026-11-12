@@ -147,6 +147,16 @@ bash scripts/smoke-installer-linux.sh .artifacts/releases/<version>/installers/l
 Players with ZIP `0.2.0-rc1` install the new version once; data and settings remain because identifier has not changed.
 
 <a id="serwer-i-zgodność--dist-05"></a>
+## The CPU opponent is updated on the server only (0.11.0)
+
+The client carries no CPU. Play against the CPU goes through the ordinary player API: a room with a CPU seat, the CPU's
+status and pace, its moves arriving like a human opponent's. The CPU itself is a private runtime library the server
+loads; a new CPU is installed by the operator on the server (`wotr-server:docs/server/BOT-OPERATIONS.md`: install the
+package, drain, upgrade the saved games, resume) and never needs a client release or a higher minimum client version
+(the client gate below reads the client release catalog, not the CPU). The client names no CPU version, policy or
+pace time. A client release is needed only when the player protocol or the contracts change: a new pace, a new seat
+status, a new CPU control in the interface.
+
 ## Server and compatibility — DIST-05
 
 The server, its image and acceptance restore releases `wotr-server` (DIST-03) separately. The administrator uses [Compose configuration and instructions](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/infra/README.md).
