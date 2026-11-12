@@ -463,6 +463,72 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0, test.Backend.Commands);
         }
 
+        // UI-536 (owner, 2026-11-12): in the army's region panel a chosen figure shines and one left behind goes dark, so
+        // no figure reads as both: after one click every figure that can move is lit and the panel does not pulse; a
+        // click on a lit figure darkens it while the others stay lit; a second click lights it again.
+        [UnityTest]
+        public IEnumerator UI536AChosenFigureShinesAndOneLeftBehindGoesDark()
+        {
+            using var test = new Harness();
+            yield return Settle();
+            Click(test.Board.OwnDice.Q<Button>("army"));
+            yield return Settle();
+            test.Board.Hover.Close();
+            var marker = test.Board.Map.Q<Button>("army-minas-tirith-FreePeoples");
+            yield return MatchTestRoom.Wait(MapContourProbe.ReachMarker(test.Board.Map, marker, "minas-tirith"));
+            PointerGestureEvents.ClickAt(marker);
+            yield return Settle();
+            yield return new WaitForSecondsRealtime(.3f);
+            var panel = test.Board.Hover.Panel.Root;
+            var lit = panel.Query<Button>(className: RegionHoverPanel.SelectedClass).ToList();
+            Assert.Greater(lit.Count, 1, "One click chooses the whole army.");
+            Assert.IsEmpty(panel.Query<Button>(className: RegionHoverPanel.LeftBehindClass).ToList(), "Nothing is left behind yet.");
+            foreach (var figure in lit)
+                AssertLit(figure);
+            Assert.IsFalse(panel.ClassListContains(ChoiceGlow.PulseClass), "A chosen figure shines steadily.");
+            LayoutTests.Save(test.Viewport, "ui536-all-chosen.png");
+
+            var regular = lit.First(b => test.Board.View.Units.Any(u => u.Id == ((DraftToken)b.userData).Id && u.Kind == UnitKind.Regular));
+            PointerGestureEvents.ClickAt(regular);
+            yield return Settle();
+            yield return new WaitForSecondsRealtime(.3f);
+            Assert.IsFalse(regular.ClassListContains(RegionHoverPanel.SelectedClass));
+            AssertDark(regular);
+            StringAssert.Contains("Left behind · Click to select", regular.tooltip);
+            foreach (var figure in lit.Where(b => b != regular))
+                AssertLit(figure);
+            yield return new WaitForSecondsRealtime(.8f);
+            Assert.IsFalse(panel.ClassListContains(ChoiceGlow.PulseClass), "A figure left behind does not breathe like an offer.");
+            LayoutTests.Save(test.Viewport, "ui536-one-left-behind.png");
+
+            PointerGestureEvents.ClickAt(regular);
+            yield return Settle();
+            yield return new WaitForSecondsRealtime(.3f);
+            AssertLit(regular);
+            Assert.IsEmpty(panel.Query<Button>(className: RegionHoverPanel.LeftBehindClass).ToList(), "A second click lights it again.");
+            Assert.AreEqual(0, test.Backend.Commands);
+        }
+
+        private static void AssertLit(VisualElement figure)
+        {
+            Assert.IsTrue(figure.ClassListContains(RegionHoverPanel.SelectedClass), figure.name + " is chosen.");
+            Assert.IsFalse(figure.ClassListContains(RegionHoverPanel.LeftBehindClass), figure.name + " is not dark.");
+            Assert.AreEqual(3f, figure.resolvedStyle.borderTopWidth, .01f, figure.name + " wears the bright rim.");
+            Assert.Greater(figure.resolvedStyle.borderTopColor.g, .85f, figure.name + "'s rim is bright gold.");
+            Assert.Greater(figure.resolvedStyle.backgroundColor.a, .5f, figure.name + " stands on a lit plate.");
+            Assert.AreEqual(1f, figure.Q(className: "icon-glow").resolvedStyle.opacity, .01f, figure.name + "'s glow is full.");
+            Assert.AreEqual(1f, figure.Q(className: "figure-art-image").resolvedStyle.opacity, .01f, figure.name + " is drawn in full.");
+        }
+
+        private static void AssertDark(VisualElement figure)
+        {
+            Assert.IsTrue(figure.ClassListContains(RegionHoverPanel.LeftBehindClass), figure.name + " is left behind.");
+            Assert.LessOrEqual(figure.Q(className: "figure-art-image").resolvedStyle.opacity, .4f, figure.name + " is dimmed.");
+            Assert.AreEqual(0f, figure.Q(className: "icon-glow").resolvedStyle.opacity, .01f, figure.name + " has no glow.");
+            Assert.Less(figure.resolvedStyle.borderTopColor.a, .6f, figure.name + " has no gold rim.");
+            Assert.Less(figure.resolvedStyle.backgroundColor.r, .1f, figure.name + " stands on a dark plate.");
+        }
+
         // UI-317 (owner report): with no legal recruitment the Muster die opens no window and lights only what it can do —
         // the Politics tab; the Reserve stays a plain tab that neither a settlement click nor the console reopens.
         [UnityTest]

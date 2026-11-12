@@ -1064,3 +1064,27 @@ still show at the side of the region", Erebor's row running on into the Iron Hil
 its region's middle (TABLETOP_FIGURES_UX, "Places"). A row still reaches past its region's border into free room: kept
 on its region, a row of three kinds would shrink in 17 regions and one of four in 49 (Erebor's to about half).
 
+
+## A chosen figure shines, one left behind goes dark — UI-536 (2026-11-12)
+
+The owner: when an army moves and its region panel opens to choose who marches, it must be unmistakable which figures
+are chosen; chosen figures glow very clearly and go clearly dark when clicked, so there is no ambiguity and no mistaken
+move. Until now a figure that could be chosen but was not wore UI-301's thick pulsing gold rim on a warm plate, while a
+chosen one wore a thinner rim on an almost clear plate, so a figure left behind looked more lit than a chosen one.
+
+While any figure of the panel's region is chosen (an army's move, a character's travel, a card's figure choice),
+`RegionHoverPanel` marks every chosen figure `selected` (lit) and every other figure that could join `left-behind` (dark):
+
+- **Lit**: a bright 3-point gold rim on a lit gold plate, the figure's gilt glow (`icon-glow`) at full strength and wider,
+  steady: a chosen figure does not breathe.
+- **Dark**: the figure drawn at a third of its strength, no glow, a dull rim on a dark plate, no pulse. Under the pointer
+  only its rim lightens, so a figure just clicked dark stays dark while the pointer rests on it. Its tooltip reads
+  "Left behind · Click to select".
+- The change takes 0.2 s under Motion and is instant under Reduced motion.
+- The invitation pulse (UI-301) runs only while nothing in the region is chosen, so a pulsing figure is always an offer
+  and never a figure in the move.
+
+The map's miniatures are unchanged: the chosen figures already lift into the hand (UI-403) and the figure left behind
+stays on its base. PlayMode `BoardInteractionTests.UI536AChosenFigureShinesAndOneLeftBehindGoesDark` checks the lit and
+dark looks by their resolved styles after a click and a second click, with pictures `ui536-all-chosen.png` and
+`ui536-one-left-behind.png`.
