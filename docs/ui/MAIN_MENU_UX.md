@@ -407,8 +407,8 @@ The "Private" switch and loose row of buttons are gone.
 The action column keeps its existing CPU slot, now **Play vs CPU** (`menu-cpu`).
 
 UI-533 (owner, 2026-11-12): the click opens the CPU's waiting room at once: a private room with the player on the Free
-Peoples and the CPU invited, where the expansions are chosen and **Swap sides** (`room-swap-sides`, see WAITING_ROOM_UX)
-decides who plays which side. The side page (`cpu-fp`, `cpu-shadow`, `cancel-cpu`) is gone. There is no replacement
+Peoples and the CPU invited, where the expansions are chosen and **Switch side** in the player's seat (`seat-free-swap`,
+see WAITING_ROOM_UX) decides who plays which side. The side page (`cpu-fp`, `cpu-shadow`, `cancel-cpu`) is gone. There is no replacement
 warning, difficulty selection or service configuration.
 
 The room is created and the CPU invited with the same invitation controller as Add CPU. It does not start the game or discard the room after an

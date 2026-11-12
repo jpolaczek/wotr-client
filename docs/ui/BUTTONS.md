@@ -206,9 +206,9 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frontend/bu
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/RulesStrip.cs` | 90 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/SavedMatchRow.cs` | 26 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/SideChoice.cs` | 52 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 158 | icon | refresh |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 206 | text | text |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 486 | icon | close |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 156 | icon | refresh |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 203 | text | text |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 487 | icon | close |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/SkillIcon.cs` | 27 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/SoundSettingsSection.cs` | 33 | text | Test sound |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 32 | icon | back |

@@ -38,8 +38,9 @@ namespace Wotr.PlayTests
                     Assert.IsFalse(screen.Root.Q<Label>("waiting-title").isElided, "The default CPU room title is fully readable.");
                     Assert.AreEqual("Add CPU", button.text);
                     Assert.IsTrue(button.enabledInHierarchy);
-                    Assert.AreEqual(DisplayStyle.None, screen.Root.Q<Button>("room-swap-sides").resolvedStyle.display,
-                        "A room without the CPU has no side swap (the other seat is a player's).");
+                    foreach (var seatKey in new[] { "free", "shadow" })
+                        Assert.AreEqual(DisplayStyle.None, screen.Root.Q<Button>("seat-" + seatKey + "-swap").resolvedStyle.display,
+                            "A room without the CPU has no side switch (the other seat is a player's).");
                     var invitations = 0;
                     screen.AddCpu += () => invitations++;
                     button.Focus();
@@ -72,7 +73,7 @@ namespace Wotr.PlayTests
                         Assert.LessOrEqual(state.MeasureTextSize(state.text, 0, VisualElement.MeasureMode.Undefined, 0,
                             VisualElement.MeasureMode.Undefined).x, state.contentRect.width + 1);
                         AssertThePaceStandsClear(screen, seat, key, scale);
-                        AssertTheSwapStandsClear(screen, human);
+                        AssertTheSwitchStandsClear(screen, human, scale);
                         LayoutTests.Save(target, $"bot13-room-{human}-{status}-{width}-{scale:0.00}.png");
                     }
                 }
@@ -102,21 +103,36 @@ namespace Wotr.PlayTests
             }
         }
 
-        // UI-533 (owner, 2026-11-12): who plays which side is chosen in the CPU's waiting room: one button in the action column
-        // names the other side, stays inside the column, overlaps no other action and asks for the swap.
-        private static void AssertTheSwapStandsClear(WaitingRoomScreen screen, Side human)
+        // UI-533 (owner, 2026-11-12): who plays which side is chosen in the CPU's waiting room, in the host's own seat beside
+        // the side's name (the column's button was hard to find). Switch side stands in that seat only, clear of its labels
+        // and buttons, and asks for the swap.
+        private static void AssertTheSwitchStandsClear(WaitingRoomScreen screen, Side human, float scale)
         {
-            var swap = screen.Root.Q<Button>("room-swap-sides");
-            Assert.AreEqual(DisplayStyle.Flex, swap.resolvedStyle.display, "A room with the CPU offers the other side.");
-            Assert.AreEqual(human == Side.FreePeoples ? "Play the Shadow" : "Play the Free Peoples", swap.text);
+            var own = human == Side.FreePeoples ? "free" : "shadow";
+            var other = human == Side.FreePeoples ? "shadow" : "free";
+            Assert.AreEqual(DisplayStyle.None, screen.Root.Q<Button>("seat-" + other + "-swap").resolvedStyle.display,
+                "The CPU's seat has no side switch.");
+            var swap = screen.Root.Q<Button>("seat-" + own + "-swap");
+            Assert.AreEqual(DisplayStyle.Flex, swap.resolvedStyle.display, "The host's seat offers the other side.");
+            Assert.AreEqual("Switch side", swap.text);
             Assert.IsTrue(swap.enabledInHierarchy);
-            var actions = screen.Root.Q("waiting-actions");
-            Assert.IsTrue(actions.worldBound.Contains(swap.worldBound.min) && actions.worldBound.Contains(swap.worldBound.max),
-                "Swap sides stays in the action column.");
-            foreach (var name in new[] { "room-ready", "start-game", "room-demo", "room-observe", "waiting-back" })
-                Assert.IsFalse(swap.worldBound.Overlaps(screen.Root.Q<Button>(name).worldBound), "Swap sides overlaps " + name);
+            StringAssert.Contains(human == Side.FreePeoples ? "Play the Shadow" : "Play the Free Peoples", swap.tooltip);
+            var seat = screen.Root.Q("seat-" + own);
+            var bound = swap.worldBound;
+            Assert.IsTrue(seat.worldBound.Contains(bound.min) && seat.worldBound.Contains(bound.max), "Switch side stays in its seat.");
+            foreach (var name in new[] { "-take", "-remove" })
+                Assert.IsFalse(bound.Overlaps(screen.Root.Q<Button>("seat-" + own + name).worldBound), "Switch side overlaps " + name);
+            foreach (var label in seat.Query<Label>().ToList())
+            {
+                if (label.parent == swap || string.IsNullOrEmpty(label.text) || label.resolvedStyle.display == DisplayStyle.None)
+                    continue;
+                var text = label.MeasureTextSize(label.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                var reach = new Rect(label.worldBound.xMin, label.worldBound.yMin,
+                    Mathf.Min(label.worldBound.width, text.x * scale), label.worldBound.height);
+                Assert.IsFalse(bound.Overlaps(reach), $"Switch side covers '{label.text}'.");
+            }
             Assert.LessOrEqual(swap.MeasureTextSize(swap.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x,
-                swap.contentRect.width + 1, "The swap's label fits.");
+                swap.contentRect.width + 1, "The switch's label fits.");
             var swaps = 0;
             void Count() => swaps++;
             screen.SwapSides += Count;

@@ -68,17 +68,18 @@ namespace Wotr.PlayTests
             finally { if (Directory.Exists(storage)) Directory.Delete(storage, true); }
         }
 
-        // UI-533: Play vs CPU opens its waiting room at once with the player on the Free Peoples; Swap sides makes the room
-        // again from the other side with the CPU invited.
+        // UI-533: Play vs CPU opens its waiting room at once with the player on the Free Peoples; Switch side in the player's
+        // seat makes the room again from the other side with the CPU invited.
         private static async Task<string> OpenCpu(MountedFlowClient client, Side side, CancellationToken token)
         {
             await ClickReady(client.Root, "menu-cpu", token);
-            await Until(() => client.Root.Q("waiting-room") != null && client.Root.Q<Button>("room-swap-sides")?.text == "Play the Shadow", token);
+            await Until(() => client.Root.Q("waiting-room") != null && Shown(client.Root.Q<Button>("seat-free-swap")), token);
             Assert.IsNull(client.Board, "Play vs CPU opens a room; it does not start a match.");
             if (side == Side.Shadow)
             {
-                await ClickReady(client.Root, "room-swap-sides", token);
-                await Until(() => client.Root.Q<Button>("room-swap-sides")?.text == "Play the Free Peoples", token);
+                await ClickReady(client.Root, "seat-free-swap", token);
+                await Until(() => Shown(client.Root.Q<Button>("seat-shadow-swap")), token);
+                Assert.IsFalse(Shown(client.Root.Q<Button>("seat-free-swap")), "The switch follows the player to the Shadow's seat.");
             }
             Assert.IsFalse(client.Root.Q<Button>("start-game").enabledSelf);
             await ClickReady(client.Root, "room-ready", token);
@@ -87,6 +88,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(side, client.Board.View.You);
             return client.Board.View.MatchId;
         }
+        private static bool Shown(VisualElement element) => element != null && element.resolvedStyle.display == DisplayStyle.Flex;
+
         private static async Task BackToMenu(MountedFlowClient client, CancellationToken token)
         {
             await ClickReady(client.Root, "back-to-games", token);

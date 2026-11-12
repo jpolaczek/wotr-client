@@ -251,3 +251,7 @@
    stands in the seat's top right corner, beside the side's name, above the Remove column. */
 .waiting-room .waiting-pace { position: absolute; right: 10px; top: 6px; width: 132px; height: 26px; min-height: 26px;
     margin: 0; font-size: 14px; }
+/* UI-533 (owner, 2026-11-12): the side choice stands in the host's own seat, beside the side's name, where the CPU's seat
+   shows its pace (the two never share a seat). */
+.waiting-room .waiting-swap { position: absolute; right: 10px; top: 6px; width: 132px; height: 26px; min-height: 26px;
+    margin: 0; font-size: 14px; }

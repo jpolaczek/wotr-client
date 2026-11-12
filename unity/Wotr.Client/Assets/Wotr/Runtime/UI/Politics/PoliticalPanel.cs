@@ -118,7 +118,10 @@ namespace Wotr.Client
         {
             if (view != null && view.MatchId != latest.MatchId)
                 Close();
+            var ownChange = OwnPoliticalChange(view, latest);
             view = latest;
+            if (ownChange)
+                Slide();
             Root.style.display = view.Nations.Count == 0 ? DisplayStyle.None : DisplayStyle.Flex;
             var ids = view.Nations.Select(n => n.Id).ToHashSet();
             foreach (var id in rows.Keys.Where(id => !ids.Contains(id)).ToList())
@@ -242,9 +245,31 @@ namespace Wotr.Client
         public void PresentOwnStep()
         {
             Open();
+            Slide();
+        }
+
+        // The token's eased travel (a jump under Reduced motion) for the next moments.
+        private void Slide()
+        {
             Drawer.AddToClassList(PoliticsPresenter.MovingClass);
             ownStep?.Pause();
             ownStep = Drawer.schedule.Execute(() => Drawer.RemoveFromClassList(PoliticsPresenter.MovingClass)).StartingIn(OwnStepMilliseconds);
+        }
+
+        // UI-534 (owner, 2026-11-12): the nation a card's choice stepped (Wisdom of Elrond, the Kings' Wisdom) jumped, since only
+        // the die's and the characters' steps called PresentOwnStep. A political change that follows the player's own
+        // decision in the same match now travels the same way; the opponent's changes keep their staged beat (PoliticsPresenter).
+        public static bool OwnPoliticalChange(PlayerView before, PlayerView after)
+        {
+            if (before == null || after == null || before.MatchId != after.MatchId || before.DecisionOwner != before.You)
+                return false;
+            foreach (var nation in after.Nations)
+            {
+                var old = before.Nations.FirstOrDefault(n => n.Id == nation.Id);
+                if (old != null && (old.StepsToWar != nation.StepsToWar || old.Active != nation.Active))
+                    return true;
+            }
+            return false;
         }
 
         public void Close() => hover.Close();

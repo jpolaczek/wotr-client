@@ -296,4 +296,9 @@ Mirkwood) is used on its nation's track, not through Characters.
   travels to its new station as in the opponent's political beat (`PoliticalPanel.PresentOwnStep`); every own step from
   the track travels the same way.
 - Test: `CharacterRosterPanelTests.APoliticalAbilityIsOfferedOnItsNationsTrack`.
+- UI-534 (owner, 2026-11-12): a nation stepped by the player's own card (Wisdom of Elrond's choice of nation, the Kings'
+  Wisdom) jumped, because only the die's and the characters' steps called `PresentOwnStep`. Any political change that
+  follows the player's own decision in the same match now travels the same way (`PoliticalPanel.OwnPoliticalChange`);
+  the opponent's changes keep their staged beat (`PoliticsPresenter`). The Politics bell already rang for every change
+  (`SoundFacts`). Test: `PoliticalPanelTests.AStepAfterTheOwnDecisionTravels`.
 
