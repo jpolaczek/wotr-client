@@ -28,6 +28,8 @@ namespace Wotr.Client
         public event Action Back;
         public event Action Invite;
         public event Action AddCpu;
+        // UI-533: the human in a room with the CPU plays the other side (the CPU takes this one).
+        public event Action SwapSides;
         // BOT-37: the host switches the seated CPU's pace while the room waits.
         public event Action<BotThinkingMode> ChangeCpuPace;
         // OBS-04: the participant the host removes, a player or an observer, by name.
@@ -48,6 +50,7 @@ namespace Wotr.Client
         private readonly Button ready;
         private readonly Button start;
         private readonly Button demo;
+        private readonly Button swap;
         private readonly Button back;
         private readonly Button invite;
         private readonly Button copy;
@@ -82,6 +85,7 @@ namespace Wotr.Client
             // DEMO-04: a practice game against the CPU, for either member while the room waits; the room stays.
             demo = Action("room-demo", "Play demo vs CPU", () => Demo?.Invoke(), "menu-action");
             demo.tooltip = "Practice against a simple computer opponent playing the other side. Starting a new demo replaces your previous demo.";
+            swap = Action("room-swap-sides", "Swap sides", () => SwapSides?.Invoke(), "menu-action");
             back = Action("waiting-back", "Back", () => Back?.Invoke(), "menu-action");
             back.AddToClassList("menu-action-quiet");
             invite = Action("generate-room-invitation", "New code", () => Invite?.Invoke(), "waiting-invite-action");
@@ -178,6 +182,7 @@ namespace Wotr.Client
             column.AddToClassList("menu-actions");
             column.Add(ready);
             column.Add(start);
+            column.Add(swap);
             column.Add(demo);
             column.Add(observe);
             var spacer = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -262,6 +267,13 @@ namespace Wotr.Client
             ready.tooltip = ReadyTooltip();
             back.SetEnabled(!shownBusy);
             demo.SetEnabled(!shownBusy && waiting && Player);
+            // UI-533: the side choice of a game against the CPU: shown in its room only, for the host before the start.
+            var cpuRoom = Room.Bot != null || invitingSide != null;
+            swap.style.display = cpuRoom && Room.IsHost ? DisplayStyle.Flex : DisplayStyle.None;
+            swap.SetEnabled(!shownBusy && waiting && Room.IsHost && Player);
+            var cpuSide = Room.You == Side.FreePeoples ? "the Shadow" : "the Free Peoples";
+            swap.text = Room.You == Side.FreePeoples ? "Play the Shadow" : "Play the Free Peoples";
+            swap.tooltip = $"Play {cpuSide}; the CPU takes your side. The rules and the CPU's pace stay.";
             var audienceFull = Room.Observers.Count >= Limit(Room);
             observe.SetEnabled(!shownBusy && waiting && Player && !audienceFull);
             observe.tooltip = !Player ? "You are watching this room." : audienceFull ? "All observer places are taken."

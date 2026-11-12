@@ -38,6 +38,8 @@ namespace Wotr.PlayTests
                     Assert.IsFalse(screen.Root.Q<Label>("waiting-title").isElided, "The default CPU room title is fully readable.");
                     Assert.AreEqual("Add CPU", button.text);
                     Assert.IsTrue(button.enabledInHierarchy);
+                    Assert.AreEqual(DisplayStyle.None, screen.Root.Q<Button>("room-swap-sides").resolvedStyle.display,
+                        "A room without the CPU has no side swap (the other seat is a player's).");
                     var invitations = 0;
                     screen.AddCpu += () => invitations++;
                     button.Focus();
@@ -70,6 +72,7 @@ namespace Wotr.PlayTests
                         Assert.LessOrEqual(state.MeasureTextSize(state.text, 0, VisualElement.MeasureMode.Undefined, 0,
                             VisualElement.MeasureMode.Undefined).x, state.contentRect.width + 1);
                         AssertThePaceStandsClear(screen, seat, key, scale);
+                        AssertTheSwapStandsClear(screen, human);
                         LayoutTests.Save(target, $"bot13-room-{human}-{status}-{width}-{scale:0.00}.png");
                     }
                 }
@@ -97,6 +100,29 @@ namespace Wotr.PlayTests
                     Mathf.Min(label.worldBound.width, text.x * scale), label.worldBound.height);
                 Assert.IsFalse(bound.Overlaps(reach), $"The pace covers '{label.text}'.");
             }
+        }
+
+        // UI-533 (owner, 2026-11-12): who plays which side is chosen in the CPU's waiting room: one button in the action column
+        // names the other side, stays inside the column, overlaps no other action and asks for the swap.
+        private static void AssertTheSwapStandsClear(WaitingRoomScreen screen, Side human)
+        {
+            var swap = screen.Root.Q<Button>("room-swap-sides");
+            Assert.AreEqual(DisplayStyle.Flex, swap.resolvedStyle.display, "A room with the CPU offers the other side.");
+            Assert.AreEqual(human == Side.FreePeoples ? "Play the Shadow" : "Play the Free Peoples", swap.text);
+            Assert.IsTrue(swap.enabledInHierarchy);
+            var actions = screen.Root.Q("waiting-actions");
+            Assert.IsTrue(actions.worldBound.Contains(swap.worldBound.min) && actions.worldBound.Contains(swap.worldBound.max),
+                "Swap sides stays in the action column.");
+            foreach (var name in new[] { "room-ready", "start-game", "room-demo", "room-observe", "waiting-back" })
+                Assert.IsFalse(swap.worldBound.Overlaps(screen.Root.Q<Button>(name).worldBound), "Swap sides overlaps " + name);
+            Assert.LessOrEqual(swap.MeasureTextSize(swap.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x,
+                swap.contentRect.width + 1, "The swap's label fits.");
+            var swaps = 0;
+            void Count() => swaps++;
+            screen.SwapSides += Count;
+            ReturnTestFixture.Click(swap);
+            screen.SwapSides -= Count;
+            Assert.AreEqual(1, swaps);
         }
 
         private static IEnumerator Settle()

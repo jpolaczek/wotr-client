@@ -214,6 +214,31 @@ namespace Wotr.Client
             waitingRoom.InviteCpu();
         }
 
+        // UI-533: the other side against the CPU. A seat is never handed over in a room, so the host leaves this one and a
+        // new private room is made with the other side, the same rules and the CPU invited again at the same pace.
+        private async Task SwapPveSides(RoomView old)
+        {
+            var token = screenLifetime.Token;
+            var side = old.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
+            var pace = old.Bot?.ThinkingMode ?? BotThinkingMode.Fast;
+            try
+            {
+                await api.Post<object>("api/rooms/" + old.Id + "/leave", null, token);
+            }
+            catch (ApiException error) when (error.Status == 404)
+            {
+                // A room already gone holds no seat.
+            }
+            var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest
+                { Name = old.Name.Length > 0 ? old.Name : "Play vs CPU", Side = side, Visibility = RoomVisibility.Private }, token);
+            if (old.Configuration != null)
+                room = await api.Put<RoomView>("api/rooms/" + room.Id + "/configuration",
+                    new ConfigureRoomRequest { ExpectedVersion = room.Version, Configuration = old.Configuration }, token);
+            token.ThrowIfCancellationRequested();
+            ShowRoom(room);
+            waitingRoom.InviteCpu(pace);
+        }
+
         // UI-497: the released modules and the rating of the Find game page. Without an answer the expansions stay Off, which
         // the server accepts, and the rating stays blank.
         private async Task LoadFindGame(MainMenuScreen lobby, CancellationToken token)
@@ -345,7 +370,12 @@ namespace Wotr.Client
                 api?.Dispose();
                 api = null;
                 ShowLogin();
-            }, removed: () => ShowLobby("The host removed you from this room."), observe: ObserveMatch);
+            }, removed: () => ShowLobby("The host removed you from this room."), observe: ObserveMatch,
+                swapSides: old =>
+                {
+                    Perform(() => SwapPveSides(old));
+                    return Task.CompletedTask;
+                });
         }
 
         // REPLAY-04: Replays before sign-in — no account, no server.

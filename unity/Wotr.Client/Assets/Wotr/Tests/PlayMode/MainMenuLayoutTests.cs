@@ -261,13 +261,14 @@ namespace Wotr.PlayTests
                     yield return Settle();
                     // UI-470 (owner, 2026-11-03): the Host a game page itself.
                     LayoutTests.Save(target, $"ui470-host-form-{width}-{scale:0.00}.png");
-                    // MENU-31: the demo page asks only for the side, with its cards in the same window.
+                    // UI-533: Play vs CPU opens its waiting room at once (the flow makes the room, the player on the Free
+                    // Peoples); the side is chosen there, so the menu has no page of its own for it.
+                    Side? played = null;
+                    menu.PlayCpu += side => played = side;
                     ReturnTestFixture.Click(menu.Root.Q<Button>("menu-cpu"));
                     yield return Settle();
-                    Assert.AreEqual("Play vs CPU", menu.Root.Q<Label>("menu-window-title").text);
-                    foreach (var part in new[] { "cpu-fp", "cpu-shadow", "cancel-cpu" })
-                        Fits(menu.Root.Q<Button>(part), window);
-                    Assert.AreEqual(size, window.worldBound.size);
+                    Assert.AreEqual(Side.FreePeoples, played);
+                    Assert.IsNull(menu.Root.Q("cpu-start"));
                     Fits(menu.Root.Q<Button>("menu-cpu"), menu.Root.Q("menu-actions"));
                     Fits(menu.Root.Q<Button>("quit-game"), menu.Root.Q("menu-actions"));
                     Assert.AreEqual(size, window.worldBound.size);

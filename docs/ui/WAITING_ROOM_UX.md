@@ -238,7 +238,18 @@ occupant resolves it; removed reservations cannot be revived by late replies.
 Ready and Start remain explicit human clicks. CPU acceptance must match the
 current configuration; Start is disabled while CPU is joining or unavailable.
 The server validates every race and command. Outage never triggers a fallback
-demo or a human decision. Play vs CPU opens this same room after choosing a side.
+demo or a human decision. Play vs CPU opens this same room at once, the player on the Free Peoples.
+
+## Who plays which side against the CPU — UI-533 (owner, 2026-11-12)
+
+In a room with the CPU (seated or being invited) the host's action column shows one more button under Start game:
+**Play the Shadow** or **Play the Free Peoples** (`room-swap-sides`), naming the side the host would take. A seat is
+never handed over inside a room (the server's rule), so the swap leaves this room and makes a new private one with the
+other side, the same rules (expansions and options) and the CPU invited again at the same pace; Ready and Start stay
+explicit clicks. The button is hidden in a room with a human opponent or an empty seat, and greyed while a request
+runs or after the start. The layout test keeps it inside the action column, clear of every other action, with its
+label fitting (`PveRoomLayoutTests`); the network test plays a game from each side through it
+(`PveInvitationNetworkTests`).
 
 ## The CPU's pace stands clear — owner, 2026-11-11
 

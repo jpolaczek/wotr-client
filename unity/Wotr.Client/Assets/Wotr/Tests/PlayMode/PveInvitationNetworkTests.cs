@@ -44,12 +44,12 @@ namespace Wotr.PlayTests
             try
             {
                 using var client = new MountedFlowClient(api, storage);
-                var first = await OpenCpu(client, "cpu-shadow", Side.Shadow, token);
+                var first = await OpenCpu(client, Side.Shadow, token);
                 var revision = client.Board.View.Revision;
                 await Task.Delay(350, token);
                 Assert.AreEqual(revision, client.Board.View.Revision, "The human Hunt allocation is never automated.");
                 await BackToMenu(client, token);
-                var second = await OpenCpu(client, "cpu-fp", Side.FreePeoples, token);
+                var second = await OpenCpu(client, Side.FreePeoples, token);
                 await BackToMenu(client, token);
                 var matches = (await api.Get<MatchListView>("api/matches", token)).Matches;
                 foreach (var id in new[] { first, second, legacy.MatchId }) Assert.IsTrue(matches.Exists(m => m.MatchId == id), id);
@@ -68,12 +68,18 @@ namespace Wotr.PlayTests
             finally { if (Directory.Exists(storage)) Directory.Delete(storage, true); }
         }
 
-        private static async Task<string> OpenCpu(MountedFlowClient client, string card, Side side, CancellationToken token)
+        // UI-533: Play vs CPU opens its waiting room at once with the player on the Free Peoples; Swap sides makes the room
+        // again from the other side with the CPU invited.
+        private static async Task<string> OpenCpu(MountedFlowClient client, Side side, CancellationToken token)
         {
             await ClickReady(client.Root, "menu-cpu", token);
-            await ClickReady(client.Root, card, token);
-            await Until(() => client.Root.Q("waiting-room") != null, token);
-            Assert.IsNull(client.Board, "Choosing a side opens a room; it does not start a match.");
+            await Until(() => client.Root.Q("waiting-room") != null && client.Root.Q<Button>("room-swap-sides")?.text == "Play the Shadow", token);
+            Assert.IsNull(client.Board, "Play vs CPU opens a room; it does not start a match.");
+            if (side == Side.Shadow)
+            {
+                await ClickReady(client.Root, "room-swap-sides", token);
+                await Until(() => client.Root.Q<Button>("room-swap-sides")?.text == "Play the Free Peoples", token);
+            }
             Assert.IsFalse(client.Root.Q<Button>("start-game").enabledSelf);
             await ClickReady(client.Root, "room-ready", token);
             await ClickReady(client.Root, "start-game", token);

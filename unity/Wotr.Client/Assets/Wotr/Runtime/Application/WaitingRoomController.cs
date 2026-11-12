@@ -16,6 +16,8 @@ namespace Wotr.Client
         // OBS-04: what an observer's waiting room does once the game starts (the observer board, OBS-05).
         private readonly Func<RoomView, Task> observe;
         private readonly Action expired;
+        // UI-533: the waiting room of a game against the CPU played from the other side (ClientFlow makes it).
+        private readonly Func<RoomView, Task> swapSides;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private readonly RoomChatController chat;
         private readonly CancellationToken token;
@@ -30,8 +32,9 @@ namespace Wotr.Client
         // pollInterval: how often the room is refreshed in the background (2 s; tests may shorten it).
         public WaitingRoomController(GameApi api, WaitingRoomScreen screen, RoomView room,
             Func<string, Task> openMatch, Func<Task> menu, Action expired, TimeSpan? pollInterval = null, Func<Task> removed = null,
-            Func<RoomView, Task> observe = null)
+            Func<RoomView, Task> observe = null, Func<RoomView, Task> swapSides = null)
         {
+            this.swapSides = swapSides;
             this.removed = removed ?? menu;
             this.observe = observe ?? (_ => Task.CompletedTask);
             this.pollInterval = pollInterval ?? TimeSpan.FromSeconds(2);
@@ -50,6 +53,7 @@ namespace Wotr.Client
             screen.Configure += Configure;
             screen.Invite += Invite;
             screen.AddCpu += InviteCpu;
+            screen.SwapSides += SwapSides;
             screen.ChangeCpuPace += ChangeCpuPace;
             screen.Start += Start;
             screen.Demo += Demo;
@@ -72,12 +76,23 @@ namespace Wotr.Client
         // BOT-37: the CPU's pace is a change of the room: its version rises and both players get ready again.
         public void ChangeCpuPace(BotThinkingMode mode) => Run(async () => Apply(await api.Put<RoomView>(Path + "/bot/thinking",
             new ConfigureRoomBotRequest { ExpectedVersion = screen.Room.Version, ThinkingMode = mode }, token)));
-        public void InviteCpu() => Run(async () =>
+        // The flow replaces this waiting room with the new one, so nothing here waits for it.
+        private void SwapSides()
+        {
+            if (!busy && !disposed && swapSides != null && screen.Room != null)
+                _ = swapSides(screen.Room);
+        }
+
+        public void InviteCpu() => InviteCpu(BotThinkingMode.Fast);
+
+        // UI-533: the pace comes with the invitation when a swap of sides brings the CPU back.
+        public void InviteCpu(BotThinkingMode mode) => Run(async () =>
         {
             invitation ??= new AddRoomBotRequest
             {
                 RequestId = Guid.NewGuid().ToString("N"),
-                ExpectedVersion = screen.Room.Version
+                ExpectedVersion = screen.Room.Version,
+                ThinkingMode = mode
             };
             var side = screen.Room.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
             screen.ShowInvitation(side);
@@ -288,6 +303,7 @@ namespace Wotr.Client
             screen.Configure -= Configure;
             screen.Invite -= Invite;
             screen.AddCpu -= InviteCpu;
+            screen.SwapSides -= SwapSides;
             screen.ChangeCpuPace -= ChangeCpuPace;
             screen.Start -= Start;
             screen.Demo -= Demo;

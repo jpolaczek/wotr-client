@@ -399,25 +399,26 @@ User application from 2026-10-16: "Adjust host view a game to the rest of the de
 - Footer: ‘Back’ (`cancel-host`) to the left, message of the middle error, ‘Create game’
   (`submit-host`) to the right.
 
-The "Private" switch and loose row of buttons are gone. `SideChoice` also serves the Play vs CPU page (BOT-13).
+The "Private" switch and loose row of buttons are gone.
 
 <a id="demo-vs-cpu-z-menu-głównego--menu-31-2026-10-16"></a>
 ## Play vs CPU from the main menu — BOT-13
 
 The action column keeps its existing CPU slot, now **Play vs CPU** (`menu-cpu`).
-Its page uses `SideChoice` (`cpu-fp`, `cpu-shadow`) and Back (`cancel-cpu`). One
-short sentence explains that Ready and Start follow in the waiting room. There
-is no replacement warning, difficulty selection or service configuration.
 
-A side click creates a private room and invites CPU using the same invitation
-controller as Add CPU. It does not start the game or discard the room after an
+UI-533 (owner, 2026-11-12): the click opens the CPU's waiting room at once: a private room with the player on the Free
+Peoples and the CPU invited, where the expansions are chosen and **Swap sides** (`room-swap-sides`, see WAITING_ROOM_UX)
+decides who plays which side. The side page (`cpu-fp`, `cpu-shadow`, `cancel-cpu`) is gone. There is no replacement
+warning, difficulty selection or service configuration.
+
+The room is created and the CPU invited with the same invitation controller as Add CPU. It does not start the game or discard the room after an
 error. Joining, Ready or Unavailable appears in the opposing seat; the ordinary
 status line explains refusals and connection failures. Existing Ready and Start
 require current-configuration acceptance. Every saved PvE remains in My games,
 with CPU identity, chosen side and turn. Earlier demos and human games remain.
 The separate waiting-room demo action retains its original replacement behavior.
 
-DEMO-06 (2026-10-19): above the side cards the page has the same rules as a waiting room, in one row (`RulesStrip`
+Superseded by UI-533 (the rules are chosen in the CPU's waiting room). DEMO-06 (2026-10-19): above the side cards the page had the same rules as a waiting room, in one row (`RulesStrip`
 with `.rules-row`: the Fate, Lords and Kings medallions, then the six variant chips in two rows of three). The page
 asks `GET /api/rooms/offered-modules` when it opens; a module the server does not release stays disabled with its
 reason, and a server without the route offers the base game. The rules are set before the click on a side card (still
