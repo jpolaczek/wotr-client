@@ -17,8 +17,8 @@ namespace Wotr.PlayTests
     // Reading is local; the map viewport and the game do not change.
     public sealed class ActionNoticeLayoutTests
     {
-        // Pennant, two peeking pennants and the seal: an icon, not a strip.
-        private const float IconStackWidth = 44;
+        // Pennant, two peeking pennants and the seal: an icon, not a strip (owner 2026-11-11: larger, on a plate).
+        private const float IconStackWidth = 60;
 
         [UnityTest]
         public IEnumerator PennantStackReadsNewestFirstAndCentresParchmentCardsInFourLayouts() => Wait(Layouts());
@@ -71,6 +71,9 @@ namespace Wotr.PlayTests
             // The pointer may still rest on the stack from the previous layout: the hover variant is the same enamel.
             Assert.That(Texture(stack.Root.Q("notice-pennant")), Does.StartWith("pennant-shadow"), "The pennant wears the opponent's enamel · " + label);
             Assert.AreEqual("wax-seal", Texture(stack.Root.Q("notice-seal")), label);
+            // Owner (2026-11-11): a larger pennant and a count that reads at a glance.
+            Assert.GreaterOrEqual(stack.Root.Q("notice-pennant").worldBound.height, 31f, "A larger pennant · " + label);
+            Assert.GreaterOrEqual(stack.Root.Q<Label>("notice-count").resolvedStyle.fontSize, 12f, "A legible count · " + label);
             Assert.LessOrEqual(stack.Root.worldBound.width, IconStackWidth, "A small icon, not a long banner · " + label);
             Assert.IsEmpty(stack.Root.Query<Label>().ToList().Where(l => l.name != "notice-count"), "The pennant carries no text · " + label);
             // UI-166: the newest action's result — heading and first line — without the side the pennant already shows.

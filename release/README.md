@@ -1,7 +1,7 @@
 <a id="instalatory-dla-graczy"></a>
 # Players' installers
 
-The local build from the current checkout is enough for the menu **WoTR → Build** in Unity; [editor instruction](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/DEVELOPMENT.md) describes profiles, fullscreen and `.artifacts/builds/local/` outputs. It does not require a clean commit and is not a process of creating a re-versioned package below.
+The local build from the current checkout is enough for the menu **WoTR → Build** in Unity; [editor instruction](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/DEVELOPMENT.md) describes profiles, fullscreen and `.artifacts/builds/local/` outputs. It does not require a clean commit and is not a process of creating a re-versioned package below.
 
 `version.json` defines the version of the release. From DIST-06 players are hit by Velopack installers 1.2.161 ( `Setup.exe` for Windows x64, `.pkg` for macOS Universal, an `.AppImage` for Linux x64 and the Steam Deck — LNX-02, D18) with full update package `.nupkg` , not ZIP installers do not have a system signature (D13, DIST-12 ); the integrity of the updates will be ensured by the signature Ed25519 manifest ( DIST-05/07 Instructions for players: [PLAYER-GUIDE](../docs/release/PLAYER-GUIDE.md) .
 
@@ -147,11 +147,21 @@ bash scripts/smoke-installer-linux.sh .artifacts/releases/<version>/installers/l
 Players with ZIP `0.2.0-rc1` install the new version once; data and settings remain because identifier has not changed.
 
 <a id="serwer-i-zgodność--dist-05"></a>
+## The CPU opponent is updated on the server only (0.11.0)
+
+The client carries no CPU. Play against the CPU goes through the ordinary player API: a room with a CPU seat, the CPU's
+status and pace, its moves arriving like a human opponent's. The CPU itself is a private runtime library the server
+loads; a new CPU is installed by the operator on the server (`wotr-server:docs/server/BOT-OPERATIONS.md`: install the
+package, drain, upgrade the saved games, resume) and never needs a client release or a higher minimum client version
+(the client gate below reads the client release catalog, not the CPU). The client names no CPU version, policy or
+pace time. A client release is needed only when the player protocol or the contracts change: a new pace, a new seat
+status, a new CPU control in the interface.
+
 ## Server and compatibility — DIST-05
 
-The server, its image and acceptance restore releases `wotr-server` (DIST-03) separately. The administrator uses [Compose configuration and instructions](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/infra/README.md).
+The server, its image and acceptance restore releases `wotr-server` (DIST-03) separately. The administrator uses [Compose configuration and instructions](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/infra/README.md).
 
-The client sends `X-Wotr-Client-Version` and `X-Wotr-Protocol-Version` in each request and handschake WebSocket. The server corresponds to 409 `ClientUpdateRequired` or `ServerUpdateRequired`; the client then shows a clear reason and does not reconnect the call automatically. The public key of the publisher is pinned in `Assets/Wotr/Runtime/Networking/ReleasePublisher.cs`. The commands and layout of the directory on the host: [infra/README](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/infra/README.md).
+The client sends `X-Wotr-Client-Version` and `X-Wotr-Protocol-Version` in each request and handschake WebSocket. The server corresponds to 409 `ClientUpdateRequired` or `ServerUpdateRequired`; the client then shows a clear reason and does not reconnect the call automatically. The public key of the publisher is pinned in `Assets/Wotr/Runtime/Networking/ReleasePublisher.cs`. The commands and layout of the directory on the host: [infra/README](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/infra/README.md).
 
 ## Application icon
 

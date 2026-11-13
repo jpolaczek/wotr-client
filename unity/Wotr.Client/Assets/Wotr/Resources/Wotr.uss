@@ -1464,11 +1464,36 @@
 .illustrated-figure.selected { border-width: 2px; border-color: rgb(241, 209, 122); background-color: rgba(199, 164, 70, .15); }
 .region-hover .illustrated-figure.eligible-figure { border-width: 3px; border-color: rgb(255, 214, 112); background-color: rgba(120, 88, 24, 0.55); }
 .motion-enabled .region-hover.choice-glow-pulse .illustrated-figure.eligible-figure { border-color: rgba(255, 214, 112, 0.4); background-color: rgba(70, 52, 18, 0.3); }
+/* UI-536 (owner, 2026-11-12): in the region panel a chosen figure shines and, while the region's choice is being made,
+   a figure that could join but is left behind goes dark (RegionHoverPanel), so no figure reads as both. Lit: a bright
+   rim on a lit gold plate, the gilt glow at full strength and wider, steady. Dark: the figure at a third of its
+   strength, no glow, a dull rim on a dark plate; under the pointer only its rim lightens. The change takes 0.2 s. */
+.region-hover .illustrated-figure.selected,
 .region-hover .illustrated-figure.eligible-figure.selected,
 .motion-enabled .region-hover.choice-glow-pulse .illustrated-figure.eligible-figure.selected {
+    border-width: 3px;
+    border-color: rgb(255, 228, 146);
+    background-color: rgba(214, 170, 64, 0.62);
+}
+.region-hover .illustrated-figure.selected > .icon-glow { left: -7px; right: -7px; top: -7px; bottom: 1px; opacity: 1; }
+.region-hover .illustrated-figure.selected > .figure-art-image { opacity: 1; }
+.region-hover .illustrated-figure.left-behind,
+.motion-enabled .region-hover.choice-glow-pulse .illustrated-figure.left-behind {
     border-width: 2px;
-    border-color: rgb(241, 209, 122);
-    background-color: rgba(199, 164, 70, .15);
+    border-color: rgba(128, 112, 88, 0.45);
+    background-color: rgba(8, 7, 6, 0.62);
+}
+.region-hover .illustrated-figure.left-behind > .figure-art-image { opacity: 0.32; }
+.region-hover .illustrated-figure.left-behind > .icon-glow { opacity: 0; }
+/* The pointer still rests on a figure just clicked dark, so under the pointer only its rim lightens: it stays dark. */
+.region-hover .illustrated-figure.left-behind:hover { border-color: rgba(200, 178, 128, 0.5); }
+.motion-enabled .region-hover .illustrated-figure.selected,
+.motion-enabled .region-hover .illustrated-figure.left-behind { transition-duration: 0.2s; }
+.motion-enabled .region-hover .illustrated-figure > .figure-art-image,
+.motion-enabled .region-hover .illustrated-figure > .icon-glow {
+    transition-property: opacity;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-sine;
 }
 .figure-motion-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 /* UI-404: a flight is the destination's own miniature on the ground (Styles/Armies.uss, "figure-flight"). */

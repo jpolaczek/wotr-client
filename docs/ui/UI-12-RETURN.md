@@ -4,7 +4,7 @@
 <a id="kontrakt-i-plan-przed-implementacją"></a>
 ## Contract and plan before implementation
 
-R05/R07/R10/R13/R21; S09/S13/S20–S22. We use the received endpoints [T35](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/server/T35-CORRESPONDENCE.md), the existing UI-10 revision gate, the draft reconcilization and the private UI-11 policy. We do not change the rules of the game.
+R05/R07/R10/R13/R21; S09/S13/S20–S22. We use the received endpoints [T35](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/server/T35-CORRESPONDENCE.md), the existing UI-10 revision gate, the draft reconcilization and the private UI-11 policy. We do not change the rules of the game.
 
 1. The list of games shows the opponent, the page, the short decision context, the status of Your
    decision/Waiting/result and the symbol of the new changes. Filters and pages are clickable.

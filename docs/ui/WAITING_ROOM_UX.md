@@ -223,3 +223,40 @@ rules strip, the seats and the audience — which greyed them out and back withi
 actions at once (`WaitingRoomController.Run` ignores them), and the controls grey out only when the server takes longer
 than 400 ms (`WaitingRoomScreen.BusyShownAfterMilliseconds`); the reply restores them.
 `WaitingRoomRulesTests.ARulesChangeKeepsThePageStillUnlessTheServerIsSlow` checks both.
+
+## CPU seat (BOT-13)
+
+The seated host invites CPU with **Add CPU** in the empty opposing seat’s existing
+Remove slot. Take seat keeps its own slot. Both controls retain their geometry;
+Add CPU becomes Remove once occupied. The seat uses the ordinary faction emblem,
+CPU name and short Joining / Ready / Unavailable status. No extra board controls,
+service settings or private client component are introduced.
+
+The client keeps one request ID and expected room version while an invitation is
+uncertain. A retry uses that same request. A newer room version or authoritative
+occupant resolves it; removed reservations cannot be revived by late replies.
+Ready and Start remain explicit human clicks. CPU acceptance must match the
+current configuration; Start is disabled while CPU is joining or unavailable.
+The server validates every race and command. Outage never triggers a fallback
+demo or a human decision. Play vs CPU opens this same room at once, the player on the Free Peoples.
+
+## Who plays which side against the CPU — UI-533 (owner, 2026-11-12)
+
+In a room with the CPU (seated or being invited) the host's own seat shows **Switch side** (`seat-free-swap` or
+`seat-shadow-swap`) in its top right corner, beside the side's name, where the CPU's seat shows its pace. Its tooltip
+names the outcome (*Play the Shadow; the CPU takes the Free Peoples…*). The owner first got the button in the action
+column under Start game (`room-swap-sides`), found it hard to see and asked for it in the seat where the side is written
+(2026-11-12); the column's button is gone. A seat is never handed over inside a room (the server's rule), so the switch
+leaves this room and makes a new private one with the other side, the same rules (expansions and options) and the CPU
+invited again at the same pace; Ready and Start stay explicit clicks. The switch is hidden in a room with a human
+opponent or an empty seat and in the CPU's seat, and greyed while a request runs or after the start. The layout test
+keeps it inside the host's seat, clear of the seat's labels and buttons, with its label fitting, in all four layouts
+(`PveRoomLayoutTests`); the network test plays a game from each side through it (`PveInvitationNetworkTests`).
+
+## The CPU's pace stands clear — owner, 2026-11-11
+
+At the foot of the CPU's seat *Pace: Fast / Thorough* covered the CPU's status and the seat's Take seat. It now stands in
+the seat's top right corner, beside the side's name and above the Remove column (132 × 26 points, `.waiting-pace`).
+`PveRoomLayoutTests` checks in all four layouts that it stays in its seat, clear of the seat's buttons and of every
+label's text.
+

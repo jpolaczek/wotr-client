@@ -20,15 +20,15 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
 <a id="przed-każdym-zadaniem"></a>
 ## Before EVERY task
 
-1. Reread this file, [WORKFLOW](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/WORKFLOW.md), the task entry in the
+1. Reread this file, [WORKFLOW](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/WORKFLOW.md), the task entry in the
    registry and its individual document. Do not rely only
    on memory from a previous session.
-2. Read [REQUIREMENTS](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/REQUIREMENTS.md), the relevant parts of
-   [ARCHITECTURE](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/ARCHITECTURE.md), [LOGIC](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/rules/LOGIC.md),
-   [EXPANSIONS](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/rules/EXPANSIONS.md),
+2. Read [REQUIREMENTS](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/REQUIREMENTS.md), the relevant parts of
+   [ARCHITECTURE](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/ARCHITECTURE.md), [LOGIC](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/rules/LOGIC.md),
+   [EXPANSIONS](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/rules/EXPANSIONS.md),
    [UX_SPEC](docs/ui/UX_SPEC.md)
    and the task's `read_before` documents.
-3. Check dependencies, open [source gaps](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/sources/gaps.json), current file
+3. Check dependencies, open [source gaps](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/sources/gaps.json), current file
    changes and recent history entries. Do not overwrite the user's work.
 4. Run `python3 scripts/tasks.py ready --stage <stage>`. Work autonomously only
    within the commissioned stage. ROADMAP defines priority order. Technical
@@ -155,8 +155,12 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
   a verification plan and documents to update. Use the template.
 - A scope or dependency change requires a ROADMAP update and a graph check. Do
   not remove dependencies merely to start blocked work.
-- Do not deploy or publish without authorization in the request. Do not add
-  notifications outside the app, AI or Warriors of Middle-earth features.
-  User-approved exceptions: a simple CPU exclusively in demo mode (R32); ranked
-  matchmaking and ratings (owner, 2026-11-05, R35, docs/ui/RANKED_UX.md). Other
-  matchmaking stays out of scope.
+- Do not deploy or publish without authorization in the request. Notifications
+  outside the app and Warriors of Middle-earth remain outside scope. User-approved
+  exceptions: ranked matchmaking and ratings (owner, 2026-11-05, R35,
+  docs/ui/RANKED_UX.md); other matchmaking stays out of scope. Owner-approved CPU
+  scope (R32): preserve the legacy demo and support saved PvE through the ordinary
+  waiting room. Two strategic faction policies live only in a private runtime
+  library loaded by the game server, with modular expansion support. Players
+  install no private bot component. The client uses normal player projections and
+  opponent presentation; every human choice requires a click.

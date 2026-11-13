@@ -36,6 +36,18 @@ wotr_test_fixture="$wotr_test_directory/client-integration.json"
 python3 scripts/bootstrap_deps.py fetch --test >/dev/null
 wotr_server_dll="$wotr_root/.deps/test/wotr-server/Wotr.Server.dll"
 export WOTR_CLIENT_TEST_SERVER="$wotr_server_dll"
+# BOT-13: opt-in public ABI script lives only in the test seeder, never in player packages.
+if [[ "${WOTR_CLIENT_PVE_FIXTURE:-}" == "1" ]]; then
+  export Wotr__Bots__RuntimeEnabled=true
+  export Wotr__Bots__RuntimeAssembly="$wotr_root/.deps/test/wotr-seeder/Wotr.Scenarios.dll"
+  export Wotr__Bots__AllowUnpackagedRuntime=true
+  export Wotr__Bots__RuntimeVersion=0.0.13
+  export Wotr__Bots__RoomsEnabled=true
+  export Wotr__Bots__AcceptedPolicyVersion=client-fixture-13
+  export Wotr__Bots__Features=base
+  export Wotr__Bots__PollMilliseconds=100
+  export Wotr__Bots__RetrySeconds=1
+fi
 bash scripts/dotnet.sh "$wotr_root/.deps/test/wotr-seeder/Wotr.Scenarios.dll" "$wotr_test_fixture"
 python3 - "$wotr_test_port" "$wotr_test_fixture" <<'PYPORT'
 import json,sys

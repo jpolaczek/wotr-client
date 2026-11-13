@@ -49,6 +49,9 @@ namespace Wotr.Client
         private bool quiet;
 
         public const string NameOnlyClass = "name-only";
+        // UI-536: a chosen figure (lit) and one left behind while the region's choice is made (dark).
+        public const string SelectedClass = "selected";
+        public const string LeftBehindClass = "left-behind";
 
         public float PreferredWidth(bool compact) => Math.Min(compact ? 520 : 440, contentsWidth);
 
@@ -291,18 +294,25 @@ namespace Wotr.Client
             foreach (var (toggle, ids) in forceToggles)
                 RefreshToggle(toggle, ids);
             var glowing = false;
+            // UI-536 (owner, 2026-11-12): while a choice is being made here (a figure of the region chosen), the chosen
+            // figures shine and every other figure that could join goes dark, so no figure reads as both. The invitation
+            // pulse is only for a region where nothing is chosen yet.
+            var choosing = figures.Keys.Any(Selected);
             foreach (var entry in figures)
             {
                 var eligible = Eligible(entry.Key);
                 var selected = Selected(entry.Key);
-                glowing |= eligible && !selected;
+                var behind = choosing && eligible && !selected;
+                glowing |= eligible && !selected && !choosing;
                 var moved = Moved(entry.Key);
                 entry.Value.EnableInClassList("eligible-figure", eligible);
-                entry.Value.EnableInClassList("selected", selected);
+                entry.Value.EnableInClassList(SelectedClass, selected);
+                entry.Value.EnableInClassList(LeftBehindClass, behind);
                 entry.Value.EnableInClassList(MapArmyArtwork.MovedClass, moved);
                 var offer = eligible ? Offer(entry.Key) : "";
                 entry.Value.tooltip = descriptions[entry.Key] + (selected ? " · Selected · Click to leave behind" : offer.Length > 0
-                    ? " · " + offer : eligible ? " · Click to select" : moved ? " · Already marched in this action" : "") +
+                    ? " · " + offer : behind ? " · Left behind · Click to select" : eligible ? " · Click to select"
+                    : moved ? " · Already marched in this action" : "") +
                     (abilities.TryGetValue(entry.Key, out var lines) ? lines : "");
             }
             figuresGlowing = glowing;

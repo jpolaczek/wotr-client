@@ -394,6 +394,11 @@ plus the delta badge in `Runtime/Map/MapObservedTrace.cs` and `FigureDelta.cs`.
     UI-315 the settled panel, then the lit row and token, then a 0.7 s slide and a hold (§6.19).
   - **Reaching war** adds the short caption "At war" beside the War station.
   - A before-value the record lacks comes from the presented view.
+  - UI-535 (owner's game, 2026-11-12): an attack on Rohan recorded the whole action's change (passive 3 to active 2) and,
+    in a later step, the activation alone (passive 3 to active 3); its beat set the token back to 3 and only the live view
+    restored 2. A change the presented view has already passed (the same state, or a token further toward war and
+    active when the change activates, for a change that itself moves toward war) is not presented
+    (`PoliticsPresenter.Passed`; `OpponentRecruitmentPoliticsTests.AStaleActivationNeverMovesTheTokenBack`).
   - With opponent rows hidden, the trace marks the Politics tab.
 - **Controls.** No Recruit, Politics or Continue control is added; only Skip shows while it plays.
 - **Hooks for UI-308/UI-309.** Event cards and character abilities reuse these presenters through their recorded

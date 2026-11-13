@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
+using Wotr.Contracts;
 
 namespace Wotr.Client
 {
@@ -47,8 +48,23 @@ namespace Wotr.Client
             var steps = change.PreviousStepsToWar ?? nation.StepsToWar;
             if (wasActive == change.Active && steps == change.StepsToWar)
                 return null;
+            if (Passed(nation, change))
+                return null;
             var settle = OpenPanel();
             return new Beat(this, change.Id, wasActive, steps, change.Active, change.StepsToWar, settle, now, "presented/" + cue.Id);
+        }
+
+        // UI-535 (owner's game, 2026-11-12): an attack on Rohan recorded the whole action's change (passive 3 to active 2) and,
+        // in a later step, the activation alone (passive 3 to active 3); the activation's beat set the token back to 3 and
+        // only the live view restored 2. A change the staged board has already passed is not presented: the board shows its
+        // state already, or a token further toward war (and active when the change activates) for a change that moves
+        // toward war itself.
+        internal static bool Passed(NationView staged, ActionNationChange change)
+        {
+            if (staged.Active == change.Active && staged.StepsToWar == change.StepsToWar)
+                return true;
+            var forward = change.StepsToWar <= (change.PreviousStepsToWar ?? change.StepsToWar);
+            return forward && staged.StepsToWar < change.StepsToWar && (staged.Active || !change.Active);
         }
 
         // UI-342: the next scene begins — a panel the presentation opened closes, unless that scene's step changes politics

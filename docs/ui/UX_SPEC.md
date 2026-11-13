@@ -3,7 +3,7 @@
 
 **The mandatory UI-73–UI-80 model:** [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md) separates non-interactive information on hover/focus from the panel opened by clicking or Enter/Space. The map area on the hover only stands out; the region opens by clicking. The legal end click/drop continues to perform a step. The map covers the screen and has the edge pan; figure moves readably and Fellowship/Hunt have a common layout. The U01–U17 below are current requirements; the clearly marked descriptions of historical implementations and results are not acceptance of this version. The status of implementation defines the register.
 
-Specification accepted 2026-10-06 for UI-14–UI-24, developed by the subsequent tasks UI. The document itself does not mean finished runtime; status and evidence are in Register. Full decision coverage: [catalog](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/ui/interaction-inventory.json), attempts: [SCENARIOS](SCENARIOS.md).
+Specification accepted 2026-10-06 for UI-14–UI-24, developed by the subsequent tasks UI. The document itself does not mean finished runtime; status and evidence are in Register. Full decision coverage: [catalog](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/ui/interaction-inventory.json), attempts: [SCENARIOS](SCENARIOS.md).
 
 <a id="u01--cel-i-układ"></a>
 ## U01 — Objective and arrangement
@@ -4954,3 +4954,15 @@ to minimise empty space"; asked which graphic, the owner chose a picture of the 
 the picture, the gem, Gondor's emblem, 2 VP, strength and leadership, an emblem before each nation, nothing past the
 window), `RegionNameOnlyTests`, `MapContourAcceptanceTests`.
 
+## CPU opponents — BOT-13
+
+Saved PvE uses the ordinary waiting room and board. A seated host invites CPU in
+the empty opposite seat’s existing Remove slot; it becomes Remove when occupied.
+The same two seat actions remain in place. CPU uses the faction emblem and short
+Joining / Ready / Unavailable state. Play vs CPU chooses a side and opens this
+room; Ready and Start remain explicit clicks. New PvE never replaces a saved game.
+Only the game server loads the optional private runtime. The client has no bot
+service address, private package, difficulty selector or additional board control.
+Normal side-safe events drive the existing opponent presenters, including source
+dice/cards, camera, figures, recruitment, battle and Hunt. Human reactions always
+require a click; reconnect, Skip and Reduced motion never submit a human choice.

@@ -126,6 +126,28 @@
     text-overflow: ellipsis;
 }
 
+/* Owner (2026-11-11): while the CPU opponent decides, the One Ring turns at the start of the hint's line beside "CPU is
+   thinking…", in the hint's height, so a long think never looks like a frozen game. Only the ring rotates (no filter). */
+.console-line > .console-thinking { flex-shrink: 0; }
+.console-thinking { flex-direction: row; align-items: center; height: 38px; min-height: 38px; margin: 6px 4px 0 8px; }
+.console-thinking-ring {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    background-image: resource("Wotr/Art/UI/icons/ring");
+    -unity-background-scale-mode: scale-to-fit;
+    transform-origin: 50% 50%;
+}
+.console-thinking-text {
+    margin: 0 0 0 8px;
+    padding: 0;
+    font-size: 13px;
+    white-space: nowrap;
+    -unity-font-style: italic;
+    color: rgb(236, 214, 150);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+}
+
 /* UI-461 (owner, 2026-11-03): the Will of the West face menu stands at the start of the hint's line, in the hint's
    height: four medallions (the Elven Ring picker's .ring-face) that never resize the console; the chosen result is pressed in. */
 .console-line > .console-will-faces { flex-shrink: 0; }

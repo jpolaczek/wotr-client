@@ -71,7 +71,7 @@ UI-05 closes [Evaluation protocol](SCENARIOS.md): click paths, actual layout fix
 
 Conditions: Units 6000.6.0f1, macOS / M1 Pro, public `BoardFixture` and responses HTTP isolating interactions. RenderTexture 1366×768 and 1920×1080, the scale 100% and 125%. The authoritative rules movement/recruitment have separate tests T11/T12; the complete sequence of these actions on two real clients receives T13.
 
-T13 adds `MovementNetworkTests` with two full panels, HTTP/WSS and PostgreSQL: movement and alternate recruitment, click and drag, one commit, malicious unobstructed target, loss of response after the commit and recovery of the result without a return cost. [Description of conditions](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/TESTING.md) distinguishes the repetitive input snapshot from the actual execution. The result does not include future special abilities or a test between two operating systems.
+T13 adds `MovementNetworkTests` with two full panels, HTTP/WSS and PostgreSQL: movement and alternate recruitment, click and drag, one commit, malicious unobstructed target, loss of response after the commit and recovery of the result without a return cost. [Description of conditions](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/TESTING.md) distinguishes the repetitive input snapshot from the actual execution. The result does not include future special abilities or a test between two operating systems.
 
 | Scenario | Actual scope of the check |
 | --- | --- |
@@ -450,7 +450,7 @@ The UI-51 response inspection bypasses its own Hunt panel and keeps its hover wi
   neutral fields and no bar and water bands. Change Control does not change the band. Python
   reverses all 323 paths and checks normal conversion without changing the sides of the regions.
 
-The final [Source caps](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/sources/map13-review/README.md) was viewed all over board, in 9 sectors and 5 details. The actual command results are in MAP-13. The domain regression remains BoardTests.PrintedBordersDetermineMovement; the graph code has not been modified. This acceptance catalog/pallets, not the final return declaration and gestures.
+The final [Source caps](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/sources/map13-review/README.md) was viewed all over board, in 9 sectors and 5 details. The actual command results are in MAP-13. The domain regression remains BoardTests.PrintedBordersDetermineMovement; the graph code has not been modified. This acceptance catalog/pallets, not the final return declaration and gestures.
 
 
 <a id="ui-57--effects-przy-źródłach"></a>
@@ -502,7 +502,7 @@ Five CharacterRosterPersistenceTests : real HTTP/PostgreSQL both sides, full sna
   names and eight samples have a real hit-test over Zoom/Effects controls in four systems; Escape
   closes preview.
 
-Evidence: MapContourRenderingTests save images before/after And pixel assertions on source coordinates. `scripts/review-map-client.py` collect 26 screenshots and 12 real Development Player measurements at 1366 × 768/1920 × 1080 and 100/125%. Separate reading format/graphicsFormat and texture blocks distinguish memory GPU from the editor's bedspread; the Player limit remains independent. Results and possible limitations: MAP-14 , configuration: [MAP-14-RENDERER](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/sources/MAP-14-RENDERER.md) .
+Evidence: MapContourRenderingTests save images before/after And pixel assertions on source coordinates. `scripts/review-map-client.py` collect 26 screenshots and 12 real Development Player measurements at 1366 × 768/1920 × 1080 and 100/125%. Separate reading format/graphicsFormat and texture blocks distinguish memory GPU from the editor's bedspread; the Player limit remains independent. Results and possible limitations: MAP-14 , configuration: [MAP-14-RENDERER](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/sources/MAP-14-RENDERER.md) .
 
 <a id="ui-59--g08g11-portrety-próba-i-oczyszczanie"></a>
 ## UI-59 — G08–G11: portraits, testing and purification
@@ -748,3 +748,36 @@ Details: [OBSERVER_UX](OBSERVER_UX.md).
 | RP10 | Play step with movement and change of both tracks: figure flies, tracks have two stages, sound sounds. Manual step, undo and change page: no flight, stage and sound; never personal Victory/Defeat (EditMode `ReplayEffectsTests`). |
 | RP11 | The axle jump during the play interrupts the flight and the second stage of the track. The play is waiting for the presentation of the step at most 3 s. |
 | RP12 | Replay of the entire batch downloaded from the real server (Wroter-Server `ReplayEndToEndTests`: 88 moves, 6 turn, win Shadow by corruption) goes to the library, export and second installation, and there without an account and server: each step forward with Free Peoples, back from Shadow, round-turn borders, "SHADOW WINS" at the end, Log without later action (EditMode `ReplayFullGameTests`). |
+
+## Saved CPU opponents — BOT-13
+
+- Invite the opposite CPU as either seated host; an observer or guest cannot invite.
+  Add CPU occupies the empty seat’s Remove slot and becomes Remove once occupied.
+  Check Joining / Ready / Unavailable at 1366×768 and 1920×1080, each at 100% and 125%.
+- Lose the successful invitation response, activate twice and retry: one assignment,
+  the same request ID/version. Race human admission and configuration; remove CPU
+  and retry the cancelled request. No duplicate or resurrected occupant is legal.
+- Change configuration: both acceptances expire, CPU must acknowledge the new version,
+  and the human clicks Ready/Start. Unsupported or unavailable runtime cannot start.
+- Play vs CPU asks for a side and opens the ordinary room. Start one save on each side,
+  resume both, and retain an earlier demo. The legacy room demo still replaces demos only.
+- Observe real host-runtime movement, recruitment card, combat and Hunt through normal
+  presenters; record the source before effects. Skip, Reduced motion and reconnect
+  preserve the human pending decision and never submit it. CPU continues while the
+  client is closed and stops at a human-owned decision.
+
+`PveRoomTests`, `PveRoomLayoutTests`, `PveInvitationNetworkTests` and
+`PvePresentationNetworkTests` use the public test-only embedded ABI script in the
+pinned seeder, a real game server and isolated PostgreSQL. This is client flow and
+presentation coverage; private faction-policy gameplay and strength remain BOT-20.
+
+BOT-13 verification (2026-10-29, Unity 6000.6.0f1): 53 EditMode and 26 distinct
+PlayMode cases passed across focused batches. The real server/seeder pins are
+`9aa74bad6200` (Contracts 0.15.0, content 1.0.16); earlier unchanged cases used
+`34df1673d20d`. There are ten captured playback clips and 32 room-state frames
+(including focused/pressed Add CPU), at the four supported size/scale layouts.
+The first presentation run passed 6/9: three test assertions searched the own
+dice console for an opponent mark. The corrected observer checks the actual
+CostEmphasis overlay plus source-before-flight and camera framing; it passed.
+Local results, exact cases/pins and clips: `.artifacts/bot13/verification.json`.
+No installer build, private-policy acceptance, publication or deployment is claimed.

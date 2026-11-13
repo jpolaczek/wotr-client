@@ -53,10 +53,10 @@ namespace Wotr.Client
             return button;
         }
 
-        public void Apply(IReadOnlyList<ActionNoticeGroup> value)
+        public void Apply(IReadOnlyList<ActionNoticeGroup> value, bool live = false)
         {
             groups = value;
-            Stack.Apply(groups);
+            Stack.Apply(groups, live);
             RefreshVisibility();
         }
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -247,6 +248,33 @@ namespace Wotr.PlayTests
         // UI-410: the station a step reaches stays enabled (a drop target) without glowing.
         private static List<Button> Arrows(PoliticalPanel panel) => panel.Drawer.Query<Button>(className: "nation-slot").ToList()
             .Where(slot => slot.enabledSelf).ToList();
+
+        // UI-534 (owner, 2026-11-12): a nation stepped by the player's own card (Wisdom of Elrond's choice) jumped; it travels as
+        // the die's step does. A change after the opponent's decision is left to its staged beat (PoliticsPresenter).
+        [UnityTest]
+        public IEnumerator AStepAfterTheOwnDecisionTravels()
+        {
+            using var client = new MountedMatchClient("http://localhost", "politics-own-card");
+            var fixture = Fixture();
+            fixture.View.DecisionOwner = fixture.View.You;
+            client.Apply(fixture.View);
+            yield return Settle();
+            var panel = client.Board.Nations;
+            Assert.IsFalse(panel.Drawer.ClassListContains(PoliticsPresenter.MovingClass));
+            var next = JsonConvert.DeserializeObject<PlayerView>(JsonConvert.SerializeObject(fixture.View));
+            next.Revision++;
+            var north = next.Nations.Single(n => n.Id == "north");
+            north.Active = true;
+            north.StepsToWar = 2;
+            Assert.IsTrue(PoliticalPanel.OwnPoliticalChange(fixture.View, next));
+            var theirs = JsonConvert.DeserializeObject<PlayerView>(JsonConvert.SerializeObject(fixture.View));
+            theirs.DecisionOwner = fixture.View.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
+            Assert.IsFalse(PoliticalPanel.OwnPoliticalChange(theirs, next), "The opponent's step keeps its staged beat.");
+            Assert.IsFalse(PoliticalPanel.OwnPoliticalChange(fixture.View, fixture.View), "Nothing moved.");
+            client.Apply(next);
+            yield return null;
+            Assert.IsTrue(panel.Drawer.ClassListContains(PoliticsPresenter.MovingClass), "The card's step travels like the die's.");
+        }
 
         private static BoardFixture Fixture()
         {

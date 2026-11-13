@@ -399,27 +399,26 @@ User application from 2026-10-16: "Adjust host view a game to the rest of the de
 - Footer: ‘Back’ (`cancel-host`) to the left, message of the middle error, ‘Create game’
   (`submit-host`) to the right.
 
-The "Private" switch and loose row of buttons are gone. card `SideChoice` also serves the demo page from the menu (MENU-31).
+The "Private" switch and loose row of buttons are gone.
 
 <a id="demo-vs-cpu-z-menu-głównego--menu-31-2026-10-16"></a>
-## "Demo vs CPU" from the main menu — MENU-31 (2026-10-16)
+## Play vs CPU from the main menu — BOT-13
 
-The user request from 2026-10-16: "Do the best from the main menu option demo mode, which immediately creates a private game and starts the game vs CPU, all that is supposed to happen is to ask for a choice of faction".
+The action column keeps its existing CPU slot, now **Play vs CPU** (`menu-cpu`).
 
-- The action column has “Demo vs CPU” (`menu-demo`) under “Host a game”. “Sign out” and “Quit game”
-  stand together in the last row of the column, so the new button fits into four layouts.
-- "Demo vs CPU" opens a page with this title in the menu window. It has one sentence about demo,
-  card pages `SideChoice` (`demo-fp`, `demo-shadow`), note that the new demo replaces the previous,
-  and "Back".
-- The card click is the whole selection (UI-142). Client:
-  1. create a private room called "Demo" on this side;
-  2. launches a demo (`POST /api/rooms/{id}/demo`, DEMO-04);
-  3. release the room (`leave`; empty room server immediately deletes, MENU-32);
-  4. opens the party as each started.
+UI-533 (owner, 2026-11-12): the click opens the CPU's waiting room at once: a private room with the player on the Free
+Peoples and the CPU invited, where the expansions are chosen and **Switch side** in the player's seat (`seat-free-swap`,
+see WAITING_ROOM_UX) decides who plays which side. The side page (`cpu-fp`, `cpu-shadow`, `cancel-cpu`) is gone. There is no replacement
+warning, difficulty selection or service configuration.
 
-The error appears in the status of the menu, and the room is released anyway.
+The room is created and the CPU invited with the same invitation controller as Add CPU. It does not start the game or discard the room after an
+error. Joining, Ready or Unavailable appears in the opposing seat; the ordinary
+status line explains refusals and connection failures. Existing Ready and Start
+require current-configuration acceptance. Every saved PvE remains in My games,
+with CPU identity, chosen side and turn. Earlier demos and human games remain.
+The separate waiting-room demo action retains its original replacement behavior.
 
-DEMO-06 (2026-10-19): above the side cards the page has the same rules as a waiting room, in one row (`RulesStrip`
+Superseded by UI-533 (the rules are chosen in the CPU's waiting room). DEMO-06 (2026-10-19): above the side cards the page had the same rules as a waiting room, in one row (`RulesStrip`
 with `.rules-row`: the Fate, Lords and Kings medallions, then the six variant chips in two rows of three). The page
 asks `GET /api/rooms/offered-modules` when it opens; a module the server does not release stays disabled with its
 reason, and a server without the route offers the base game. The rules are set before the click on a side card (still
@@ -429,7 +428,7 @@ the whole selection); their tooltips leave out Ready. The client then configures
 <a id="logowanie-bez-rejestracji--auth-03-2026-10-16"></a>
 ## Logging without registration — AUTH-03 (2026-10-16)
 
-Decision [D16](https://github.com/jpolaczek/wotr-server/blob/6cd98fb2035d18730ecc810e5f12e2acdfe35de1/docs/DECISIONS.md): an account is set up on the game page, the client only opens it. `GatewayScreen`:
+Decision [D16](https://github.com/jpolaczek/wotr-server/blob/f52b87442a9e2bc83bc14b53a60e9b987d3b24b9/docs/DECISIONS.md): an account is set up on the game page, the client only opens it. `GatewayScreen`:
 - one `Account name` (`auth-username`) field and password; the client checks that the entry is a
   valid account name (an email address gets "sign in with your account name, not the email address"),
   and the server finds the account by name only (AUTH-05, 2026-10-17);

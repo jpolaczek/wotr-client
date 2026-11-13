@@ -161,6 +161,38 @@ namespace Wotr.PlayTests
             Assert.IsTrue(panel.Drawer.Q("nation-track-" + stage.Main).ClassListContains("nation-at-war"), "The released row is at war.");
         }
 
+        // UI-535 (owner's game, 2026-11-12): the whole action's change (passive 2 to active 1) and a later step's activation
+        // alone (passive 2 to active 2): the token slides once toward war and never back.
+        [UnityTest]
+        public IEnumerator AStaleActivationNeverMovesTheTokenBack()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, Side.FreePeoples);
+            var nation = stage.Before.Nations.Single(n => n.Id == stage.Main);
+            nation.Active = false;
+            nation.StepsToWar = 2;
+            yield return stage.Ready();
+            var latest = stage.Latest();
+            Nation(latest, stage.Main, true, 1);
+            var token = stage.Board.Nations.Drawer.Q<Button>("nation-status-" + stage.Main);
+            stage.Play(latest, null, Politics(stage.Step(1), stage.Main, false, 2, true, 1), Politics(stage.Step(2), stage.Main, false, 2, true, 2));
+            yield return stage.Until(() => stage.Board.Nations.Drawer.style.display.value == DisplayStyle.Flex);
+            var start = token.resolvedStyle.left;
+            yield return stage.Until(() => token.resolvedStyle.left > start + 1 || token.resolvedStyle.left < start - 1);
+            var moved = token.resolvedStyle.left;
+            var direction = Mathf.Sign(moved - start);
+            var furthest = moved;
+            while (stage.Playback.Holding)
+            {
+                var left = token.resolvedStyle.left;
+                Assert.GreaterOrEqual((left - furthest) * direction, -1f, "The token never slides back toward its old station.");
+                if ((left - furthest) * direction > 0)
+                    furthest = left;
+                yield return null;
+            }
+            yield return stage.Released();
+            Assert.IsTrue(token.ClassListContains("active-nation"));
+        }
+
         // UI-315 (owner review): the panel the step opens settles, the nation's token glows before it moves, slides to its
         // new station while lit and stays lit there — the step is seen, not flashed.
         [UnityTest]
