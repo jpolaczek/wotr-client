@@ -18,6 +18,10 @@ namespace Wotr.Client
 
         public static ConfirmationDialog Quit(string note) => new ConfirmationDialog("quit", "Quit War of the Ring?", note, "Quit");
 
+        // UI-537: My games' x removes the game for both players, with everything stored for it.
+        public static ConfirmationDialog DeleteGame() => new ConfirmationDialog("delete-game", "Delete this game?",
+            "The game is removed for both players. You cannot undo this.", "Delete");
+
         // UI-501: leaving a ranked game is a named concession.
         public static ConfirmationDialog Concede() => new ConfirmationDialog("concede", "Concede this game?",
             "You lose the game and your rating follows. You cannot return to it.", "Concede");

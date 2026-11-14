@@ -62,6 +62,10 @@ namespace Wotr.Client
         public event Action<string, RoomRole> Join;
         public event Action<RoomView> Open;
         public event Action<MatchSummary> OpenMatch;
+        // UI-537: a confirmed x in My games; the browser removes the game on the server and reloads the lists.
+        public event Action<MatchSummary> DeleteMatch;
+        public ConfirmationDialog DeleteGame { get; } = ConfirmationDialog.DeleteGame();
+        private MatchSummary pendingDelete;
         public event Action Refresh;
         public event Action Logout;
         // MENU-14: a confirmed Quit game closes the application.
@@ -133,6 +137,14 @@ namespace Wotr.Client
             page.Add(Status);
             Quit.Confirmed += () => QuitRequested?.Invoke();
             Root.Add(Quit.Root);
+            DeleteGame.Confirmed += () =>
+            {
+                var match = pendingDelete;
+                pendingDelete = null;
+                if (match != null)
+                    DeleteMatch?.Invoke(match);
+            };
+            Root.Add(DeleteGame.Root);
             ShowPublicGames();
         }
 
@@ -414,6 +426,27 @@ namespace Wotr.Client
             UpdateEmpty();
         }
 
+        // UI-537: the x asks first; only Delete removes the game.
+        private void AskDelete(MatchSummary match)
+        {
+            if (match == null || match.Ranked)
+                return;
+            pendingDelete = match;
+            DeleteGame.Open();
+        }
+
+        // UI-537: the deleted game leaves both lists at once; the next reload confirms it.
+        public void RemoveMatch(string matchId)
+        {
+            foreach (var shown in new[] { rows, finishedRows })
+                if (shown.TryGetValue(matchId, out var row))
+                {
+                    row.Root.RemoveFromHierarchy();
+                    shown.Remove(matchId);
+                }
+            UpdateEmpty();
+        }
+
         private void PlaceRows(MatchListView page, Dictionary<string, SavedMatchRow> shown, VisualElement list)
         {
             var ids = new HashSet<string>(page.Matches.Select(m => m.MatchId));
@@ -427,7 +460,7 @@ namespace Wotr.Client
                 var match = page.Matches[index];
                 if (!shown.TryGetValue(match.MatchId, out var row))
                 {
-                    row = new SavedMatchRow(match, selected => OpenMatch?.Invoke(selected));
+                    row = new SavedMatchRow(match, selected => OpenMatch?.Invoke(selected), AskDelete);
                     shown.Add(match.MatchId, row);
                 }
                 row.Apply(match);

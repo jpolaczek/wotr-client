@@ -115,5 +115,53 @@ namespace Wotr.EditorTests
             screen.ShowMatches(page);
             Assert.AreEqual(DisplayStyle.None, badge.style.display.value);
         }
+    
+
+        // UI-537 (owner, 2026-11-14): an x beside each My games row deletes the game for both players after a question;
+        // a ranked game (RANK-04: never removed) has none; Cancel changes nothing.
+        [Test]
+        public void TheXBesideAGameAsksAndOnlyDeleteRemovesIt()
+        {
+            var screen = new MainMenuScreen("Player");
+            var page = new MatchListView();
+            page.Matches.Add(new MatchSummary { MatchId = "plain", Status = MatchStatus.Waiting, Opponent = "Gandalf" });
+            page.Matches.Add(new MatchSummary { MatchId = "ranked", Status = MatchStatus.Waiting, Ranked = true, Opponent = "Saruman" });
+            screen.ShowMatches(page);
+            var finished = new MatchListView();
+            finished.Matches.Add(new MatchSummary { MatchId = "done", Status = MatchStatus.Finished, Winner = Side.Shadow, You = Side.Shadow });
+            screen.ShowFinished(finished);
+            var deleted = new List<string>();
+            screen.DeleteMatch += match => deleted.Add(match.MatchId);
+            var x = screen.Root.Q<Button>("delete-match-plain");
+            Assert.IsNotNull(x);
+            Assert.AreEqual("×", x.text);
+            Assert.AreEqual(DisplayStyle.Flex, x.style.display.value);
+            Assert.AreEqual(DisplayStyle.None, screen.Root.Q<Button>("delete-match-ranked").style.display.value, "A ranked game is never deleted.");
+            Assert.IsNotNull(screen.Root.Q<Button>("delete-match-done"), "Finished games have their x too.");
+            // The x is beside the row's button, not inside it: pressing it never opens the game.
+            Assert.IsNull(screen.Root.Q<Button>("resume-match-plain").Q<Button>("delete-match-plain"));
+            Assert.IsFalse(screen.DeleteGame.IsOpen);
+            Click(x);
+            Assert.IsTrue(screen.DeleteGame.IsOpen);
+            Assert.AreEqual("Delete this game?", screen.DeleteGame.Root.Q<Label>(className: "title").text);
+            Click(screen.DeleteGame.Root.Q<Button>("delete-game-cancel"));
+            Assert.IsFalse(screen.DeleteGame.IsOpen);
+            CollectionAssert.IsEmpty(deleted, "Cancel deletes nothing.");
+            Click(x);
+            Click(screen.DeleteGame.Root.Q<Button>("delete-game-confirm"));
+            CollectionAssert.AreEqual(new[] { "plain" }, deleted);
+            screen.RemoveMatch("plain");
+            Assert.IsNull(screen.Root.Q("saved-match-plain"), "The deleted game leaves the list at once.");
+            Assert.IsNotNull(screen.Root.Q("saved-match-ranked"));
+        }
+
+        // Without a panel no event reaches the button: its click action is invoked as a press would.
+        private static void Click(Button button)
+        {
+            var invoke = typeof(Clickable).GetMethod("Invoke", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Public, null, new[] { typeof(EventBase) }, null);
+            Assert.IsNotNull(invoke, "Clickable.Invoke");
+            invoke.Invoke(button.clickable, new object[] { null });
+        }
     }
 }
