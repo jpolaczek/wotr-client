@@ -70,6 +70,57 @@ namespace Wotr.PlayTests
             Directory.Delete(storage, true);
         }
 
+        // UI-537 (owner, 2026-11-14): the x beside a My games row deletes the game for both players after its question;
+        // the other player's open board learns it (MENU-22) and both menus list the game no more.
+        [UnityTest]
+        public IEnumerator TheXInMyGamesDeletesTheGameForBothPlayers()
+        {
+            var path = Environment.GetEnvironmentVariable("WOTR_CLIENT_TEST_CONFIG");
+            if (string.IsNullOrEmpty(path))
+                Assert.Ignore("Real HTTP fixture required.");
+            var task = RunFromMyGames(JObject.Parse(File.ReadAllText(path))["Address"].Value<string>());
+            while (!task.IsCompleted)
+                yield return null;
+            task.GetAwaiter().GetResult();
+        }
+
+        private static async Task RunFromMyGames(string address)
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+            var token = timeout.Token;
+            var storage = Path.Combine(Path.GetTempPath(), "wotr-delete-x-" + Guid.NewGuid().ToString("N"));
+            var hostApi = new GameApi(address);
+            var guestApi = new GameApi(address);
+            await TestAccounts.Register(hostApi, "deletex_" + Guid.NewGuid().ToString("N").Substring(0, 16), token);
+            await TestAccounts.Register(guestApi, "deletedx_" + Guid.NewGuid().ToString("N").Substring(0, 16), token);
+            var match = await StartMatch(hostApi, guestApi, token);
+            using (var host = new MountedFlowClient(hostApi, storage))
+            using (var guest = new MountedFlowClient(guestApi, storage))
+            {
+                await Open(guest, match, token);
+                await ShowList(host.Root, "resume-match-" + match, token);
+                var menu = host.Root;
+                await ClickReady(menu, "delete-match-" + match, token);
+                await Until(() => menu.Q("delete-game-confirmation")?.resolvedStyle.display == DisplayStyle.Flex, token);
+                await ClickReady(menu, "delete-game-confirm", token);
+                await Until(() => menu.Q("saved-match-" + match) == null, token);
+                await Until(() => guest.Board?.GameDeleted.IsOpen == true, token);
+                Assert.AreEqual("Game deleted", guest.Board.Connection.text);
+                await ClickReady(guest.Root, "game-deleted-menu", token);
+                await Until(() => guest.Board == null && guest.Root.Q("main-menu") != null, token);
+                foreach (var api in new[] { hostApi, guestApi })
+                {
+                    var list = await api.Get<MatchListView>("api/matches", token);
+                    Assert.IsFalse(list.Matches.Exists(summary => summary.MatchId == match), "The server lists the game no more.");
+                }
+                await ShowList(guest.Root, "resume-match-" + match, token);
+                await Task.Delay(1000, token);
+                Assert.IsNull(guest.Root.Q<Button>("resume-match-" + match), "The deleted game is gone from the other player's My games.");
+                Assert.AreEqual(404, await Status(() => hostApi.Get<PlayerView>("api/matches/" + match, token)));
+            }
+            Directory.Delete(storage, true);
+        }
+
         private static async Task<int> Status(Func<Task> request)
         {
             try

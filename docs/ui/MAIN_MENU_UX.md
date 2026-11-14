@@ -50,7 +50,7 @@ The window shows one page at a time and does not change the size between the pag
 | Page | He's opening it. | Content |
 | --- | --- | --- |
 | Open games (default) | `show-public-games` | Public rooms waiting for the player. The poem (`join-public-<id>`) has a free side emblem (ring or eye), the game name, "Hosted by {host}" and "Join as {side}". The whole row joins with one click. |
-| My games | `show-my-games` | Own rooms before start (`open-room-<id>`) and started parties (`resume-match-<id>`); from MENU-13 the line of the party only resumes it. |
+| My games | `show-my-games` | Own rooms before start (`open-room-<id>`) and started parties (`resume-match-<id>`); from MENU-13 the line of the party only resumes it; from UI-537 an x beside each started game (`delete-match-<id>`, greyed for a ranked game) deletes it for both players. |
 | Host a game | `host-game` | HostGameForm form; Back returns to Open games. |
 | Test scenarios | `open-test-scenarios` | Only in Test Mode (TEST-03); Back returns to Open games. |
 
@@ -344,6 +344,27 @@ Esc and click next to it do not close this window. The player who selected the �
   is not on the list “My games”.
 - Common Question Window: `ConfirmationDialog` with name prefix (`quit-…`, `delete-…`) and
   `confirm-window`, `confirm-note`, `confirm-actions` classes.
+
+
+## My games' x — UI-537 (2026-11-14)
+
+Source: owner request of 2026-11-14 — “add an x at every entry in My games so games can be deleted; a deleted game stops
+existing for both players”. Server: `DELETE /api/matches/{id}` (MENU-21), unchanged.
+
+- Every started game in My games, in both tabs (going and finished), has an x (`delete-match-<id>`, “×”, tooltip
+  “Delete this game for both players”) beside its row button, not inside it: pressing the x never opens the game.
+- A ranked game's x stands greyed (tooltip “A ranked game cannot be deleted”; unavailable controls are disabled, not
+  hidden): the server never removes one (RANK-04, 409), so leaving it is only by conceding.
+- The x opens `ConfirmationDialog.DeleteGame` over the menu (prefix `delete-game`): “Delete this game?”, “The game is
+  removed for both players. You cannot undo this.”, Delete (`delete-game-confirm`) and Cancel (`delete-game-cancel`).
+  Focus starts on Cancel; Esc, Cancel and a click beside the window delete nothing (MENU-14).
+- Delete sends `DELETE api/matches/{id}` (`MainMenuBrowser`); the row leaves both lists at once and the lists reload.
+  A 404 (already deleted) removes the row too; a 409 says “A ranked game cannot be deleted.”; another error says “The
+  game could not be deleted. Check the connection and try again.” in the menu's status line.
+- The other player: an open board shows “Game deleted” (MENU-22's `GameDeletedNotice`, unchanged); the main menu lists
+  the game no more at its next refresh.
+- Tests: EditMode `MainMenuTests.TheXBesideAGameAsksAndOnlyDeleteRemovesIt`; PlayMode
+  `MatchDeletionNetworkTests.TheXInMyGamesDeletesTheGameForBothPlayers` (real server).
 
 
 <a id="demo-przeciw-cpu--demo-04-2026-10-15"></a>

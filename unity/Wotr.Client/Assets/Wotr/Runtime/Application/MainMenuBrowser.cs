@@ -31,7 +31,40 @@ namespace Wotr.Client
             screen.MoreMatches += MoreMatches;
             screen.MoreFinished += MoreFinished;
             screen.Refresh += Refresh;
+            screen.DeleteMatch += DeleteMatch;
             _ = Poll();
+        }
+
+        // UI-537: My games' confirmed x removes the game for both players (MENU-21: DELETE api/matches/{id}); the row
+        // leaves at once and the lists reload. A ranked game is refused (RANK-04); a game already gone is gone.
+        private void DeleteMatch(MatchSummary match) => _ = Delete(match);
+
+        private async Task Delete(MatchSummary match)
+        {
+            try
+            {
+                await api.Delete("api/matches/" + Uri.EscapeDataString(match.MatchId), lifetime.Token);
+                screen.RemoveMatch(match.MatchId);
+                screen.Status.text = "";
+            }
+            catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
+            {
+                return;
+            }
+            catch (ApiException error) when (error.Status == 404)
+            {
+                screen.RemoveMatch(match.MatchId);
+            }
+            catch (ApiException error) when (error.Status == 409)
+            {
+                screen.Status.text = "A ranked game cannot be deleted.";
+            }
+            catch (Exception)
+            {
+                screen.Status.text = "The game could not be deleted. Check the connection and try again.";
+            }
+            if (!lifetime.IsCancellationRequested)
+                Refresh();
         }
 
         public void Refresh() => _ = Load();
@@ -220,6 +253,7 @@ namespace Wotr.Client
             screen.MoreMatches -= MoreMatches;
             screen.MoreFinished -= MoreFinished;
             screen.Refresh -= Refresh;
+            screen.DeleteMatch -= DeleteMatch;
             lifetime.Cancel();
             request?.Cancel();
             request?.Dispose();

@@ -748,6 +748,17 @@
     white-space: normal;
     -unity-text-align: middle-left;
 }
+/* UI-537: My games' x beside the row: square, the row's height, the hover of every button. */
+.saved-match .delete-match {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 44px;
+    min-width: 44px;
+    margin-left: 4px;
+    padding: 0;
+    font-size: 22px;
+    -unity-text-align: middle-center;
+}
 .saved-match-heading {
     -unity-font-style: bold;
 }
