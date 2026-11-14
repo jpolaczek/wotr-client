@@ -15,8 +15,8 @@ namespace Wotr.Client
         private readonly VisualElement detailAvatar = AvatarImage.Create(AvatarImage.Tiny);
         // UI-263: the game's expansion crests in the row's upper right corner.
         private readonly VisualElement crests;
-        // UI-537 (owner, 2026-11-14): an x beside the row deletes the game for both players (MENU-21's removal); a ranked game
-        // is never removed (RANK-04), so its row has none.
+        // UI-537 (owner, 2026-11-14): an x beside every row deletes the game for both players (MENU-21's removal); a ranked
+        // game is never removed (RANK-04), so its x stands greyed (unavailable controls are disabled, not hidden).
         private readonly Button delete;
         private MatchSummary current;
         private string version = "";
@@ -63,7 +63,8 @@ namespace Wotr.Client
             state.text = (match.Ranked ? "Ranked · " : "") + (match.HasUnseenChanges ? "● New changes · " : "") + Status(match);
             Root.EnableInClassList("your-decision", match.Status == MatchStatus.YourDecision);
             ExpansionCrests.Show(crests, match.Configuration);
-            delete.style.display = match.Ranked ? DisplayStyle.None : DisplayStyle.Flex;
+            delete.SetEnabled(!match.Ranked);
+            delete.tooltip = match.Ranked ? "A ranked game cannot be deleted" : "Delete this game for both players";
         }
 
         public static string Status(MatchSummary match)

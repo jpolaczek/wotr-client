@@ -118,7 +118,7 @@ namespace Wotr.EditorTests
     
 
         // UI-537 (owner, 2026-11-14): an x beside each My games row deletes the game for both players after a question;
-        // a ranked game (RANK-04: never removed) has none; Cancel changes nothing.
+        // a ranked game's x (RANK-04: never removed) stands greyed; Cancel changes nothing.
         [Test]
         public void TheXBesideAGameAsksAndOnlyDeleteRemovesIt()
         {
@@ -135,8 +135,10 @@ namespace Wotr.EditorTests
             var x = screen.Root.Q<Button>("delete-match-plain");
             Assert.IsNotNull(x);
             Assert.AreEqual("×", x.text);
-            Assert.AreEqual(DisplayStyle.Flex, x.style.display.value);
-            Assert.AreEqual(DisplayStyle.None, screen.Root.Q<Button>("delete-match-ranked").style.display.value, "A ranked game is never deleted.");
+            Assert.IsTrue(x.enabledSelf);
+            var ranked = screen.Root.Q<Button>("delete-match-ranked");
+            Assert.IsFalse(ranked.enabledSelf, "A ranked game is never deleted: its x stands greyed.");
+            Assert.AreEqual("A ranked game cannot be deleted", ranked.tooltip);
             Assert.IsNotNull(screen.Root.Q<Button>("delete-match-done"), "Finished games have their x too.");
             // The x is beside the row's button, not inside it: pressing it never opens the game.
             Assert.IsNull(screen.Root.Q<Button>("resume-match-plain").Q<Button>("delete-match-plain"));
