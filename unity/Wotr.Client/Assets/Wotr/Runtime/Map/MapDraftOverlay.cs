@@ -20,6 +20,10 @@ namespace Wotr.Client
         // UI-538 (owner): the settlement a recruitment's next figure goes to, lit apart from the other placement targets: a
         // Muster die's settlement in focus (UI-412), a card's region chosen first, a ruler's chosen settlement (UI-392).
         public HashSet<string> ChosenPlacements { get; } = new HashSet<string>();
+        // UI-538 (owner, 2026-11-16): with a figure taken up, the settlements the same recruitment could still take for
+        // another figure (another nation, another kind), shown pale beside the taken figure's own green.
+        public HashSet<string> OtherPlacements { get; } = new HashSet<string>();
+        private readonly HashSet<string> openPlacements = new HashSet<string>();
         private readonly HashSet<string> waitingPlacements = new HashSet<string>();
         private string recruitFocus = "";
         private bool figureTaken;
@@ -40,13 +44,17 @@ namespace Wotr.Client
             PlacementTargets.Clear();
             ChosenRegions.Clear();
             waitingPlacements.Clear();
+            openPlacements.Clear();
             figureTaken = draft.ReserveId.Length > 0;
             endpoint = "";
             RouteSteps = -1;
             if (context != null)
             {
                 if (MusterActions.Active(view, draft, context) && draft.Kind is null or CommandKind.Recruit)
+                {
                     Place(MusterActions.Targets(view, draft, context));
+                    openPlacements.UnionWith(MusterActions.OpenTargets(view, context));
+                }
                 if (ContextArmySelection.Active(view, draft, context) && draft.Kind is CommandKind.MoveArmies or CommandKind.AttackArmy)
                 {
                     Targets.UnionWith(ArmyActionTargets.For(draft, view, context));
@@ -69,10 +77,14 @@ namespace Wotr.Client
                 AttackTargets.UnionWith(CardArmyEvent.AttackTargets(view, draft));
             }
             if (context == null && draft.Kind == CommandKind.Recruit)
+            {
                 Place(RecruitDraft.Targets(draft, view));
+                openPlacements.UnionWith(RecruitDraft.OpenTargets(draft, view));
+            }
             if (draft.Kind == CommandKind.ChooseEffect)
             {
                 Place(EventRecruitDraft.Targets(draft, EventRecruitDraft.Option(view)));
+                openPlacements.UnionWith(EventRecruitDraft.OpenTargets(draft, EventRecruitDraft.Option(view)));
                 WaitCardRegion(view, draft);
             }
             // UI-431: Monsters Roused lights the regions of both its halves; a region waiting for its force is marked.
@@ -130,6 +142,7 @@ namespace Wotr.Client
             if (draft.Kind == CommandKind.ChooseCouncilHomelands)
                 CouncilHomelands(view, draft);
             UpdateChosenPlacements();
+            UpdateOtherPlacements();
             UpdatePlannedRegions(view, draft);
             UpdateSourceRegions(view, draft);
             map.ShowDraftSources(view, draft);
@@ -180,6 +193,17 @@ namespace Wotr.Client
                     ChosenPlacements.Add(region);
             if (recruitFocus.Length > 0 && !figureTaken && PlacementTargets.Contains(recruitFocus))
                 ChosenPlacements.Add(recruitFocus);
+        }
+
+        // UI-538 (owner, 2026-11-16): only while a figure is taken up; a pale settlement is no target (its click is as before).
+        private void UpdateOtherPlacements()
+        {
+            OtherPlacements.Clear();
+            if (!figureTaken)
+                return;
+            foreach (var region in openPlacements)
+                if (!Targets.Contains(region) && map.Data.Regions.ContainsKey(region))
+                    OtherPlacements.Add(region);
         }
 
         // A target a placement takes: lit and clicked as any target, and lit more strongly (UI-452).

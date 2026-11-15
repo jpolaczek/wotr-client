@@ -4971,14 +4971,23 @@ the map. It must stand out clearly from the other lit settlements: greener, more
 - **How it looks**: a brighter green filled at .8 against the lit settlements' .56 (UI-452); steady while they pulse
   (it leaves `MapTargetPulse`); a wider bright green edge over the ink line (`MapTargetGlow.ChosenPlacement`). A
   pressed or carried-over region keeps its own state as before.
+- **A taken figure's settlements and the others'** (owner, 2026-11-16: "the other nations should be marked paler, in grey,
+  against the right one"): while a figure is taken up, its own settlements keep the placement green, glow and pulse, and
+  every other settlement the same recruitment could still take for another figure (another nation, or another kind of
+  the same nation) is filled a pale grey, still and edgeless (`MapDraftOverlay.OtherPlacements`,
+  `MapRegionEmphasis.OtherPlacement`; from `MusterActions.OpenTargets`, `EventRecruitDraft.OpenTargets`,
+  `RecruitDraft.OpenTargets`). A pale settlement is no target: its click is as before (a Muster die's refusal says why,
+  and the region panel opens). With no figure taken up nothing is pale.
 - Other chosen regions keep UI-392's gold: the Council's homelands, Monsters Roused's waiting force, Scouts.
 - The mark goes when the settlement takes its figure (the focus clears with the committed recruit's revision), when
   another settlement is clicked, when a region without a settlement is clicked and when the action ends.
 - Unchanged: a figure's click after a Muster settlement is in focus still lights that figure's settlements (UI-142 sends
   it at once when it has only one).
 
-Tests: EditMode `MapTests.AChosenPlacementStandsOutFromTheLitPlacementTargets`; PlayMode `RecruitFocusMenuTests` (the
-mark follows Erebor, the Iron Hills, and goes at the Old Forest; picture `ui538-iron-hills.png`), `RulerTokenMenuTests`
+Tests: EditMode `MapTests.AChosenPlacementStandsOutFromTheLitPlacementTargets`,
+`MapTests.ATakenFiguresSettlementsStayGreenAndTheOthersTurnPale`; PlayMode `RecruitFocusMenuTests` (the mark follows
+Erebor, the Iron Hills, and goes at the Old Forest; then a figure with two settlements or more is taken up and the
+others' settlements turn pale; pictures `ui538-iron-hills.png`, `ui538-taken-figure.png`), `RulerTokenMenuTests`
 (Dáin's Iron Guard).
 
 ## CPU opponents — BOT-13

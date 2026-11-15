@@ -31,6 +31,12 @@ namespace Wotr.Client
             return group?.Targets.Where(t => !draft.Payload.Placements.Any(p => p.RegionId == t)) ?? Enumerable.Empty<string>();
         }
 
+        // UI-538: every settlement the recruitment may still take, whichever figure is taken up.
+        public static IEnumerable<string> OpenTargets(TurnDraft draft, PlayerView view) =>
+            view.Options.FirstOrDefault(o => o.Kind == CommandKind.Recruit)?.Recruitment
+                .SelectMany(g => g.Targets).Distinct().Where(t => !draft.Payload.Placements.Any(p => p.RegionId == t)) ??
+            Enumerable.Empty<string>();
+
         public static bool Place(TurnDraft draft, PlayerView view, string region)
         {
             if (!Targets(draft, view).Contains(region))

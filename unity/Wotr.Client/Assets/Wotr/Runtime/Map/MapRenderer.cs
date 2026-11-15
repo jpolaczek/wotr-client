@@ -210,6 +210,8 @@ namespace Wotr.Client
                 return MapRegionEmphasis.PlacementTarget;
             if (draft?.Targets.Contains(id) == true)
                 return MapRegionEmphasis.Target;
+            if (draft?.OtherPlacements.Contains(id) == true)
+                return MapRegionEmphasis.OtherPlacement;
             if (draft?.SourceRegions.Contains(id) == true)
                 return MapRegionEmphasis.DraftSource;
             if (id == selected)

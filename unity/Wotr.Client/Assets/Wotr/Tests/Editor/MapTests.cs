@@ -110,6 +110,27 @@ namespace Wotr.EditorTests
             Assert.AreEqual(MapRegionEmphasis.PlacementTarget, map.Renderer.CurrentEmphasis("iron-hills"));
         }
 
+        // UI-538 (owner, 2026-11-16): with a figure taken up its own settlements keep the placement green; a settlement only
+        // another figure may go to is pale grey, still, edgeless and no target.
+        [Test]
+        public void ATakenFiguresSettlementsStayGreenAndTheOthersTurnPale()
+        {
+            var pale = MapRenderer.FillFor(MapRegionEmphasis.OtherPlacement);
+            var lit = MapRenderer.FillFor(MapRegionEmphasis.PlacementTarget);
+            Assert.Less(pale.a, lit.a, "Paler than a lit settlement.");
+            Assert.Less(Mathf.Max(pale.r, pale.g, pale.b) - Mathf.Min(pale.r, pale.g, pale.b), .1f, "Grey, not green.");
+            var map = new MapCanvas(BoardPresentation.Load());
+            map.DraftOverlay.Targets.Add("erebor");
+            map.DraftOverlay.PlacementTargets.Add("erebor");
+            map.DraftOverlay.OtherPlacements.Add("woodland-realm");
+            map.Redraw();
+            Assert.AreEqual(MapRegionEmphasis.PlacementTarget, map.Renderer.CurrentEmphasis("erebor"));
+            Assert.AreEqual(MapRegionEmphasis.OtherPlacement, map.Renderer.CurrentEmphasis("woodland-realm"));
+            Assert.IsTrue(map.Renderer.TargetPulses("erebor"), "The taken figure's settlement pulses as a target.");
+            Assert.IsFalse(map.Renderer.TargetPulses("woodland-realm"), "A pale settlement stands still.");
+            Assert.IsFalse(map.Renderer.PlacementChosen("woodland-realm"), "And has no edge.");
+        }
+
         [Test]
         public void HoverIsSubtleAndNeverOverridesSelectionOrLegalTargets()
         {

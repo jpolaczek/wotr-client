@@ -63,6 +63,34 @@ namespace Wotr.PlayTests
             Assert.IsTrue(Lit(board, "elves", UnitKind.Regular), "A region without a settlement lights every recruit again.");
             Assert.IsTrue(Lit(board, "dwarves", UnitKind.Elite));
             Assert.AreEqual(revision, board.View.Revision, "Clicking settlements sends nothing.");
+            await TakeUp(board, client, token);
+            Assert.AreEqual(revision, board.View.Revision, "Taking a figure up sends nothing.");
+        }
+
+        // UI-538 (owner, 2026-11-16): a figure taken up keeps its own settlements green; the settlements only the other
+        // figures may take turn pale grey, still and no targets. The figure has two settlements or more, so its click
+        // only takes it up (UI-142 would send a figure with one).
+        private static async Task TakeUp(BoardScreen board, MountedFlowClient client, CancellationToken token)
+        {
+            var open = board.Map.DraftOverlay.PlacementTargets.ToList();
+            var recruitment = board.View.Options.First(o => o.Kind == CommandKind.Recruit && o.Enabled).Recruitment;
+            var group = recruitment.First(g => g.Targets.Count >= 2 && recruitment.Any(other => other.Targets.Any(t => !g.Targets.Contains(t))));
+            PointerGestureEvents.ClickAt(Token(board, group.Nation, group.Kind));
+            await Task.Delay(600, token);
+            var own = board.Map.DraftOverlay.PlacementTargets.ToList();
+            CollectionAssert.IsNotEmpty(own, "The taken figure lights its own settlements.");
+            CollectionAssert.IsSubsetOf(own, open, "Among the settlements lit before.");
+            var pale = open.Where(region => !own.Contains(region)).ToList();
+            CollectionAssert.IsNotEmpty(pale, "Other figures recruit elsewhere.");
+            foreach (var region in own)
+                Assert.AreEqual(MapRegionEmphasis.PlacementTarget, board.Map.Renderer.CurrentEmphasis(region), region);
+            CollectionAssert.AreEquivalent(pale, board.Map.DraftOverlay.OtherPlacements);
+            foreach (var region in pale)
+            {
+                Assert.AreEqual(MapRegionEmphasis.OtherPlacement, board.Map.Renderer.CurrentEmphasis(region), region);
+                Assert.IsFalse(board.Map.Renderer.TargetPulses(region), region + " stands still.");
+            }
+            LayoutTests.Save(client.Panel.targetTexture, "ui538-taken-figure.png");
         }
 
         private static async Task Inspect(BoardScreen board, string region, CancellationToken token)
