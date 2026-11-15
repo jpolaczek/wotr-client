@@ -39,6 +39,8 @@ namespace Wotr.PlayTests
             Assert.IsTrue(Lit(board, "elves", UnitKind.Regular));
             await Inspect(board, "erebor", token);
             Assert.AreEqual("Reserve · Erebor", Title(board));
+            // UI-538 (owner): the settlement in focus stands out on the map from the other lit settlements.
+            AssertChosen(board, "erebor", "iron-hills");
             Assert.IsTrue(Lit(board, "dwarves", UnitKind.Regular), "Erebor still takes Regulars.");
             Assert.IsFalse(Lit(board, "dwarves", UnitKind.Elite), "Corrupted Dáin forbids Elites in Erebor.");
             Assert.IsTrue(Token(board, "dwarves", UnitKind.Elite).enabledSelf, "An unlit Elite stays choosable for another settlement.");
@@ -49,11 +51,15 @@ namespace Wotr.PlayTests
             await Inspect(board, "iron-hills", token);
             Assert.AreEqual("Reserve · Iron Hills", Title(board));
             Assert.IsTrue(Lit(board, "dwarves", UnitKind.Elite), "The Iron Hills take a Dwarven Elite.");
+            AssertChosen(board, "iron-hills", "erebor");
+            LayoutTests.Save(client.Panel.targetTexture, "ui538-iron-hills.png");
             await Inspect(board, "dale", token);
             Assert.IsTrue(Lit(board, "north", UnitKind.Regular));
             Assert.IsFalse(Lit(board, "north", UnitKind.Elite), "Corrupted Brand forbids North Elites everywhere.");
             await Inspect(board, "old-forest", token);
             Assert.AreEqual("Reserve", Title(board));
+            CollectionAssert.IsEmpty(board.Map.DraftOverlay.ChosenPlacements, "A region without a settlement clears the mark.");
+            Assert.AreEqual(MapRegionEmphasis.PlacementTarget, board.Map.Renderer.CurrentEmphasis("iron-hills"));
             Assert.IsTrue(Lit(board, "elves", UnitKind.Regular), "A region without a settlement lights every recruit again.");
             Assert.IsTrue(Lit(board, "dwarves", UnitKind.Elite));
             Assert.AreEqual(revision, board.View.Revision, "Clicking settlements sends nothing.");
@@ -67,6 +73,16 @@ namespace Wotr.PlayTests
         }
 
         private static string Title(BoardScreen board) => board.Reinforcements.Root.Q<Label>(className: "title").text;
+
+        // UI-538: the chosen settlement is the bright, steady green with its own edge; another lit settlement stays lit.
+        private static void AssertChosen(BoardScreen board, string chosen, string other)
+        {
+            CollectionAssert.AreEquivalent(new[] { chosen }, board.Map.DraftOverlay.ChosenPlacements);
+            Assert.AreEqual(MapRegionEmphasis.ChosenPlacement, board.Map.Renderer.CurrentEmphasis(chosen), chosen);
+            Assert.IsTrue(board.Map.Renderer.PlacementChosen(chosen), chosen + " has the bright edge.");
+            Assert.IsFalse(board.Map.Renderer.TargetPulses(chosen), chosen + " stands still.");
+            Assert.AreEqual(MapRegionEmphasis.PlacementTarget, board.Map.Renderer.CurrentEmphasis(other), other + " stays lit.");
+        }
 
         private static Button Token(BoardScreen board, string nation, UnitKind kind)
         {

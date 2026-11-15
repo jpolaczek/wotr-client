@@ -36,6 +36,8 @@ namespace Wotr.Client
         private readonly List<string> enterable = new List<string>();
         private readonly List<string> attackable = new List<string>();
         private readonly List<string> chosen = new List<string>();
+        // UI-538: the settlements a recruitment's next figure goes to (bright green, steady).
+        private readonly List<string> placed = new List<string>();
         // UI-323: the steady gold edge of the regions the player's own draft moves from, and its reused buffer.
         private MapSourceGlow sourceGlow;
         private readonly List<string> sourceable = new List<string>();
@@ -46,6 +48,11 @@ namespace Wotr.Client
         // UI-323: the regions with the steady gold source edge.
         public IReadOnlyCollection<string> SourceGlowRegions => sourceGlow?.Regions ?? (IReadOnlyCollection<string>)new string[0];
         public int TargetGlowRepaints => targetGlow?.Layer.Repaints ?? 0;
+        // UI-538: the region wears the chosen placement's bright green edge.
+        public bool PlacementChosen(string region) => targetGlow?.IsPlacementChosen(region) == true;
+
+        // The fill a region takes for an emphasis (MapRegionVisual).
+        public static Color FillFor(MapRegionEmphasis emphasis) => MapRegionVisual.ColorFor(emphasis);
         private bool politicalActive;
         // UI-218: the illustration under the nations' colours is subdued, so the borders between them read clearly.
         public const float PoliticalTerrainOpacity = .55f;
@@ -157,12 +164,15 @@ namespace Wotr.Client
             attackable.Clear();
             sourceable.Clear();
             chosen.Clear();
+            placed.Clear();
             foreach (var entry in regions)
             {
                 var emphasis = Emphasis(entry.Key, selected, sources, owners, draft, data, hovered, pressed, carried);
                 entry.Value.Update(emphasis);
                 if (draft?.AttackTargets.Contains(entry.Key) == true)
                     attackable.Add(entry.Key);
+                else if (draft?.ChosenPlacements.Contains(entry.Key) == true)
+                    placed.Add(entry.Key);
                 else if (draft?.ChosenRegions.Contains(entry.Key) == true)
                     chosen.Add(entry.Key);
                 else if (draft?.Targets.Contains(entry.Key) == true)
@@ -170,7 +180,7 @@ namespace Wotr.Client
                 if (draft?.SourceRegions.Contains(entry.Key) == true)
                     sourceable.Add(entry.Key);
             }
-            targetGlow.Update(enterable, attackable, chosen);
+            targetGlow.Update(enterable, attackable, chosen, placed);
             targetPulse.Update(enterable, attackable);
             sourceGlow.Update(sourceable);
             LastUpdateMilliseconds = (Stopwatch.GetTimestamp() - started) * 1000d / Stopwatch.Frequency;
@@ -191,6 +201,9 @@ namespace Wotr.Client
                 return MapRegionEmphasis.CarriedTarget;
             if (draft?.AttackTargets.Contains(id) == true)
                 return MapRegionEmphasis.Attack;
+            // UI-538: before UI-392's gold, so a ruler's chosen settlement is green like every recruitment's.
+            if (draft?.ChosenPlacements.Contains(id) == true)
+                return MapRegionEmphasis.ChosenPlacement;
             if (draft?.PlannedRegions.Contains(id) == true || draft?.ChosenRegions.Contains(id) == true)
                 return MapRegionEmphasis.Selected;
             if (draft?.PlacementTargets.Contains(id) == true)

@@ -254,6 +254,9 @@ namespace Wotr.PlayTests
             Assert.That(board.Map.Camera.Zoom, Is.EqualTo(zoom).Within(0.001f), "The camera keeps its zoom.");
             Assert.IsFalse(board.Map.Gliding, "The glide has ended.");
             CollectionAssert.Contains(board.Map.DraftOverlay.ChosenRegions, region, "The clicked settlement is the chosen one.");
+            // UI-538 (owner): a recruitment's chosen settlement is the bright, steady green, not UI-392's gold.
+            Assert.AreEqual(MapRegionEmphasis.ChosenPlacement, board.Map.Renderer.CurrentEmphasis(region), "It stands out on the map.");
+            Assert.IsTrue(board.Map.Renderer.PlacementChosen(region), "With the bright green edge.");
             LayoutTests.Save(client.Panel.targetTexture, "ui392-chosen-settlement.png");
             var figure = board.Reinforcements.Root.Query<Button>(className: "reserve-token").ToList()
                 .First(button => button.name.StartsWith("character-reserve-dwarves-") && button.enabledInHierarchy && button.userData != null);
