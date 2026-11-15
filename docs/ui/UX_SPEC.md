@@ -4981,8 +4981,8 @@ the map. It must stand out clearly from the other lit settlements: greener, more
 - Other chosen regions keep UI-392's gold: the Council's homelands, Monsters Roused's waiting force, Scouts.
 - The mark goes when the settlement takes its figure (the focus clears with the committed recruit's revision), when
   another settlement is clicked, when a region without a settlement is clicked and when the action ends.
-- Unchanged: a figure's click after a Muster settlement is in focus still lights that figure's settlements (UI-142 sends
-  it at once when it has only one).
+- Unchanged (owner, 2026-11-16: "it stays as it is today"): a figure's click after a Muster settlement is in focus
+  still lights that figure's settlements (UI-142 sends it at once when it has only one).
 
 Tests: EditMode `MapTests.AChosenPlacementStandsOutFromTheLitPlacementTargets`,
 `MapTests.ATakenFiguresSettlementsStayGreenAndTheOthersTurnPale`; PlayMode `RecruitFocusMenuTests` (the mark follows
