@@ -3,7 +3,7 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    public enum MapRegionEmphasis { None, Protection, Hover, Source, Selected, Target, Attack, Pressed, DraftSource, CarriedTarget, CarriedAttack, PlacementTarget }
+    public enum MapRegionEmphasis { None, Protection, Hover, Source, Selected, Target, Attack, Pressed, DraftSource, CarriedTarget, CarriedAttack, PlacementTarget, ChosenPlacement, OtherPlacement }
 
     internal sealed class MapRegionVisual
     {
@@ -37,6 +37,12 @@ namespace Wotr.Client
             // UI-452 (owner): a region a recruitment or a companion's homeland may take, filled clearly enough to read on forest
             // and mountain art (MapDraftOverlay.PlacementTargets); its edges glow as a target's.
             MapRegionEmphasis.PlacementTarget => new Color(.12f, .72f, .36f, .56f),
+            // UI-538 (owner): the settlement a recruitment's next figure goes to, a brighter green filled much more strongly
+            // than the lit settlements and steady while they pulse (MapDraftOverlay.ChosenPlacements).
+            MapRegionEmphasis.ChosenPlacement => new Color(.22f, .9f, .42f, .8f),
+            // UI-538 (owner, 2026-11-16): with a figure taken up, a settlement only another figure may go to: pale grey,
+            // still and edgeless beside the taken figure's green (MapDraftOverlay.OtherPlacements).
+            MapRegionEmphasis.OtherPlacement => new Color(.78f, .8f, .78f, .3f),
             // UI-405: the legal target under a carried figure, the same colour lit more strongly.
             MapRegionEmphasis.CarriedAttack => new Color(.86f, .2f, .14f, .52f),
             MapRegionEmphasis.CarriedTarget => new Color(.2f, .72f, .38f, .5f),

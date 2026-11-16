@@ -33,6 +33,10 @@ namespace Wotr.Client
                 .Where(g => draft.ReserveId.Length == 0 || g.ReserveIds.Contains(draft.ReserveId))
                 .SelectMany(g => g.Targets).Distinct() ?? Enumerable.Empty<string>();
 
+        // UI-538: every settlement the die may recruit in, whichever figure is taken up.
+        public static IEnumerable<string> OpenTargets(PlayerView view, ActionDieContext context) =>
+            Option(view, context, CommandKind.Recruit)?.Recruitment.SelectMany(g => g.Targets).Distinct() ?? Enumerable.Empty<string>();
+
         public static bool Recruit(TurnDraft draft, PlayerView view, ActionDieContext context, string figure, string region)
         {
             if (!Active(view, draft, context) || Option(view, context, CommandKind.Recruit)?.Recruitment

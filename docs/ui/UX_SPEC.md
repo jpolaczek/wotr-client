@@ -1906,6 +1906,8 @@ Owner requests and reports from the Kings and Lords test scenarios:
   stops it). The chosen settlement wears a wider gold edge that pulses with the green targets and its fill turns to the
   planned colour, until its figure is placed (`MapDraftOverlay.ChosenRegions`). The next figure's click places it
   there. The Balrog's optional figure keeps its panel. Tests: `ReinforcementPlansTests`, `RulerTokenMenuTests`.
+  *Since UI-538 a recruitment's chosen settlement takes the bright, steady green instead of the gold edge and the planned
+  colour; other chosen regions keep the gold.*
 - UI-393 (owner) — a reserve figure is dragged onto a lit settlement as its own icon: the pressed figure's art follows
   the pointer, centred and a little larger, and its slot keeps only a faint trace while it is lifted; a drop on a legal
   settlement (or on the army standing there) places it, a drop elsewhere returns it with no action (UI-113). Other drag
@@ -1981,6 +1983,7 @@ Owner requests and reports from the Kings and Lords test scenarios:
   settlement again. The narrowing follows the targets, not the region's nation: Helm's Deep under the Mark of the White Hand
   lights Isengard's figures. The click flow is unchanged (a figure's click still lights its settlements).
   Test: `RecruitFocusMenuTests` (the Corrupted kings scenario: Erebor, the Iron Hills, Dale, the Old Forest).
+  *Since UI-538 the settlement in focus is also marked on the map (the bright, steady green of a chosen placement).*
 - UI-413 (owner) — the Politics rows carry no effect badges: the small diamond a nation-wide effect (Wormtongue on Rohan,
   a Corrupted Brand or Théoden) placed at the start of a row covered the nation's name. The Effects tab still lists
   every effect; the Fellowship's badge keeps its place (`EffectsScopeBadges`; the global one beside the Effects
@@ -4953,6 +4956,39 @@ to minimise empty space"; asked which graphic, the owner chose a picture of the 
 `RegionWindowDesignTests.MinasTirithsWindowSpeaksInSymbolsAtFourLayouts` (1366 × 768 and 1920 × 1080 at 100 and 125 %:
 the picture, the gem, Gondor's emblem, 2 VP, strength and leadership, an emblem before each nation, nothing past the
 window), `RegionNameOnlyTests`, `MapContourAcceptanceTests`.
+
+<a id="chosen-settlement-stands-out--ui-538"></a>
+## A recruitment's chosen settlement stands out — UI-538 (2026-11-15)
+
+The owner: in a recruitment the Reserve window opens and the settlements a figure may go to light green; a figure may be
+chosen first and then its settlement, or a settlement first and then its figure, but a chosen settlement was not shown on
+the map. It must stand out clearly from the other lit settlements: greener, more lit.
+
+- **One mark** (`MapDraftOverlay.ChosenPlacements`, `MapRegionEmphasis.ChosenPlacement`): the settlement the next
+  figure's click goes to, while it is among the placement targets — a Muster die's settlement in focus (UI-412, passed by
+  `ReinforcementsInteraction` through `MapDraftOverlay.FocusRecruit`, only while no figure is taken up), a card's
+  recruitment region chosen first (`EventRecruitDraft`, likewise), a ruler's chosen settlement (UI-392).
+- **How it looks**: a brighter green filled at .8 against the lit settlements' .56 (UI-452); steady while they pulse
+  (it leaves `MapTargetPulse`); a wider bright green edge over the ink line (`MapTargetGlow.ChosenPlacement`). A
+  pressed or carried-over region keeps its own state as before.
+- **A taken figure's settlements and the others'** (owner, 2026-11-16: "the other nations should be marked paler, in grey,
+  against the right one"): while a figure is taken up, its own settlements keep the placement green, glow and pulse, and
+  every other settlement the same recruitment could still take for another figure (another nation, or another kind of
+  the same nation) is filled a pale grey, still and edgeless (`MapDraftOverlay.OtherPlacements`,
+  `MapRegionEmphasis.OtherPlacement`; from `MusterActions.OpenTargets`, `EventRecruitDraft.OpenTargets`,
+  `RecruitDraft.OpenTargets`). A pale settlement is no target: its click is as before (a Muster die's refusal says why,
+  and the region panel opens). With no figure taken up nothing is pale.
+- Other chosen regions keep UI-392's gold: the Council's homelands, Monsters Roused's waiting force, Scouts.
+- The mark goes when the settlement takes its figure (the focus clears with the committed recruit's revision), when
+  another settlement is clicked, when a region without a settlement is clicked and when the action ends.
+- Unchanged (owner, 2026-11-16: "it stays as it is today"): a figure's click after a Muster settlement is in focus
+  still lights that figure's settlements (UI-142 sends it at once when it has only one).
+
+Tests: EditMode `MapTests.AChosenPlacementStandsOutFromTheLitPlacementTargets`,
+`MapTests.ATakenFiguresSettlementsStayGreenAndTheOthersTurnPale`; PlayMode `RecruitFocusMenuTests` (the mark follows
+Erebor, the Iron Hills, and goes at the Old Forest; then a figure with two settlements or more is taken up and the
+others' settlements turn pale; pictures `ui538-iron-hills.png`, `ui538-taken-figure.png`), `RulerTokenMenuTests`
+(Dáin's Iron Guard).
 
 ## CPU opponents — BOT-13
 

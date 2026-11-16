@@ -12,11 +12,16 @@ namespace Wotr.Client
         public static IEnumerable<string> Available(TurnDraft draft, RecruitmentOption group) =>
             group.ReserveIds.Where(id => draft.Payload.Placements.All(p => p.UnitId != id));
 
-        public static IEnumerable<string> Targets(TurnDraft draft, ActionOption option)
+        public static IEnumerable<string> Targets(TurnDraft draft, ActionOption option) => Targets(draft, option, draft.ReserveId);
+
+        // UI-538: every region a figure of the recruitment may still go to, whichever figure is taken up.
+        public static IEnumerable<string> OpenTargets(TurnDraft draft, ActionOption option) => Targets(draft, option, "");
+
+        private static IEnumerable<string> Targets(TurnDraft draft, ActionOption option, string reserve)
         {
             if (option?.EventRecruitment == null || draft.Payload.Placements.Count >= option.Maximum)
                 return Enumerable.Empty<string>();
-            var groups = option.Recruitment.Where(g => draft.ReserveId.Length == 0 || g.ReserveIds.Contains(draft.ReserveId));
+            var groups = option.Recruitment.Where(g => reserve.Length == 0 || g.ReserveIds.Contains(reserve));
             return groups.Where(g => Available(draft, g).Any()).SelectMany(g => g.Targets.Where(region => CanPlace(draft, option, g, region))).Distinct();
         }
 

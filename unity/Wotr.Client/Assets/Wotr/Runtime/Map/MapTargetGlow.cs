@@ -17,11 +17,14 @@ namespace Wotr.Client
         public static readonly Color Attack = new Color(.95f, .26f, .20f, 1f);
         // UI-392: the one chosen among the lit regions, waiting for its decision.
         public static readonly Color Chosen = new Color(1f, .84f, .44f, 1f);
+        // UI-538: the settlement a recruitment's next figure goes to, a light, bright green over the targets' green.
+        public static readonly Color ChosenPlacement = new Color(.62f, 1f, .66f, 1f);
         internal MapVectorLayer Layer { get; }
         private readonly Dictionary<string, RegionGeometry> shapes = new Dictionary<string, RegionGeometry>();
         private readonly HashSet<string> enter = new HashSet<string>();
         private readonly HashSet<string> attack = new HashSet<string>();
         private readonly HashSet<string> chosen = new HashSet<string>();
+        private readonly HashSet<string> placed = new HashSet<string>();
         private readonly IVisualElementScheduledItem pulse;
 
         internal MapTargetGlow(MapGeometry geometry, Vector2 size)
@@ -34,14 +37,18 @@ namespace Wotr.Client
             pulse.Pause();
         }
 
-        public bool Glowing => enter.Count > 0 || attack.Count > 0 || chosen.Count > 0;
+        public bool Glowing => enter.Count > 0 || attack.Count > 0 || chosen.Count > 0 || placed.Count > 0;
 
         public bool IsChosen(string region) => chosen.Contains(region);
 
+        public bool IsPlacementChosen(string region) => placed.Contains(region);
+
         // The regions to mark this frame; the layer repaints only when a set changes.
-        internal void Update(IReadOnlyList<string> enterable, IReadOnlyList<string> attackable, IReadOnlyList<string> chosenRegions)
+        internal void Update(IReadOnlyList<string> enterable, IReadOnlyList<string> attackable, IReadOnlyList<string> chosenRegions,
+            IReadOnlyList<string> placedRegions)
         {
-            if (!Changed(enter, enterable) & !Changed(attack, attackable) & !Changed(chosen, chosenRegions))
+            if (!Changed(enter, enterable) & !Changed(attack, attackable) & !Changed(chosen, chosenRegions) &
+                !Changed(placed, placedRegions))
                 return;
             Layer.MarkDirtyRepaint();
             if (Glowing)
@@ -75,6 +82,20 @@ namespace Wotr.Client
                 Glow(painter, id, Attack);
             foreach (var id in chosen)
                 Mark(painter, id);
+            foreach (var id in placed)
+                MarkPlacement(painter, id);
+        }
+
+        // UI-538 (owner): the chosen settlement's edge is wider and brighter than every lit settlement's, over the same ink
+        // line, so it reads at once among them.
+        private void MarkPlacement(Painter2D painter, string id)
+        {
+            if (!shapes.TryGetValue(id, out var shape))
+                return;
+            var color = ChosenPlacement;
+            MapVectorDrawing.Outline(painter, shape.Rings, new Color(color.r, color.g, color.b, .6f), 16f);
+            MapVectorDrawing.Outline(painter, shape.Rings, Contrast, 6f);
+            MapVectorDrawing.Outline(painter, shape.Rings, new Color(color.r, color.g, color.b, 1f), 4.2f);
         }
 
         // UI-392: the chosen region's edge is gold and wider than the other targets', and pulses with them.

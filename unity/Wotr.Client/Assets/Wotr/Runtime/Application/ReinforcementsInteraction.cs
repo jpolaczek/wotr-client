@@ -56,6 +56,8 @@ namespace Wotr.Client
             draft = selection;
             if (!MusterRecruiting() || view.Revision != focusRevision)
                 focus = "";
+            // UI-538: the map marks the settlement in focus while it may take a figure.
+            board.Map.DraftOverlay.FocusRecruit(focus);
             var plan = ReinforcementPlans.For(view, draft, board.Presentation);
             // UI-271: Gothmog's ability stands beside the Muster rows while the die chosen can pay it.
             abilities = plan == null && muster() && draft.Kind == null
@@ -220,6 +222,7 @@ namespace Wotr.Client
             focus = next;
             focusRevision = view.Revision;
             board.Reinforcements.Apply(State(ReinforcementPlans.For(view, draft, board.Presentation)));
+            board.Map.DraftOverlay.FocusRecruit(focus);
         }
 
         private void Remove(string id)
@@ -242,6 +245,7 @@ namespace Wotr.Client
             board.Map.PlannedRecruits.Removed -= RemoveRegion;
             board.Reinforcements.Apply(ReinforcementsState.Closed);
             board.Map.PlannedRecruits.Apply(Nothing, Side.FreePeoples, false);
+            board.Map.DraftOverlay.FocusRecruit("");
         }
     }
 }
