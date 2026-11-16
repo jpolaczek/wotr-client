@@ -242,7 +242,6 @@ namespace Wotr.Client
             if (CharacterDraft.UsesCharacters(draft.Kind) && view?.Decision != null)
             {
                 EditChoice(() => CharacterDraft.Region(draft, DraftOptions.For(view, draft), region));
-                reinforcements.RegionChosen(region);
                 return;
             }
             if (draft.Kind == CommandKind.RetreatBattle && view.Options.Any(o => o.Kind == draft.Kind && o.Targets.Contains(region)))
@@ -277,7 +276,11 @@ namespace Wotr.Client
                 var option = DraftOptions.For(view, draft);
                 if (option.EventRecruitment != null)
                 {
-                    Edit(() => EventRecruitDraft.Region(draft, option, region));
+                    // UI-539: a lit region places the armed token; any other region (none is lit before a token) opens its panel.
+                    if (EventRecruitDraft.Targets(draft, option).Contains(region))
+                        Edit(() => EventRecruitDraft.Region(draft, option, region));
+                    else
+                        TogglePanel(region);
                     return;
                 }
                 if (view.Decision?.Presentation is "ArmyFigure" or "ArmyFigures")

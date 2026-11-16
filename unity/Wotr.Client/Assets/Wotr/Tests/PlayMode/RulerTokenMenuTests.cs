@@ -240,34 +240,33 @@ namespace Wotr.PlayTests
             LayoutTests.Save(client.Panel.targetTexture, "ui440-roster-dain.png");
             PointerGestureEvents.ClickAt(guard);
             await Task.Delay(800, token);
-            Assert.Greater(board.Map.DraftOverlay.Targets.Count, 0, "Iron Guard started: its settlements glow on the map.");
-            LayoutTests.Save(client.Panel.targetTexture, "ui391-iron-guard-started.png");
-            // UI-450 (owner, superseding UI-392's "the Reserve does not open by itself"): the Reserve opens with the ability;
-            // a lit settlement's click still glides the camera there at the same zoom and marks it the chosen one.
+            // UI-450 (owner): the Reserve opens with the ability. UI-539 (owner, 2026-11-16; UI-392's settlement first
+            // retired): the recruitment is figure first, so no settlement glows before a figure and a settlement clicked
+            // first is not chosen.
             Assert.IsTrue(board.Reinforcements.IsOpen, "The Reserve opens with the ability.");
             Assert.IsTrue(board.Reinforcements.Tab.ClassListContains("legal-target"), "The Reserve tab glows.");
-            var region = board.Map.DraftOverlay.Targets.Contains("erebor") ? "erebor" : board.Map.DraftOverlay.Targets.First();
-            var zoom = board.Map.Camera.Zoom;
-            board.Map.Select(region);
-            await Task.Delay(1000, token);
-            Assert.IsTrue(board.Reinforcements.IsOpen, "The settlement's click opens the Reserve.");
-            Assert.That(board.Map.Camera.Zoom, Is.EqualTo(zoom).Within(0.001f), "The camera keeps its zoom.");
-            Assert.IsFalse(board.Map.Gliding, "The glide has ended.");
-            CollectionAssert.Contains(board.Map.DraftOverlay.ChosenRegions, region, "The clicked settlement is the chosen one.");
-            // UI-538 (owner): a recruitment's chosen settlement is the bright, steady green, not UI-392's gold.
-            Assert.AreEqual(MapRegionEmphasis.ChosenPlacement, board.Map.Renderer.CurrentEmphasis(region), "It stands out on the map.");
-            Assert.IsTrue(board.Map.Renderer.PlacementChosen(region), "With the bright green edge.");
-            LayoutTests.Save(client.Panel.targetTexture, "ui392-chosen-settlement.png");
+            CollectionAssert.IsEmpty(board.Map.DraftOverlay.PlacementTargets, "Iron Guard started: no settlement glows before a figure.");
+            LayoutTests.Save(client.Panel.targetTexture, "ui391-iron-guard-started.png");
+            board.Map.Select("erebor");
+            await Task.Delay(800, token);
+            CollectionAssert.IsEmpty(board.Map.DraftOverlay.ChosenRegions, "A settlement clicked first is not chosen.");
+            CollectionAssert.IsEmpty(board.Map.DraftOverlay.ChosenPlacements);
+            CollectionAssert.IsEmpty(board.Map.DraftOverlay.PlacementTargets);
             var figure = board.Reinforcements.Root.Query<Button>(className: "reserve-token").ToList()
                 .First(button => button.name.StartsWith("character-reserve-dwarves-") && button.enabledInHierarchy && button.userData != null);
             PointerGestureEvents.ClickAt(figure);
             await Task.Delay(800, token);
-            CollectionAssert.Contains(board.Map.DraftOverlay.PlannedRegions, region, "The figure's click places it in the chosen settlement.");
-            CollectionAssert.DoesNotContain(board.Map.DraftOverlay.ChosenRegions, region, "A full settlement no longer waits.");
+            CollectionAssert.IsNotEmpty(board.Map.DraftOverlay.PlacementTargets, "The figure's click lights its settlements.");
+            var region = board.Map.DraftOverlay.PlacementTargets.Contains("erebor") ? "erebor" : board.Map.DraftOverlay.PlacementTargets.First();
+            LayoutTests.Save(client.Panel.targetTexture, "ui539-iron-guard-figure.png");
+            board.Map.Select(region);
+            await Task.Delay(800, token);
+            CollectionAssert.Contains(board.Map.DraftOverlay.PlannedRegions, region, "The lit settlement's click places the figure there.");
+            CollectionAssert.IsEmpty(board.Map.DraftOverlay.PlacementTargets, "Nothing glows until the next figure.");
             // UI-393 (owner), UI-454 (owner, 2026-11-03): the next figure is carried to another lit settlement — over the
             // Reserve as its own icon, its slot showing that it was lifted, over the map as its miniature with the landing
             // mark under it — and the drop places it there.
-            var second = board.Map.DraftOverlay.Targets.First(target => target != region);
+            var second = region == "erebor" ? "iron-hills" : "erebor";
             var next = board.Reinforcements.Root.Query<Button>(className: "reserve-token").ToList()
                 .First(button => button.name.StartsWith("character-reserve-dwarves-") && button.enabledInHierarchy && button.userData != null);
             var destination = MapContourProbe.ReachRegion(board.Map, second);
@@ -275,6 +274,7 @@ namespace Wotr.PlayTests
             await Task.Delay(100, token);
             var carry = board.Map.RecruitCarry;
             Assert.IsTrue(carry.Active, "The Reserve figure is taken up.");
+            CollectionAssert.Contains(board.Map.DraftOverlay.PlacementTargets, second, "The carried figure lights where it may drop (UI-454).");
             Assert.AreEqual(DisplayStyle.Flex, carry.Icon.style.display.value, "The figure's icon follows the pointer.");
             Assert.AreSame(next.Q<Image>(className: "reserve-token-figure").sprite, ((Image)carry.Icon).sprite,
                 "It is the pressed figure's own art.");

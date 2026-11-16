@@ -112,6 +112,33 @@ namespace Wotr.EditorTests
             Assert.AreEqual("muster", draft.Payload.DieId);
         }
 
+        // UI-539 (owner, 2026-11-16): a Muster die's recruitment is figure first: with no figure taken up no settlement is
+        // lit (no target, no chosen mark, nothing pale); a figure's click lights only its own settlements and the others the
+        // die could recruit in turn pale (UI-538).
+        [Test]
+        public void NoSettlementIsLitBeforeAFigureIsTakenUp()
+        {
+            var view = Fixture(out var recruit);
+            var context = new ActionDieContext();
+            context.Sync(view, "muster");
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = "muster");
+            var map = new MapCanvas(BoardPresentation.Load());
+            map.DraftOverlay.Apply(view, draft, context);
+            CollectionAssert.IsEmpty(MusterActions.Targets(view, draft, context));
+            CollectionAssert.IsEmpty(map.DraftOverlay.PlacementTargets, "No settlement is lit before a figure.");
+            CollectionAssert.IsEmpty(map.DraftOverlay.ChosenPlacements);
+            CollectionAssert.IsEmpty(map.DraftOverlay.OtherPlacements);
+            var regular = recruit.Recruitment.First(g => g.Nation == "gondor" && g.Kind == UnitKind.Regular).ReserveIds[0];
+            Assert.IsTrue(MusterActions.Select(draft, view, context, regular));
+            map.DraftOverlay.Apply(view, draft, context);
+            var own = MusterActions.FigureTargets(view, context, regular);
+            CollectionAssert.AreEquivalent(own, map.DraftOverlay.PlacementTargets.ToList());
+            var others = MusterActions.OpenTargets(view, context).Where(region => !own.Contains(region)).ToList();
+            CollectionAssert.IsSubsetOf(map.DraftOverlay.OtherPlacements.ToList(), others, "Only the other figures' settlements are pale.");
+            CollectionAssert.IsEmpty(map.DraftOverlay.ChosenPlacements, "Nothing is chosen before a click.");
+        }
+
         private static PlayerView Fixture(out ActionOption recruit)
         {
             var fixture = new BoardFixture();

@@ -28,10 +28,9 @@ namespace Wotr.Client
         public static ActionOption Option(PlayerView view, ActionDieContext context, CommandKind kind) =>
             view.Options.FirstOrDefault(o => o.Kind == kind && context.Allows(o));
 
+        // UI-539 (owner, 2026-11-16): a recruitment is figure first: only a figure taken up lights the settlements it can take.
         public static IEnumerable<string> Targets(PlayerView view, TurnDraft draft, ActionDieContext context) =>
-            Option(view, context, CommandKind.Recruit)?.Recruitment
-                .Where(g => draft.ReserveId.Length == 0 || g.ReserveIds.Contains(draft.ReserveId))
-                .SelectMany(g => g.Targets).Distinct() ?? Enumerable.Empty<string>();
+            draft.ReserveId.Length == 0 ? Enumerable.Empty<string>() : FigureTargets(view, context, draft.ReserveId);
 
         // UI-538: every settlement the die may recruit in, whichever figure is taken up.
         public static IEnumerable<string> OpenTargets(PlayerView view, ActionDieContext context) =>

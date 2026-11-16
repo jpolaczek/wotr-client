@@ -13,21 +13,22 @@ using static Wotr.PlayTests.ReturnTestFixture;
 
 namespace Wotr.PlayTests
 {
-    // UI-412 (owner, 2026-10-29): with a Muster die chosen, a clicked settlement lights only the reserves it can take. In
-    // the Corrupted kings scenario Erebor takes Dwarven Regulars but no Elite, the Iron Hills take the Elite, Dale no North
-    // Elite, and a region without a settlement lights every recruit again.
+    // UI-539 (owner, 2026-11-16; UI-412's narrowing retired): with a Muster die chosen in the Corrupted kings scenario the
+    // Reserve lights every figure the die may recruit and the map lights nothing; a settlement clicked first changes
+    // nothing; a figure's click lights its own settlements and greys the settlements only the others take (UI-538); a lit
+    // settlement's click recruits it there.
     public sealed class RecruitFocusMenuTests
     {
         [UnityTest]
-        public IEnumerator AClickedSettlementLightsOnlyTheReservesItCanTake() => MatchTestRoom.Wait(Focus());
+        public IEnumerator ARecruitmentIsFigureFirst() => MatchTestRoom.Wait(FigureFirst());
 
-        private static async Task Focus()
+        private static async Task FigureFirst()
         {
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
             var token = timeout.Token;
             var fixture = Load();
             using var api = await fixture.Login(Side.FreePeoples, token);
-            using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui412-" + Guid.NewGuid().ToString("N")));
+            using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui539-" + Guid.NewGuid().ToString("N")));
             await OpenScenario(client, "kings-corrupted-recruitment", token);
             await Task.Delay(500, token);
             var board = client.Board;
@@ -35,51 +36,49 @@ namespace Wotr.PlayTests
             var die = board.View.Dice.First(d => d.Owner == Side.FreePeoples && d.Location == DieLocation.Available && d.Face == DieFace.Muster);
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(die.Id));
             await Task.Delay(600, token);
-            Assert.IsTrue(Lit(board, "dwarves", UnitKind.Elite), "Before a click, a Dwarven Elite may go to the Iron Hills.");
+            Assert.IsTrue(Lit(board, "dwarves", UnitKind.Elite), "A Dwarven Elite may be recruited (in the Iron Hills).");
             Assert.IsTrue(Lit(board, "elves", UnitKind.Regular));
+            AssertNothingLit(board, "Before a figure");
+            LayoutTests.Save(client.Panel.targetTexture, "ui539-muster-before-figure.png");
             await Inspect(board, "erebor", token);
-            Assert.AreEqual("Reserve · Erebor", Title(board));
-            // UI-538 (owner): the settlement in focus stands out on the map from the other lit settlements.
-            AssertChosen(board, "erebor", "iron-hills");
-            Assert.IsTrue(Lit(board, "dwarves", UnitKind.Regular), "Erebor still takes Regulars.");
-            Assert.IsFalse(Lit(board, "dwarves", UnitKind.Elite), "Corrupted Dáin forbids Elites in Erebor.");
-            Assert.IsTrue(Token(board, "dwarves", UnitKind.Elite).enabledSelf, "An unlit Elite stays choosable for another settlement.");
-            StringAssert.Contains("Erebor", Token(board, "dwarves", UnitKind.Elite).tooltip);
-            Assert.IsFalse(board.Reinforcements.Root.Q("reinforcement-elves").ClassListContains("recruitable"), "The Elves' row is not lit.");
-            Assert.IsFalse(Lit(board, "elves", UnitKind.Regular), "No Elf goes to Erebor.");
-            LayoutTests.Save(client.Panel.targetTexture, "ui412-erebor.png");
-            await Inspect(board, "iron-hills", token);
-            Assert.AreEqual("Reserve · Iron Hills", Title(board));
-            Assert.IsTrue(Lit(board, "dwarves", UnitKind.Elite), "The Iron Hills take a Dwarven Elite.");
-            AssertChosen(board, "iron-hills", "erebor");
-            LayoutTests.Save(client.Panel.targetTexture, "ui538-iron-hills.png");
-            await Inspect(board, "dale", token);
-            Assert.IsTrue(Lit(board, "north", UnitKind.Regular));
-            Assert.IsFalse(Lit(board, "north", UnitKind.Elite), "Corrupted Brand forbids North Elites everywhere.");
-            await Inspect(board, "old-forest", token);
-            Assert.AreEqual("Reserve", Title(board));
-            CollectionAssert.IsEmpty(board.Map.DraftOverlay.ChosenPlacements, "A region without a settlement clears the mark.");
-            Assert.AreEqual(MapRegionEmphasis.PlacementTarget, board.Map.Renderer.CurrentEmphasis("iron-hills"));
-            Assert.IsTrue(Lit(board, "elves", UnitKind.Regular), "A region without a settlement lights every recruit again.");
-            Assert.IsTrue(Lit(board, "dwarves", UnitKind.Elite));
-            Assert.AreEqual(revision, board.View.Revision, "Clicking settlements sends nothing.");
-            await TakeUp(board, client, token);
+            Assert.AreEqual("Reserve", Title(board), "A settlement clicked first narrows nothing.");
+            Assert.IsTrue(Lit(board, "dwarves", UnitKind.Elite), "Every figure stays lit.");
+            Assert.IsTrue(Lit(board, "elves", UnitKind.Regular));
+            AssertNothingLit(board, "After a settlement's click");
+            Assert.AreEqual(revision, board.View.Revision, "Clicking a settlement sends nothing.");
+            var group = await TakeUp(board, client, token);
             Assert.AreEqual(revision, board.View.Revision, "Taking a figure up sends nothing.");
+            var target = board.Map.DraftOverlay.PlacementTargets.First();
+            MapContourProbe.ClickRegion(board.Map, target);
+            for (var wait = 0; wait < 50 && board.View.Revision == revision; wait++)
+                await Task.Delay(100, token);
+            Assert.Greater(board.View.Revision, revision, "The lit settlement's click recruits there.");
+            for (var wait = 0; wait < 20 && !board.View.Units.Any(u => u.Nation == group.Nation && u.Kind == group.Kind && u.Location == target); wait++)
+                await Task.Delay(100, token);
+            Assert.IsTrue(board.View.Units.Any(u => u.Nation == group.Nation && u.Kind == group.Kind && u.Location == target),
+                group.Nation + " " + group.Kind + " in " + target);
         }
 
-        // UI-538 (owner, 2026-11-16): a figure taken up keeps its own settlements green; the settlements only the other
-        // figures may take turn pale grey, still and no targets. The figure has two settlements or more, so its click
-        // only takes it up (UI-142 would send a figure with one).
-        private static async Task TakeUp(BoardScreen board, MountedFlowClient client, CancellationToken token)
+        private static void AssertNothingLit(BoardScreen board, string when)
         {
-            var open = board.Map.DraftOverlay.PlacementTargets.ToList();
+            CollectionAssert.IsEmpty(board.Map.DraftOverlay.PlacementTargets, when + ": no settlement is lit.");
+            CollectionAssert.IsEmpty(board.Map.DraftOverlay.ChosenPlacements, when + ": no settlement is chosen.");
+            CollectionAssert.IsEmpty(board.Map.DraftOverlay.OtherPlacements, when + ": nothing is pale.");
+            Assert.AreNotEqual(MapRegionEmphasis.PlacementTarget, board.Map.Renderer.CurrentEmphasis("iron-hills"), when);
+        }
+
+        // UI-538 (owner, 2026-11-16): a figure taken up lights its own settlements; the settlements only the other figures
+        // may take turn pale grey, still and no targets. The figure has two settlements or more, so its click only takes it
+        // up (UI-142 would send a figure with one).
+        private static async Task<RecruitmentOption> TakeUp(BoardScreen board, MountedFlowClient client, CancellationToken token)
+        {
             var recruitment = board.View.Options.First(o => o.Kind == CommandKind.Recruit && o.Enabled).Recruitment;
+            var open = recruitment.SelectMany(g => g.Targets).Distinct().ToList();
             var group = recruitment.First(g => g.Targets.Count >= 2 && recruitment.Any(other => other.Targets.Any(t => !g.Targets.Contains(t))));
             PointerGestureEvents.ClickAt(Token(board, group.Nation, group.Kind));
             await Task.Delay(600, token);
             var own = board.Map.DraftOverlay.PlacementTargets.ToList();
-            CollectionAssert.IsNotEmpty(own, "The taken figure lights its own settlements.");
-            CollectionAssert.IsSubsetOf(own, open, "Among the settlements lit before.");
+            CollectionAssert.AreEquivalent(group.Targets.Distinct(), own, "The taken figure lights its own settlements.");
             var pale = open.Where(region => !own.Contains(region)).ToList();
             CollectionAssert.IsNotEmpty(pale, "Other figures recruit elsewhere.");
             foreach (var region in own)
@@ -90,7 +89,8 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(MapRegionEmphasis.OtherPlacement, board.Map.Renderer.CurrentEmphasis(region), region);
                 Assert.IsFalse(board.Map.Renderer.TargetPulses(region), region + " stands still.");
             }
-            LayoutTests.Save(client.Panel.targetTexture, "ui538-taken-figure.png");
+            LayoutTests.Save(client.Panel.targetTexture, "ui539-muster-figure-taken.png");
+            return group;
         }
 
         private static async Task Inspect(BoardScreen board, string region, CancellationToken token)
@@ -101,16 +101,6 @@ namespace Wotr.PlayTests
         }
 
         private static string Title(BoardScreen board) => board.Reinforcements.Root.Q<Label>(className: "title").text;
-
-        // UI-538: the chosen settlement is the bright, steady green with its own edge; another lit settlement stays lit.
-        private static void AssertChosen(BoardScreen board, string chosen, string other)
-        {
-            CollectionAssert.AreEquivalent(new[] { chosen }, board.Map.DraftOverlay.ChosenPlacements);
-            Assert.AreEqual(MapRegionEmphasis.ChosenPlacement, board.Map.Renderer.CurrentEmphasis(chosen), chosen);
-            Assert.IsTrue(board.Map.Renderer.PlacementChosen(chosen), chosen + " has the bright edge.");
-            Assert.IsFalse(board.Map.Renderer.TargetPulses(chosen), chosen + " stands still.");
-            Assert.AreEqual(MapRegionEmphasis.PlacementTarget, board.Map.Renderer.CurrentEmphasis(other), other + " stays lit.");
-        }
 
         private static Button Token(BoardScreen board, string nation, UnitKind kind)
         {

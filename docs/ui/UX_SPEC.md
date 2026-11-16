@@ -1899,6 +1899,7 @@ Owner requests and reports from the Kings and Lords test scenarios:
   skill's formatted description, and the window opens with that ability's icon focused (its description shown) instead
   of unrolled. Tests: `CharacterAbilityStripTests`,
   `RulerTokenMenuTests.DainsIronGuardStartsFromItsIconInTheCharactersTab`.
+  *Retired by UI-539 (owner, 2026-11-16): a king's recruitment is figure first, as every recruitment.*
 - UI-392 (owner) — a king's recruitment (Iron Guard, Call to Arms, Mustering of the Mark) starts on the map: the
   Reserve does not open by itself; its tab glows and can be opened by hand, and the target settlements glow green. A
   click on a lit settlement remembers it, opens the Reserve for it and glides the camera there at the same zoom
@@ -1974,6 +1975,7 @@ Owner requests and reports from the Kings and Lords test scenarios:
 
 ## A settlement's own recruits, clear Politics names — UI-412 and UI-413 (2026-10-29)
 
+  *Retired by UI-539 (owner, 2026-11-16): a recruitment is figure first; a settlement's click narrows nothing.*
 - UI-412 (owner) — with a Muster die chosen, a clicked settlement lights in the Reserve only the figures it can take:
   the kinds whose recruitment targets (the server's `RecruitmentOption.Targets`) hold that settlement stay lit, and so
   do their nations' rows. The others lose their light but stay choosable, as before, for another settlement; their
@@ -4960,6 +4962,9 @@ window), `RegionNameOnlyTests`, `MapContourAcceptanceTests`.
 <a id="chosen-settlement-stands-out--ui-538"></a>
 ## A recruitment's chosen settlement stands out — UI-538 (2026-11-15)
 
+*Since UI-539 a recruitment is figure first: the chosen-settlement mark is left only for Monsters Roused's carried
+region; the pale grey of the second part stays.*
+
 The owner: in a recruitment the Reserve window opens and the settlements a figure may go to light green; a figure may be
 chosen first and then its settlement, or a settlement first and then its figure, but a chosen settlement was not shown on
 the map. It must stand out clearly from the other lit settlements: greener, more lit.
@@ -4989,6 +4994,38 @@ Tests: EditMode `MapTests.AChosenPlacementStandsOutFromTheLitPlacementTargets`,
 Erebor, the Iron Hills, and goes at the Old Forest; then a figure with two settlements or more is taken up and the
 others' settlements turn pale; pictures `ui538-iron-hills.png`, `ui538-taken-figure.png`), `RulerTokenMenuTests`
 (Dáin's Iron Guard).
+
+## A recruitment is figure first — UI-539 (2026-11-16)
+
+UI-539 (owner: "you can click a unit and then a region or the other way round, and that is confusing"): a recruitment —
+a Muster die's, a card's (`EventRecruitDraft`) or a Kings ruler's (`CharacterRecruitDraft`: Iron Guard, Call to Arms,
+Mustering of the Mark) — opens the Reserve with every figure it may recruit lit, and lights nothing on the map. A
+figure's click (or carry, UI-454) lights the settlements that figure may take (`PlacementTarget`, with the pulse) and
+greys the settlements only the other figures could take (UI-538's `OtherPlacement`); a lit settlement's click places the
+figure; a second click on the figure releases it, another figure's click switches.
+
+- A region clicked before a figure stores nothing and narrows nothing: it only opens its region panel (UI-189), whose
+  settlement still reopens the Reserve and marks its nation's row (UI-135). Retired: UI-412's focus and its
+  "Reserve · <settlement>" title, the unlit "Elsewhere" figures and rows, UI-213's region first (a card's token click
+  filling the region chosen before it, or the last one), UI-392/UI-423's ruler settlement first and its hint, UI-538's
+  chosen-settlement mark for these sources.
+- After a placement a card's armed token stays armed with its group's next free figure while it has a region (UI-213);
+  a Muster die's second figure and a ruler's next figure are taken up by their own click.
+- Unchanged: UI-142 (a figure with one legal settlement is recruited at once), UI-454 (carrying a figure), UI-538's pale
+  grey while a figure is taken up, the Reserve opening with a ruler's ability (UI-450).
+- Monsters Roused (Fate, UI-431): its halves are still chosen by their regions; the West half's region waits in its
+  recruitment plan (`EventRecruitDraft.Preselect`) and takes the plan's first figure, marked as UI-538's chosen placement.
+- The rules are unchanged: every recruitment is the list of placements the server validates; no option was reachable only
+  through a region clicked first (the card's limits — regions, nations, per-region kinds, completion — and the ruler's
+  one-figure-a-settlement are computed per figure).
+- UI-389's "a die lights all its uses": a Muster die's recruitment use is the open Reserve's lit figures, not the map.
+
+Tests: EditMode `ReinforcementRowsTests.NoSettlementIsLitBeforeAFigureIsTakenUp`,
+`EventRecruitDraftTests.ARegionFirstStoresNothingAndFigureFirstPlansWithUndo`,
+`EventRecruitDraftTests.APreselectedRegionTakesOnlyTheFirstToken`, `ReinforcementPlansTests.AKingsRecruitmentIsFigureFirst`;
+PlayMode `RecruitFocusMenuTests.ARecruitmentIsFigureFirst` (pictures `ui539-muster-before-figure.png`,
+`ui539-muster-figure-taken.png`), `RulerTokenMenuTests` (Iron Guard, picture `ui539-iron-guard-figure.png`),
+`BoardInteractionTests` (a settlement's click narrows nothing).
 
 ## CPU opponents — BOT-13
 
