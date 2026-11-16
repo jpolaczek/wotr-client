@@ -71,7 +71,8 @@ namespace Wotr.PlayTests
             Assert.AreNotSame(board.Characters.DecisionHost, board.Tray.parent, "The window keeps its form.");
             Assert.IsTrue(board.Reinforcements.IsOpen, "The icon's click opened the Reserve for " + ability + ".");
             Assert.AreEqual(DisplayStyle.Flex, chip.resolvedStyle.display, "The window's icons stay.");
-            Assert.Greater(board.Map.DraftOverlay.Targets.Count, 0, "Its places glow on the map.");
+            // UI-539 (owner, 2026-11-16): a ruler's recruitment is figure first: no settlement glows before a figure.
+            CollectionAssert.IsEmpty(board.Map.DraftOverlay.PlacementTargets, "No place glows before a figure.");
             Assert.IsNull(inspector.Q("character-ability-sheet"), "No text unrolls.");
             LayoutTests.Save(client.Panel.targetTexture, "ui380-" + king + "-ability.png");
             LayoutTests.Save(client.Panel.targetTexture, "ui440-" + king + "-" + ability + "-started.png");

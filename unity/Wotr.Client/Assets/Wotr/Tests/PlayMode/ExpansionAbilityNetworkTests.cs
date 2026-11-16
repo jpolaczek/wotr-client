@@ -51,8 +51,9 @@ namespace Wotr.PlayTests
                         await Reconnect(room, client);
                     }
                     var revision = client.Board.View.Revision;
-                    client.Board.Map.Select(placements[index].Item1);
+                    // UI-539: the figure first, then its settlement.
                     Click(client, "character-reserve-" + nation + "-" + placements[index].Item2);
+                    client.Board.Map.Select(placements[index].Item1);
                     if (index < placements.Length - 1)
                         Assert.AreEqual(revision, client.Board.View.Revision, "A figure before the last is only placed.");
                 }

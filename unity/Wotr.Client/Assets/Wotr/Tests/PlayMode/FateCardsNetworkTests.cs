@@ -134,11 +134,18 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-539 (owner, 2026-11-16): a recruitment is figure first: the token's click arms it (a token still armed after its
+        // last placement, UI-213, is not clicked again: that would release it), then the lit region's click places it.
         private static async Task RecruitAt(MatchTestRoom room, MountedMatchClient client, string nation, UnitKind kind, string region)
         {
+            var name = "event-reserve-" + nation + "-" + kind;
+            var token = client.Board.Reinforcements.Root.Q<Button>(name);
+            if (token == null || !token.ClassListContains("selected"))
+            {
+                Click(client, name);
+                await room.Settle();
+            }
             await Target(room, client, region);
-            Click(client, "event-reserve-" + nation + "-" + kind);
-            await room.Settle();
         }
 
         private static async Task Target(MatchTestRoom room, MountedMatchClient client, string region)
