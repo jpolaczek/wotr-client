@@ -24,7 +24,6 @@ namespace Wotr.Client
         public RoomView Room { get; private set; }
         public event Action<bool> Ready;
         public event Action Start;
-        public event Action Demo;
         public event Action Back;
         public event Action Invite;
         public event Action AddCpu;
@@ -47,7 +46,6 @@ namespace Wotr.Client
         private readonly Button observe;
         private readonly Button ready;
         private readonly Button start;
-        private readonly Button demo;
         private readonly Button back;
         private readonly Button invite;
         private readonly Button copy;
@@ -86,9 +84,8 @@ namespace Wotr.Client
             observe = Action("room-observe", "Observe", () => Observe?.Invoke(), "menu-action");
             ready = Action("room-ready", "Ready", () => Ready?.Invoke(!OwnReady), "menu-action");
             start = Action("start-game", "Start game", () => Start?.Invoke(), "menu-action");
-            // DEMO-04: a practice game against the CPU, for either member while the room waits; the room stays.
-            demo = Action("room-demo", "Play demo vs CPU", () => Demo?.Invoke(), "menu-action");
-            demo.tooltip = "Practice against a simple computer opponent playing the other side. Starting a new demo replaces your previous demo.";
+            // Owner, 2026-11-17: the room has no practice demo against the CPU any more (DEMO-04's button): Ready and Start game
+            // are its only way into a game.
             back = Action("waiting-back", "Back", () => Back?.Invoke(), "menu-action");
             back.AddToClassList("menu-action-quiet");
             invite = Action("generate-room-invitation", "New code", () => Invite?.Invoke(), "waiting-invite-action");
@@ -188,7 +185,6 @@ namespace Wotr.Client
             column.AddToClassList("menu-actions");
             column.Add(ready);
             column.Add(start);
-            column.Add(demo);
             column.Add(observe);
             var spacer = new VisualElement { pickingMode = PickingMode.Ignore };
             spacer.AddToClassList("menu-actions-spacer");
@@ -272,7 +268,6 @@ namespace Wotr.Client
             ready.SetEnabled(!shownBusy && waiting && Player);
             ready.tooltip = ReadyTooltip();
             back.SetEnabled(!shownBusy);
-            demo.SetEnabled(!shownBusy && waiting && Player);
             var audienceFull = Room.Observers.Count >= Limit(Room);
             observe.SetEnabled(!shownBusy && waiting && Player && !audienceFull);
             observe.tooltip = !Player ? "You are watching this room." : audienceFull ? "All observer places are taken."
@@ -319,14 +314,12 @@ namespace Wotr.Client
             }
         }
 
-        // A CPU room has no rules to choose: the expansions and modes give way to the base game's line. The legacy demo
-        // against the CPU is a CPU room's too (owner, 2026-11-17): a game one hosts does not offer it.
+        // A CPU room has no rules to choose: the expansions and modes give way to the base game's line.
         private void ShowRules(RoomView room)
         {
             var cpu = CpuRoom(room);
             Rules.Root.style.display = cpu ? DisplayStyle.None : DisplayStyle.Flex;
             baseGame.style.display = cpu ? DisplayStyle.Flex : DisplayStyle.None;
-            demo.style.display = cpu ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         // One seat: the side's emblem and name, the player or an empty place, Host/You and readiness; Take seat for a free

@@ -47,7 +47,7 @@ namespace Wotr.EditorTests
                 FreePeoples = "Host", Host = "Host", ObserverLimit = 16 };
             room.Observers.Add(new RoomObserverView { Name = "Watcher" });
             screen.Update(room);
-            foreach (var name in new[] { "room-ready", "room-demo", "room-observe", "seat-free-take", "seat-free-remove", "seat-shadow-remove", "remove-observer-Watcher" })
+            foreach (var name in new[] { "room-ready", "room-observe", "seat-free-take", "seat-free-remove", "seat-shadow-remove", "remove-observer-Watcher" })
                 Assert.IsFalse(screen.Root.Q<Button>(name).enabledSelf, name);
             Assert.IsTrue(screen.Root.Q<Button>("seat-shadow-take").enabledSelf);
             Assert.IsFalse(screen.Root.Q("seat-free").ClassListContains("yours"));

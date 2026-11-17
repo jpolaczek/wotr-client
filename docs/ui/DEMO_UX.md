@@ -8,6 +8,10 @@ Server, bot and data: `wotr-server:docs/server/DEMO-MODE.md`.
 <a id="pokój-oczekiwania"></a>
 ## Waiting room
 
+**Removed (owner, 2026-11-17: "remove Play demo vs CPU from the game's window; then we only click Ready and Start
+game").** No room offers the demo any more. The CPU is reached through Play vs CPU, Ready and Start game. The server's
+`POST api/rooms/{id}/demo` stays for older clients; this client no longer calls it. What follows is the history.
+
 - In the action Ready/Start row standing the “Play demo vs CPU” button (`room-demo`), visible to
   both room members.
 - Garnish (solid arrangement principle):

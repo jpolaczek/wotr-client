@@ -5127,7 +5127,7 @@ Wey", and the credit (the seat's tooltip, a saved game's row) begins "AlphaWOTR,
   are not carried over). Owner, 2026-11-17 (follow-up): the server refuses the CPU outside a Play vs CPU room
   (`CpuOnlyInPlayVsCpu`, "The CPU plays only in games started with Play vs CPU."), knowing the room as the client does: a
   private room named "Play vs CPU" (`CpuNames.PlayVsCpuRoom`), so such a room opened again from the games list still offers
-  Add CPU. The legacy demo against the CPU ("Play demo vs CPU") is a CPU room's only; a game one hosts does not show it. A seat's medallions and chips, should they show, are disabled for AlphaWOTR with the reason
+  Add CPU. The legacy demo against the CPU ("Play demo vs CPU") is gone from every room (owner, 2026-11-17: "then we only click Ready and Start game"). A seat's medallions and chips, should they show, are disabled for AlphaWOTR with the reason
   (`RulesChoices.CpuBaseGame`, "Games against the CPU use the base game."). The server's refusals read: `CpuBaseGameOnly` "Games against the CPU use the base game. Switch the
   expansions and variants off, then add the CPU."; `CpuBusy` "The CPU is playing as many games as it can right now. Try
   again in a few minutes."
