@@ -16,6 +16,38 @@ namespace Wotr.EditorTests
             return status.Trail;
         }
 
+        // UI-543 (owner, 2026-11-17): the player's decision that a card brought (the opponent's card above all, which never
+        // stands in the player's trail) names that card in the console; a click opens it. Nothing for the opponent's
+        // decision, for a source already in the trail, or for an unknown source.
+        [Test]
+        public void TheCardBehindThePlayersDecisionStandsInTheConsole()
+        {
+            const string card = "base.sh.strategy.13";
+            var view = new PlayerView { You = Side.FreePeoples, DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Kind = DecisionKind.Losses, SourceId = card } };
+            string inspected = null;
+            var status = new ConsoleStatus();
+            status.SetTrail(view, BoardPresentation.Load(), id => inspected = id);
+            var cause = status.Trail.Q<Button>(EffectTrailChoices.CauseName);
+            Assert.IsNotNull(cause);
+            Assert.AreEqual("◇ " + CardLibrary.Title(card), cause.text);
+            StringAssert.Contains("comes from " + CardLibrary.Title(card), cause.tooltip);
+            Assert.AreEqual(DisplayStyle.Flex, status.Trail.style.display.value, "The trail shows it.");
+            var invoke = typeof(Clickable).GetMethod("Invoke", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Public, null, new[] { typeof(EventBase) }, null);
+            invoke.Invoke(cause.clickable, new object[] { null });
+            Assert.AreEqual(card, inspected, "A click opens the card.");
+
+            view.DecisionOwner = Side.Shadow;
+            Assert.AreEqual("", EffectTrailChoices.Cause(view), "The opponent's decision is theirs.");
+            view.DecisionOwner = Side.FreePeoples;
+            view.EffectTrail.Add(new EffectTrailView { SourceId = card });
+            Assert.AreEqual("", EffectTrailChoices.Cause(view), "A source already in the trail is not named twice.");
+            view.EffectTrail.Clear();
+            view.Decision.SourceId = "hunt.tile.unknown";
+            Assert.AreEqual("", EffectTrailChoices.Cause(view), "An unknown source is not named.");
+        }
+
         [Test]
         public void CompactFiguresKeepTypesNationDetailsAndOriginalHistory()
         {

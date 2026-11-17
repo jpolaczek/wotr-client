@@ -1580,6 +1580,47 @@ Tests:
   - frames `ui541-*`.
 - PlayMode `OpponentFreePeoplesActingNetworkTests` (Dead Men).
 
+<a id="the-attack-is-seen--ui-542"></a>
+## The attack is seen — UI-542 (2026-11-17)
+
+The owner: "if the CPU or the other player attacks, the camera does not centre on the region and nothing shows what
+attacks what; we must jump to the attack, see this group of units head in that direction, then open the battle window".
+
+- **The camera.** A wheel zoom or drag pan of the player's own turn kept `PresentationCamera` from moving for the whole
+  next presentation: the flag lasted until the next release. Now only steering during a presentation stops its camera.
+  The flag is cleared at a presentation's first cue, so the attack is framed as §6.5 says.
+- **The lunge** (`AttackPresenter.Lunge`). The attack's trace stands as before: both forces glow and the defended region
+  is outlined. After 0.3 s the attacking force's figures (its army and the characters beside it) lunge towards the
+  defended region:
+  - 40% of the way, at most 70 map points;
+  - out by 40% of the lunge's 1 s, held to 55%, then back.
+
+  Only the figures' own translate moves: the stand keeps its place and nothing changes region. The battle window opens
+  after it, as before (`BattlePresenter`, on the same cue). Reduced motion: no lunge. Skip ends it with the figures back
+  in place.
+
+Tests: PlayMode `OpponentBattlePresentationTests.AnAttackAfterThePlayersOwnZoomBringsTheCameraAndTheAttackersLunge`
+(both viewers; frame `ui542-attack-lunge-*`), `OpponentPresentationLayoutTests` (the takeover during a presentation still
+stops the camera).
+
+<a id="the-card-behind-a-decision--ui-543"></a>
+## The card behind a decision — UI-543 (2026-11-17)
+
+The owner: "if during a battle or another process we must take extra damage because a card says so, draw a card or
+move something, the interface at the bottom should show the card or effect being carried out".
+
+- **What it shows.** The player's own decision that a card or a character's ability brought (`Decision.SourceId`) names
+  its source in the console trail: "◇ <card>", with a gold edge and the tooltip "This step comes from <card> · Click to
+  read the card". A click opens the card, as the trail's other chips do (`EffectTrailChoices.Cause`).
+- **Why it was missing.** The trail lists only the player's own committed choices
+  (`EffectTrail`, `c.Owner == viewer`), so the opponent's card behind the player's losses, draw or move stood nowhere.
+- **When it is not shown:**
+  - the opponent's decision;
+  - a source the trail already names;
+  - a source that is neither a card nor a character (a Hunt tile has its own window).
+
+Tests: EditMode `EffectTrailTests.TheCardBehindThePlayersDecisionStandsInTheConsole`.
+
 <a id="the-rest-of-a-cards-way--ui-493"></a>
 ## The rest of a card's way — UI-493 (2026-11-04)
 

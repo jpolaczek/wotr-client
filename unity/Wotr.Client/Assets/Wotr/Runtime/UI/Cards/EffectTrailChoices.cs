@@ -6,9 +6,46 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    internal static class EffectTrailChoices
+    public static class EffectTrailChoices
     {
+        public const string CauseName = "console-decision-source";
+
         public static void Render(VisualElement root, PlayerView view, BoardPresentation data, Action<string> inspect)
+        {
+            Trail(root, view, data, inspect);
+            Cause(root, view, inspect);
+        }
+
+        // UI-543 (owner, 2026-11-17: "if during a battle or another process we must take extra damage because a card says so,
+        // draw a card or move something, the interface at the bottom should show the card or effect being carried out"):
+        // the player's own decision that a card or a character's ability brought (the opponent's card above all, whose
+        // choices never stand in the player's trail) names its source in the console; a click opens the card.
+        public static string Cause(PlayerView view) =>
+            view.Decision is { } decision && view.DecisionOwner == view.You && decision.SourceId.Length > 0 &&
+            (CardLibrary.Cards.ContainsKey(decision.SourceId) || view.Characters.Any(c => c.Id == decision.SourceId)) &&
+            view.EffectTrail.All(item => item.SourceId != decision.SourceId) ? decision.SourceId : "";
+
+        private static void Cause(VisualElement root, PlayerView view, Action<string> inspect)
+        {
+            var id = Cause(view);
+            if (id.Length == 0)
+                return;
+            var name = Source(view, id);
+            var card = CardLibrary.Cards.ContainsKey(id);
+            var cause = BoardScreen.Button("◇ " + name, () =>
+            {
+                if (card)
+                    inspect(id);
+            });
+            cause.name = CauseName;
+            cause.AddToClassList("committed-choice");
+            cause.AddToClassList("decision-source");
+            cause.userData = id;
+            cause.tooltip = "This step comes from " + name + (card ? " · Click to read the card" : "");
+            root.Add(cause);
+        }
+
+        private static void Trail(VisualElement root, PlayerView view, BoardPresentation data, Action<string> inspect)
         {
             if (view.EffectTrail.Count == 0)
                 return;

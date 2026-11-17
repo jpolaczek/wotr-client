@@ -107,7 +107,8 @@ namespace Wotr.Client
         // The chips are rebuilt only when the trail changes.
         public void SetTrail(PlayerView view, BoardPresentation data, Action<string> inspect)
         {
-            var key = view == null ? "" : view.MatchId + "/" + string.Join("|", view.EffectTrail.Select(t => t.SourceId + ":" + t.ChoiceId + ":" + t.TargetId));
+            var key = view == null ? "" : view.MatchId + "/" + string.Join("|", view.EffectTrail.Select(t => t.SourceId + ":" + t.ChoiceId + ":" + t.TargetId)) +
+                "/" + EffectTrailChoices.Cause(view);
             if (key == trailKey)
                 return;
             trailKey = key;

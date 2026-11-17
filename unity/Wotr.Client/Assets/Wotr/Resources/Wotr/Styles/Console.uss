@@ -177,6 +177,8 @@
 #board-screen .console-options-strip .console-options .console-option { flex-grow: 0; flex-shrink: 0; flex-basis: auto; text-overflow: clip; }
 .console-options-strip > .console-trail { max-width: none; height: auto; margin: 0 0 0 6px; }
 #board-screen .console-options-strip .console-trail .committed-choice { flex-shrink: 0; max-width: none; text-overflow: clip; }
+/* UI-543 (owner, 2026-11-17): the card or ability behind the player's decision, named beside the trail. */
+#board-screen .console-trail .decision-source { border-color: rgb(176, 141, 79); color: rgb(249, 223, 157); }
 #board-screen .console-options .console-option {
     flex-grow: 1;
     flex-shrink: 1;
