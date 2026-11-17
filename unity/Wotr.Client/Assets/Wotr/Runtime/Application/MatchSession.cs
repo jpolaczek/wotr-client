@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine.UIElements;
 using Wotr.Contracts;
 
 namespace Wotr.Client
@@ -28,6 +29,11 @@ namespace Wotr.Client
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private bool ratingAsked;
         private bool disposed;
+        // UI-540: while the CPU holds the decision, its state is read again now and then (a waiting CPU changes no revision).
+        public const long CpuCheckMilliseconds = 15000;
+        private PlayerView presented;
+        private IVisualElementScheduledItem cpuWatch;
+        private bool cpuChecking;
         public BoardExit Exit { get; }
         public bool Expired { get; private set; }
         // UI-501: an unfinished ranked game: leaving it loses it.
@@ -62,6 +68,7 @@ namespace Wotr.Client
             pause = new RankedPauseController(api, matchId, board, connection);
             connection.ClockSeen += ShowClock;
             connection.OpponentSeen += board.TopBar.Clock.ShowOpponent;
+            cpuWatch = board.Root.schedule.Execute(CheckCpu).Every(CpuCheckMilliseconds);
             if (replays != null)
                 saver = new ReplaySaver(api, "api/matches/" + Uri.EscapeDataString(matchId) + "/replay", replays, board.GameEnd);
             connection.Start();
@@ -72,6 +79,7 @@ namespace Wotr.Client
         {
             if (disposed)
                 return;
+            presented = view;
             board.Apply(view);
             if (view.Winner.HasValue && !ratingAsked)
                 _ = LoadRating();
@@ -83,6 +91,36 @@ namespace Wotr.Client
                 if (!disposed && board.Root.panel != null)
                     seen.Displayed(view.Revision);
             });
+        }
+
+        private static bool SameCpu(CpuSeatState a, CpuSeatState b) =>
+            a == null ? b == null : b != null && a.Waiting == b.Waiting && a.Since == b.Since && a.Problem == b.Problem;
+
+        // UI-540: the CPU's decision: read its state again (it may wait with an error, or have come back).
+        private void CheckCpu()
+        {
+            if (disposed || cpuChecking || !board.CpuOpponent || presented == null || presented.Winner.HasValue ||
+                !presented.DecisionOwner.HasValue || presented.DecisionOwner.Value == presented.You)
+                return;
+            _ = RefreshCpu();
+        }
+
+        private async Task RefreshCpu()
+        {
+            cpuChecking = true;
+            try
+            {
+                await connection.RefreshClock();
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception) when (!disposed)
+            {
+                // The update loop's next notice or reconnect reads the view again.
+            }
+            finally
+            {
+                cpuChecking = false;
+            }
         }
 
         // UI-502: how the game moved the player's rating. A normal game has none (404), and a failed read is tried again with
@@ -130,6 +168,12 @@ namespace Wotr.Client
                 return;
             board.ShowClock(view.Clock, view.You);
             turns.SetPaused(view.Clock?.Paused == true);
+            // UI-540: the CPU's waiting state rides on every view read, whatever its revision.
+            if (!SameCpu(board.CpuState, view.Cpu))
+            {
+                board.CpuState = view.Cpu;
+                turns.CpuChanged();
+            }
             ShowRanked(view.Clock != null);
         }
 
@@ -165,6 +209,7 @@ namespace Wotr.Client
             connection.StatusChanged -= ConnectionChanged;
             board.TopBar.Clock.Warning -= WarnClock;
             connection.ClockSeen -= ShowClock;
+            cpuWatch?.Pause();
             connection.OpponentSeen -= board.TopBar.Clock.ShowOpponent;
             pause.Dispose();
             sounds?.Dispose();

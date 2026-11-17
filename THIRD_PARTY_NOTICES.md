@@ -12,6 +12,12 @@ Attached TTF are static scales of original projects. [Manifest](unity/Wotr.Clien
 
 Role division and integration describes [TYPOGRAPHY](docs/ui/TYPOGRAPHY.md).
 
+## The CPU opponent
+
+Games against the CPU in the base game are played by AlphaWOTR (MIT licence, Copyright (c) 2026 Sarvesh Sadana,
+https://github.com/Weyoun5/AlphaWOTR) on the game server; the client does not contain it. The client names it on the CPU
+seat and credits its author there (UI-540).
+
 ## Libraries
 
 Redistributed as DLLs in `Assets/Plugins` and in every build; their license texts go to the build

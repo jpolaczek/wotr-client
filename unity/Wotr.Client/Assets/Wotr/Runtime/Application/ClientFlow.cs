@@ -210,7 +210,7 @@ namespace Wotr.Client
             var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest
                 { Name = "Play vs CPU", Side = side, Visibility = RoomVisibility.Private }, token);
             token.ThrowIfCancellationRequested();
-            ShowRoom(room);
+            ShowRoom(room, true);
             waitingRoom.InviteCpu();
         }
 
@@ -229,13 +229,11 @@ namespace Wotr.Client
             {
                 // A room already gone holds no seat.
             }
+            // The base game (owner, 2026-11-17: a game against the CPU has no expansions or modes); the pace stays.
             var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest
                 { Name = old.Name.Length > 0 ? old.Name : "Play vs CPU", Side = side, Visibility = RoomVisibility.Private }, token);
-            if (old.Configuration != null)
-                room = await api.Put<RoomView>("api/rooms/" + room.Id + "/configuration",
-                    new ConfigureRoomRequest { ExpectedVersion = room.Version, Configuration = old.Configuration }, token);
             token.ThrowIfCancellationRequested();
-            ShowRoom(room);
+            ShowRoom(room, true);
             waitingRoom.InviteCpu(pace);
         }
 
@@ -352,7 +350,10 @@ namespace Wotr.Client
             }
         }
 
-        private void ShowRoom(RoomView room)
+        private void ShowRoom(RoomView room) => ShowRoom(room, false);
+
+        // A room made by Play vs CPU offers the CPU and no rules to choose (the base game).
+        private void ShowRoom(RoomView room, bool playVsCpu)
         {
             // OBS-05: a room one watches whose game is going on opens its board, not the waiting room.
             if (room.Role == RoomRole.Observer && room.Status == RoomStatus.Started && room.MatchId.Length > 0)
@@ -361,7 +362,7 @@ namespace Wotr.Client
                 return;
             }
             ChangeScreen();
-            var waiting = new WaitingRoomScreen();
+            var waiting = new WaitingRoomScreen { PlayVsCpu = playVsCpu };
             errorLabel = waiting.Status;
             root.Add(waiting.Root);
             waiting.InterfaceRequested += OpenInterface;

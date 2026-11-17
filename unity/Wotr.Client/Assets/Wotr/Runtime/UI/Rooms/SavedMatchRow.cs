@@ -49,11 +49,11 @@ namespace Wotr.Client
         public void Apply(MatchSummary match)
         {
             current = match;
-            var key = $"{match.Revision}/{match.LastSeenRevision}/{match.Status}/{match.Opponent}/{match.OpponentAvatar}/{match.Name}/{match.Ranked}/{match.IsPve}/{match.Bot?.Status}";
+            var key = $"{match.Revision}/{match.LastSeenRevision}/{match.Status}/{match.Opponent}/{match.OpponentAvatar}/{match.Name}/{match.Ranked}/{match.IsPve}/{match.Bot?.Status}/{match.Bot?.Engine}";
             if (key == version)
                 return;
             version = key;
-            var opponent = match.IsPve ? "CPU" : match.Opponent;
+            var opponent = match.IsPve ? CpuNames.Name(match.Bot) : match.Opponent;
             heading.text = string.IsNullOrEmpty(match.Name) ? "With " + opponent : match.Name;
             detail.text = (string.IsNullOrEmpty(match.Name) ? "" : "With " + opponent + " · ") + BoardScreen.SideName(match.You) + " · Turn " + match.Turn + " · " + Modules(match.Configuration);
             // UI-505: the picture stands before the line that names the opponent.

@@ -305,6 +305,12 @@ namespace Wotr.PlayTests
                     foreach (var key in new[] { "free", "shadow" })
                     {
                         Fits(waiting.Root.Q<Button>("seat-" + key + "-take"), waiting.Root.Q("seat-" + key));
+                        // Owner, 2026-11-17: a hosted room's empty seat offers no Add CPU (the CPU only through Play vs CPU).
+                        if (key == "shadow")
+                        {
+                            Assert.AreEqual(DisplayStyle.None, waiting.Root.Q<Button>("seat-shadow-remove").resolvedStyle.display);
+                            continue;
+                        }
                         Fits(waiting.Root.Q<Button>("seat-" + key + "-remove"), waiting.Root.Q("seat-" + key));
                         Assert.IsFalse(waiting.Root.Q<Button>("seat-" + key + "-take").worldBound.Overlaps(waiting.Root.Q<Button>("seat-" + key + "-remove").worldBound));
                     }

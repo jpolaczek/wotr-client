@@ -209,6 +209,15 @@
     width: 236px;
     margin: 0 4px 0 6px;
 }
+/* Owner, 2026-11-17: a CPU room shows the base game's line in the rules' place, the same width. */
+.waiting-room .waiting-cpu-base-game {
+    flex-shrink: 0;
+    width: 236px;
+    margin: 6px 4px 0 6px;
+    white-space: normal;
+    font-size: 13px;
+    color: rgb(214, 196, 150);
+}
 /* UI-415 (owner): the waiting room as compact as the menu: lower seats, audience, invitation and chat; 32-point
    buttons; every control keeps its place. */
 .waiting-room .waiting-seats { height: 100px; margin-bottom: 4px; }
