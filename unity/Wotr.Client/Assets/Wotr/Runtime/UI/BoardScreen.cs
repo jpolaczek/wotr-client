@@ -65,6 +65,8 @@ namespace Wotr.Client
         // Owner (2026-11-11): a match against the CPU (opened from a CPU room or a saved PvE game); while the CPU decides,
         // the console shows that it thinks (ConsoleThinking).
         public bool CpuOpponent { get; set; }
+        // UI-540: the CPU opponent's waiting state from the latest view read (null while it plays normally).
+        public CpuSeatState CpuState { get; set; }
         public TurnRibbon Ribbon { get; } = new TurnRibbon();
         public GameEndScreen GameEnd { get; } = new GameEndScreen();
         // CHAT-01: the board's chat at the bottom left, beside the map legend.

@@ -379,7 +379,9 @@ namespace Wotr.Client
                 var cpu = room.Bot?.Side == side;
                 var status = cpu ? room.Bot.Status : invitation;
                 var pending = !taken && inviting == side;
-                player.text = cpu || pending ? "CPU" : taken ? holder : "Waiting for a player…";
+                // UI-540: AlphaWOTR is named and credited; an invitation still on its way and the scripted CPU read "CPU".
+                player.text = cpu ? CpuNames.Name(room.Bot) : pending ? CpuNames.Plain : taken ? holder : "Waiting for a player…";
+                player.tooltip = cpu ? CpuNames.Tooltip(room.Bot) : "";
                 // AVATAR-01: the occupant's picture; the CPU and an empty seat show none.
                 AvatarImage.Show(avatar, taken && !cpu ? (side == Side.FreePeoples ? room.FreePeoplesAvatar : room.ShadowAvatar) : "");
                 Root.EnableInClassList("empty", !taken);

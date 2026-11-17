@@ -707,6 +707,13 @@ namespace Wotr.Client
         // UI-500: during a pause nothing new leaves; a command already sent may still learn its receipt.
         public void SetPaused(bool value) => paused = value;
 
+        // UI-540: the CPU opponent's waiting state changed; the console says so.
+        public void CpuChanged()
+        {
+            if (view != null)
+                Render();
+        }
+
         public void SetConnection(string status)
         {
             var connected = status == "Connected";
