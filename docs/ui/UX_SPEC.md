@@ -5044,6 +5044,8 @@ require a click; reconnect, Skip and Reduced motion never submit a human choice.
 
 Owner, 2026-11-16 (BOT-219 D1/D2/D6): a game against the CPU is the base game; the player chooses the faction; the CPU is
 AlphaWOTR (MIT licence, its author Sarvesh Sadana, https://github.com/Weyoun5/AlphaWOTR), named and credited. Owner,
+2026-11-17: annotated as created by Wey: its seat's line under the name (where a player's reads Host/You) reads "Created by
+Wey", and the credit (the seat's tooltip, a saved game's row) begins "AlphaWOTR, created by Wey". Owner,
 2026-11-17: when AlphaWOTR cannot answer, the game waits; nothing else plays in its place, and the player is told.
 
 - **The CPU seat** (`WaitingRoomScreen`, `CpuNames`): a seat whose `BotSeatView.Engine` is `alphawotr` reads AlphaWOTR,
@@ -5054,7 +5056,10 @@ AlphaWOTR (MIT licence, its author Sarvesh Sadana, https://github.com/Weyoun5/Al
   guest's Remove stays). A room made by Play vs CPU (`WaitingRoomScreen.PlayVsCpu`), or one holding the CPU, has no rules
   strip: the line "Base game · Games against the CPU use the base game, without expansions or modes." stands in its place.
   Play vs CPU makes a base-game room with the chosen side; switching sides makes a new base-game room (the old room's rules
-  are not carried over). A seat's medallions and chips, should they show, are disabled for AlphaWOTR with the reason
+  are not carried over). Owner, 2026-11-17 (follow-up): the server refuses the CPU outside a Play vs CPU room
+  (`CpuOnlyInPlayVsCpu`, "The CPU plays only in games started with Play vs CPU."), knowing the room as the client does: a
+  private room named "Play vs CPU" (`CpuNames.PlayVsCpuRoom`), so such a room opened again from the games list still offers
+  Add CPU. The legacy demo against the CPU ("Play demo vs CPU") is a CPU room's only; a game one hosts does not show it. A seat's medallions and chips, should they show, are disabled for AlphaWOTR with the reason
   (`RulesChoices.CpuBaseGame`, "Games against the CPU use the base game."). The server's refusals read: `CpuBaseGameOnly` "Games against the CPU use the base game. Switch the
   expansions and variants off, then add the CPU."; `CpuBusy` "The CPU is playing as many games as it can right now. Try
   again in a few minutes."

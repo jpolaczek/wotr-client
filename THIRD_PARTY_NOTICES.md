@@ -14,9 +14,9 @@ Role division and integration describes [TYPOGRAPHY](docs/ui/TYPOGRAPHY.md).
 
 ## The CPU opponent
 
-Games against the CPU in the base game are played by AlphaWOTR (MIT licence, Copyright (c) 2026 Sarvesh Sadana,
-https://github.com/Weyoun5/AlphaWOTR) on the game server; the client does not contain it. The client names it on the CPU
-seat and credits its author there (UI-540).
+Games against the CPU in the base game are played by AlphaWOTR, created by Wey (MIT licence, Copyright (c) 2026 Sarvesh
+Sadana, https://github.com/Weyoun5/AlphaWOTR), on the game server; the client does not contain it. The client names it on
+the CPU seat with the line "Created by Wey" and credits it there and on a saved game against it (UI-540).
 
 ## Libraries
 

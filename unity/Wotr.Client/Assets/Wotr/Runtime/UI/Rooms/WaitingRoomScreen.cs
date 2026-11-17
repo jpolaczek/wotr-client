@@ -68,7 +68,7 @@ namespace Wotr.Client
         private readonly Label baseGame = new Label("Base game · Games against the CPU use the base game, without expansions or modes.")
             { name = "waiting-cpu-base-game", pickingMode = PickingMode.Ignore };
 
-        private bool CpuRoom(RoomView room) => PlayVsCpu || room?.Bot != null || invitingSide != null;
+        private bool CpuRoom(RoomView room) => PlayVsCpu || room?.Bot != null || invitingSide != null || CpuNames.PlayVsCpuRoom(room);
         private BotSeatStatus invitationStatus;
 
         public WaitingRoomScreen()
@@ -321,12 +321,14 @@ namespace Wotr.Client
             }
         }
 
-        // A CPU room has no rules to choose: the expansions and modes give way to the base game's line.
+        // A CPU room has no rules to choose: the expansions and modes give way to the base game's line. The legacy demo
+        // against the CPU is a CPU room's too (owner, 2026-11-17): a game one hosts does not offer it.
         private void ShowRules(RoomView room)
         {
             var cpu = CpuRoom(room);
             Rules.Root.style.display = cpu ? DisplayStyle.None : DisplayStyle.Flex;
             baseGame.style.display = cpu ? DisplayStyle.Flex : DisplayStyle.None;
+            demo.style.display = cpu ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         // One seat: the side's emblem and name, the player or an empty place, Host/You and readiness; Take seat for a free
@@ -367,6 +369,7 @@ namespace Wotr.Client
                 Root.Add(heading);
                 player.name = "seat-" + key + "-player";
                 player.AddToClassList("waiting-seat-player");
+                tags.name = "seat-" + key + "-tags";
                 tags.AddToClassList("waiting-seat-tags");
                 state.name = "seat-" + key + "-state";
                 state.AddToClassList("waiting-seat-state");
@@ -402,12 +405,15 @@ namespace Wotr.Client
                 // UI-540: AlphaWOTR is named and credited; an invitation still on its way and the scripted CPU read "CPU".
                 player.text = cpu ? CpuNames.Name(room.Bot) : pending ? CpuNames.Plain : taken ? holder : "Waiting for a player…";
                 player.tooltip = cpu ? CpuNames.Tooltip(room.Bot) : "";
+                // The seat's labels ignore the pointer, so the seat itself carries the credit for hovering.
+                Root.tooltip = cpu ? CpuNames.Tooltip(room.Bot) : "";
                 // AVATAR-01: the occupant's picture; the CPU and an empty seat show none.
                 AvatarImage.Show(avatar, taken && !cpu ? (side == Side.FreePeoples ? room.FreePeoplesAvatar : room.ShadowAvatar) : "");
                 Root.EnableInClassList("empty", !taken);
                 Root.EnableInClassList("yours", yours);
                 var host = taken && holder == room.Host;
-                tags.text = host && yours ? "Host · You" : host ? "Host" : yours ? "You" : "";
+                // Owner, 2026-11-17: AlphaWOTR's seat says who created it, on the line a player's seat gives Host/You.
+                tags.text = cpu ? CpuNames.Annotation(room.Bot) : host && yours ? "Host · You" : host ? "Host" : yours ? "You" : "";
                 state.text = cpu || pending ? status.ToString() : taken ? accepted ? "Ready" : "Not ready" : "";
                 state.EnableInClassList("ready", (cpu || pending) ? status == BotSeatStatus.Ready && accepted : taken && accepted);
                 state.EnableInClassList("unavailable", (cpu || pending) && status == BotSeatStatus.Unavailable);

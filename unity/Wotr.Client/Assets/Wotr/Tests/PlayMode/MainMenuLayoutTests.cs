@@ -295,8 +295,10 @@ namespace Wotr.PlayTests
                     // MENU-25: the waiting room's window is the main menu's window; every control keeps its place inside it.
                     var waitingWindow = waiting.Root.Q("waiting-window");
                     Assert.AreEqual(size, waitingWindow.worldBound.size, "The waiting room uses the menu's frame.");
-                    foreach (var name in new[] { "waiting-back", "room-ready", "start-game", "room-demo", "room-observe", "open-interface" })
+                    foreach (var name in new[] { "waiting-back", "room-ready", "start-game", "room-observe", "open-interface" })
                         Fits(waiting.Root.Q<Button>(name), waiting.Root.Q("waiting-actions"));
+                    // Owner, 2026-11-17: a hosted room offers no demo against the CPU.
+                    Assert.AreEqual(DisplayStyle.None, waiting.Root.Q<Button>("room-demo").resolvedStyle.display);
                     foreach (var name in new[] { "generate-room-invitation", "copy-room-invitation", "refresh-room", "room-chat-send" })
                         Fits(waiting.Root.Q<Button>(name), waitingWindow);
                     foreach (var name in new[] { "seat-free", "seat-shadow", "waiting-observers", "room-invitation", "room-chat-input", "room-chat-log" })

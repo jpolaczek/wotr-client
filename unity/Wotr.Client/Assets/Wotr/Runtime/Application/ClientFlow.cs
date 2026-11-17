@@ -207,8 +207,7 @@ namespace Wotr.Client
         private async Task CreatePveRoom(Side side)
         {
             var token = screenLifetime.Token;
-            var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest
-                { Name = "Play vs CPU", Side = side, Visibility = RoomVisibility.Private }, token);
+            var room = await api.Post<RoomView>("api/rooms", CpuNames.PlayVsCpuRequest(side), token);
             token.ThrowIfCancellationRequested();
             ShowRoom(room, true);
             waitingRoom.InviteCpu();
@@ -229,9 +228,9 @@ namespace Wotr.Client
             {
                 // A room already gone holds no seat.
             }
-            // The base game (owner, 2026-11-17: a game against the CPU has no expansions or modes); the pace stays.
-            var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest
-                { Name = old.Name.Length > 0 ? old.Name : "Play vs CPU", Side = side, Visibility = RoomVisibility.Private }, token);
+            // A Play vs CPU room (owner, 2026-11-17: the CPU joins no other) in the base game (no expansions or modes); the
+            // pace stays.
+            var room = await api.Post<RoomView>("api/rooms", CpuNames.PlayVsCpuRequest(side), token);
             token.ThrowIfCancellationRequested();
             ShowRoom(room, true);
             waitingRoom.InviteCpu(pace);

@@ -103,7 +103,7 @@ namespace Wotr.PlayTests
             var token = timeout.Token;
             var loss = new LoseFirstBotResponse();
             using var api = await fixture.Human(token, loss);
-            var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest { Side = Side.FreePeoples }, token);
+            var room = await api.Post<RoomView>("api/rooms", CpuNames.PlayVsCpuRequest(Side.FreePeoples), token);
             var screen = new WaitingRoomScreen();
             using var controller = new WaitingRoomController(api, screen, room, _ => Task.CompletedTask,
                 () => Task.CompletedTask, () => Assert.Fail("Expired"), TimeSpan.FromMinutes(5));
@@ -130,7 +130,9 @@ namespace Wotr.PlayTests
             var token = timeout.Token;
             using var host = await fixture.Human(token);
             using var guest = await fixture.Human(token);
-            var room = await host.Post<RoomView>("api/rooms", new CreateRoomRequest { Side = Side.Shadow }, token);
+            var room = await host.Post<RoomView>("api/rooms", CpuNames.PlayVsCpuRequest(Side.Shadow), token);
+            // A Play vs CPU room has no code until its host makes one (New code), as a named room.
+            room = await host.Post<RoomView>(Path(room) + "/invitation", null, token);
             var cpu = Outcome(() => host.Put<RoomView>(Path(room) + "/bot", Request(room), token));
             var human = Outcome(() => guest.Post<RoomView>("api/rooms/join", new JoinRoomRequest { Code = room.JoinCode }, token));
             var outcomes = await Task.WhenAll(cpu, human);
@@ -178,7 +180,7 @@ namespace Wotr.PlayTests
             Assert.IsFalse(screen.Root.Q<Button>("start-game").enabledSelf);
             await Refused(() => other.Post<RoomView>(Path(room) + "/start", new RoomRevisionRequest { ExpectedVersion = room.Version }, token), "BotUnavailable");
             Assert.IsEmpty((await api.Get<RoomView>(Path(room), token)).MatchId);
-            var empty = await other.Post<RoomView>("api/rooms", new CreateRoomRequest { Name = "Unavailable CPU", Side = Side.Shadow }, token);
+            var empty = await other.Post<RoomView>("api/rooms", CpuNames.PlayVsCpuRequest(Side.Shadow), token);
             await Refused(() => other.Put<RoomView>(Path(empty) + "/bot", Request(empty), token), "BotUnavailable");
             Assert.IsNull((await other.Get<RoomView>(Path(empty), token)).Bot);
         }
@@ -188,7 +190,7 @@ namespace Wotr.PlayTests
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var token = timeout.Token;
             using var api = await PveTestFixture.Load().Human(token);
-            var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest { Name = "CPU configuration race", Side = Side.FreePeoples }, token);
+            var room = await api.Post<RoomView>("api/rooms", CpuNames.PlayVsCpuRequest(Side.FreePeoples), token);
             var invitation = Request(room);
             var outcomes = await Task.WhenAll(
                 Outcome(() => api.Put<RoomView>(Path(room) + "/bot", invitation, token)),

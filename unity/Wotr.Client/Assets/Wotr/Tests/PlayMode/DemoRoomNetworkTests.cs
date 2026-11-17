@@ -36,7 +36,8 @@ namespace Wotr.PlayTests
             var storage = Path.Combine(Path.GetTempPath(), "wotr-demo-" + Guid.NewGuid().ToString("N"));
             var api = new GameApi(address);
             await TestAccounts.Register(api, "demo_" + Guid.NewGuid().ToString("N").Substring(0, 16), token);
-            var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest { Side = Side.Shadow }, token);
+            // Owner, 2026-11-17: the demo against the CPU is offered in a Play vs CPU room only.
+            var room = await api.Post<RoomView>("api/rooms", CpuNames.PlayVsCpuRequest(Side.Shadow), token);
             using (var client = new MountedFlowClient(api, storage))
             {
                 var first = await Demo(client, room.Id, token);
