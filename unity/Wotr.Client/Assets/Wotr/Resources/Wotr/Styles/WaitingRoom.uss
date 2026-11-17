@@ -256,11 +256,7 @@
 .waiting-room .room-chat-line { height: 34px; margin-top: 3px; }
 .waiting-room .room-chat-input { height: 32px; }
 .waiting-room .room-chat-send { width: 96px; height: 32px; min-height: 32px; font-size: 14px; }
-/* BOT-37: the CPU's pace. Owner (2026-11-11): at the foot of the seat it covered the CPU's status and Take seat, so it
-   stands in the seat's top right corner, beside the side's name, above the Remove column. */
-.waiting-room .waiting-pace { position: absolute; right: 10px; top: 6px; width: 132px; height: 26px; min-height: 26px;
-    margin: 0; font-size: 14px; }
-/* UI-533 (owner, 2026-11-12): the side choice stands in the host's own seat, beside the side's name, where the CPU's seat
-   shows its pace (the two never share a seat). */
+/* UI-533 (owner, 2026-11-12): the side choice stands in the host's own seat, beside the side's name, above the Remove
+   column. (The CPU's seat no longer shows a pace there: owner, 2026-11-17.) */
 .waiting-room .waiting-swap { position: absolute; right: 10px; top: 6px; width: 132px; height: 26px; min-height: 26px;
     margin: 0; font-size: 14px; }

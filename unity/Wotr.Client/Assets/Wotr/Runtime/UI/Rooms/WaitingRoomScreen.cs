@@ -30,8 +30,6 @@ namespace Wotr.Client
         public event Action AddCpu;
         // UI-533: the human in a room with the CPU plays the other side (the CPU takes this one).
         public event Action SwapSides;
-        // BOT-37: the host switches the seated CPU's pace while the room waits.
-        public event Action<BotThinkingMode> ChangeCpuPace;
         // OBS-04: the participant the host removes, a player or an observer, by name.
         public event Action<string> Remove;
         public event Action<Side> TakeSeat;
@@ -81,9 +79,9 @@ namespace Wotr.Client
             Root.AddToClassList("main-menu");
             Root.AddToClassList("waiting-room");
             freePeoples = new SeatCard(Side.FreePeoples, side => TakeSeat?.Invoke(side), player => Remove?.Invoke(player), () => AddCpu?.Invoke(),
-                mode => ChangeCpuPace?.Invoke(mode), () => SwapSides?.Invoke());
+                () => SwapSides?.Invoke());
             shadow = new SeatCard(Side.Shadow, side => TakeSeat?.Invoke(side), player => Remove?.Invoke(player), () => AddCpu?.Invoke(),
-                mode => ChangeCpuPace?.Invoke(mode), () => SwapSides?.Invoke());
+                () => SwapSides?.Invoke());
             audience = new AudienceLine(observer => Remove?.Invoke(observer));
             observe = Action("room-observe", "Observe", () => Observe?.Invoke(), "menu-action");
             ready = Action("room-ready", "Ready", () => Ready?.Invoke(!OwnReady), "menu-action");
@@ -333,7 +331,8 @@ namespace Wotr.Client
 
         // One seat: the side's emblem and name, the player or an empty place, Host/You and readiness; Take seat for a free
         // place and Remove for the host, both always in place. UI-533 (owner, 2026-11-12): in a room with the CPU the host's
-        // own seat offers Switch side in its top right corner, beside the side's name (where the CPU's seat shows its pace).
+        // own seat offers Switch side in its top right corner, beside the side's name. Owner, 2026-11-17: the CPU's seat no
+        // longer offers a pace (BOT-37's Fast/Thorough); AlphaWOTR plays at the server's one setting.
         private sealed class SeatCard
         {
             public VisualElement Root { get; }
@@ -344,14 +343,10 @@ namespace Wotr.Client
             private readonly Label state = new Label();
             private readonly Button take;
             private readonly Button remove;
-            // BOT-37: the CPU's pace, Fast or Thorough; the host's press switches it.
-            private readonly Button pace;
             private readonly Button swap;
-            private BotThinkingMode mode;
             private string holder = "";
 
-            public SeatCard(Side side, Action<Side> takeSeat, Action<string> removePlayer, Action addCpu, Action<BotThinkingMode> changePace,
-                Action swapSides)
+            public SeatCard(Side side, Action<Side> takeSeat, Action<string> removePlayer, Action addCpu, Action swapSides)
             {
                 this.side = side;
                 var key = side == Side.FreePeoples ? "free" : "shadow";
@@ -384,12 +379,9 @@ namespace Wotr.Client
                     if (holder.Length == 0) addCpu();
                     else removePlayer(holder);
                 }, "waiting-remove");
-                pace = Action("seat-" + key + "-pace", "Pace: Fast", () =>
-                    changePace(mode == BotThinkingMode.Fast ? BotThinkingMode.Thorough : BotThinkingMode.Fast), "waiting-pace");
                 swap = Action("seat-" + key + "-swap", "Switch side", swapSides, "waiting-swap");
                 Root.Add(take);
                 Root.Add(remove);
-                Root.Add(pace);
                 Root.Add(swap);
             }
 
@@ -420,9 +412,6 @@ namespace Wotr.Client
                 remove.text = taken ? "Remove" : "Add CPU";
                 // A room one hosts has no Add CPU (owner, 2026-11-17: the CPU only through Play vs CPU).
                 remove.style.display = taken || offersCpu ? DisplayStyle.Flex : DisplayStyle.None;
-                mode = cpu ? room.Bot.ThinkingMode : BotThinkingMode.Fast;
-                pace.text = mode == BotThinkingMode.Thorough ? "Pace: Thorough" : "Pace: Fast";
-                pace.style.display = cpu ? DisplayStyle.Flex : DisplayStyle.None;
                 var cpuRoom = room.Bot != null || inviting != null;
                 swap.style.display = cpuRoom && yours && room.IsHost ? DisplayStyle.Flex : DisplayStyle.None;
             }
@@ -441,19 +430,10 @@ namespace Wotr.Client
                     : room.IsHost ? "Remove this player from the room. They cannot join it again." : "Only the host can remove a player."
                     : !room.IsHost || !canInvite ? "Only a seated host can invite CPU to the opposite seat."
                     : "Invite CPU. If the connection was interrupted, retry the same invitation.";
-                var cpu = room.Bot?.Side == side;
                 swap.SetEnabled(!busy && waiting && room.IsHost && yours);
                 var other = side == Side.FreePeoples ? "the Shadow" : "the Free Peoples";
                 swap.tooltip = !waiting ? "Sides cannot change after the start."
-                    : $"Play {other}; the CPU takes {(side == Side.FreePeoples ? "the Free Peoples" : "the Shadow")}. The rules and the CPU's pace stay.";
-                pace.SetEnabled(!busy && waiting && room.IsHost && cpu);
-                pace.tooltip = !cpu ? "" : !waiting ? "The CPU's pace is saved with the game."
-                    : !room.IsHost ? "Only the host chooses the CPU's pace."
-                    // The paces' times belong to the server's CPU (a new CPU may change them without a client release), so
-                    // the text names no seconds.
-                    : mode == BotThinkingMode.Fast
-                        ? "Fast: the CPU answers quickly. Press for Thorough: it looks further ahead and takes longer. Both players get ready again."
-                        : "Thorough: the CPU looks further ahead and takes longer. Press for Fast: it answers quickly. Both players get ready again.";
+                    : $"Play {other}; the CPU takes {(side == Side.FreePeoples ? "the Free Peoples" : "the Shadow")}. The CPU plays the base game.";
             }
         }
 

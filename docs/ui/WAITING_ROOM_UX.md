@@ -248,15 +248,18 @@ names the outcome (*Play the Shadow; the CPU takes the Free Peoples…*). The ow
 column under Start game (`room-swap-sides`), found it hard to see and asked for it in the seat where the side is written
 (2026-11-12); the column's button is gone. A seat is never handed over inside a room (the server's rule), so the switch
 leaves this room and makes a new private one with the other side, the same rules (expansions and options) and the CPU
-invited again at the same pace; Ready and Start stay explicit clicks. The switch is hidden in a room with a human
+invited again at the same pace; Ready and Start stay explicit clicks. (Since 2026-11-17 the new room is a Play vs CPU room
+in the base game, and there is no pace to carry; see below.) The switch is hidden in a room with a human
 opponent or an empty seat and in the CPU's seat, and greyed while a request runs or after the start. The layout test
 keeps it inside the host's seat, clear of the seat's labels and buttons, with its label fitting, in all four layouts
 (`PveRoomLayoutTests`); the network test plays a game from each side through it (`PveInvitationNetworkTests`).
 
-## The CPU's pace stands clear — owner, 2026-11-11
+## No pace for the CPU — owner, 2026-11-17
 
-At the foot of the CPU's seat *Pace: Fast / Thorough* covered the CPU's status and the seat's Take seat. It now stands in
-the seat's top right corner, beside the side's name and above the Remove column (132 × 26 points, `.waiting-pace`).
-`PveRoomLayoutTests` checks in all four layouts that it stays in its seat, clear of the seat's buttons and of every
-label's text.
+The CPU's seat no longer offers *Pace: Fast / Thorough* (BOT-37, placed in the seat's top right corner on 2026-11-11):
+AlphaWOTR plays at the server's one setting, and the owner removed the option from the client ("the pace option must go,
+it is no longer needed"). An invitation asks for the server's default; switching sides carries no pace; the client no
+longer calls `PUT /api/rooms/{id}/bot/thinking`. `PveRoomTests.TheCpuSeatOffersNoPace` checks that no seat has a pace
+button and no word of a pace is left in the room; `PveRoomLayoutTests` checks in all four layouts that the CPU's name,
+"Created by Wey" and its status read whole inside its seat, clear of its buttons.
 

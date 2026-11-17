@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -53,7 +54,7 @@ namespace Wotr.PlayTests
                     Assert.IsFalse(button.ClassListContains(PressFeedback.PressedClass));
                     foreach (var status in new[] { BotSeatStatus.Joining, BotSeatStatus.Ready, BotSeatStatus.Unavailable })
                     {
-                        // The CPU is AlphaWOTR, as on production: its name and "Created by Wey" stand clear of the pace too.
+                        // The CPU is AlphaWOTR, as on production: its name and "Created by Wey" stay inside its seat.
                         room.Bot = new BotSeatView { Side = human == Side.FreePeoples ? Side.Shadow : Side.FreePeoples, Status = status,
                             Engine = CpuNames.AlphaWotrEngine };
                         if (human == Side.FreePeoples) room.Shadow = "CPU";
@@ -74,7 +75,7 @@ namespace Wotr.PlayTests
                             screen.Root.Q<Button>("seat-" + key + "-take").worldBound.xMin, "The status cannot overlap seat actions.");
                         Assert.LessOrEqual(state.MeasureTextSize(state.text, 0, VisualElement.MeasureMode.Undefined, 0,
                             VisualElement.MeasureMode.Undefined).x, state.contentRect.width + 1);
-                        AssertThePaceStandsClear(screen, seat, key, scale);
+                        AssertTheCpuSeatHasNoPaceAndItsLinesFit(screen, seat, key, scale);
                         AssertTheSwitchStandsClear(screen, human, scale);
                         LayoutTests.Save(target, $"bot13-room-{human}-{status}-{width}-{scale:0.00}.png");
                     }
@@ -84,24 +85,21 @@ namespace Wotr.PlayTests
                 Object.Destroy(target);
             }
         }
-        // Owner (2026-11-11): the CPU's pace covered its status and Take seat. It stays inside the seat and clear of the
-        // side's name, the player's name and status (as far as their text reaches) and the seat's buttons.
-        private static void AssertThePaceStandsClear(WaitingRoomScreen screen, VisualElement seat, string key, float scale)
+        // Owner, 2026-11-17: the CPU's seat has no pace; its name, "Created by Wey" and its status read whole inside the
+        // seat, clear of its buttons.
+        private static void AssertTheCpuSeatHasNoPaceAndItsLinesFit(WaitingRoomScreen screen, VisualElement seat, string key, float scale)
         {
-            var pace = screen.Root.Q<Button>("seat-" + key + "-pace");
-            Assert.AreEqual(DisplayStyle.Flex, pace.resolvedStyle.display, "The CPU's seat shows its pace.");
-            var bound = pace.worldBound;
-            Assert.IsTrue(seat.worldBound.Contains(bound.min) && seat.worldBound.Contains(bound.max), "The pace stays in its seat.");
-            foreach (var name in new[] { "-take", "-remove" })
-                Assert.IsFalse(bound.Overlaps(screen.Root.Q<Button>("seat-" + key + name).worldBound), "The pace overlaps " + name);
-            foreach (var label in seat.Query<Label>().ToList())
+            Assert.IsNull(screen.Root.Q<Button>("seat-" + key + "-pace"), "The CPU's seat offers no pace.");
+            var buttons = new[] { "-take", "-remove" }.Select(name => screen.Root.Q<Button>("seat-" + key + name).worldBound).ToArray();
+            foreach (var label in new[] { "-player", "-tags", "-state" }.Select(name => screen.Root.Q<Label>("seat-" + key + name)))
             {
-                if (label.parent == pace || string.IsNullOrEmpty(label.text) || label.resolvedStyle.display == DisplayStyle.None)
+                if (string.IsNullOrEmpty(label.text))
                     continue;
                 var text = label.MeasureTextSize(label.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
-                var reach = new Rect(label.worldBound.xMin, label.worldBound.yMin,
-                    Mathf.Min(label.worldBound.width, text.x * scale), label.worldBound.height);
-                Assert.IsFalse(bound.Overlaps(reach), $"The pace covers '{label.text}'.");
+                var reach = new Rect(label.worldBound.xMin, label.worldBound.yMin, text.x * scale, label.worldBound.height);
+                Assert.IsTrue(seat.worldBound.Contains(reach.min) && seat.worldBound.Contains(reach.max), $"'{label.text}' stays in its seat.");
+                foreach (var button in buttons)
+                    Assert.IsFalse(button.Overlaps(reach), $"A seat button covers '{label.text}'.");
             }
         }
 

@@ -54,7 +54,6 @@ namespace Wotr.Client
             screen.Invite += Invite;
             screen.AddCpu += InviteCpu;
             screen.SwapSides += SwapSides;
-            screen.ChangeCpuPace += ChangeCpuPace;
             screen.Start += Start;
             screen.Demo += Demo;
             screen.Remove += Remove;
@@ -73,9 +72,6 @@ namespace Wotr.Client
             Path + "/configuration", new ConfigureRoomRequest { ExpectedVersion = screen.Room.Version, Configuration = configuration },
             token)));
         private void Invite() => Run(async () => Apply(await api.Post<RoomView>(Path + "/invitation", null, token)));
-        // BOT-37: the CPU's pace is a change of the room: its version rises and both players get ready again.
-        public void ChangeCpuPace(BotThinkingMode mode) => Run(async () => Apply(await api.Put<RoomView>(Path + "/bot/thinking",
-            new ConfigureRoomBotRequest { ExpectedVersion = screen.Room.Version, ThinkingMode = mode }, token)));
         // The flow replaces this waiting room with the new one, so nothing here waits for it.
         private void SwapSides()
         {
@@ -83,16 +79,13 @@ namespace Wotr.Client
                 _ = swapSides(screen.Room);
         }
 
-        public void InviteCpu() => InviteCpu(BotThinkingMode.Fast);
-
-        // UI-533: the pace comes with the invitation when a swap of sides brings the CPU back.
-        public void InviteCpu(BotThinkingMode mode) => Run(async () =>
+        // Owner, 2026-11-17: the CPU has no pace to choose; an invitation asks for the server's one setting.
+        public void InviteCpu() => Run(async () =>
         {
             invitation ??= new AddRoomBotRequest
             {
                 RequestId = Guid.NewGuid().ToString("N"),
-                ExpectedVersion = screen.Room.Version,
-                ThinkingMode = mode
+                ExpectedVersion = screen.Room.Version
             };
             var side = screen.Room.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
             screen.ShowInvitation(side);
@@ -309,7 +302,6 @@ namespace Wotr.Client
             screen.Invite -= Invite;
             screen.AddCpu -= InviteCpu;
             screen.SwapSides -= SwapSides;
-            screen.ChangeCpuPace -= ChangeCpuPace;
             screen.Start -= Start;
             screen.Demo -= Demo;
             screen.Remove -= Remove;
