@@ -4766,6 +4766,43 @@ Playtest (owner's checklist):
 
 Tests: EditMode `OpponentPresentationModelTests`; PlayMode `OpponentCardRollPresentationTests`; frames `ui541-*`.
 
+<a id="the-attack-is-seen--ui-542"></a>
+## The attack is seen — UI-542 (2026-11-17)
+
+The owner asked that the opponent's or the CPU's attack bring the camera to it, show which force heads where, then open
+the battle window.
+
+- **The camera.** The player's own zoom or pan on their turn no longer keeps the camera away from the next
+  presentation; only steering during a presentation does.
+- **The attackers' figures** lunge towards the defended region and back, while both forces glow. Then the battle
+  window opens.
+
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#the-attack-is-seen--ui-542).
+
+Playtest (owner's checklist):
+- [ ] Against the CPU, zoom and pan the map on your turn, then pass. When the CPU attacks, expect:
+  - the camera travels to the battle;
+  - both forces glow;
+  - the attacking figures lunge towards the defender and come back;
+  - then the battle window opens.
+- [ ] Say if the lunge reads well, and whether it should be longer or reach further.
+
+<a id="the-card-behind-a-decision--ui-543"></a>
+## The card behind a decision — UI-543 (2026-11-17)
+
+The owner asked that the interface at the bottom name the card or effect being carried out when the player must take
+extra losses, draw a card or move something because of it.
+
+- **The chip.** The console trail shows "◇ <card>" for the player's decision that a card or a character's ability
+  brought, the opponent's card above all. A click opens the card.
+
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#the-card-behind-a-decision--ui-543).
+
+Playtest:
+- [ ] Let the Shadow play Dreadful Spells on your army. Expect the losses decision with "◇ Dreadful Spells" in the
+  console; a click opens the card.
+- [ ] Say which other forced steps still lack their source.
+
 <a id="the-rest-of-a-cards-way--ui-493"></a>
 ## The rest of a card's way — UI-493 (2026-11-04)
 
