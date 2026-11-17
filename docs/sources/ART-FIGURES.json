@@ -38,11 +38,11 @@
     "graphicalassets/figures/v3/raw/gimli.png": "f270e02c7729f973db2ea130e7e163b01671d81a393828fc5b2de52d97d786d4",
     "graphicalassets/figures/v3/raw/merry.png": "b4136588e2f230f42c82a6241b5fdf8918afe130db5fa09cdc75ecd0120a6f67",
     "graphicalassets/figures/v3/raw/pippin.png": "e3eb129c923eb36d09b0a69edd86a88c074c04d051a5684ce574d48b5c19efc9",
-    "graphicalassets/figures/v3/raw/gandalf-white.png": "36185e74017b6bdd17ccf6e240a09837b333ede366f31d5941b5eb77f51ef109",
+    "graphicalassets/figures/v3/raw/gandalf-white.png": "604ac1589c0f9db4ea53c067233ae86b3d45932e9cfd5c4ae4442741cb29e31e",
     "graphicalassets/figures/v3/raw/aragorn.png": "b3eed3d939c480ff7d264048e46f1ceebf3e7da3284bbaab0e6da1b016452efa",
     "graphicalassets/figures/v3/raw/gollum.png": "bec13037ec12ae09013ec1bf02da73bd52da5e3ff3a8bd80dd529a8761aa0c0c",
     "graphicalassets/figures/v3/raw/ring-bearers.png": "c757dd9615cdc7720174f277aa3b69ae7afc7a86f10de1ef503aa47ddaae4c65",
-    "graphicalassets/figures/v3/raw/saruman.png": "e010ec193d5e45803c8461016e028ffccc53791278906363931a35ab9eb3abb0",
+    "graphicalassets/figures/v3/raw/saruman.png": "a986b5ff94e278678aca88b042796a1ba0956911406ac31ff429a5647de007d5",
     "graphicalassets/figures/v3/raw/mouth-of-sauron.png": "eeadbc8264acfd8dda7c716f1e7147e92e521cac52339682452cf289ecdb4ec8",
     "graphicalassets/figures/v3/raw/witch-king.png": "d260edc3c3029729032ba65574ece202d136843ab286dbd5635f44ca9c9187ea",
     "graphicalassets/figures/v3/raw/elrond.png": "8744fbbff187d40e64afe6120645190a9fa4e4a805fa5a1a0913f6400bbcdc9a",
@@ -92,7 +92,7 @@
     "graphicalassets/figures/v3/raw/black-serpent-portrait.png": "0d7454a8c6acd67c581304964b41f2056175a3accd0bc304ca580bfa9a523561",
     "graphicalassets/figures/v3/raw/shadow-of-mirkwood-portrait.png": "72e7476394c9190d4032d7a621b1883e309a863a2076da22c0d952d7d9764a67",
     "graphicalassets/figures/v3/raw/ugluk-portrait.png": "a3c017be47991e6f6375e17a6c05bec0d0d3e778a83e1bf2b84311293b31849c",
-    "graphicalassets/figures/v3/prompts.json": "ca9ef0521a248c4607db43d59c6fbb359686e24a0b8596364034bbe12a915f3f",
+    "graphicalassets/figures/v3/prompts.json": "f72aabf327cde81abf8f71c4a9b8ecb5b45599269bcfd7035e7b93a41b5bcfb7",
     "scripts/build_figure_art.py": "2a48207d1c58b0ab4ad685cbe94fc59900c54b52fd6c5e61ce41ea7d65b49152"
   },
   "tools": {
@@ -126,8 +126,8 @@
   "outputs": {
     "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-portraits-v2.json": "33d438c49b105499ee96ec5ce9fc76e49fde6585b92e74e487d16710e8456187",
     "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-portraits-v2.png": "046578ccad9fd6d76041880ff3ccab9af3ef975bcbd010531094c5a852867ccc",
-    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/characters-v1.json": "ed83c129b6edd8900db9c3703682d4399e678b5186ca8c8493317e99a888a84f",
-    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/characters-v1.png": "51468d1fdf70adc053621aa75d23b04bf7b2bf2ab73acc63a3b30cbb88954d71",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/characters-v1.json": "33a41c1044153dacc9b857fd14092db6b4ae80dd65e219873e6b775e822a4feb",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/characters-v1.png": "a862c264a4ba4b04ab4627d42ee4ed8e158c0da872f98122a3b1bf06c143c19f",
     "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/units-v3.json": "6600b61512a36b8ab5b01fd0dfcb08d7f20260980e22b5366eff23f6282f662a",
     "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/units-v3.png": "54b8f5ba811821a39297a691ca987447ec705afd1e5beebb45c7738afa14bfc0"
   },
