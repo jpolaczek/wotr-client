@@ -5044,6 +5044,8 @@ require a click; reconnect, Skip and Reduced motion never submit a human choice.
 
 Owner, 2026-11-16 (BOT-219 D1/D2/D6): a game against the CPU is the base game; the player chooses the faction; the CPU is
 AlphaWOTR (MIT licence, its author Sarvesh Sadana, https://github.com/Weyoun5/AlphaWOTR), named and credited. Owner,
+2026-11-17: annotated as created by Wey: its seat's line under the name (where a player's reads Host/You) reads "Created by
+Wey", and the credit (the seat's tooltip, a saved game's row) begins "AlphaWOTR, created by Wey". Owner,
 2026-11-17: when AlphaWOTR cannot answer, the game waits; nothing else plays in its place, and the player is told.
 
 - **The CPU seat** (`WaitingRoomScreen`, `CpuNames`): a seat whose `BotSeatView.Engine` is `alphawotr` reads AlphaWOTR,

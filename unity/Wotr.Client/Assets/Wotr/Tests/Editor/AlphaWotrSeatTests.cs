@@ -24,12 +24,18 @@ namespace Wotr.EditorTests
             screen.Update(room);
             var name = screen.Root.Q<Label>("seat-shadow-player");
             Assert.AreEqual("AlphaWOTR", name.text);
+            StringAssert.Contains("created by Wey", name.tooltip);
             StringAssert.Contains("Sarvesh Sadana", name.tooltip);
             StringAssert.Contains("MIT", name.tooltip);
+            // Owner, 2026-11-17: the seat says who created AlphaWOTR in plain sight.
+            var tags = screen.Root.Q<Label>("seat-shadow-tags");
+            Assert.AreEqual("Created by Wey", tags.text);
+            StringAssert.Contains("created by Wey", screen.Root.Q("seat-shadow").tooltip, "Hovering the seat shows the credit.");
             room.Bot = new BotSeatView { Side = Side.Shadow, Status = BotSeatStatus.Ready };
             screen.Update(room);
             Assert.AreEqual("CPU", name.text, "A game begun with the scripted CPU is named as before.");
             Assert.AreEqual("", name.tooltip);
+            Assert.AreEqual("", tags.text);
         }
 
         [Test]

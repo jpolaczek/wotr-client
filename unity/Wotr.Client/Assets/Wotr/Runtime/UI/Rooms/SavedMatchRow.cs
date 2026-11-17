@@ -55,6 +55,8 @@ namespace Wotr.Client
             version = key;
             var opponent = match.IsPve ? CpuNames.Name(match.Bot) : match.Opponent;
             heading.text = string.IsNullOrEmpty(match.Name) ? "With " + opponent : match.Name;
+            // Owner, 2026-11-17: a game against AlphaWOTR credits its creator.
+            Root.tooltip = match.IsPve ? CpuNames.Tooltip(match.Bot) : "";
             detail.text = (string.IsNullOrEmpty(match.Name) ? "" : "With " + opponent + " · ") + BoardScreen.SideName(match.You) + " · Turn " + match.Turn + " · " + Modules(match.Configuration);
             // UI-505: the picture stands before the line that names the opponent.
             var unnamed = string.IsNullOrEmpty(match.Name);

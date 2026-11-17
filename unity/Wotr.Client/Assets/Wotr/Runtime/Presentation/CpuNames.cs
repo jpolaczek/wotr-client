@@ -12,7 +12,10 @@ namespace Wotr.Client
         public const string AlphaWotrEngine = "alphawotr";
         public const string AlphaWotr = "AlphaWOTR";
         public const string Plain = "CPU";
-        public const string Credit = "AlphaWOTR by Sarvesh Sadana · MIT licence · github.com/Weyoun5/AlphaWOTR";
+        // Owner, 2026-11-17: AlphaWOTR is annotated as created by Wey (its author's name in the game). The MIT licence's
+        // copyright line stays in the credit and in THIRD_PARTY_NOTICES.md.
+        public const string CreatedBy = "Created by Wey";
+        public const string Credit = "AlphaWOTR, created by Wey · MIT licence, Copyright (c) 2026 Sarvesh Sadana · github.com/Weyoun5/AlphaWOTR";
         public const string BaseGameOnly = "Games against the CPU use the base game.";
         public const string Unavailable = "The CPU is unavailable. The game will continue when it is back.";
 
@@ -33,6 +36,9 @@ namespace Wotr.Client
 
         // The seat's tooltip: the credit for AlphaWOTR, nothing for the scripted CPU.
         public static string Tooltip(BotSeatView bot) => IsAlphaWotr(bot) ? Credit : "";
+
+        // The seat's line under the name: who made AlphaWOTR; nothing for the scripted CPU.
+        public static string Annotation(BotSeatView bot) => IsAlphaWotr(bot) ? CreatedBy : "";
 
         public static bool Waiting(CpuSeatState state) => state != null && state.Waiting;
 

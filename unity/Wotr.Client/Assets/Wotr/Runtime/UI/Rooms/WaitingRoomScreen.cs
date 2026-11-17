@@ -369,6 +369,7 @@ namespace Wotr.Client
                 Root.Add(heading);
                 player.name = "seat-" + key + "-player";
                 player.AddToClassList("waiting-seat-player");
+                tags.name = "seat-" + key + "-tags";
                 tags.AddToClassList("waiting-seat-tags");
                 state.name = "seat-" + key + "-state";
                 state.AddToClassList("waiting-seat-state");
@@ -404,12 +405,15 @@ namespace Wotr.Client
                 // UI-540: AlphaWOTR is named and credited; an invitation still on its way and the scripted CPU read "CPU".
                 player.text = cpu ? CpuNames.Name(room.Bot) : pending ? CpuNames.Plain : taken ? holder : "Waiting for a player…";
                 player.tooltip = cpu ? CpuNames.Tooltip(room.Bot) : "";
+                // The seat's labels ignore the pointer, so the seat itself carries the credit for hovering.
+                Root.tooltip = cpu ? CpuNames.Tooltip(room.Bot) : "";
                 // AVATAR-01: the occupant's picture; the CPU and an empty seat show none.
                 AvatarImage.Show(avatar, taken && !cpu ? (side == Side.FreePeoples ? room.FreePeoplesAvatar : room.ShadowAvatar) : "");
                 Root.EnableInClassList("empty", !taken);
                 Root.EnableInClassList("yours", yours);
                 var host = taken && holder == room.Host;
-                tags.text = host && yours ? "Host · You" : host ? "Host" : yours ? "You" : "";
+                // Owner, 2026-11-17: AlphaWOTR's seat says who created it, on the line a player's seat gives Host/You.
+                tags.text = cpu ? CpuNames.Annotation(room.Bot) : host && yours ? "Host · You" : host ? "Host" : yours ? "You" : "";
                 state.text = cpu || pending ? status.ToString() : taken ? accepted ? "Ready" : "Not ready" : "";
                 state.EnableInClassList("ready", (cpu || pending) ? status == BotSeatStatus.Ready && accepted : taken && accepted);
                 state.EnableInClassList("unavailable", (cpu || pending) && status == BotSeatStatus.Unavailable);

@@ -53,7 +53,9 @@ namespace Wotr.PlayTests
                     Assert.IsFalse(button.ClassListContains(PressFeedback.PressedClass));
                     foreach (var status in new[] { BotSeatStatus.Joining, BotSeatStatus.Ready, BotSeatStatus.Unavailable })
                     {
-                        room.Bot = new BotSeatView { Side = human == Side.FreePeoples ? Side.Shadow : Side.FreePeoples, Status = status };
+                        // The CPU is AlphaWOTR, as on production: its name and "Created by Wey" stand clear of the pace too.
+                        room.Bot = new BotSeatView { Side = human == Side.FreePeoples ? Side.Shadow : Side.FreePeoples, Status = status,
+                            Engine = CpuNames.AlphaWotrEngine };
                         if (human == Side.FreePeoples) room.Shadow = "CPU";
                         else room.FreePeoples = "CPU";
                         room.FreePeoplesAccepted = room.ShadowAccepted = status == BotSeatStatus.Ready;
