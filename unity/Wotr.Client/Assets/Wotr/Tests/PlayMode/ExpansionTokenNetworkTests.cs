@@ -82,8 +82,9 @@ namespace Wotr.PlayTests
                         await Layout(room, room.Fp, "ruler-recruit", "ui09");
                         await Reconnect(room, room.Fp);
                     }
-                    room.Fp.Board.Map.Select(regions[index]);
+                    // UI-539: the figure first, then its settlement.
                     Click(room.Fp, "character-reserve-rohan-Regular");
+                    room.Fp.Board.Map.Select(regions[index]);
                 }
                 await room.At(start + 1);
                 Assert.AreEqual(edoras + 2, room.Sh.Board.View.Units.Count(u => u.Location == "edoras"));

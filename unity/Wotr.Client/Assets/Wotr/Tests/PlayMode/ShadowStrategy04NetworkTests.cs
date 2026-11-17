@@ -197,12 +197,21 @@ namespace Wotr.PlayTests
             await room.At(revision + 1);
         }
 
+        // UI-539 (owner, 2026-11-16): a recruitment is figure first: the token is taken up (it stays armed while its group
+        // has a figure left, UI-213), then its settlement's click places it.
         private static async Task Recruit(MatchTestRoom room, string nation, string region, UnitKind kind, int count)
         {
-            room.Sh.Board.Map.Select(region);
-            await room.Settle();
+            var name = "event-reserve-" + nation + "-" + kind;
             for (var i = 0; i < count; i++)
-                Click(room.Sh, "event-reserve-" + nation + "-" + kind);
+            {
+                if (room.Sh.Board.Reinforcements.Root.Q<Button>(name)?.ClassListContains("selected") != true)
+                {
+                    Click(room.Sh, name);
+                    await room.Settle();
+                }
+                room.Sh.Board.Map.Select(region);
+                await room.Settle();
+            }
         }
     }
 }

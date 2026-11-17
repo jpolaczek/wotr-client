@@ -8,19 +8,27 @@ namespace Wotr.EditorTests
 {
     public class EventRecruitDraftTests
     {
+        // UI-539 (owner, 2026-11-16): figure first: no region is a target before a token, a region clicked first stores
+        // nothing, and each token's click arms it for its own regions.
         [Test]
-        public void RegionFirstAndFigureFirstProduceOneMixedPlanWithUndo()
+        public void ARegionFirstStoresNothingAndFigureFirstPlansWithUndo()
         {
             var view = Misty();
             var option = view.Options[0];
             var draft = Draft();
-            Assert.IsTrue(EventRecruitDraft.Region(draft, option, "moria"));
-            Assert.IsEmpty(draft.Payload.Placements);
+            CollectionAssert.IsEmpty(EventRecruitDraft.Targets(draft, option), "No region is lit before a token.");
+            Assert.IsFalse(EventRecruitDraft.Region(draft, option, "moria"));
+            Assert.AreEqual("", draft.Payload.RegionId, "A region clicked first is not stored.");
             Assert.IsTrue(EventRecruitDraft.Select(draft, option, "regular-0"));
+            Assert.IsEmpty(draft.Payload.Placements, "A token's click arms it.");
+            CollectionAssert.Contains(EventRecruitDraft.Targets(draft, option).ToList(), "moria");
+            Assert.IsTrue(EventRecruitDraft.Region(draft, option, "moria"));
             Assert.IsTrue(EventRecruitDraft.Select(draft, option, "elite-0"));
+            Assert.IsTrue(EventRecruitDraft.Region(draft, option, "moria"));
             Assert.IsFalse(draft.Ready(option));
             Assert.IsFalse(EventRecruitDraft.Drop(draft, option, "nazgul-0", "mount-gram"));
             Assert.IsTrue(EventRecruitDraft.Select(draft, option, "nazgul-0"));
+            Assert.IsTrue(EventRecruitDraft.Region(draft, option, "moria"));
             Assert.IsTrue(draft.Ready(option));
             Assert.IsEmpty(draft.Payload.Ids);
             EventRecruitDraft.Remove(draft, "elite-0");
@@ -142,13 +150,36 @@ namespace Wotr.EditorTests
             Assert.AreEqual(1, draft.Payload.Placements.Count);
             Assert.IsTrue(EventRecruitDraft.Select(draft, option, "elite-0"));
             Assert.AreEqual("", draft.ReserveId, "A click on the armed token releases it.");
-            Assert.IsTrue(EventRecruitDraft.Select(draft, option, "regular-1"), "Region first: with nothing armed the token fills Moria.");
+            Assert.IsTrue(EventRecruitDraft.Select(draft, option, "regular-1"), "UI-539: with nothing armed a token's click arms it.");
+            Assert.AreEqual("regular-1", draft.ReserveId);
+            Assert.AreEqual(1, draft.Payload.Placements.Count, "The last region is not filled by itself.");
+            Assert.IsTrue(EventRecruitDraft.Region(draft, option, "moria"));
             Assert.AreEqual(2, draft.Payload.Placements.Count);
             Assert.AreEqual("", draft.ReserveId, "Moria's limit for Regulars and Elites is reached.");
             Assert.IsFalse(EventRecruitDraft.Select(draft, option, "elite-0"), "No region is left within the limits.");
             Assert.IsFalse(EventRecruitDraft.Region(draft, option, "mount-gram"), "The card allows one region.");
             Assert.IsTrue(EventRecruitDraft.Select(draft, option, "nazgul-0"));
+            Assert.IsTrue(EventRecruitDraft.Region(draft, option, "moria"), "The Nazgûl's own click, then Moria.");
             Assert.IsTrue(draft.Ready(option));
+        }
+
+        // UI-431/UI-539: Monsters Roused's West half carries its region into the card's recruitment: the first token's click
+        // places there; after a placement a token's click arms it, and nothing is preselected again.
+        [Test]
+        public void APreselectedRegionTakesOnlyTheFirstToken()
+        {
+            var option = Misty().Options[0];
+            var draft = Draft();
+            Assert.IsFalse(EventRecruitDraft.Preselect(draft, option, "old-forest"), "Only a region the card may recruit in.");
+            Assert.IsTrue(EventRecruitDraft.Preselect(draft, option, "moria"));
+            Assert.IsTrue(EventRecruitDraft.Select(draft, option, "regular-0"));
+            Assert.AreEqual("moria", draft.Payload.Placements.Single().RegionId);
+            Assert.IsFalse(EventRecruitDraft.Preselect(draft, option, "moria"), "Only before any figure.");
+            Assert.IsTrue(EventRecruitDraft.Select(draft, option, "elite-0"));
+            Assert.AreEqual(1, draft.Payload.Placements.Count, "After the first placement a token's click arms it.");
+            Assert.AreEqual("elite-0", draft.ReserveId);
+            EventRecruitDraft.Remove(draft, "regular-0");
+            Assert.AreEqual("", draft.Payload.RegionId, "With every placement removed no region waits.");
         }
 
         private static ActionOption Settlements()

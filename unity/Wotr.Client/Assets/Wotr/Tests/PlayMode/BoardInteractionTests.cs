@@ -596,12 +596,12 @@ namespace Wotr.PlayTests
                 MapContourProbe.ClickRegion(test.Board.Map, "edoras");
                 yield return Settle();
                 Assert.IsTrue(rohan.ClassListContains("reinforcement-focused"), "A clicked settlement marks its nation's row.");
-                // UI-412 (owner): Edoras takes no figure now (Rohan is not at war), so nothing is lit; Gondor's Regular stays
-                // choosable for another settlement.
-                Assert.AreEqual("Reserve · Edoras", panel.Q<Label>(className: "title").text);
-                Assert.IsFalse(token.ClassListContains("eligible-token"), "Edoras lights no Gondor figure.");
-                Assert.IsTrue(token.enabledSelf, "Gondor's Regular stays choosable.");
-                Assert.IsFalse(panel.Q("reinforcement-gondor").ClassListContains("recruitable"), "Gondor's row is not lit for Edoras.");
+                // UI-539 (owner, 2026-11-16; UI-412's narrowing retired): a settlement clicked first narrows nothing and
+                // lights nothing; Gondor's Regular stays lit.
+                Assert.AreEqual("Reserve", panel.Q<Label>(className: "title").text);
+                Assert.IsTrue(token.ClassListContains("eligible-token"), "Gondor's Regular stays lit.");
+                Assert.IsTrue(panel.Q("reinforcement-gondor").ClassListContains("recruitable"), "Gondor's row stays lit.");
+                CollectionAssert.IsEmpty(test.Board.Map.DraftOverlay.PlacementTargets, "No settlement glows before a figure.");
                 Assert.AreEqual(0, test.Backend.Commands, "Inspecting a settlement sends nothing.");
                 LayoutTests.Save(test.Viewport, "ui130-reinforcements.png");
                 MapContourProbe.ClickRegion(test.Board.Map, "edoras");

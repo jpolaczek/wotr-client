@@ -18,8 +18,6 @@ namespace Wotr.Client
         public bool Planning;
         public bool Confirmable;
         public bool Optional;
-        // UI-392: the plan's settlement is chosen first, on the map, and that click opens the panel.
-        public bool RegionFirst;
         // UI-181: the tab and its header read Reserve.
         public string Title = "Reserve";
         public string TokenPrefix = "reserve-token-";
@@ -82,22 +80,19 @@ namespace Wotr.Client
             };
         }
 
+        // UI-539 (owner, 2026-11-16): a Muster's Reserve is figure first; a settlement's click narrows nothing (UI-412 retired).
         public static ReinforcementsState For(PlayerView view, ActionOption recruit, string selected, bool interactive) =>
-            For(view, recruit, selected, interactive, RecruitFocus.None);
-
-        // UI-412 (owner): a clicked settlement lights only its own recruits in the Muster's Reserve and names it in the header.
-        public static ReinforcementsState For(PlayerView view, ActionOption recruit, string selected, bool interactive, RecruitFocus focus) =>
             new ReinforcementsState
             {
                 Open = true,
                 Interactive = interactive,
-                Title = focus.Active ? "Reserve · " + focus.Name : "Reserve",
+                Title = "Reserve",
                 Finishable = view.Decision?.Kind == DecisionKind.ActionSequence &&
                     view.ActionSequence is { Kind: CommandKind.Recruit } sequence && sequence.Owner == view.You,
                 Side = view.You,
                 Selected = selected,
                 Points = ReinforcementRows.Budget(view),
-                Rows = ReinforcementRows.For(view, recruit, focus)
+                Rows = ReinforcementRows.For(view, recruit)
             };
 
         public static ReinforcementsState For(PlayerView view, ReinforcementPlan plan, string selected, bool interactive) =>
@@ -108,7 +103,6 @@ namespace Wotr.Client
                 Planning = true,
                 Confirmable = plan.Ready,
                 Optional = plan.Optional,
-                RegionFirst = plan.RegionFirst,
                 Title = plan.Title.Length > 0 ? "Reserve · " + plan.Title : "Reserve",
                 TokenPrefix = plan.Prefix + "-reserve-",
                 TokenHint = plan.Hint,
