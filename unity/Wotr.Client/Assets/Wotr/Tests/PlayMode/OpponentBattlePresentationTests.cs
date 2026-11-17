@@ -41,6 +41,49 @@ namespace Wotr.PlayTests
             Assert.AreNotEqual(DisplayStyle.None, stage.Board.Tray.style.display.value);
         }
 
+        // UI-542 (owner, 2026-11-17: "if the CPU attacks the camera does not centre on the region and nothing shows what
+        // attacks what"): the player's own zoom on their turn no longer keeps the camera away; it brings the attack into
+        // view, the attacking figures lunge towards the defended region and come back, then the battle window opens.
+        [UnityTest]
+        public IEnumerator AnAttackAfterThePlayersOwnZoomBringsTheCameraAndTheAttackersLunge([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = Attack(out var fight, viewer: viewer);
+            yield return stage.Ready();
+            var map = stage.Board.Map;
+            map.FocusOn(stage.Anchor("grey-havens"), map.FitZoom * 2.2f);
+            yield return null;
+            using (var wheel = WheelEvent.GetPooled(new Event { type = EventType.ScrollWheel, mousePosition = map.worldBound.center, delta = new Vector2(0, -1) }))
+                map.SendEvent(wheel);
+            yield return null;
+            var away = map.Camera.Pan;
+            stage.Play(fight.Latest(), null, fight.Steps.ToArray());
+            var furthest = 0f;
+            var saved = false;
+            var figures = new List<VisualElement>();
+            yield return stage.Until(() =>
+            {
+                // A force far from the camera shows no figures: they are found once the camera has come.
+                if (figures.Count == 0)
+                    figures = map.ForceArtworks("minas-morgul", stage.Opponent, false).ToList();
+                var reach = figures.Count == 0 ? 0 : figures.Max(figure => figure.resolvedStyle.translate.x * figure.resolvedStyle.translate.x +
+                    figure.resolvedStyle.translate.y * figure.resolvedStyle.translate.y);
+                furthest = Mathf.Max(furthest, reach);
+                if (!saved && reach > 100)
+                {
+                    LayoutTests.Save(stage.Texture, "ui542-attack-lunge-" + viewer + ".png");
+                    saved = true;
+                }
+                return stage.Board.Battles.IsOpen && stage.Board.Battles.Presenting;
+            });
+            Assert.AreNotEqual(away, map.Camera.Pan, "The camera came to the attack after the player's own zoom.");
+            Assert.IsTrue(map.worldBound.Contains(map.LocalToWorld(map.Camera.ToScreen(stage.Anchor("osgiliath")))), "The attack is in view.");
+            Assert.IsNotEmpty(figures, "The attacking force at Minas Morgul came into view.");
+            Assert.Greater(furthest, 25f, "The attackers lunged towards the defended region.");
+            foreach (var figure in figures)
+                Assert.AreEqual(0f, figure.resolvedStyle.translate.x, .5f, "They are back on their stand before the window opens.");
+            yield return stage.Released();
+        }
+
         // UI-335 (owner 2026-10-25): the presented round and the decision share the window's one ribbon — the decision only
         // joins it — so a stage reached in the presentation is not glided to again at the release.
         [UnityTest]

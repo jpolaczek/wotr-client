@@ -20,6 +20,10 @@ namespace Wotr.Client
         private readonly BoardScreen board;
         private MapCanvas Map => board.Map;
         private bool steered;
+        // UI-542 (owner, 2026-11-17: "if the CPU attacks the camera does not centre on the region"): only the player's
+        // steering during a presentation stops its camera; a pan or zoom of their own turn is forgotten when the next
+        // presentation begins (it used to last until the next release, so the first presentation never moved).
+        private bool presenting;
 
         public PresentationCamera(BoardScreen board)
         {
@@ -45,6 +49,11 @@ namespace Wotr.Client
 
         public IPresentationBeat Begin(PresentationCue cue, double now)
         {
+            if (!presenting)
+            {
+                presenting = true;
+                steered = false;
+            }
             // The exception is for the opponent's actions; after the player's own click the camera stays theirs.
             if (cue.OwnCommand || !Frames(cue))
                 return null;
@@ -65,7 +74,11 @@ namespace Wotr.Client
         }
 
         // The presentation ended: the next one may move the camera again.
-        public void Released() => steered = false;
+        public void Released()
+        {
+            steered = false;
+            presenting = false;
+        }
 
         public void Dispose()
         {
