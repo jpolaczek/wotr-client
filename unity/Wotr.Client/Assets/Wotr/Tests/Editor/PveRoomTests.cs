@@ -98,78 +98,21 @@ namespace Wotr.EditorTests
             Assert.AreEqual(DisplayStyle.None, reopened.Rules.Root.style.display.value, "A room reopened with the CPU has no rules either.");
         }
 
-        // BOT-37: the CPU seat shows its pace; only the host switches it, only while the room waits.
+        // Owner, 2026-11-17: the CPU's seat offers no pace (BOT-37's Fast/Thorough are gone from the client), whatever the
+        // CPU's saved setting, and the host's own seat still offers Switch side in the corner the pace used to share.
         [Test]
-        public void TheCpuSeatShowsItsPaceAndOnlyTheWaitingHostSwitchesIt()
+        public void TheCpuSeatOffersNoPace()
         {
             var room = Room(Side.FreePeoples);
-            var screen = new WaitingRoomScreen();
-            screen.Update(room);
-            var pace = screen.Root.Q<Button>("seat-shadow-pace");
-            Assert.AreEqual(DisplayStyle.None, pace.style.display.value, "No CPU, no pace.");
-            Assert.AreEqual(DisplayStyle.None, screen.Root.Q<Button>("seat-free-pace").style.display.value);
             room.Shadow = "CPU";
             room.Bot = new BotSeatView { Side = Side.Shadow, Status = BotSeatStatus.Ready, ThinkingMode = BotThinkingMode.Thorough };
+            var screen = new WaitingRoomScreen { PlayVsCpu = true };
             screen.Update(room);
-            Assert.AreEqual(DisplayStyle.Flex, pace.style.display.value);
-            Assert.AreEqual("Pace: Thorough", pace.text);
-            Assert.IsTrue(pace.enabledSelf);
-            StringAssert.Contains("Press for Fast", pace.tooltip);
-            room.Bot.ThinkingMode = BotThinkingMode.Fast;
-            room.Version++;
-            screen.Update(room);
-            Assert.AreEqual("Pace: Fast", pace.text);
-            room.IsHost = false;
-            screen.Update(room);
-            Assert.IsFalse(pace.enabledSelf);
-            room.IsHost = true;
-            room.Status = RoomStatus.Started;
-            screen.Update(room);
-            Assert.IsFalse(pace.enabledSelf);
-            StringAssert.Contains("saved with the game", pace.tooltip);
-        }
-
-        [Test]
-        public async Task SwitchingThePaceChangesTheRoomThroughTheServer()
-        {
-            var room = Room(Side.FreePeoples);
-            room.Shadow = "CPU";
-            room.Bot = new BotSeatView { Side = Side.Shadow, Status = BotSeatStatus.Ready };
-            var handler = new Pace(room);
-            using var api = new GameApi("http://127.0.0.1:5088", handler);
-            var screen = new WaitingRoomScreen();
-            using var controller = new WaitingRoomController(api, screen, room, _ => Task.CompletedTask,
-                () => Task.CompletedTask, () => Assert.Fail("Unexpected expiry"), TimeSpan.FromHours(1));
-            controller.ChangeCpuPace(BotThinkingMode.Thorough);
-            await Until(() => screen.Room.Bot.ThinkingMode == BotThinkingMode.Thorough);
-            Assert.AreEqual(1, handler.Calls);
-            StringAssert.Contains("\"ExpectedVersion\":1", handler.Body);
-            StringAssert.Contains("Thorough", handler.Body);
-            Assert.AreEqual(2, screen.Room.Version);
-            Assert.AreEqual("Pace: Thorough", screen.Root.Q<Button>("seat-shadow-pace").text);
-        }
-
-        private sealed class Pace : HttpMessageHandler
-        {
-            private readonly RoomView room;
-            public int Calls;
-            public string Body;
-            public Pace(RoomView room) => this.room = room;
-            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
-            {
-                if (request.RequestUri.AbsolutePath.EndsWith("/bot/thinking") && request.Method == HttpMethod.Put)
-                {
-                    Calls++;
-                    Body = await request.Content.ReadAsStringAsync();
-                    var copy = JsonConvert.DeserializeObject<RoomView>(JsonConvert.SerializeObject(room));
-                    copy.Version++;
-                    copy.Bot.ThinkingMode = BotThinkingMode.Thorough;
-                    copy.FreePeoplesAccepted = copy.ShadowAccepted = false;
-                    return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonConvert.SerializeObject(copy)) };
-                }
-                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonConvert.SerializeObject(
-                    request.RequestUri.AbsolutePath.EndsWith("/chat") ? (object)new RoomChatView() : room)) };
-            }
+            Assert.IsNull(screen.Root.Q<Button>("seat-shadow-pace"));
+            Assert.IsNull(screen.Root.Q<Button>("seat-free-pace"));
+            var texts = screen.Root.Query<TextElement>().ToList().Select(element => element.text + " " + element.tooltip);
+            Assert.IsFalse(texts.Any(text => text.Contains("Pace") || text.Contains("pace")), "No word of a pace anywhere in the room.");
+            Assert.AreEqual(DisplayStyle.Flex, screen.Root.Q<Button>("seat-free-swap").style.display.value);
         }
 
         [Test]

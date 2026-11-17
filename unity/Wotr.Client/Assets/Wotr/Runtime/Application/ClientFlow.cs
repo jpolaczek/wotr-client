@@ -214,12 +214,11 @@ namespace Wotr.Client
         }
 
         // UI-533: the other side against the CPU. A seat is never handed over in a room, so the host leaves this one and a
-        // new private room is made with the other side, the same rules and the CPU invited again at the same pace.
+        // new Play vs CPU room is made with the other side and the CPU invited again.
         private async Task SwapPveSides(RoomView old)
         {
             var token = screenLifetime.Token;
             var side = old.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
-            var pace = old.Bot?.ThinkingMode ?? BotThinkingMode.Fast;
             try
             {
                 await api.Post<object>("api/rooms/" + old.Id + "/leave", null, token);
@@ -228,12 +227,11 @@ namespace Wotr.Client
             {
                 // A room already gone holds no seat.
             }
-            // A Play vs CPU room (owner, 2026-11-17: the CPU joins no other) in the base game (no expansions or modes); the
-            // pace stays.
+            // A Play vs CPU room (owner, 2026-11-17: the CPU joins no other) in the base game (no expansions or modes).
             var room = await api.Post<RoomView>("api/rooms", CpuNames.PlayVsCpuRequest(side), token);
             token.ThrowIfCancellationRequested();
             ShowRoom(room, true);
-            waitingRoom.InviteCpu(pace);
+            waitingRoom.InviteCpu();
         }
 
         // UI-497: the released modules and the rating of the Find game page. Without an answer the expansions stay Off, which
