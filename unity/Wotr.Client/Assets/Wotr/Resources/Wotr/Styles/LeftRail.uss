@@ -275,9 +275,9 @@
     scale: 1.12 1.12;
 }
 .motion-enabled #board-screen .presenting-politics .nation-token.choice-glow {
-    transition-property: left, scale, border-color, background-color;
-    transition-duration: 0.7s, 0.35s, 750ms, 750ms;
-    transition-timing-function: ease-in-out, ease-out-sine, ease-in-out-sine, ease-in-out-sine;
+    transition-property: scale, border-color, background-color;
+    transition-duration: 0.35s, 750ms, 750ms;
+    transition-timing-function: ease-out-sine, ease-in-out-sine, ease-in-out-sine;
 }
 .politics-panel .nation-token > .nation-emblem,
 .politics-legend-token > .nation-emblem { left: 4px; right: 4px; top: 4px; bottom: 4px; width: auto; }

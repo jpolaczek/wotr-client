@@ -154,8 +154,9 @@ namespace Wotr.PlayTests
             fixture.View.Revision++;
             board.Apply(fixture.View);
             yield return Settle();
-            // UI-327: the activation turns the token over; its active side shows from the middle of the turn.
-            yield return new WaitForSecondsRealtime((float)TokenFlip.HalfSeconds * 2 + .1f);
+            // UI-327: the activation turns the token over; its active side shows from the middle of the turn. UI-544: then it
+            // travels to its new place (0.7 s a step), so the place is read once it has settled.
+            yield return new WaitForSecondsRealtime((float)TokenFlip.HalfSeconds * 2 + 1.3f);
             Assert.AreSame(token, Token(board.Nations, "north"));
             Assert.IsFalse(token.ClassListContains("passive-nation"));
             Assert.IsTrue(token.ClassListContains("active-nation"));

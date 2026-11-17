@@ -8,7 +8,6 @@ namespace Wotr.Client
     public sealed class FellowshipTrackRow
     {
         // UI-95: the marker lives in the lane and glides between cells instead of jumping.
-        public const string GlidingClass = "track-marker-gliding";
         public const string MoveClass = "track-move";
         // UI-231: steps behind the marker; the Mordor track darkens them as cooled stones.
         public const string PassedClass = "track-passed";
@@ -84,13 +83,17 @@ namespace Wotr.Client
             }));
             lane.Add(marker);
             markerPulse = new ChoicePulse(lane);
-            lane.RegisterCallback<GeometryChangedEvent>(_ => Place(false));
+            // UI-544: the marker travels from the cell it was last seen on, whatever moved it and wherever the panel was.
+            glide = new TokenGlide(steps => Math.Min(1.2, .35 + .15 * (steps - 1)), marker);
+            lane.RegisterCallback<GeometryChangedEvent>(_ => Place());
             overflow.AddToClassList("fellowship-track-overflow");
             lane.Add(overflow);
             Value = new Label { name = valueName, pickingMode = PickingMode.Ignore };
             Value.AddToClassList("fellowship-track-value");
             Root.Add(Value);
         }
+
+        private readonly TokenGlide glide;
 
         private Button MoveButton(string name, VisualElement symbol)
         {
@@ -171,7 +174,7 @@ namespace Wotr.Client
                 cells[selected].AddToClassList("selected");
                 for (var i = 0; i < cells.Length; i++)
                     cells[i].EnableInClassList(PassedClass, i < selected);
-                Place(true);
+                Place();
                 if (moved)
                     Flash();
             }
@@ -188,17 +191,15 @@ namespace Wotr.Client
             Root.schedule.Execute(() => Root.RemoveFromClassList(ChangedClass)).StartingIn(300);
         }
 
-        // Only a new position glides; a first or resized layout places the marker at once,
-        // so a loaded board or a scale change never replays travel.
-        private void Place(bool glide)
+        // UI-544: only a new position travels (TokenGlide remembers the cell last shown), so a first layout or a resize
+        // places the marker at once, and a move made while the panel was closed travels when it opens.
+        private void Place()
         {
             if (selected < 0)
                 return;
             var cell = cells[selected].layout;
             if (float.IsNaN(cell.width) || cell.width <= 0)
                 return;
-            if (!glide)
-                marker.RemoveFromClassList(GlidingClass);
             // An absolute marker counts from inside the lane's border (UI-231: the Mordor band has one); a cell's layout
             // counts from outside it. On the bordered band the marker sits one pixel inside its round stone on both
             // axes — the band's height differs between the panel's layouts, and scaled sub-pixel rounding cannot push
@@ -213,8 +214,7 @@ namespace Wotr.Client
                 marker.style.height = cell.height - 2 * inset;
             }
             overflow.style.left = cell.xMax - border - OverflowWidth;
-            if (!marker.ClassListContains(GlidingClass))
-                marker.schedule.Execute(() => marker.AddToClassList(GlidingClass));
+            glide.Placed(selected, cell.x - border + inset);
         }
     }
 }
