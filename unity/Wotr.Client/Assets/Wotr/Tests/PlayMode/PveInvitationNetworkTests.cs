@@ -131,6 +131,8 @@ namespace Wotr.PlayTests
             using var host = await fixture.Human(token);
             using var guest = await fixture.Human(token);
             var room = await host.Post<RoomView>("api/rooms", CpuNames.PlayVsCpuRequest(Side.Shadow), token);
+            // A Play vs CPU room has no code until its host makes one (New code), as a named room.
+            room = await host.Post<RoomView>(Path(room) + "/invitation", null, token);
             var cpu = Outcome(() => host.Put<RoomView>(Path(room) + "/bot", Request(room), token));
             var human = Outcome(() => guest.Post<RoomView>("api/rooms/join", new JoinRoomRequest { Code = room.JoinCode }, token));
             var outcomes = await Task.WhenAll(cpu, human);
