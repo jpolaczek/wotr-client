@@ -5012,9 +5012,13 @@ AlphaWOTR (MIT licence, its author Sarvesh Sadana, https://github.com/Weyoun5/Al
 - **The CPU seat** (`WaitingRoomScreen`, `CpuNames`): a seat whose `BotSeatView.Engine` is `alphawotr` reads AlphaWOTR,
   its tooltip the credit (author, MIT licence, the project's address). An invitation still on its way and a game begun
   with the scripted CPU read "CPU" as before.
-- **Base game only** (`RulesChoices.CpuBaseGame`): in a room whose CPU is AlphaWOTR the expansion medallions and variant
-  chips are disabled, each tooltip "Games against the CPU use the base game.". Play vs CPU already makes a base-game room
-  with the chosen side. The server's refusals read: `CpuBaseGameOnly` "Games against the CPU use the base game. Switch the
+- **The CPU only through Play vs CPU** (owner, 2026-11-17: "Host game should not have Add CPU, and Play vs CPU should not
+  have the choice of expansions and modes"): a room one hosts never offers Add CPU (its empty seat's button is absent; a
+  guest's Remove stays). A room made by Play vs CPU (`WaitingRoomScreen.PlayVsCpu`), or one holding the CPU, has no rules
+  strip: the line "Base game · Games against the CPU use the base game, without expansions or modes." stands in its place.
+  Play vs CPU makes a base-game room with the chosen side; switching sides makes a new base-game room (the old room's rules
+  are not carried over). A seat's medallions and chips, should they show, are disabled for AlphaWOTR with the reason
+  (`RulesChoices.CpuBaseGame`, "Games against the CPU use the base game."). The server's refusals read: `CpuBaseGameOnly` "Games against the CPU use the base game. Switch the
   expansions and variants off, then add the CPU."; `CpuBusy` "The CPU is playing as many games as it can right now. Try
   again in a few minutes."
 - **A waiting CPU** (`ConsoleThinking.Wait`, `MatchSession.CheckCpu`): the match view's `Cpu` (BOT-226: waiting, since
@@ -5028,4 +5032,5 @@ AlphaWOTR (MIT licence, its author Sarvesh Sadana, https://github.com/Weyoun5/Al
   the board game is unchanged.
 
 Tests: EditMode `AlphaWotrSeatTests` (the seat's name and credit, the base-game rules, the saved game's row, the console's
-waiting line and its return).
+waiting line and its return), `PveRoomTests.AHostedRoomOffersNoCpuAndACpuRoomNoRules`; PlayMode `MainMenuLayoutTests`
+(a hosted room's empty seat has no Add CPU), `PveRoomLayoutTests`, `PveInvitationNetworkTests` (in a Play vs CPU room).

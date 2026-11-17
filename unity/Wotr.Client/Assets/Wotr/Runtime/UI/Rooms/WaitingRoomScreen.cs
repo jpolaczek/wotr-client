@@ -62,6 +62,13 @@ namespace Wotr.Client
         private bool shownBusy;
         private IVisualElementScheduledItem showBusy;
         private Side? invitingSide;
+        // Owner, 2026-11-17: the CPU is reached only through Play vs CPU. A room made by it (or holding the CPU) offers Add
+        // CPU on the other seat and no choice of expansions or modes (the base game); a room one hosts never offers the CPU.
+        public bool PlayVsCpu { get; set; }
+        private readonly Label baseGame = new Label("Base game · Games against the CPU use the base game, without expansions or modes.")
+            { name = "waiting-cpu-base-game", pickingMode = PickingMode.Ignore };
+
+        private bool CpuRoom(RoomView room) => PlayVsCpu || room?.Bot != null || invitingSide != null;
         private BotSeatStatus invitationStatus;
 
         public WaitingRoomScreen()
@@ -141,6 +148,9 @@ namespace Wotr.Client
             social.Add(ChatHost);
             lower.Add(social);
             lower.Add(Rules.Root);
+            baseGame.AddToClassList("waiting-cpu-base-game");
+            baseGame.style.display = DisplayStyle.None;
+            lower.Add(baseGame);
             window.Add(lower);
             return window;
         }
@@ -222,8 +232,9 @@ namespace Wotr.Client
             title.text = room.Name;
             information.text = $"{room.Visibility} · {RulesChoices.Summary(room.Configuration)} · Two players · " +
                 $"Observers {room.Observers.Count}/{Limit(room)}";
-            freePeoples.Show(room, invitingSide, invitationStatus);
-            shadow.Show(room, invitingSide, invitationStatus);
+            freePeoples.Show(room, invitingSide, invitationStatus, CpuRoom(room));
+            shadow.Show(room, invitingSide, invitationStatus, CpuRoom(room));
+            ShowRules(room);
             audience.Show(room, Limit(room));
             code.SetValueWithoutNotify(room.JoinCode);
             back.tooltip = room.IsHost ? "Cancel this waiting room for everyone in it."
@@ -304,9 +315,18 @@ namespace Wotr.Client
             invitationStatus = status;
             if (Room != null)
             {
-                freePeoples.Show(Room, invitingSide, invitationStatus);
-                shadow.Show(Room, invitingSide, invitationStatus);
+                freePeoples.Show(Room, invitingSide, invitationStatus, CpuRoom(Room));
+                shadow.Show(Room, invitingSide, invitationStatus, CpuRoom(Room));
+                ShowRules(Room);
             }
+        }
+
+        // A CPU room has no rules to choose: the expansions and modes give way to the base game's line.
+        private void ShowRules(RoomView room)
+        {
+            var cpu = CpuRoom(room);
+            Rules.Root.style.display = cpu ? DisplayStyle.None : DisplayStyle.Flex;
+            baseGame.style.display = cpu ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         // One seat: the side's emblem and name, the player or an empty place, Host/You and readiness; Take seat for a free
@@ -370,7 +390,7 @@ namespace Wotr.Client
                 Root.Add(swap);
             }
 
-            public void Show(RoomView room, Side? inviting = null, BotSeatStatus invitation = BotSeatStatus.Joining)
+            public void Show(RoomView room, Side? inviting = null, BotSeatStatus invitation = BotSeatStatus.Joining, bool offersCpu = true)
             {
                 holder = (side == Side.FreePeoples ? room.FreePeoples : room.Shadow) ?? "";
                 var taken = holder.Length > 0;
@@ -392,6 +412,8 @@ namespace Wotr.Client
                 state.EnableInClassList("ready", (cpu || pending) ? status == BotSeatStatus.Ready && accepted : taken && accepted);
                 state.EnableInClassList("unavailable", (cpu || pending) && status == BotSeatStatus.Unavailable);
                 remove.text = taken ? "Remove" : "Add CPU";
+                // A room one hosts has no Add CPU (owner, 2026-11-17: the CPU only through Play vs CPU).
+                remove.style.display = taken || offersCpu ? DisplayStyle.Flex : DisplayStyle.None;
                 mode = cpu ? room.Bot.ThinkingMode : BotThinkingMode.Fast;
                 pace.text = mode == BotThinkingMode.Thorough ? "Pace: Thorough" : "Pace: Fast";
                 pace.style.display = cpu ? DisplayStyle.Flex : DisplayStyle.None;

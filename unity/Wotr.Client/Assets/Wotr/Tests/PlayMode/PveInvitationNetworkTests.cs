@@ -204,7 +204,7 @@ namespace Wotr.PlayTests
             }
             var stale = room;
             room = await api.Post<RoomView>(Path(room) + "/remove", new RemoveParticipantRequest { Name = "CPU" }, token);
-            var screen = new WaitingRoomScreen();
+            var screen = new WaitingRoomScreen { PlayVsCpu = true };
             screen.Update(room);
             screen.Update(stale);
             Assert.AreEqual(room.Version, screen.Room.Version, "A late response cannot restore the removed seat in the UI.");
