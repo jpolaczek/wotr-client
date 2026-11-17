@@ -72,8 +72,8 @@ namespace Wotr.EditorTests
         }
 
         // UI-538 (owner): the settlement a recruitment's next figure goes to stands out from the lit settlements: greener,
-        // filled more strongly, steady while they pulse, with a bright green edge; a Muster's focus is marked only while it
-        // is a placement target and no figure is taken up.
+        // filled more strongly, steady while they pulse, with a bright green edge (since UI-539 only Monsters Roused's
+        // carried region is chosen before a figure).
         [Test]
         public void AChosenPlacementStandsOutFromTheLitPlacementTargets()
         {
@@ -100,14 +100,6 @@ namespace Wotr.EditorTests
             map.DraftOverlay.ChosenRegions.Add("erebor");
             map.Redraw();
             Assert.AreEqual(MapRegionEmphasis.Selected, map.Renderer.CurrentEmphasis("erebor"), "Other chosen regions keep UI-392's gold.");
-            map.DraftOverlay.ChosenRegions.Clear();
-            map.DraftOverlay.FocusRecruit("iron-hills");
-            Assert.IsTrue(map.DraftOverlay.ChosenPlacements.Contains("iron-hills"), "A Muster's settlement in focus is chosen.");
-            Assert.AreEqual(MapRegionEmphasis.ChosenPlacement, map.Renderer.CurrentEmphasis("iron-hills"));
-            map.DraftOverlay.FocusRecruit("old-forest");
-            CollectionAssert.IsEmpty(map.DraftOverlay.ChosenPlacements, "A region no figure may go to is never marked.");
-            map.DraftOverlay.FocusRecruit("");
-            Assert.AreEqual(MapRegionEmphasis.PlacementTarget, map.Renderer.CurrentEmphasis("iron-hills"));
         }
 
         // UI-538 (owner, 2026-11-16): with a figure taken up its own settlements keep the placement green; a settlement only

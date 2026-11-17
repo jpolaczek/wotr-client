@@ -42,10 +42,16 @@ namespace Wotr.Client
                 return;
             Reveal();
             var region = carry.Take(view, MonstersHalves.EastStep);
-            if (region.Length == 0)
-                region = carry.Take(view, MonstersHalves.WestStep);
             if (region.Length > 0)
+            {
                 board.Root.schedule.Execute(() => regionClick(region));
+                return;
+            }
+            // UI-539: the West half's region waits in its recruitment plan for the first figure (no region click: a region
+            // clicked before a figure stores nothing).
+            var west = carry.Take(view, MonstersHalves.WestStep);
+            if (west.Length > 0)
+                board.Root.schedule.Execute(() => edit(() => EventRecruitDraft.Preselect(draft, DraftOptions.For(view, draft), west), false));
         }
 
         // The halves' regions lie in the north, often off screen: the view moves to them once for the decision.

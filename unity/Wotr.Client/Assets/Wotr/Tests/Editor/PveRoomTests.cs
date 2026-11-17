@@ -19,7 +19,7 @@ namespace Wotr.EditorTests
         public void CpuUsesTheExistingRemoveSlotAndOnlyASeatedHostCanInvite(Side side)
         {
             var room = Room(side);
-            var screen = new WaitingRoomScreen();
+            var screen = new WaitingRoomScreen { PlayVsCpu = true };
             screen.Update(room);
             var key = side == Side.FreePeoples ? "shadow" : "free";
             var action = screen.Root.Q<Button>("seat-" + key + "-remove");
@@ -50,6 +50,36 @@ namespace Wotr.EditorTests
             room.Status = RoomStatus.Started;
             screen.Update(room);
             Assert.IsFalse(action.enabledSelf);
+        }
+
+        // Owner, 2026-11-17: the CPU only through Play vs CPU. A room one hosts never offers Add CPU and keeps its rules; a
+        // Play vs CPU room (or one holding the CPU) offers no expansions or modes, only the base game's line.
+        [Test]
+        public void AHostedRoomOffersNoCpuAndACpuRoomNoRules()
+        {
+            var room = Room(Side.FreePeoples);
+            var hosted = new WaitingRoomScreen();
+            hosted.Update(room);
+            Assert.AreEqual(DisplayStyle.None, hosted.Root.Q<Button>("seat-shadow-remove").style.display.value, "No Add CPU in a hosted room.");
+            Assert.AreEqual(DisplayStyle.Flex, hosted.Rules.Root.style.display.value);
+            Assert.AreEqual(DisplayStyle.None, hosted.Root.Q<Label>("waiting-cpu-base-game").style.display.value);
+            room.Shadow = "Guest";
+            hosted.Update(room);
+            Assert.AreEqual(DisplayStyle.Flex, hosted.Root.Q<Button>("seat-shadow-remove").style.display.value, "A guest can still be removed.");
+            Assert.AreEqual("Remove", hosted.Root.Q<Button>("seat-shadow-remove").text);
+
+            var cpu = new WaitingRoomScreen { PlayVsCpu = true };
+            cpu.Update(Room(Side.FreePeoples));
+            Assert.AreEqual(DisplayStyle.Flex, cpu.Root.Q<Button>("seat-shadow-remove").style.display.value);
+            Assert.AreEqual(DisplayStyle.None, cpu.Rules.Root.style.display.value, "No expansions or modes against the CPU.");
+            Assert.AreEqual(DisplayStyle.Flex, cpu.Root.Q<Label>("waiting-cpu-base-game").style.display.value);
+
+            var seated = Room(Side.FreePeoples);
+            seated.Shadow = "CPU";
+            seated.Bot = new BotSeatView { Side = Side.Shadow, Status = BotSeatStatus.Ready };
+            var reopened = new WaitingRoomScreen();
+            reopened.Update(seated);
+            Assert.AreEqual(DisplayStyle.None, reopened.Rules.Root.style.display.value, "A room reopened with the CPU has no rules either.");
         }
 
         // BOT-37: the CPU seat shows its pace; only the host switches it, only while the room waits.

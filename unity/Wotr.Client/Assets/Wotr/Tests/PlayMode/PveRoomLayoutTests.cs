@@ -24,7 +24,7 @@ namespace Wotr.PlayTests
                 foreach (var human in new[] { Side.FreePeoples, Side.Shadow })
                 {
                     client.Interface.Content.Clear();
-                    var screen = new WaitingRoomScreen();
+                    var screen = new WaitingRoomScreen { PlayVsCpu = true };
                     client.Interface.Content.Add(screen.Root);
                     var room = new RoomView { Id = "room", Name = "Play vs CPU", Managed = true, IsHost = true,
                         Host = "Human", Role = RoomRole.Player, You = human, FreePeoples = human == Side.FreePeoples ? "Human" : "",

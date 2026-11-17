@@ -12,7 +12,9 @@ namespace Wotr.Client
         public static IEnumerable<string> Available(TurnDraft draft, RecruitmentOption group) =>
             group.ReserveIds.Where(id => draft.Payload.Placements.All(p => p.UnitId != id));
 
-        public static IEnumerable<string> Targets(TurnDraft draft, ActionOption option) => Targets(draft, option, draft.ReserveId);
+        // UI-539 (owner, 2026-11-16): figure first: with no token armed no region is a target.
+        public static IEnumerable<string> Targets(TurnDraft draft, ActionOption option) =>
+            draft.ReserveId.Length == 0 ? Enumerable.Empty<string>() : Targets(draft, option, draft.ReserveId);
 
         // UI-538: every region a figure of the recruitment may still go to, whichever figure is taken up.
         public static IEnumerable<string> OpenTargets(TurnDraft draft, ActionOption option) => Targets(draft, option, "");
@@ -51,9 +53,11 @@ namespace Wotr.Client
             var group = Armable(draft, option, id);
             if (group == null)
                 return false;
-            // Region first: with no token armed, a token click fills the chosen region. An armed token is switched
-            // or released instead (UI-213).
-            if (draft.ReserveId.Length == 0 && draft.Payload.RegionId.Length > 0 && CanPlace(draft, option, group, draft.Payload.RegionId))
+            // UI-539: the one region chosen before a figure is the one Monsters Roused's West half carries (Preselect):
+            // with nothing placed yet and no token armed, a token click fills it. An armed token is switched or released
+            // instead (UI-213).
+            if (draft.ReserveId.Length == 0 && draft.Payload.Placements.Count == 0 && draft.Payload.RegionId.Length > 0 &&
+                CanPlace(draft, option, group, draft.Payload.RegionId))
                 return Drop(draft, option, id, draft.Payload.RegionId);
             draft.Change(_ => draft.ReserveId = draft.ReserveId == id ? "" : id);
             return true;
@@ -79,12 +83,17 @@ namespace Wotr.Client
             return group.Targets.Any(region => CanPlace(draft, option, group, region)) ? group : null;
         }
 
-        public static bool Region(TurnDraft draft, ActionOption option, string region)
+        // UI-539: a lit region's click places the armed token there; with none armed nothing is lit and nothing stored.
+        public static bool Region(TurnDraft draft, ActionOption option, string region) =>
+            draft.ReserveId.Length > 0 && Targets(draft, option).Contains(region) && Drop(draft, option, draft.ReserveId, region);
+
+        // UI-431/UI-539: Monsters Roused's West half carries the region its click chose into its recruitment plan, before
+        // any figure: the plan's first token click places there.
+        public static bool Preselect(TurnDraft draft, ActionOption option, string region)
         {
-            if (!Targets(draft, option).Contains(region))
+            if (option?.EventRecruitment == null || draft.ReserveId.Length > 0 || draft.Payload.Placements.Count > 0 ||
+                !OpenTargets(draft, option).Contains(region))
                 return false;
-            if (draft.ReserveId.Length > 0)
-                return Drop(draft, option, draft.ReserveId, region);
             draft.Change(p => p.RegionId = region);
             return true;
         }
@@ -119,6 +128,9 @@ namespace Wotr.Client
         {
             p.Placements.RemoveAll(placement => placement.UnitId == id);
             draft.ReserveId = "";
+            // UI-539: the last placed region is not a region chosen first.
+            if (p.Placements.Count == 0)
+                p.RegionId = "";
         });
 
         public static bool Ready(TurnDraft draft, ActionOption option)

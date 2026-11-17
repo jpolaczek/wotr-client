@@ -76,11 +76,16 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-539: the token first, then its settlement (the token stays armed while its group has a figure left).
         private static void Fill(MountedMatchClient client, string nation, string region, UnitKind kind, int count)
         {
-            client.Board.Map.Select(region);
             for (var index = 0; index < count; index++)
-                CardNetworkTests.Click(client.Board.Reinforcements.Root.Q<Button>("event-reserve-" + nation + "-" + kind));
+            {
+                var token = client.Board.Reinforcements.Root.Q<Button>("event-reserve-" + nation + "-" + kind);
+                if (!token.ClassListContains("selected"))
+                    CardNetworkTests.Click(token);
+                client.Board.Map.Select(region);
+            }
         }
 
         private static void Check(MountedMatchClient client)

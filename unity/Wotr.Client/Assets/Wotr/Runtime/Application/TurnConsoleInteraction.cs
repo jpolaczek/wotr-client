@@ -86,7 +86,7 @@ namespace Wotr.Client
             board.Console.Status.SetMustAct(idle && clickable && TurnSignal.MustAct(view));
             // UI-171: the tray reports its hint before this refresh; a hint-less step shows the new guidance, not the last.
             ShowHint();
-            board.Console.Status.SetThinking(ConsoleThinking.Thinking(view, board.CpuOpponent, online, busy || pending));
+            board.Console.Status.SetThinking(ConsoleThinking.Thinking(view, board.CpuOpponent, online, busy || pending), board.CpuState);
             var rings = ExpansionActions.RingKind(view, draft);
             board.Console.Rings.Apply(view, draft.Payload.RingId, idle, DraftOptions.For(view, draft, rings), rings, draft.Payload.Ids);
             board.Console.Hunt.SetAllocating(view.Decision?.Kind == DecisionKind.AllocateHunt && view.DecisionOwner == view.You);

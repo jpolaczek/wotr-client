@@ -18,6 +18,9 @@ namespace Wotr.Client
         public VisualElement Ring { get; } = new VisualElement { name = "console-thinking-ring", pickingMode = PickingMode.Ignore };
         public Label Text { get; } = new Label { name = "console-thinking-text", pickingMode = PickingMode.Ignore };
         public bool Shown => Root.style.display == DisplayStyle.Flex;
+        // UI-540: AlphaWOTR cannot answer; the game waits for it (nothing else plays in its place).
+        public bool Waiting { get; private set; }
+        public const string Tooltip = "The CPU is choosing its move. The game goes on by itself.";
         public float Angle { get; private set; }
         private IVisualElementScheduledItem turning;
         private IVisualElementScheduledItem dots;
@@ -30,7 +33,7 @@ namespace Wotr.Client
             Text.AddToClassList("console-thinking-text");
             Root.Add(Ring);
             Root.Add(Text);
-            Root.tooltip = "The CPU is choosing its move. The game goes on by itself.";
+            Root.tooltip = Tooltip;
             Root.style.display = DisplayStyle.None;
             Text.text = Words + "…";
             turning = Ring.schedule.Execute(Turn).Every(FrameMilliseconds);
@@ -47,6 +50,8 @@ namespace Wotr.Client
             Root.style.display = value ? DisplayStyle.Flex : DisplayStyle.None;
             if (value)
             {
+                if (Waiting)
+                    return;
                 turning.Resume();
                 dots.Resume();
                 return;
@@ -54,7 +59,31 @@ namespace Wotr.Client
             turning.Pause();
             dots.Pause();
             dotCount = 3;
-            Text.text = Words + "…";
+            Text.text = Waiting ? CpuNames.Unavailable : Words + "…";
+        }
+
+        // The CPU's decision waits with an error: the words say so, the ring stands still and fades; null goes back to thinking.
+        public void Wait(CpuSeatState state)
+        {
+            var waiting = CpuNames.Waiting(state);
+            Root.EnableInClassList("waiting", waiting);
+            Root.tooltip = waiting ? CpuNames.WaitingDetail(state) : Tooltip;
+            if (waiting == Waiting)
+                return;
+            Waiting = waiting;
+            Text.text = waiting ? CpuNames.Unavailable : Words + "…";
+            if (!Shown)
+                return;
+            if (waiting)
+            {
+                turning.Pause();
+                dots.Pause();
+            }
+            else
+            {
+                turning.Resume();
+                dots.Resume();
+            }
         }
 
         private void Turn()

@@ -12,10 +12,12 @@ namespace Wotr.Client
         public static bool Ruler(PlayerView view, TurnDraft draft) => CharacterDraft.UsesCharacters(draft.Kind) &&
             DraftOptions.For(view, draft) is { } option && CharacterDraft.Selected(draft, option)?.RulerRecruitment != null;
 
-        public static IEnumerable<string> Targets(TurnDraft draft, CharacterActionOption choice) => choice?.Recruitment
-            .Where(g => draft.ReserveId.Length == 0 || g.ReserveIds.Contains(draft.ReserveId))
-            .SelectMany(g => g.Targets.Where(region => g.ReserveIds.Any(id => CanPlace(draft, choice, id, region)))).Distinct()
-            ?? Enumerable.Empty<string>();
+        // UI-539 (owner, 2026-11-16): figure first: only the figure taken up lights the settlements it can take.
+        public static IEnumerable<string> Targets(TurnDraft draft, CharacterActionOption choice) => draft.ReserveId.Length == 0
+            ? Enumerable.Empty<string>()
+            : choice?.Recruitment.Where(g => g.ReserveIds.Contains(draft.ReserveId))
+                .SelectMany(g => g.Targets.Where(region => CanPlace(draft, choice, draft.ReserveId, region))).Distinct()
+              ?? Enumerable.Empty<string>();
 
         public static bool CanPlace(TurnDraft draft, CharacterActionOption choice, string id, string region)
         {
@@ -49,7 +51,9 @@ namespace Wotr.Client
         {
             if (!choice.Recruitment.Any(g => g.ReserveIds.Contains(id) && g.Targets.Any(r => CanPlace(draft, choice, id, r))))
                 return false;
-            if (CanPlace(draft, choice, id, draft.Payload.RegionId))
+            // UI-131: the figure that joins the Balrog goes with him to the region his entry chose, at once. UI-539: a ruler's
+            // recruitment is figure first, so its figure's click only takes it up.
+            if (choice.RulerRecruitment == null && CanPlace(draft, choice, id, draft.Payload.RegionId))
                 return Drop(draft, choice, id, draft.Payload.RegionId);
             draft.Change(_ => draft.ReserveId = draft.ReserveId == id ? "" : id);
             return true;
@@ -66,15 +70,9 @@ namespace Wotr.Client
             return true;
         }
 
-        public static bool Region(TurnDraft draft, CharacterActionOption choice, string region)
-        {
-            if (!Targets(draft, choice).Contains(region))
-                return false;
-            if (draft.ReserveId.Length > 0)
-                return Drop(draft, choice, draft.ReserveId, region);
-            draft.Change(p => p.RegionId = region);
-            return true;
-        }
+        // UI-539: a lit settlement's click places the figure taken up; with none taken up nothing is lit and nothing stored.
+        public static bool Region(TurnDraft draft, CharacterActionOption choice, string region) =>
+            draft.ReserveId.Length > 0 && Targets(draft, choice).Contains(region) && Drop(draft, choice, draft.ReserveId, region);
 
         public static bool Drop(TurnDraft draft, CharacterActionOption choice, string id, string region)
         {

@@ -138,6 +138,9 @@
     -unity-background-scale-mode: scale-to-fit;
     transform-origin: 50% 50%;
 }
+/* UI-540: AlphaWOTR cannot answer and the game waits: the ring stands still and fades, the words say so. */
+.console-thinking.waiting .console-thinking-ring { opacity: 0.35; }
+.console-thinking.waiting .console-thinking-text { -unity-font-style: normal; color: rgb(232, 170, 140); }
 .console-thinking-text {
     margin: 0 0 0 8px;
     padding: 0;

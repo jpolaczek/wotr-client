@@ -279,6 +279,10 @@ namespace Wotr.Client
                 if (apiError.Message == "SeatEmpty") return "Nobody holds the other seat.";
                 if (apiError.Message == "SeatTaken") return "That seat was just taken.";
                 if (apiError.Message == "BotUnavailable") return "CPU is unavailable. Try again later.";
+                // UI-540: AlphaWOTR plays the base game only, and as many games at once as the server allows.
+                if (apiError.Message == "CpuBaseGameOnly")
+                    return CpuNames.BaseGameOnly + " Switch the expansions and variants off, then add the CPU.";
+                if (apiError.Message == "CpuBusy") return "The CPU is playing as many games as it can right now. Try again in a few minutes.";
                 if (apiError.Message == "BotNotReady") return "CPU is still joining. Wait for Ready.";
                 if (apiError.Message == "BotConfigurationUnsupported" || apiError.Message == "BotVersionUnsupported")
                     return "CPU cannot play this configuration here.";

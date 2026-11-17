@@ -1899,6 +1899,7 @@ Owner requests and reports from the Kings and Lords test scenarios:
   skill's formatted description, and the window opens with that ability's icon focused (its description shown) instead
   of unrolled. Tests: `CharacterAbilityStripTests`,
   `RulerTokenMenuTests.DainsIronGuardStartsFromItsIconInTheCharactersTab`.
+  *Retired by UI-539 (owner, 2026-11-16): a king's recruitment is figure first, as every recruitment.*
 - UI-392 (owner) — a king's recruitment (Iron Guard, Call to Arms, Mustering of the Mark) starts on the map: the
   Reserve does not open by itself; its tab glows and can be opened by hand, and the target settlements glow green. A
   click on a lit settlement remembers it, opens the Reserve for it and glides the camera there at the same zoom
@@ -1974,6 +1975,7 @@ Owner requests and reports from the Kings and Lords test scenarios:
 
 ## A settlement's own recruits, clear Politics names — UI-412 and UI-413 (2026-10-29)
 
+  *Retired by UI-539 (owner, 2026-11-16): a recruitment is figure first; a settlement's click narrows nothing.*
 - UI-412 (owner) — with a Muster die chosen, a clicked settlement lights in the Reserve only the figures it can take:
   the kinds whose recruitment targets (the server's `RecruitmentOption.Targets`) hold that settlement stay lit, and so
   do their nations' rows. The others lose their light but stay choosable, as before, for another settlement; their
@@ -4960,6 +4962,9 @@ window), `RegionNameOnlyTests`, `MapContourAcceptanceTests`.
 <a id="chosen-settlement-stands-out--ui-538"></a>
 ## A recruitment's chosen settlement stands out — UI-538 (2026-11-15)
 
+*Since UI-539 a recruitment is figure first: the chosen-settlement mark is left only for Monsters Roused's carried
+region; the pale grey of the second part stays.*
+
 The owner: in a recruitment the Reserve window opens and the settlements a figure may go to light green; a figure may be
 chosen first and then its settlement, or a settlement first and then its figure, but a chosen settlement was not shown on
 the map. It must stand out clearly from the other lit settlements: greener, more lit.
@@ -4990,6 +4995,38 @@ Erebor, the Iron Hills, and goes at the Old Forest; then a figure with two settl
 others' settlements turn pale; pictures `ui538-iron-hills.png`, `ui538-taken-figure.png`), `RulerTokenMenuTests`
 (Dáin's Iron Guard).
 
+## A recruitment is figure first — UI-539 (2026-11-16)
+
+UI-539 (owner: "you can click a unit and then a region or the other way round, and that is confusing"): a recruitment —
+a Muster die's, a card's (`EventRecruitDraft`) or a Kings ruler's (`CharacterRecruitDraft`: Iron Guard, Call to Arms,
+Mustering of the Mark) — opens the Reserve with every figure it may recruit lit, and lights nothing on the map. A
+figure's click (or carry, UI-454) lights the settlements that figure may take (`PlacementTarget`, with the pulse) and
+greys the settlements only the other figures could take (UI-538's `OtherPlacement`); a lit settlement's click places the
+figure; a second click on the figure releases it, another figure's click switches.
+
+- A region clicked before a figure stores nothing and narrows nothing: it only opens its region panel (UI-189), whose
+  settlement still reopens the Reserve and marks its nation's row (UI-135). Retired: UI-412's focus and its
+  "Reserve · <settlement>" title, the unlit "Elsewhere" figures and rows, UI-213's region first (a card's token click
+  filling the region chosen before it, or the last one), UI-392/UI-423's ruler settlement first and its hint, UI-538's
+  chosen-settlement mark for these sources.
+- After a placement a card's armed token stays armed with its group's next free figure while it has a region (UI-213);
+  a Muster die's second figure and a ruler's next figure are taken up by their own click.
+- Unchanged: UI-142 (a figure with one legal settlement is recruited at once), UI-454 (carrying a figure), UI-538's pale
+  grey while a figure is taken up, the Reserve opening with a ruler's ability (UI-450).
+- Monsters Roused (Fate, UI-431): its halves are still chosen by their regions; the West half's region waits in its
+  recruitment plan (`EventRecruitDraft.Preselect`) and takes the plan's first figure, marked as UI-538's chosen placement.
+- The rules are unchanged: every recruitment is the list of placements the server validates; no option was reachable only
+  through a region clicked first (the card's limits — regions, nations, per-region kinds, completion — and the ruler's
+  one-figure-a-settlement are computed per figure).
+- UI-389's "a die lights all its uses": a Muster die's recruitment use is the open Reserve's lit figures, not the map.
+
+Tests: EditMode `ReinforcementRowsTests.NoSettlementIsLitBeforeAFigureIsTakenUp`,
+`EventRecruitDraftTests.ARegionFirstStoresNothingAndFigureFirstPlansWithUndo`,
+`EventRecruitDraftTests.APreselectedRegionTakesOnlyTheFirstToken`, `ReinforcementPlansTests.AKingsRecruitmentIsFigureFirst`;
+PlayMode `RecruitFocusMenuTests.ARecruitmentIsFigureFirst` (pictures `ui539-muster-before-figure.png`,
+`ui539-muster-figure-taken.png`), `RulerTokenMenuTests` (Iron Guard, picture `ui539-iron-guard-figure.png`),
+`BoardInteractionTests` (a settlement's click narrows nothing).
+
 ## CPU opponents — BOT-13
 
 Saved PvE uses the ordinary waiting room and board. A seated host invites CPU in
@@ -5002,3 +5039,35 @@ service address, private package, difficulty selector or additional board contro
 Normal side-safe events drive the existing opponent presenters, including source
 dice/cards, camera, figures, recruitment, battle and Hunt. Human reactions always
 require a click; reconnect, Skip and Reduced motion never submit a human choice.
+
+## AlphaWOTR, the CPU — UI-540 (2026-11-17)
+
+Owner, 2026-11-16 (BOT-219 D1/D2/D6): a game against the CPU is the base game; the player chooses the faction; the CPU is
+AlphaWOTR (MIT licence, its author Sarvesh Sadana, https://github.com/Weyoun5/AlphaWOTR), named and credited. Owner,
+2026-11-17: when AlphaWOTR cannot answer, the game waits; nothing else plays in its place, and the player is told.
+
+- **The CPU seat** (`WaitingRoomScreen`, `CpuNames`): a seat whose `BotSeatView.Engine` is `alphawotr` reads AlphaWOTR,
+  its tooltip the credit (author, MIT licence, the project's address). An invitation still on its way and a game begun
+  with the scripted CPU read "CPU" as before.
+- **The CPU only through Play vs CPU** (owner, 2026-11-17: "Host game should not have Add CPU, and Play vs CPU should not
+  have the choice of expansions and modes"): a room one hosts never offers Add CPU (its empty seat's button is absent; a
+  guest's Remove stays). A room made by Play vs CPU (`WaitingRoomScreen.PlayVsCpu`), or one holding the CPU, has no rules
+  strip: the line "Base game · Games against the CPU use the base game, without expansions or modes." stands in its place.
+  Play vs CPU makes a base-game room with the chosen side; switching sides makes a new base-game room (the old room's rules
+  are not carried over). A seat's medallions and chips, should they show, are disabled for AlphaWOTR with the reason
+  (`RulesChoices.CpuBaseGame`, "Games against the CPU use the base game."). The server's refusals read: `CpuBaseGameOnly` "Games against the CPU use the base game. Switch the
+  expansions and variants off, then add the CPU."; `CpuBusy` "The CPU is playing as many games as it can right now. Try
+  again in a few minutes."
+- **A waiting CPU** (`ConsoleThinking.Wait`, `MatchSession.CheckCpu`): the match view's `Cpu` (BOT-226: waiting, since
+  when, the kind of failure only) is read with every view, and every 15 s while the CPU holds the decision (a waiting
+  CPU changes no revision). While it waits, the console's thinking line reads "The CPU is unavailable. The game will
+  continue when it is back.", the ring stands still and fades, the tooltip says since when and that no other CPU plays
+  in its place; it goes back to "CPU is thinking…" when AlphaWOTR answers.
+- **Saved games** (`SavedMatchRow`): a CPU game names AlphaWOTR (or "CPU" for the scripted one) and reads "CPU
+  unavailable" while it waits (the server's list gives the seat Unavailable on a Protocol* error).
+- Credits: THIRD_PARTY_NOTICES.md (the client does not contain AlphaWOTR; it runs on the server). The footer's credit of
+  the board game is unchanged.
+
+Tests: EditMode `AlphaWotrSeatTests` (the seat's name and credit, the base-game rules, the saved game's row, the console's
+waiting line and its return), `PveRoomTests.AHostedRoomOffersNoCpuAndACpuRoomNoRules`; PlayMode `MainMenuLayoutTests`
+(a hosted room's empty seat has no Add CPU), `PveRoomLayoutTests`, `PveInvitationNetworkTests` (in a Play vs CPU room).

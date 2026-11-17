@@ -189,8 +189,9 @@ namespace Wotr.Client
         }
 
         // The indicator takes the hint's place while the CPU thinks; the hint returns with the player's turn.
-        public void SetThinking(bool value)
+        public void SetThinking(bool value, CpuSeatState cpu = null)
         {
+            Thinking.Wait(value ? cpu : null);
             if (value == Thinking.Shown)
                 return;
             Thinking.Show(value);

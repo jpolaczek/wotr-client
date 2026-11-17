@@ -17,15 +17,14 @@ namespace Wotr.Client
         public HashSet<string> SourceRegions { get; } = new HashSet<string>();
         // UI-392: the settlement chosen for an ability's recruitment while it waits for its figure (a pulsing gold edge).
         public HashSet<string> ChosenRegions { get; } = new HashSet<string>();
-        // UI-538 (owner): the settlement a recruitment's next figure goes to, lit apart from the other placement targets: a
-        // Muster die's settlement in focus (UI-412), a card's region chosen first, a ruler's chosen settlement (UI-392).
+        // UI-538 (owner): the settlement a recruitment's next figure goes to, lit apart from the other placement targets. Since
+        // UI-539 (figure first) only Monsters Roused's West half chooses one before a figure: the region its click carried.
         public HashSet<string> ChosenPlacements { get; } = new HashSet<string>();
         // UI-538 (owner, 2026-11-16): with a figure taken up, the settlements the same recruitment could still take for
         // another figure (another nation, another kind), shown pale beside the taken figure's own green.
         public HashSet<string> OtherPlacements { get; } = new HashSet<string>();
         private readonly HashSet<string> openPlacements = new HashSet<string>();
         private readonly HashSet<string> waitingPlacements = new HashSet<string>();
-        private string recruitFocus = "";
         private bool figureTaken;
         private string endpoint = "";
         // UI-435: the lit targets were drawn again (the battle window keeps them clear of itself).
@@ -133,11 +132,6 @@ namespace Wotr.Client
                     Place(CharacterRecruitDraft.Targets(draft, character));
                 else
                     Targets.UnionWith(character?.Targets ?? new List<string>());
-                if (character?.RulerRecruitment != null && Targets.Contains(draft.Payload.RegionId))
-                {
-                    ChosenRegions.Add(draft.Payload.RegionId);
-                    waitingPlacements.Add(draft.Payload.RegionId);
-                }
             }
             if (draft.Kind == CommandKind.ChooseCouncilHomelands)
                 CouncilHomelands(view, draft);
@@ -163,36 +157,23 @@ namespace Wotr.Client
                 ChosenRegions.Add(CouncilDraft.Waiting(draft));
         }
 
-        // UI-538: a Muster die's settlement in focus (UI-412), from ReinforcementsInteraction; "" clears it. Only the regions'
-        // fills and edges are drawn again (no layout), and only when the focus changes.
-        public void FocusRecruit(string region)
-        {
-            region ??= "";
-            if (region == recruitFocus)
-                return;
-            recruitFocus = region;
-            UpdateChosenPlacements();
-            map.Redraw();
-        }
-
-        // UI-538: a card's recruitment keeps the region chosen first while no figure is taken up; the next figure's click
-        // places there (EventRecruitDraft.Select).
+        // UI-538/UI-539: Monsters Roused's West half carries its region into the card's recruitment before any figure
+        // (EventRecruitDraft.Preselect); the first figure's click places there.
         private void WaitCardRegion(PlayerView view, TurnDraft draft)
         {
-            if (EventRecruitDraft.Option(view) != null && draft.Payload.RegionId.Length > 0 && !figureTaken)
+            if (EventRecruitDraft.Option(view) != null && draft.Payload.RegionId.Length > 0 && draft.Payload.Placements.Count == 0 &&
+                !figureTaken)
                 waitingPlacements.Add(draft.Payload.RegionId);
         }
 
-        // UI-538: a chosen settlement is marked only while a figure may still go there; the focus also waits for no figure
-        // to be taken up (a taken figure lights its own settlements, and the next settlement click places it).
+        // UI-538: the carried region is marked while a figure may still go there (nothing else is lit before a figure,
+        // UI-539, so it is checked against the recruitment's open settlements).
         private void UpdateChosenPlacements()
         {
             ChosenPlacements.Clear();
             foreach (var region in waitingPlacements)
-                if (PlacementTargets.Contains(region))
+                if (openPlacements.Contains(region) && map.Data.Regions.ContainsKey(region))
                     ChosenPlacements.Add(region);
-            if (recruitFocus.Length > 0 && !figureTaken && PlacementTargets.Contains(recruitFocus))
-                ChosenPlacements.Add(recruitFocus);
         }
 
         // UI-538 (owner, 2026-11-16): only while a figure is taken up; a pale settlement is no target (its click is as before).

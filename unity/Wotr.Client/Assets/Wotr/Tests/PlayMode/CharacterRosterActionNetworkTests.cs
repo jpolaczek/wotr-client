@@ -179,9 +179,10 @@ namespace Wotr.PlayTests
                     await KingsCardNetworkChecks.Layout(room, room.Fp, "ruler", "ui67");
                     await KingsCardNetworkChecks.Reconnect(room, room.Fp);
                 }
-                room.Fp.Board.Map.Select(regions[index]);
-                await room.Settle();
+                // UI-539: the figure first, then its settlement.
                 PointerGestureEvents.ClickAt(room.Fp.Board.Reinforcements.Root.Q<Button>("character-reserve-rohan-Regular"));
+                await room.Settle();
+                room.Fp.Board.Map.Select(regions[index]);
             }
             await room.At(revision + 1);
             Assert.AreEqual("dismay", room.Sh.Board.View.RulerTokens.Single(t => t.Id == token).Location);

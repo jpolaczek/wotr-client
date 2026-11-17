@@ -114,7 +114,6 @@ namespace Wotr.EditorTests
             Assert.IsTrue(plan.Optional);
             Assert.AreEqual(1, plan.Slots);
             Assert.IsTrue(plan.Ready, "Entering without a companion is legal.");
-            Assert.IsFalse(plan.RegionFirst, "UI-392: the Balrog's one figure keeps its panel.");
             Assert.IsTrue(ReinforcementPlans.Choose(draft, view, elites[0]));
             Assert.AreEqual("moria", ReinforcementPlans.For(view, draft, Data).Placements.Single().RegionId,
                 "The only target takes the figure at once.");
@@ -137,20 +136,23 @@ namespace Wotr.EditorTests
             Assert.AreEqual(2, plan.Slots);
             StringAssert.Contains("Edoras", plan.Rows.Single().Status);
             Assert.IsFalse(plan.Ready);
-            // UI-392 (owner): a king's recruitment starts on the map; the settlement clicked first takes the next figure.
-            Assert.IsTrue(plan.RegionFirst);
-            Assert.IsTrue(ReinforcementsState.For(view, plan, "", true).RegionFirst, "Its panel waits for the settlement's click.");
-            Assert.IsTrue(CharacterRecruitDraft.Region(draft, ruler, "helms-deep"));
-            Assert.AreEqual("helms-deep", draft.Payload.RegionId);
+            // UI-539 (owner, 2026-11-16; UI-392's region first retired): a king's recruitment is figure first.
+            Assert.AreEqual(CharacterReinforcements.RulerHint, plan.Hint);
+            CollectionAssert.IsEmpty(CharacterRecruitDraft.Targets(draft, ruler), "No settlement is lit before a figure.");
+            Assert.IsFalse(CharacterRecruitDraft.Region(draft, ruler, "helms-deep"));
+            Assert.AreEqual("", draft.Payload.RegionId, "A settlement clicked first is not stored.");
             Assert.IsTrue(ReinforcementPlans.Choose(draft, view, rohan[0]));
+            Assert.IsEmpty(draft.Payload.Placements, "The figure's click takes it up.");
+            CollectionAssert.AreEquivalent(new[] { "edoras", "helms-deep" }, CharacterRecruitDraft.Targets(draft, ruler).ToList());
+            Assert.IsTrue(CharacterRecruitDraft.Region(draft, ruler, "helms-deep"));
             Assert.AreEqual("helms-deep", ReinforcementPlans.For(view, draft, Data).Placements.Single().RegionId);
         }
 
-        // UI-423 (owner's playtest pattern, like UI-412): after a king's recruitment's first settlement is clicked (Dáin's Iron
-        // Guard, UI-392), the Reserve lights only the figures that settlement takes; the others stay choosable, unlit, and say
-        // why and what their click does. A settlement given its figure narrows nothing.
+        // UI-539 (owner, 2026-11-16; UI-423's narrowing retired): Dáin's Iron Guard is figure first: every free figure is
+        // choosable and lit, no settlement before a figure, a settlement clicked first stores nothing; a Dwarf lights Erebor
+        // and the Iron Hills, the North's figure Dale.
         [Test]
-        public void AKingsChosenSettlementLightsOnlyTheFiguresItTakes()
+        public void AKingsRecruitmentIsFigureFirst()
         {
             var view = new BoardFixture().View;
             view.You = Side.FreePeoples;
@@ -171,25 +173,23 @@ namespace Wotr.EditorTests
             draft.Choose(CommandKind.UseCharacterAbility);
             CharacterDraft.Select(draft, view, guard);
             var plan = ReinforcementPlans.For(view, draft, Data);
-            Assert.IsFalse(plan.Rows.Any(r => r.Elsewhere || r.Figures.Any(f => f.Elsewhere)), "Before a settlement is chosen every figure is lit.");
-            StringAssert.StartsWith("Click, then click a highlighted settlement", plan.Hint);
+            Assert.AreEqual(CharacterReinforcements.RulerHint, plan.Hint);
+            Assert.IsTrue(plan.Rows.All(r => r.Figures.All(f => f.ReserveId != null)), "Every free figure is choosable.");
+            CollectionAssert.IsEmpty(CharacterRecruitDraft.Targets(draft, guard));
+            Assert.IsFalse(CharacterRecruitDraft.Region(draft, guard, "dale"));
+            Assert.AreEqual("", draft.Payload.RegionId);
 
-            Assert.IsTrue(CharacterRecruitDraft.Region(draft, guard, "dale"));
+            var dwarf = plan.Rows.Single(r => r.Nation == "dwarves").Figures.Single().ReserveId;
+            Assert.IsTrue(ReinforcementPlans.Choose(draft, view, dwarf));
+            CollectionAssert.AreEquivalent(new[] { "erebor", "iron-hills" }, CharacterRecruitDraft.Targets(draft, guard).ToList());
+            Assert.IsTrue(CharacterRecruitDraft.Region(draft, guard, "iron-hills"));
             plan = ReinforcementPlans.For(view, draft, Data);
-            var dale = plan.Rows.Single(r => r.Nation == "north");
-            var dwarf = plan.Rows.Single(r => r.Nation == "dwarves");
-            Assert.IsFalse(dale.Elsewhere || dale.Figures.Single().Elsewhere, "Dale takes the North's figure.");
-            Assert.IsTrue(dwarf.Elsewhere, "No Dwarf goes to Dale: his nation's row is not lit.");
-            Assert.AreEqual("Cannot be recruited in Dale now", dwarf.Reason);
-            Assert.IsTrue(dwarf.Figures.Single().Elsewhere);
-            Assert.IsNotNull(dwarf.Figures.Single().ReserveId, "The Dwarf stays choosable for another settlement.");
-            Assert.AreEqual("Cannot be recruited in Dale now · Click it to light the settlements that take it", dwarf.Figures.Single().Hint);
-            StringAssert.StartsWith("Click to place it in Dale", plan.Hint);
-
-            Assert.IsTrue(ReinforcementPlans.Choose(draft, view, dale.Figures.Single().ReserveId));
-            plan = ReinforcementPlans.For(view, draft, Data);
-            Assert.AreEqual("dale", plan.Placements.Single().RegionId, "The lit figure's click places it in the chosen settlement.");
-            Assert.IsFalse(plan.Rows.Any(r => r.Elsewhere || r.Figures.Any(f => f.Elsewhere)), "A settlement given its figure narrows nothing.");
+            Assert.AreEqual("iron-hills", plan.Placements.Single().RegionId);
+            CollectionAssert.IsEmpty(CharacterRecruitDraft.Targets(draft, guard), "Nothing is lit until the next figure.");
+            var northman = plan.Rows.Single(r => r.Nation == "north").Figures.Single().ReserveId;
+            Assert.IsTrue(ReinforcementPlans.Choose(draft, view, northman), "The next figure is taken up, not placed.");
+            Assert.AreEqual(1, ReinforcementPlans.For(view, draft, Data).Placements.Count);
+            CollectionAssert.AreEquivalent(new[] { "dale" }, CharacterRecruitDraft.Targets(draft, guard).ToList());
         }
 
         private static List<string> ReserveIds(PlayerView view, string nation) => view.Units

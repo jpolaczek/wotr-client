@@ -65,6 +65,10 @@ namespace Wotr.Client
             _ => "No Ruler tokens are used; only a fallen Awakened sovereign gives Dismay."
         };
 
+        // UI-540 (owner, 2026-11-16): a room whose CPU is AlphaWOTR keeps to the base game; its expansions and variants stay
+        // off, with the reason.
+        public static bool CpuBaseGame(RoomView room) => CpuNames.IsAlphaWotr(room?.Bot);
+
         public static bool Editable(RoomView room) =>
             room != null && room.IsHost && room.Status == RoomStatus.Waiting && string.IsNullOrEmpty(room.MatchId) &&
             !OwnReady(room);
@@ -156,8 +160,9 @@ namespace Wotr.Client
                 Id = module,
                 Name = ModuleName(module),
                 On = on,
-                Enabled = Editable(room) && (offered || on),
-                Tooltip = ModuleTooltip(room, module, on, offered, readiness ? AgainReady : "")
+                Enabled = Editable(room) && !CpuBaseGame(room) && (offered || on),
+                Tooltip = CpuBaseGame(room) ? ModuleName(module) + " · " + CpuNames.BaseGameOnly
+                    : ModuleTooltip(room, module, on, offered, readiness ? AgainReady : "")
             };
         }
 
@@ -183,8 +188,9 @@ namespace Wotr.Client
                 Id = variant,
                 Name = VariantName(variant),
                 On = on,
-                Enabled = Editable(room) && available,
-                Tooltip = VariantTooltip(room, variant, on, available, readiness ? AgainReady : "")
+                Enabled = Editable(room) && !CpuBaseGame(room) && available,
+                Tooltip = CpuBaseGame(room) ? VariantName(variant) + " · " + CpuNames.BaseGameOnly + "\n" + VariantEffect(variant)
+                    : VariantTooltip(room, variant, on, available, readiness ? AgainReady : "")
             };
         }
 
