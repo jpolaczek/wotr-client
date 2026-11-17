@@ -140,7 +140,16 @@ namespace Wotr.PlayTests
             using var room = await UI10TestRoom.Connect("ui34-separate-mordor");
             var board = room.Fp.Board;
             var ids = board.View.Options.Single(o => o.Kind == CommandKind.SeparateCompanions).EligibleIds.ToArray();
-            foreach (var id in ids)
+            // UI-545 (owner, 2026-11-17): the first chosen companion stands apart from the ones still to choose.
+            PointerGestureEvents.ClickAt(Portrait(board, ids[0]));
+            await room.Settle();
+            Assert.IsTrue(Portrait(board, ids[0]).ClassListContains("selected"));
+            Assert.IsFalse(Portrait(board, ids[0]).ClassListContains(ChoiceGlow.ClassName), "The chosen one stops glowing.");
+            Assert.AreEqual(DisplayStyle.Flex, Portrait(board, ids[0]).Q<Label>(FellowshipRoster.ChosenMarkName).resolvedStyle.display, "It wears its ✓.");
+            if (ids.Length > 1)
+                Assert.IsTrue(Portrait(board, ids[1]).ClassListContains(ChoiceGlow.ClassName), "The others still glow.");
+            LayoutTests.Save(room.Fp.Viewport, "ui545-chosen-companion.png");
+            foreach (var id in ids.Skip(1))
                 PointerGestureEvents.ClickAt(Portrait(board, id));
             // UI-481 (owner): the console's ✓ confirms, and the console says it removes them from play.
             await room.Until(() => board.Console.Actions.Confirm.enabledInHierarchy);

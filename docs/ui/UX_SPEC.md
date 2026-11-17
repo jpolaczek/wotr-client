@@ -4846,6 +4846,20 @@ Playtest:
   along the track.
 - [ ] Say if the pace reads well.
 
+<a id="the-chosen-companions-stand-apart--ui-545"></a>
+## The chosen companions stand apart — UI-545 (2026-11-17)
+
+The owner: "choosing a group from the Fellowship, they all glow and you cannot see who is chosen; it must differ clearly".
+
+- **The chosen look.** A chosen companion (separating a group, an effect's companions, the next Guide) stops glowing and
+  pulsing. It wears a solid pale-gold rim on a full warm plate, a little raised (1.06), with a green ✓ in its corner
+  (`FellowshipRoster.ChosenMarkName`).
+- **The others.** The companions still to choose keep the pulsing gold glow. Unchosen again, a companion glows again.
+- **Style.** Colours and a texture-free badge only, no filter.
+
+Tests: EditMode `FellowshipGuideChoiceTests.AChosenCompanionStandsApartFromTheOnesStillToChoose`; PlayMode
+`FellowshipGuideNetworkTests` (the separation's first chosen companion; frame `ui545-chosen-companion`).
+
 <a id="the-rest-of-a-cards-way--ui-493"></a>
 ## The rest of a card's way — UI-493 (2026-11-04)
 

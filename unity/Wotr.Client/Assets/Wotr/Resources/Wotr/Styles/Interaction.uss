@@ -476,3 +476,32 @@
 #board-screen .battle-card-row > .battle-card { width: auto; flex-grow: 1; flex-shrink: 1; }
 #board-screen .battle-card-row > .skill-icon.battle-replacement-chip { width: 33px; height: 33px; margin: 0 2px 0 6px; }
 
+/* UI-545 (owner, 2026-11-17): a chosen companion (a group to separate, an effect's companions, the next Guide) is told
+   apart from the ones still to choose: it stops glowing and pulsing, wears a solid pale-gold rim on a full warm plate, a
+   little raised, with a ✓ in its corner; the others keep the pulsing gold glow. Textures and colours only, no filter. */
+#board-screen .fellowship-panel .companion-token.selected,
+.motion-enabled #board-screen .choice-glow-pulse .companion-token.selected {
+    border-width: 3px;
+    border-color: rgb(255, 240, 190);
+    background-color: rgba(170, 125, 35, 0.92);
+    scale: 1.06 1.06;
+}
+.companion-token > .companion-chosen-mark {
+    display: none;
+    position: absolute;
+    right: -5px;
+    top: -6px;
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    padding: 0;
+    border-width: 1px;
+    border-radius: 9px;
+    border-color: rgb(255, 240, 190);
+    background-color: rgb(46, 110, 52);
+    color: rgb(255, 255, 255);
+    font-size: 11px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+.companion-token.selected > .companion-chosen-mark { display: flex; }
