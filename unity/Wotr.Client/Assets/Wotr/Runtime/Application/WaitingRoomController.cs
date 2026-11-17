@@ -282,6 +282,7 @@ namespace Wotr.Client
                 // UI-540: AlphaWOTR plays the base game only, and as many games at once as the server allows.
                 if (apiError.Message == "CpuBaseGameOnly")
                     return CpuNames.BaseGameOnly + " Switch the expansions and variants off, then add the CPU.";
+                if (apiError.Message == "CpuOnlyInPlayVsCpu") return CpuNames.OnlyInPlayVsCpu;
                 if (apiError.Message == "CpuBusy") return "The CPU is playing as many games as it can right now. Try again in a few minutes.";
                 if (apiError.Message == "BotNotReady") return "CPU is still joining. Wait for Ready.";
                 if (apiError.Message == "BotConfigurationUnsupported" || apiError.Message == "BotVersionUnsupported")

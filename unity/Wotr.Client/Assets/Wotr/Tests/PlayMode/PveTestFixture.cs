@@ -48,7 +48,7 @@ namespace Wotr.PlayTests
         }
         public static async Task<RoomView> Create(GameApi api, Side human, CancellationToken token)
         {
-            var room = await api.Post<RoomView>("api/rooms", new CreateRoomRequest { Name = "CPU test", Side = human }, token);
+            var room = await api.Post<RoomView>("api/rooms", CpuNames.PlayVsCpuRequest(human), token);
             return await api.Put<RoomView>(Path(room) + "/bot", Request(room), token);
         }
         public static async Task Release(string match, CancellationToken token)

@@ -5054,7 +5054,10 @@ AlphaWOTR (MIT licence, its author Sarvesh Sadana, https://github.com/Weyoun5/Al
   guest's Remove stays). A room made by Play vs CPU (`WaitingRoomScreen.PlayVsCpu`), or one holding the CPU, has no rules
   strip: the line "Base game · Games against the CPU use the base game, without expansions or modes." stands in its place.
   Play vs CPU makes a base-game room with the chosen side; switching sides makes a new base-game room (the old room's rules
-  are not carried over). A seat's medallions and chips, should they show, are disabled for AlphaWOTR with the reason
+  are not carried over). Owner, 2026-11-17 (follow-up): the server refuses the CPU outside a Play vs CPU room
+  (`CpuOnlyInPlayVsCpu`, "The CPU plays only in games started with Play vs CPU."), knowing the room as the client does: a
+  private room named "Play vs CPU" (`CpuNames.PlayVsCpuRoom`), so such a room opened again from the games list still offers
+  Add CPU. The legacy demo against the CPU ("Play demo vs CPU") is a CPU room's only; a game one hosts does not show it. A seat's medallions and chips, should they show, are disabled for AlphaWOTR with the reason
   (`RulesChoices.CpuBaseGame`, "Games against the CPU use the base game."). The server's refusals read: `CpuBaseGameOnly` "Games against the CPU use the base game. Switch the
   expansions and variants off, then add the CPU."; `CpuBusy` "The CPU is playing as many games as it can right now. Try
   again in a few minutes."

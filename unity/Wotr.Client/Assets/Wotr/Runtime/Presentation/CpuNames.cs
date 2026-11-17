@@ -18,6 +18,17 @@ namespace Wotr.Client
 
         public static bool IsAlphaWotr(BotSeatView bot) => bot != null && bot.Engine == AlphaWotrEngine;
 
+        // Owner, 2026-11-17: the CPU joins only a Play vs CPU room, the private room Play vs CPU makes under this name;
+        // the server knows it the same way (RoomRules.PlayVsCpu in wotr-server) and refuses the CPU elsewhere.
+        public const string PlayVsCpuName = "Play vs CPU";
+        public const string OnlyInPlayVsCpu = "The CPU plays only in games started with Play vs CPU.";
+
+        public static CreateRoomRequest PlayVsCpuRequest(Side side) =>
+            new CreateRoomRequest { Name = PlayVsCpuName, Side = side, Visibility = RoomVisibility.Private };
+
+        public static bool PlayVsCpuRoom(RoomView room) =>
+            room != null && room.Managed && room.Visibility == RoomVisibility.Private && room.Name == PlayVsCpuName;
+
         public static string Name(BotSeatView bot) => IsAlphaWotr(bot) ? AlphaWotr : Plain;
 
         // The seat's tooltip: the credit for AlphaWOTR, nothing for the scripted CPU.
