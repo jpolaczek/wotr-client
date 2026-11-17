@@ -10,9 +10,11 @@ using Wotr.Contracts;
 
 namespace Wotr.PlayTests
 {
-    // UI-492 (owner, 2026-11-04): a card's dice rolled outside a battle stand as a plate of die faces at the region for about a
-    // second, with the dice sound, before the losses they cause. The faces that hit wear the battle dice's hit face, a roll
-    // with no region stands in the middle of the map, and nothing in it takes the pointer. Frames: ui492-*.
+    // UI-492 (owner, 2026-11-04) and UI-541 (owner, 2026-11-17): a card's dice rolled outside a battle open a window of their
+    // own above the region: the card's name and what its dice count, then the dice (the battle's faces, the hit face for a
+    // hit) with the dice sound, then the result; it stays while the losses they cause play and leaves at the release. A roll
+    // with no region stands in the middle of the safe area; nothing in it takes the pointer. The player's own Athelas plays
+    // its dice and then the Ring's move on the corruption track. Frames: ui541-*.
     public sealed class OpponentCardRollPresentationTests
     {
         private const string Region = "osgiliath";
@@ -32,29 +34,38 @@ namespace Wotr.PlayTests
             foreach (var id in ids.Take(2))
                 choice.Facts.Figures.Add(stage.Change(id, Region, "casualties"));
             stage.Play(latest, "grey-havens", choice, Roll(stage, 2, new[] { 5, 6, 1 }, 5, Region));
-            VisualElement plate = null;
-            yield return stage.Until(() => (plate = Plate(stage)) != null);
+            VisualElement window = null;
+            yield return stage.Until(() => (window = Window(stage)) != null);
             var started = Time.realtimeSinceStartup;
             Assert.AreEqual(before, stage.Army(Region), "The figures are still there: the roll comes first.");
             Assert.IsNull(stage.Board.Map.Q("observed-delta"));
-            CollectionAssert.AreEqual(new[] { 5, 6, 1 }, Faces(plate).Select(face => face.Value));
-            CollectionAssert.AreEqual(new[] { true, true, false }, Faces(plate).Select(face => face.ClassListContains("battle-pips-hit")),
+            Assert.AreEqual("Hits on 5+", window.Q<Label>(CardRollPresenter.RuleName).text);
+            Assert.IsTrue(Waiting(window, CardRollPresenter.DiceName), "The window opens before its dice.");
+            CollectionAssert.AreEqual(new[] { 5, 6, 1 }, Faces(window).Select(face => face.Value));
+            CollectionAssert.AreEqual(new[] { true, true, false }, Faces(window).Select(face => face.ClassListContains("battle-pips-hit")),
                 "The faces that hit say so.");
-            Assert.AreEqual(PickingMode.Ignore, plate.pickingMode, "Nothing to click.");
-            Assert.IsTrue(plate.Query<Button>().ToList().Count == 0);
-            CollectionAssert.Contains(sounds.Played, SoundCue.DiceRoll, "With the dice sound.");
+            Assert.AreEqual(PickingMode.Ignore, window.pickingMode, "Nothing to click.");
+            Assert.AreEqual(0, window.Query<Button>().ToList().Count, "A presentation's window has no button.");
             Assert.IsTrue(stage.Presenters.Camera.SafeArea().Contains(stage.Board.Map.Camera.ToScreen(stage.Anchor(Region))), "The camera framed it first.");
-            yield return new WaitForSecondsRealtime(.3f);
+            yield return stage.Until(() => !Waiting(window, CardRollPresenter.DiceName));
+            CollectionAssert.Contains(sounds.Played, SoundCue.DiceRoll, "The dice land with their sound.");
+            Assert.IsTrue(Waiting(window, CardRollPresenter.ResultName), "The result follows the dice.");
+            yield return stage.Until(() => !Waiting(window, CardRollPresenter.ResultName));
+            Assert.AreEqual("2 hits", window.Q<Label>(CardRollPresenter.ResultName).text);
             var anchor = stage.Board.Map.Camera.ToScreen(stage.Anchor(Region));
-            var bounds = new Rect(stage.Board.Map.WorldToLocal(plate.worldBound.position), plate.worldBound.size);
+            var bounds = new Rect(stage.Board.Map.WorldToLocal(window.worldBound.position), window.worldBound.size);
             Assert.AreEqual(anchor.x, bounds.center.x, 2f, "Centred on the region.");
             Assert.Less(bounds.yMax, anchor.y, "Above its anchor.");
-            LayoutTests.Save(stage.Texture, "ui492-roll-" + viewer + ".png");
+            Assert.IsTrue(stage.Presenters.Camera.SafeArea().Contains(bounds.min) && stage.Presenters.Camera.SafeArea().Contains(bounds.max),
+                "Inside the safe area.");
+            LayoutTests.Save(stage.Texture, "ui541-roll-" + viewer + ".png");
             yield return stage.Until(() => stage.Board.Map.Q("observed-delta") != null);
-            Assert.AreEqual(CardRollPresenter.Seconds, Time.realtimeSinceStartup - started, .35f, "About a second.");
+            Assert.AreEqual(CardRollPresenter.Seconds, Time.realtimeSinceStartup - started, .4f, "The window's beats, then the losses.");
             Assert.AreEqual(before - 2, stage.Army(Region), "Then the losses.");
+            Assert.IsNotNull(Window(stage), "The window stays while its losses play.");
             yield return stage.Released();
-            Assert.IsNull(Plate(stage));
+            yield return new WaitForSecondsRealtime((MapObservedTrace.FadeOutMilliseconds + 100) / 1000f);
+            Assert.IsNull(Window(stage));
             stage.AssertFinal(latest);
         }
 
@@ -66,14 +77,17 @@ namespace Wotr.PlayTests
             var latest = stage.Latest();
             var pan = stage.Board.Map.Camera.Pan;
             stage.Play(latest, null, Choice(stage), Roll(stage, 2, new[] { 6 }, 5));
-            VisualElement plate = null;
-            yield return stage.Until(() => (plate = Plate(stage)) != null);
+            VisualElement window = null;
+            yield return stage.Until(() => (window = Window(stage)) != null);
             yield return new WaitForSecondsRealtime(.2f);
-            Assert.AreEqual(stage.Board.Map.worldBound.center.x, plate.worldBound.center.x, 2f);
+            var safe = stage.Presenters.Camera.SafeArea();
+            var bounds = new Rect(stage.Board.Map.WorldToLocal(window.worldBound.position), window.worldBound.size);
+            Assert.AreEqual(safe.center.x, bounds.center.x, 2f, "In the middle of the safe area.");
+            Assert.AreEqual(safe.center.y, bounds.center.y, 2f);
             Assert.AreEqual(pan, stage.Board.Map.Camera.Pan, "With no place to frame the camera stays.");
-            LayoutTests.Save(stage.Texture, "ui492-roll-no-region.png");
             yield return stage.Released();
-            Assert.IsNull(Plate(stage));
+            yield return new WaitForSecondsRealtime((MapObservedTrace.FadeOutMilliseconds + 100) / 1000f);
+            Assert.IsNull(Window(stage));
         }
 
         [UnityTest]
@@ -83,14 +97,61 @@ namespace Wotr.PlayTests
             yield return stage.Ready();
             var latest = stage.Latest();
             stage.Play(latest, null, Choice(stage), Roll(stage, 2, new[] { 5, 2 }, 5, Region));
-            yield return stage.Until(() => Plate(stage) != null);
+            yield return stage.Until(() => Window(stage) != null);
             if (!reduced)
                 PointerGestureEvents.ClickAt(stage.Presenters.Skip.Button);
             yield return stage.Released();
             yield return new WaitForSecondsRealtime((MapObservedTrace.FadeOutMilliseconds + 100) / 1000f);
-            Assert.IsNull(Plate(stage), "It leaves with the beat.");
+            Assert.IsNull(Window(stage), "It leaves with the presentation.");
             Assert.IsEmpty(stage.Lit);
         }
+
+        // UI-541 (owner, 2026-11-17): the player's own Athelas: no reveal of their own card, the window names it and its dice,
+        // and the Ring moves down the corruption track after them, while the window stays.
+        [UnityTest]
+        public IEnumerator OwnAthelasShowsItsDiceAndThenTheRingMovesOnTheCorruptionTrack()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, Side.FreePeoples);
+            const int corrupted = 4;
+            const int healed = 2;
+            stage.Before.Fellowship.Corruption = corrupted;
+            yield return stage.Ready();
+            var latest = stage.Latest();
+            latest.Fellowship.Corruption = healed;
+            var played = stage.Step(1);
+            played.Actor = Side.FreePeoples;
+            played.Kind = "EventPlayed";
+            played.Facts.FellowshipBefore = Outcome(stage.Before.Fellowship, corrupted);
+            played.Facts.FellowshipAfter = Outcome(stage.Before.Fellowship, healed);
+            var roll = Roll(stage, 2, new[] { 3, 5, 1 }, 3);
+            roll.Kind = "HealingRoll";
+            roll.ActionId = played.ActionId;
+            roll.Facts.SourceId = "base.fp.character.09";
+            var corruption = stage.Board.Fellowship.Status.Q<Label>("fellowship-status-corruption");
+            var shown = corruption.text;
+            stage.Play(latest, null, played, roll);
+            VisualElement window = null;
+            yield return stage.Until(() => (window = Window(stage)) != null);
+            Assert.AreEqual("Athelas", window.Q<Label>(CardRollPresenter.TitleName).text);
+            Assert.AreEqual("Each 3+ heals one Corruption", window.Q<Label>(CardRollPresenter.RuleName).text);
+            Assert.AreEqual(shown, corruption.text, "The Ring waits for the dice.");
+            yield return stage.Until(() => !Waiting(window, CardRollPresenter.ResultName));
+            Assert.AreEqual("2 successes", window.Q<Label>(CardRollPresenter.ResultName).text);
+            LayoutTests.Save(stage.Texture, "ui541-own-athelas.png");
+            yield return stage.Until(() => corruption.text != shown);
+            Assert.IsNotNull(Window(stage), "The window stays while the Ring moves.");
+            LayoutTests.Save(stage.Texture, "ui541-own-athelas-ring.png");
+            yield return stage.Released();
+            yield return new WaitForSecondsRealtime((MapObservedTrace.FadeOutMilliseconds + 100) / 1000f);
+            Assert.IsNull(Window(stage));
+            stage.AssertFinal(latest);
+        }
+
+        private static HuntOutcomeView Outcome(FellowshipView fellowship, int corruption) => new HuntOutcomeView
+        {
+            RegionId = fellowship.RegionId, Progress = fellowship.Progress, MordorStep = fellowship.MordorStep,
+            Corruption = corruption, Hidden = fellowship.Hidden, GuideId = fellowship.Guide
+        };
 
         // The opponent's decision whose effect rolls.
         private static ActionLogStep Choice(PresentedBoardStage stage)
@@ -116,9 +177,12 @@ namespace Wotr.PlayTests
             return step;
         }
 
-        private static VisualElement Plate(PresentedBoardStage stage) => stage.Board.Root.Q(CardRollPresenter.PlateName);
+        private static VisualElement Window(PresentedBoardStage stage) => stage.Board.Root.Q(CardRollPresenter.WindowName);
 
-        private static List<DiePips> Faces(VisualElement plate) => plate.Query<DiePips>().ToList();
+        private static bool Waiting(VisualElement window, string part) =>
+            window.Q(part).ClassListContains(CardRollPresenter.WindowName + "-waiting");
+
+        private static List<DiePips> Faces(VisualElement window) => window.Query<DiePips>().ToList();
 
         private sealed class Recorded : IPresentationSounds
         {

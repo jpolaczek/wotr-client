@@ -28,7 +28,9 @@ namespace Wotr.Client
             ActionMemory memory, Side? you, BoardPresentation data)
         {
             var steps = group.OrderBy(step => step.Order).ToList();
-            var figures = FigureCuesByStep(steps, shown, data);
+            // UI-541 (owner, 2026-11-17): the player's own dice-rolling card plays its dice and what they cause.
+            var ownRoll = you.HasValue && steps.Any(step => CardRoll(step) && !shown.Contains(step));
+            var figures = FigureCuesByStep(steps, ownRoll ? steps.ToHashSet() : shown, data);
             var revealed = RevealedTiles(steps);
             var corrupted = steps.Any(step => step.Facts.Sovereigns.Any(s => s.Status == SovereignStatus.Corrupted));
             var inactive = steps.Any(step => step.Kind == MordorInactivity);
@@ -59,7 +61,8 @@ namespace Wotr.Client
                     {
                         released.Add(cue);
                     }
-                    else if (PresentationSelection.OpponentsChange(cue, step, you, memory, inactive))
+                    else if (PresentationSelection.OpponentsChange(cue, step, you, memory, inactive) ||
+                             ownRoll && PresentationSelection.OwnRollShows(cue))
                     {
                         cue.Actor = null;
                         released.Add(cue);
@@ -73,12 +76,13 @@ namespace Wotr.Client
         private const string EventLosses = "EventLosses";
 
         // UI-492 (owner, 2026-11-04): the board's difference records a card's casualties on the command's first step, but
-        // its dice were rolled before them, so a roll plays before the first figure change in its region.
+        // its dice were rolled before them, so a roll plays before the first figure change in its region. UI-541 (owner,
+        // 2026-11-17): and before its action's Fellowship change (the Ring on the corruption track), resources and tokens.
         private static List<PresentationCue> RollsBeforeTheirEffects(List<PresentationCue> cues)
         {
             foreach (var roll in cues.Where(cue => cue.Kind == PresentationCueKind.Roll).ToList())
             {
-                var effect = cues.FindIndex(cue => cue.Figures.Count > 0 && cue.Regions.Intersect(roll.Regions).Any());
+                var effect = cues.FindIndex(cue => cue != roll && Caused(cue, roll));
                 if (effect < 0 || effect > cues.IndexOf(roll))
                     continue;
                 cues.Remove(roll);
@@ -86,6 +90,14 @@ namespace Wotr.Client
             }
             return cues;
         }
+
+        private static bool Caused(PresentationCue cue, PresentationCue roll) =>
+            cue.Figures.Count > 0 && cue.Regions.Intersect(roll.Regions).Any() ||
+            cue.ActionId == roll.ActionId && cue.Kind is PresentationCueKind.Fellowship or PresentationCueKind.Resource;
+
+        // UI-492/UI-541: a card's dice rolled outside a battle; the losses they cause repeat them on a later step.
+        private static bool CardRoll(ActionLogStep step) =>
+            step.Facts.Rolls.Count > 0 && !InBattle(step) && step.Kind != EventLosses;
 
         // UI-487/UI-488 (owner, 2026-11-04): the board's difference records a revision's dice on its first step, but they
         // move at its end. The action's die leaves after the action's last effect (a Fellowship move's die enters the Hunt
@@ -185,9 +197,13 @@ namespace Wotr.Client
         // repeat them on a later step (EventLosses.Apply), which is no second roll.
         private static IEnumerable<PresentationCue> Rolls(ActionLogStep step)
         {
-            if (step.Facts.Rolls.Count == 0 || InBattle(step) || step.Kind == EventLosses)
+            if (!CardRoll(step))
                 yield break;
-            var payload = new CuePayload { HitTarget = step.Facts.HitTarget };
+            var payload = new CuePayload
+            {
+                HitTarget = step.Facts.HitTarget, Hits = step.Facts.Hits, RollKind = step.Kind,
+                Source = step.Facts.SourceId.Length > 0 ? step.Facts.SourceId : step.Context.DefinitionId
+            };
             payload.Rolls.AddRange(step.Facts.Rolls);
             payload.Regions.AddRange(step.Facts.Targets.Count > 0 ? step.Facts.Targets : step.Context.Regions);
             yield return new PresentationCue(step, PresentationCueKind.Roll, step.Id, payload);

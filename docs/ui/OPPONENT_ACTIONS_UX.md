@@ -80,7 +80,8 @@ The owner's request supersedes the older "no automatic camera" and "no automatic
 presentation of an important opponent action (and the shared public resolutions named in §1)**, while it plays. For
 that presentation the client may move the camera (§6.5) and show the played public card (§6.2) without a click.
 Nothing else changes: hover, tooltips, decisions, window placement, privacy, own actions, the Log, pennants, history
-framing, first load and reconnect keep their current rules.
+framing, first load and reconnect keep their current rules. (Own actions, one exception, owner 2026-11-17, UI-541: the
+player's own card that rolls dice plays its dice in their window and then what they cause.)
 
 Passages superseded within that limit, once the implementing task ships (each keeps applying to everything else):
 
@@ -1532,11 +1533,52 @@ line.
 - **The beat** (`CardRollPresenter`, about 1 s): the camera frames the region (`Targets`, else `Context.Regions`), its outline shows and a plate of die faces stands above its anchor, with the Dice sound once; the faces at or
   over `HitTarget` wear the battle dice's hit face. Dead Men records no target number, so its face shows plain. A roll with no region (a healing roll, the Three Rings) stands in the middle of the map, the camera staying.
 - **The order.** The board's difference puts a card's casualties on the command's first step, though the dice fell before them, so a roll plays before the first figure change of its region.
-- **Who sees it.** The side that did not roll. The player's own card is their own step and plays nothing, as ever.
+- **Who sees it.** The side that did not roll. The player's own card is their own step and plays nothing, as ever. (Superseded by UI-541: the player's own dice-rolling card plays its dice and their effects.)
 - Skip ends it; Skip animations shows it without a fade.
 
 Tests: EditMode `OpponentPresentationModelTests` (`ARecordedCardsDiceShowOnceAtTheirRegionBeforeTheChoiceTheyCause` on the recorded `event-loss` fixtures, `ACardsDiceComeBeforeTheFiguresTheyTake`,
 `ADiceFactInsideABattleBelongsToItsWindow`); PlayMode `OpponentCardRollPresentationTests` (both viewers; frames `ui492-*`); `OpponentFreePeoplesActingNetworkTests.TheShadowSeesTheDiceOfDeadMenAndTheCaptureOfPelargir`.
+
+<a id="a-cards-dice-in-their-own-window--ui-541"></a>
+## A card's dice in their own window — UI-541 (2026-11-17)
+
+The owner: "cards such as Athelas that roll dice for an effect should present those dice: a special window should open, the dice shown as usual, and then the animations run (e.g. the Ring moving on the
+corruption track, or others)". This supersedes UI-492's plate, its order and its "Who sees it".
+
+- **The window** (`CardRollPresenter`, `presentation-card-dice`), read-only (no button; Skip and Esc as for every presentation):
+  - it opens with the card's name (`Facts.SourceId`, else `Context.DefinitionId`) and what its dice count ("Hits on 5+",
+    "Each 3+ heals one Corruption", "Each 4+ adds one Corruption", "Each 5+ is a success", "Each die scores its number"
+    for Dead Men);
+  - after 0.4 s the dice land: the battle's faces (`battle-pips`, 40 points), the hit face for a hit, the dice sound
+    once;
+  - 1 s later the result appears: "2 hits", "No hits", "2 successes", "No successes" (UI-520's result plate);
+  - after 1.5 s the roll's effects play while the window stays: the figures it takes, the Ring on the corruption track
+    (the Fellowship panel), the Rings recovered;
+  - the next action's first cue closes it (`CardRollWindowRetirement`, registered first), as do the release and Skip.
+
+  It stands centred above the roll's region (below it when there is no room), inside the safe area, or in the middle of
+  the safe area for a roll with no region. It fades in and out by opacity only: no CSS filter (UX_SPEC, the UITK filter
+  crash).
+- **The order.** A roll plays before its action's effects: the figure changes in its region (UI-492) and now also the
+  action's Fellowship change and its Rings. The board's difference records them on the command's first step, before the
+  automatic step that rolled.
+- **Who sees it.** Both sides and observers. The player's own dice-rolling card plays its dice and what they cause: the
+  Roll, Fellowship, Removal, Transformation and Ring cues of that action (`PresentationSelection.OwnRollShows`). Their
+  own cost, card and dice still play nothing, and the camera does not move for it (`OwnCommand`). While it plays,
+  input waits, as for every presentation.
+
+Tests:
+- EditMode `OpponentPresentationModelTests`:
+  - `ARecordedCardsDiceShowOnceAtTheirRegionBeforeTheChoiceTheyCause` (the player's own Dreadful Spells now plays its
+    dice);
+  - `AthelasDicePlayBeforeTheRingMovesForBothSides`.
+- PlayMode `OpponentCardRollPresentationTests`:
+  - the window above the region with the rule, the dice, the result and the losses after it, for both viewers;
+  - the middle of the safe area;
+  - Skip;
+  - `OwnAthelasShowsItsDiceAndThenTheRingMovesOnTheCorruptionTrack`;
+  - frames `ui541-*`.
+- PlayMode `OpponentFreePeoplesActingNetworkTests` (Dead Men).
 
 <a id="the-rest-of-a-cards-way--ui-493"></a>
 ## The rest of a card's way — UI-493 (2026-11-04)

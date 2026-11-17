@@ -93,6 +93,8 @@ namespace Wotr.Client
                 new List<(VisualElement, string, Side, bool, Rect)>();
             private readonly List<(ObjectGlow Glow, string Region)> fellowships = new List<(ObjectGlow, string)>();
             private readonly List<(VisualElement Element, string Region)> above = new List<(VisualElement, string)>();
+            // UI-541: a card's dice window, above its region (below it when there is no room) or in the safe area's middle.
+            private readonly List<(VisualElement Element, string Region, Rect Safe)> windows = new List<(VisualElement, string, Rect)>();
             private bool ended;
             public VisualElement Root { get; } = new VisualElement { pickingMode = PickingMode.Ignore };
             public VisualElement Plates { get; } = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -201,6 +203,16 @@ namespace Wotr.Client
                 return this;
             }
 
+            // UI-541 (owner, 2026-11-17): a card's dice window, kept inside the safe area (map-local points): centred above its
+            // region's anchor, below it when there is no room above, or in the middle of the safe area without a region.
+            public TraceSet Window(string region, VisualElement window, Rect safe)
+            {
+                Plates.Add(window);
+                windows.Add((window, region, safe));
+                Layout();
+                return this;
+            }
+
             // UI-309: the Fellowship's figure on its region (a separation's public origin) glows (UI-314).
             public TraceSet Fellowship(string region)
             {
@@ -270,6 +282,17 @@ namespace Wotr.Client
                     var anchor = owner.Anchor(region);
                     element.style.left = anchor.x;
                     element.style.top = anchor.y - AboveGap;
+                }
+                foreach (var (element, region, safe) in windows)
+                {
+                    if (region == null)
+                    {
+                        element.style.left = safe.center.x - Resolved(element.resolvedStyle.width) / 2;
+                        element.style.top = safe.center.y - Resolved(element.resolvedStyle.height) / 2;
+                        continue;
+                    }
+                    var anchor = owner.Anchor(region);
+                    Above(element, new Rect(anchor.x - AboveGap, anchor.y - AboveGap, 2 * AboveGap, 2 * AboveGap), safe);
                 }
                 Root.MarkDirtyRepaint();
             }
