@@ -33,6 +33,12 @@ namespace Wotr.Client
             };
         }
 
+        // UI-541 (owner, 2026-11-17): the player's own card that rolls dice plays them and what they cause (the Ring on the
+        // corruption track, the figures they take, the Rings recovered); the player's own cost, card and dice never.
+        public static bool OwnRollShows(PresentationCue cue) => cue.Kind is PresentationCueKind.Roll or
+            PresentationCueKind.Fellowship or PresentationCueKind.Removal or PresentationCueKind.Transformation ||
+            cue.Kind == PresentationCueKind.Resource && cue.Resource?.Kind == ActionCostKind.Ring;
+
         // UI-330: an observer's presentation shows every side's recorded steps; only legacy steps without facts never qualify.
         public static IEnumerable<ActionLogStep> Every(IReadOnlyList<ActionLogStep> group) => group.Where(step => !step.Legacy);
 

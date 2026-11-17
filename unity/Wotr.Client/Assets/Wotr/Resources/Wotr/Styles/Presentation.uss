@@ -472,19 +472,57 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
-/* UI-492: a card's dice at its region (or in the middle of the map) for a moment. */
-.presentation-card-roll {
+/* UI-541 (owner, 2026-11-17): a card's dice in a window of their own, above the roll's region or in the middle of the
+   safe area: the card's name, what its dice count, the dice (the battle's faces, the hit face for a hit) and the result.
+   Read-only: nothing in it takes the pointer. Textures and opacity only, no filter (UX_SPEC: the UITK filter crash). */
+.presentation-card-dice {
     position: absolute;
-    flex-direction: row;
-    padding: 3px 4px;
-    border-radius: 4px;
-    background-color: rgba(26, 24, 23, 0.92);
-    translate: -50% -100%;
+    align-items: center;
+    min-width: 220px;
+    padding: 8px 14px 10px 14px;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: rgb(176, 141, 79);
+    background-color: rgba(26, 24, 23, 0.95);
 }
-.presentation-card-roll > .battle-pips {
-    width: 26px;
-    height: 26px;
-    margin: 0 1px;
+.presentation-card-dice-title {
+    margin: 0;
+    padding: 0;
+    font-size: 17px;
+    color: rgb(249, 223, 157);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-text-align: middle-center;
+}
+.presentation-card-dice-rule {
+    margin: 2px 0 6px 0;
+    padding: 0;
+    font-size: 13px;
+    color: rgb(214, 205, 182);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+    -unity-text-align: middle-center;
+}
+.presentation-card-dice-row {
+    flex-direction: row;
+    justify-content: center;
+    min-height: 44px;
+}
+.presentation-card-dice-row > .battle-pips.presentation-card-dice-row-die {
+    width: 40px;
+    height: 40px;
+    margin: 0 3px;
+}
+.presentation-card-dice-result {
+    margin: 6px 0 0 0;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 15px;
+    color: rgb(231, 228, 215);
+    background-color: rgba(60, 52, 40, 0.9);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+/* The dice and the result keep their place while they wait for their beat. */
+.presentation-card-dice-waiting {
+    opacity: 0;
 }
 
 /* UI-493: the name of a table card leaving, beside the Effects tab. */

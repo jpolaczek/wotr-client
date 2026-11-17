@@ -156,7 +156,7 @@ namespace Wotr.PlayTests
             using var room = await Connect("dead-men", ScenarioKind.CardPack);
             await room.ChooseFigure(room.Fp, "base.character.gimli");
             MapContourProbe.ClickRegion(room.Fp.Board.Map, "pelargir");
-            var dice = new Sight(room.Sh, () => room.Sh.Board.Root.Q(CardRollPresenter.PlateName) is { } plate && plate.Query<DiePips>().ToList().Count > 0,
+            var dice = new Sight(room.Sh, () => room.Sh.Board.Root.Q(CardRollPresenter.WindowName) is { } window && window.Query<DiePips>().ToList().Count > 0,
                 "ui492-network-dead-men");
             await room.Settle();
             await room.Confirm(room.Fp);

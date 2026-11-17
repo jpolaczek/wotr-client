@@ -4735,6 +4735,37 @@ Playtest (owner's checklist):
 
 Tests: EditMode `OpponentPresentationModelTests`; PlayMode `OpponentCardRollPresentationTests` (both viewers); `OpponentFreePeoplesActingNetworkTests`; frames `ui492-*`.
 
+<a id="a-cards-dice-in-their-own-window--ui-541"></a>
+## A card's dice in their own window — UI-541 (2026-11-17)
+
+The owner: cards such as Athelas that roll dice should open a window with the dice, shown as usual, and then run the
+effect's animations (the Ring on the corruption track, or others).
+
+- **The window** stands above the roll's region, or in the middle of the safe area. It shows:
+  - the card's name and what its dice count;
+  - the dice, the hit faces lit, with the dice sound;
+  - the result ("2 successes", "2 hits").
+- **The effects** play after it while it stays open. It closes when the next action begins.
+- **Who sees it:** the opponent sees it, and now the player who played the card sees it too. The player's own card is
+  not replayed, and the camera does not move for it.
+
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-cards-dice-in-their-own-window--ui-541).
+
+Playtest (owner's checklist):
+- [ ] Play Athelas yourself with the Fellowship corrupted (vs CPU, Free Peoples). Expect:
+  - the window "Athelas · Each 3+ heals one Corruption" (5+ without Strider as Guide);
+  - the three dice, then "N successes";
+  - then the Ring steps down the corruption track while the window stays;
+  - the window closes when the CPU's next action begins.
+- [ ] Watch the Shadow play Dreadful Spells (or the CPU's army-rolling card). Expect:
+  - the window above the region with "Hits on 5+", the dice, then "N hits";
+  - then your losses decision.
+- [ ] Play Dreadful Spells yourself as the Shadow. Expect your own dice in the window, without a replay of your card.
+- [ ] Say if the window's timing (0.4 s, then the dice for 1 s, then the result for 1.5 s) reads well, and whether it
+  should stay longer.
+
+Tests: EditMode `OpponentPresentationModelTests`; PlayMode `OpponentCardRollPresentationTests`; frames `ui541-*`.
+
 <a id="the-rest-of-a-cards-way--ui-493"></a>
 ## The rest of a card's way — UI-493 (2026-11-04)
 

@@ -762,8 +762,47 @@ namespace Wotr.EditorTests
             Assert.IsTrue(PresentationCamera.Frames(roll));
             var card = cues.FindIndex(cue => cue.Kind == PresentationCueKind.Card && cue.Card.Use == ActionCardUse.Event);
             Assert.Less(card, cues.IndexOf(roll), "The card is read first.");
-            Assert.IsFalse(Replay(Fixture("event-loss-shadow"), out _).Any(cue => cue.Kind == PresentationCueKind.Roll),
-                "The side that played the card rolled its own dice.");
+            // UI-541 (owner, 2026-11-17): the side that played the card sees its own dice too, in their window, with no
+            // reveal of its own card and no camera move.
+            var own = Replay(Fixture("event-loss-shadow"), out _);
+            var ownRoll = own.Single(cue => cue.Kind == PresentationCueKind.Roll);
+            CollectionAssert.AreEqual(new[] { 5, 6, 1 }, ownRoll.Rolls);
+            Assert.IsTrue(ownRoll.OwnCommand);
+            Assert.IsFalse(own.Any(cue => cue.Kind is PresentationCueKind.Card or PresentationCueKind.Cost), "No replay of the player's own card or cost.");
+        }
+
+        // UI-541 (owner, 2026-11-17): Athelas's dice play before the Ring moves on the corruption track, for the side that
+        // played it (its own card, cost and dice stay unplayed) and for the opponent.
+        [Test]
+        public void AthelasDicePlayBeforeTheRingMovesForBothSides()
+        {
+            foreach (var viewer in new[] { Side.FreePeoples, Side.Shadow })
+            {
+                var model = new OpponentPresentationModel(viewer, Data);
+                model.Baseline(new ActionLogPage[0], 1);
+                var played = Step("played", 2, 1, Side.FreePeoples, "EventPlayed");
+                played.Facts.FellowshipBefore = new HuntOutcomeView { RegionId = "rivendell", Progress = 2, Corruption = 4, Hidden = true };
+                played.Facts.FellowshipAfter = new HuntOutcomeView { RegionId = "rivendell", Progress = 2, Corruption = 2, Hidden = true };
+                played.Facts.Resources.Add(new ActionResourceChange { Kind = ActionCostKind.Card, Id = "fp-hand", From = "4", To = "3" });
+                var roll = Step("roll", 2, 2, null, "HealingRoll");
+                roll.Facts.Rolls.AddRange(new[] { 3, 5, 1 });
+                roll.Facts.HitTarget = 3;
+                roll.Facts.Hits = 2;
+                roll.Facts.SourceId = "fp-character-17";
+                model.Advance(2);
+                var cues = model.Merge(new[] { Page(played, roll) }).ToList();
+                var rolled = cues.FindIndex(cue => cue.Kind == PresentationCueKind.Roll);
+                var healed = cues.FindIndex(cue => cue.Kind == PresentationCueKind.Fellowship);
+                Assert.GreaterOrEqual(rolled, 0, viewer.ToString());
+                Assert.Greater(healed, rolled, viewer + ": the Ring moves after the dice.");
+                var dice = cues[rolled];
+                Assert.AreEqual(2, dice.Hits);
+                Assert.AreEqual("fp-character-17", dice.Source);
+                Assert.AreEqual("HealingRoll", dice.RollKind);
+                Assert.AreEqual(viewer == Side.FreePeoples, dice.OwnCommand);
+                if (viewer == Side.FreePeoples)
+                    Assert.IsFalse(cues.Any(cue => cue.Kind == PresentationCueKind.Resource), "The player's own hand is no replay.");
+            }
         }
 
         // The board's difference lists the figures on the first step; the dice were rolled before they fell.

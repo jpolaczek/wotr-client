@@ -59,6 +59,10 @@ namespace Wotr.Client
         // UI-492: a card's public roll and the number that hits, when it has one.
         public IReadOnlyList<int> Rolls { get; }
         public int? HitTarget { get; }
+        // UI-541 (owner, 2026-11-17): the roll's window names its card, what the dice count and how many counted.
+        public int? Hits { get; }
+        public string Source { get; }
+        public string RollKind { get; }
         // UI-305: the revision holds the player's own decision, so this cue is a shared result of their own click (a
         // roll, their retreat or advance). It still plays in its window, but the camera never moves for it.
         public bool OwnCommand { get; internal set; }
@@ -94,6 +98,9 @@ namespace Wotr.Client
             Tiles = payload.Tiles.ToArray();
             Rolls = payload.Rolls.ToArray();
             HitTarget = payload.HitTarget;
+            Hits = payload.Hits;
+            Source = payload.Source ?? "";
+            RollKind = payload.RollKind ?? "";
         }
 
         public override string ToString() => Id;
@@ -121,6 +128,9 @@ namespace Wotr.Client
         public List<string> Tiles { get; } = new List<string>();
         public List<int> Rolls { get; } = new List<int>();
         public int? HitTarget { get; set; }
+        public int? Hits { get; set; }
+        public string Source { get; set; }
+        public string RollKind { get; set; }
     }
 
     // A cue copies its contract objects once, when it is made; a handful of small objects per revision (a battle snapshot is

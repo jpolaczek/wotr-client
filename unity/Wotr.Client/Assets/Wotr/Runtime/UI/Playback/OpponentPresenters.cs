@@ -46,6 +46,9 @@ namespace Wotr.Client
             staged = new StagedBoard(board);
             Trace = new MapObservedTrace(board.Map);
             Skip = new SkipControl(board, layer, Playback, SkipNow);
+            // UI-492/UI-541: a card's dice window; its retirement goes first, so the next action's scene begins without it.
+            rolls = new CardRollPresenter(board, Trace, Sounds, camera.SafeArea);
+            Playback.Register(new CardRollWindowRetirement(rolls));
             // UI-333: before any scene, a finished battle's window steps aside for the next one; UI-342: so does the
             // Politics panel the presentation opened.
             Playback.Register(new BattleWindowRetirement(board, Playback));
@@ -58,7 +61,6 @@ namespace Wotr.Client
             cards = new CardRevealPresenter(board, staged, Playback, camera, layer);
             Playback.Register(cards);
             // UI-492: a card's dice, between its reveal and what they cause.
-            rolls = new CardRollPresenter(board, Trace, layer, Sounds);
             Playback.Register(rolls);
             characters = new CharacterPresenter(board, staged, Trace, camera);
             Playback.Register(characters);
