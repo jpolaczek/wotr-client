@@ -66,6 +66,9 @@ namespace Wotr.Client
         // UI-305: the revision holds the player's own decision, so this cue is a shared result of their own click (a
         // roll, their retreat or advance). It still plays in its window, but the camera never moves for it.
         public bool OwnCommand { get; internal set; }
+        // UI-546 (owner, 2026-11-18): what the recorded step names as its cause (a card, an ability, "combat"), else the
+        // definition its context belongs to, so a card's effect in a battle or the Hunt can show the card first.
+        public string Cause { get; }
 
         internal PresentationCue(ActionLogStep step, PresentationCueKind kind, string key, CuePayload payload)
         {
@@ -101,6 +104,7 @@ namespace Wotr.Client
             Hits = payload.Hits;
             Source = payload.Source ?? "";
             RollKind = payload.RollKind ?? "";
+            Cause = (step.Facts.SourceId ?? "").Length > 0 ? step.Facts.SourceId : step.Context.DefinitionId ?? "";
         }
 
         public override string ToString() => Id;

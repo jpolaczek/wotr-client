@@ -275,6 +275,44 @@ namespace Wotr.PlayTests
             yield return stage.Released();
         }
 
+        // UI-546 (owner, 2026-11-18): a card's hit in a battle presents the card first, out of its side's hand and beside the
+        // battle window, "Takes effect"; only then the hit lands. Here the Shadow's card deals its automatic hit to the
+        // defending Elite. Frame: ui546-battle-card.
+        [UnityTest]
+        public IEnumerator ACardsHitPresentsTheCardBeforeTheHitLands()
+        {
+            using var stage = Attack(out var fight);
+            yield return Open(stage, fight);
+            var round = fight.Next();
+            string defender = null;
+            round.Change(battle => defender = battle.Defender.Units.First().Id);
+            var hit = round.Record(battle => battle.Defender.Units.RemoveAll(u => u.Id == defender));
+            hit.Facts.SourceId = AutomaticHit;
+            hit.Facts.LossDetails.Add(new ActionLossFact { Figure = stage.Unit(defender), Operation = BattleLossKind.Remove, RegionId = "osgiliath", Hits = 1 });
+            var final = round.Latest();
+            PresentedBoardStage.Place(final, new[] { defender }, "casualties");
+            stage.Play(final, null, round.Steps.ToArray());
+            yield return stage.Until(() => Presented(stage, AutomaticHit));
+            var shownAt = Time.realtimeSinceStartup;
+            Assert.AreEqual(CardTriggerPresenter.TriggerNote, stage.Board.Cards.Note);
+            Assert.IsFalse(DefenderStruck(stage), "The hit waits for its card.");
+            yield return new WaitForSecondsRealtime((float)CardFlight.Seconds + .4f);
+            Assert.IsFalse(stage.Board.Cards.Root.worldBound.Overlaps(stage.Board.Battles.Root.worldBound), "Beside the battle window, never over it.");
+            stage.Save("ui546-battle-card.png");
+            yield return stage.Until(() => DefenderStruck(stage));
+            Assert.Greater(Time.realtimeSinceStartup - shownAt, (float)CardTriggerPresenter.HoldSeconds, "The card stood to be read first.");
+            Assert.IsFalse(Presented(stage, AutomaticHit), "It left before the hit.");
+            yield return stage.Released();
+        }
+
+        private const string AutomaticHit = "base.sh.strategy.06";
+
+        private static bool Presented(PresentedBoardStage stage, string card) => stage.Board.Cards.CardId == card &&
+            stage.Board.Cards.Root.resolvedStyle.display == DisplayStyle.Flex;
+
+        private static bool DefenderStruck(PresentedBoardStage stage) => stage.Board.Battles.Presented.Q("battle-defender")?
+            .Query(className: BattleHits.HitClass).ToList().Count > 0;
+
         private static bool Struck(PresentedBoardStage stage, string kind) =>
             stage.Board.Battles.Presented.Q("battle-attacker")?.Q("battle-figure-" + kind)?.ClassListContains(BattleHits.HitClass) == true;
 

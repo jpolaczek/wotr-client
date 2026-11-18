@@ -4860,6 +4860,29 @@ The owner: "choosing a group from the Fellowship, they all glow and you cannot s
 Tests: EditMode `FellowshipGuideChoiceTests.AChosenCompanionStandsApartFromTheOnesStillToChoose`; PlayMode
 `FellowshipGuideNetworkTests` (the separation's first chosen companion; frame `ui545-chosen-companion`).
 
+<a id="a-card-taking-effect-is-shown--ui-546"></a>
+## A card taking effect is shown — UI-546 (2026-11-18)
+
+The owner: "when, during a battle or the Hunt, a card's effect triggers and something happens — damage, a draw, a move,
+anything — we must see an animation presenting that card, so it is clear where the effects come from".
+
+- **The animation.** Before such an effect plays, its card grows out of where it comes from (the Effects tab for a card
+  on the table, else its side's hand). It stands to be read for 2.5 s beside the battle or Hunt window with "Takes
+  effect", then shrinks into that window, and the effect plays.
+- **Which cards.** Any card the recorded step names as its cause in a battle or the Hunt, whichever side's: a reaction
+  to the Hunt (Axe and Bow, Mithril Coat and Sting), a card that starts a Hunt, a card's hits in a battle. Each card is
+  presented once per battle or Hunt.
+
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-card-taking-effect-is-shown--ui-546).
+
+Playtest:
+- [ ] Play the Shadow and hunt the Fellowship until the Free Peoples answer with Axe and Bow or Mithril Coat and Sting.
+  Expect the card to come out of their hand and stand beside the Hunt window with "Takes effect", then the damage to
+  change.
+- [ ] In a battle, let a combat card such as one dealing an automatic hit take effect. Expect the card before the hit
+  lands.
+- [ ] Say whether 2.5 s is long enough to read the card (a click holds it).
+
 <a id="the-rest-of-a-cards-way--ui-493"></a>
 ## The rest of a card's way — UI-493 (2026-11-04)
 

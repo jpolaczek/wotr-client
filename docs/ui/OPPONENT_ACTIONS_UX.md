@@ -1622,6 +1622,42 @@ move something, the interface at the bottom should show the card or effect being
 
 Tests: EditMode `EffectTrailTests.TheCardBehindThePlayersDecisionStandsInTheConsole`.
 
+<a id="a-card-taking-effect-is-shown--ui-546"></a>
+## A card taking effect is shown — UI-546 (2026-11-18)
+
+The owner: "when, during a battle or the Hunt, a card's effect triggers and something happens — damage, a draw, a move,
+anything — we must see an animation presenting that card, so it is clear where the effects come from".
+
+- **Why it was missing.** In the owner's game of 2026-11-18, the Free Peoples answered the Shadow's Hunt with Axe and Bow
+  and the damage dropped. The Hunt window only lit the Effects tab, so the card itself was never seen. A card's hits in
+  a battle showed only as the hits.
+- **What triggers it.** A shown battle or Hunt step (the selection is unchanged, `PresentationSelection.Select`) whose
+  recorded cause is a card in the catalogue:
+  - the Hunt entry's `SourceId`;
+  - else the step's `Facts.SourceId`;
+  - else its context's `DefinitionId` (`PresentationCue.Cause`).
+- **What it shows** (`CardTriggerPresenter`, registered after the Event reveal and before every family presenter):
+  - The card opens read-only in the card inspector, as an Event's reveal does. It is placed in the middle of the safe
+    map area unless that covers the open battle or Hunt window; then it stands beside the window
+    (`CardInspector.Show(avoid)`).
+  - It reads "Takes effect" and grows out of the Effects tab for a table card, else its side's hand (`.fp.`/`.sh.` in
+    its identity) (`CardFlight`, 0.6 s).
+  - It stands 2.5 s (`HoldSeconds`), then shrinks into the window and fades. Then the step's own beats play: the Hunt
+    entry's mark, the damage, the hit.
+- **Once.** A card is presented once per battle or Hunt of an action. An Event the action played was revealed already
+  (`CardRevealPresenter`) and is not presented again.
+- **Not presented here:**
+  - a combat card's reveal, which turns face up in the battle window (UI-311);
+  - a card's dice, which have their own window naming the card (UI-541);
+  - the card's own play, cost or dice;
+  - a source that is no card ("combat", "fellowship-move", a character's ability).
+- **Pin, Skip.** A click on the card pins it, and the presentation holds until it is closed. Skip and Esc close an
+  unpinned card. Under Skip animations the card stands without its flight.
+
+Tests: PlayMode `OpponentHuntPresentationTests.ACardAnsweringTheHuntIsPresentedOnceBeforeItsEffect` (frame
+`ui546-hunt-card`) and `AnEventThatStartsTheHuntIsNotPresentedTwice`;
+`OpponentBattlePresentationTests.ACardsHitPresentsTheCardBeforeTheHitLands` (frame `ui546-battle-card`).
+
 <a id="the-rest-of-a-cards-way--ui-493"></a>
 ## The rest of a card's way — UI-493 (2026-11-04)
 
