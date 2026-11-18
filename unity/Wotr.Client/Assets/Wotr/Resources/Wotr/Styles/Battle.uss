@@ -301,6 +301,15 @@
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
 }
+/* UI-549 (owner, 2026-11-18: "the green checks must not be covered by the dice beside them"): a rerolled die's cell holds
+   the first face (16), the arrow (10), the reroll (20) and its ✓ or × with their margin, so no neighbour covers the mark,
+   and five rerolled dice still stand in one row of a side's column. */
+.regional-battle .tray .battle-die.battle-die-rerolled, .battle-report .battle-die.battle-die-rerolled {
+    width: 64px;
+    min-width: 64px;
+}
+.battle-die-rerolled .battle-pips.battle-pips-rerolled { width: 16px; height: 16px; }
+.battle-die-rerolled #battle-reroll-result { width: 20px; height: 20px; }
 /* UI-136: no box behind a combat die; hover brightens the die art and a press lowers it. */
 .regional-battle .tray .battle-die:hover, .regional-battle .tray .battle-die:focus { background-color: rgba(0, 0, 0, 0); }
 .regional-battle .tray .battle-die:hover .battle-pips, .regional-battle .tray .battle-die:focus .battle-pips {

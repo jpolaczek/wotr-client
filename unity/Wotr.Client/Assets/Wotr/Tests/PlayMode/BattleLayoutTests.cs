@@ -331,6 +331,43 @@ namespace Wotr.PlayTests
             element.panel.visualTree.SendEvent(move);
         }
 
+        // UI-549 (owner, 2026-11-18: "the green checks must not be covered by the dice beside them"): with every combat die
+        // rerolled, each side's dice still stand in one row and every ✓ or × is inside its own cell, covered by nothing.
+        // Frame: ui549-all-rerolled.
+        [UnityTest]
+        public IEnumerator EveryRerolledDieKeepsItsMarkInOneRow()
+        {
+            using var client = new MountedMatchClient("http://localhost", "rerolled");
+            var view = BattleScreenFixture.Create(CommandKind.ContinueBattle);
+            foreach (var force in new[] { view.Battle.Attacker, view.Battle.Defender })
+                foreach (var die in force.Dice)
+                {
+                    die.Reroll ??= 6;
+                    die.RerollHit = true;
+                }
+            view.LastBattleRound = view.Battle;
+            view.Battle = null;
+            client.Apply(view);
+            yield return Settle();
+            CardNetworkTests.Click(client.Board.BattleReport.Open);
+            yield return Settle();
+            var ids = new[] { view.LastBattleRound.Attacker, view.LastBattleRound.Defender }.SelectMany(f => f.Dice)
+                .Select(d => "battle-die-" + d.Id).ToList();
+            Assert.GreaterOrEqual(ids.Count, 8, "Both sides rolled several dice.");
+            var all = client.Board.BattleReport.Root.Query<BattleDieButton>().ToList().Where(d => ids.Contains(d.name)).ToList();
+            Assert.AreEqual(ids.Count, all.Count, "Every combat die of both sides is shown.");
+            foreach (var die in all)
+            {
+                Assert.IsTrue(die.ClassListContains(BattleDieButton.RerolledClass), die.name);
+                var mark = die.Q<Label>("battle-die-outcome").worldBound;
+                Assert.LessOrEqual(mark.xMax, die.worldBound.xMax + .5f, die.name + "'s mark is inside its cell.");
+                Assert.GreaterOrEqual(die.Q(className: "battle-result-row").worldBound.xMin, die.worldBound.xMin - .5f, die.name + "'s faces are inside its cell.");
+                Assert.IsFalse(all.Where(o => o != die).Any(o => o.worldBound.Overlaps(mark)), die.name + "'s mark is not covered.");
+                Assert.AreEqual(all.Where(o => o.parent == die.parent).Min(o => o.worldBound.y), die.worldBound.y, .5f, die.name + " stands in its side's one row.");
+            }
+            LayoutTests.Save(client.Panel.targetTexture, "ui549-all-rerolled.png");
+        }
+
         [UnityTest]
         public IEnumerator RevealChangesBackToInspectedCombatTextAndReportKeepsActualRerolls()
         {
@@ -370,6 +407,16 @@ namespace Wotr.PlayTests
                 StringAssert.Contains("Leader reroll 6", rerolled.tooltip);
                 Assert.AreEqual(2, rerolled.Query<DiePips>().ToList().Count);
                 Assert.AreEqual("✓", rerolled.Q<Label>("battle-die-outcome").text);
+                // UI-549 (owner, 2026-11-18): every die's mark stands inside its own cell, so no die beside it covers it.
+                foreach (var die in client.Board.BattleReport.Root.Query<BattleDieButton>().ToList())
+                {
+                    var mark = die.Q<Label>("battle-die-outcome").worldBound;
+                    Assert.LessOrEqual(mark.xMax, die.worldBound.xMax + .5f, die.name + "'s mark is inside its cell.");
+                    Assert.GreaterOrEqual(die.Q(className: "battle-result-row").worldBound.xMin, die.worldBound.xMin - .5f, die.name + "'s faces are inside its cell.");
+                    foreach (var other in client.Board.BattleReport.Root.Query<BattleDieButton>().ToList().Where(o => o != die))
+                        Assert.IsFalse(other.worldBound.Overlaps(mark), other.name + " does not cover " + die.name + "'s mark.");
+                }
+                LayoutTests.Save(client.Panel.targetTexture, "ui549-rerolled-marks.png");
                 // UI-114: the press state adds a sink and a tint to the cosmetic set; still no roll animation or delay.
                 var cosmetic = new[] { "background-color", "translate", "-unity-background-image-tint-color" };
                 Assert.IsTrue(client.Board.BattleReport.Root.Query<Button>().ToList().All(b =>

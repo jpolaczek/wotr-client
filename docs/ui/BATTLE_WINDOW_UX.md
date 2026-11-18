@@ -155,7 +155,7 @@ The owner prepares the evidence in his task; UI-121 takes the joint course.
 | BW07 | UI-115 | Four layouts of both sides: width ≤ 820, decisions without scroll, map visible around the window, no empty areas. |
 | BW08 | UI-116 | Parchment-plated hand-to-hand tackles with press and weapons; double-click/drop/Play plays; No card separate; card with condition greyed out behind available. |
 | BW09 | UI-116 | card opponent covered as reverse to reveal; revealed pair with initiative; preview of obligated/archived card without Play. |
-| BW10 | UI-117 | Six d6 walls with eyelets, hit with glow, metastasized as two dice with arrow, signed modifier; pages of special attacks. |
+| BW10 | UI-117 | Six d6 walls with eyelets, hit with glow, metastasized as two dice with arrow, signed modifier; pages of special attacks. UI-549 (owner, 2026-11-18: "the green checks must not be covered by the dice beside them"): a rerolled die's cell is 64 px with faces of 16 and 20 px (`BattleDieButton.RerolledClass`), so its ✓ or × stays inside it and five rerolled dice still fit one row (`BattleLayoutTests.EveryRerolledDieKeepsItsMarkInOneRow`). |
 | BW11 | UI-117 | Selection of dice to the metastasize by pressing (the selection ring), zero to the server limit, Keep roll/Reroll with one click; another's private selection. |
 | BW12 | UI-118 | Tokens of losses with keep/downgrade/remove overlays and operation number, assigned/remaining seals, icon legend, one Apply loses; preview server in tooltip. |
 | BW13 | UI-118 | No replacement, death of commanders, excess hits and loss of events in the same tray with the same style. |
