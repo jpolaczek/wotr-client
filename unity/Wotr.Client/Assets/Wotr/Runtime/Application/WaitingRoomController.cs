@@ -55,7 +55,6 @@ namespace Wotr.Client
             screen.AddCpu += InviteCpu;
             screen.SwapSides += SwapSides;
             screen.Start += Start;
-            screen.Demo += Demo;
             screen.Remove += Remove;
             screen.TakeSeat += TakeSeat;
             screen.Observe += Observe;
@@ -123,13 +122,6 @@ namespace Wotr.Client
                 new RoomRevisionRequest { ExpectedVersion = screen.Room.Version }, token);
             token.ThrowIfCancellationRequested();
             await openMatch(room.MatchId);
-        });
-        // DEMO-04: the demo replaces the player's previous one and opens like a started game; the room keeps waiting.
-        private void Demo() => Run(async () =>
-        {
-            var demo = await api.Post<DemoMatchView>(Path + "/demo", null, token);
-            token.ThrowIfCancellationRequested();
-            await openMatch(demo.MatchId);
         });
         // MENU-25: the host frees a seat for good; OBS-04: or removes an observer, by name.
         private void Remove(string name) => Run(async () => Apply(await api.Post<RoomView>(Path + "/remove",
@@ -303,7 +295,6 @@ namespace Wotr.Client
             screen.AddCpu -= InviteCpu;
             screen.SwapSides -= SwapSides;
             screen.Start -= Start;
-            screen.Demo -= Demo;
             screen.Remove -= Remove;
             screen.TakeSeat -= TakeSeat;
             screen.Observe -= Observe;

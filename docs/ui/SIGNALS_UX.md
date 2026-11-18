@@ -174,7 +174,7 @@ playback (UI-304) will consume; its contract is [OPPONENT_ACTIONS_UX §9.1](OPPO
 <a id="widoczne-proporce-i-ich-przybycie-2026-11-11"></a>
 ## Visible pennants and their arrival (owner, 2026-11-11)
 
-The owner: "poprawmy w kliencie widoczność notyfikacji (flagi) i sygnalizujmy wyraźniej, gdy pojawiają się nowe". The
+The owner: "let's improve the visibility of notifications (pennants) in the client and signal more clearly when new ones appear". The
 pennants (UI-99/UI-100) were 22 × 28 on the bare map and a new one came without a sign. Decision 1 above stands (no
 toast, no text on the pennant), and the pennants stay quiet ([AUDIO_UX](AUDIO_UX.md): opponent flags make no sound).
 

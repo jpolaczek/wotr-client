@@ -391,15 +391,12 @@
 
 /* UI-307: during a political beat the nation's token travels its recorded steps (a jump under Reduced motion). UI-319: it
    flares first — a swell with its glow — and settles back to its size as it slides; an activation crossfades its crest. */
+/* UI-544: the travel itself is TokenGlide's (a translate eased from the last place shown), for every change; no left
+   transition here, or the token would travel twice. */
 .motion-enabled .presenting-politics .nation-token {
-    transition-property: left, scale;
-    transition-duration: 0.7s, 0.35s;
-    transition-timing-function: ease-in-out, ease-out-sine;
-}
-.motion-enabled .presenting-politics .icon-glow {
-    transition-property: left;
-    transition-duration: 0.7s;
-    transition-timing-function: ease-in-out;
+    transition-property: scale;
+    transition-duration: 0.35s;
+    transition-timing-function: ease-out-sine;
 }
 .motion-enabled .presenting-politics .nation-token.presentation-flare { scale: 1.2 1.2; }
 .motion-enabled .presenting-politics .nation-token > .nation-emblem {

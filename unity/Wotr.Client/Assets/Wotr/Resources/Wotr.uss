@@ -1588,7 +1588,7 @@
 .fellowship-panel .fellowship-track-tick { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; margin: 0; padding: 0; font-size: 10px; -unity-text-align: middle-center; color: rgb(169, 185, 187); }
 .fellowship-track-marker { position: absolute; left: 0; top: 0; height: 24px; }
 /* UI-95: FellowshipTrackRow places the marker over its cell; after the first placement it glides. */
-.motion-enabled .fellowship-track-marker.track-marker-gliding { transition-property: left; transition-duration: 260ms; transition-timing-function: ease-in-out-cubic; }
+/* UI-544: the marker's travel is TokenGlide's (from the cell last shown), not a left transition. */
 /* AUDIO-06: with Reduced motion a moved marker is briefly enlarged instead of gliding, one track after the other. */
 .reduced-motion .fellowship-track.track-changed .fellowship-track-marker { scale: 1.3 1.3; }
 .fellowship-track-end { position: absolute; left: 1px; bottom: 0; width: 12px; height: 12px; }

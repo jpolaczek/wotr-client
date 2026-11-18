@@ -687,7 +687,7 @@ Notification 2026-10-11 with screen: all information from a separate window card
 <a id="płynny-ruch-drużyny--ui-95"></a>
 ## Liquid movement Fellowship — UI-95
 
-Notification 2026-10-11 : “The ring team does not have smooth animations of movement”. Fellowship is hidden, so the visible motion is the progress mark on the track: it moves smoothly now (approx. 260 ms) instead of jumping, same tag Corruption Declaration or disclosure shall be carried out figure Fellowship by a flight that is not interrupted by another motionless projection figures Reduced motion disables both animations; the hidden route is still not shown.
+Notification 2026-10-11 : “The ring team does not have smooth animations of movement”. Fellowship is hidden, so the visible motion is the progress mark on the track: it moves smoothly now (approx. 260 ms; since UI-544 0.35 s and 0.15 s for each further field) instead of jumping, same tag Corruption Declaration or disclosure shall be carried out figure Fellowship by a flight that is not interrupted by another motionless projection figures Reduced motion disables both animations; the hidden route is still not shown.
 
 <a id="panel-kości-w-stylu-planszy--ui-97"></a>
 ## dice-style panel board — UI-97-style panel
@@ -4803,6 +4803,63 @@ Playtest:
   console; a click opens the card.
 - [ ] Say which other forced steps still lack their source.
 
+<a id="track-tokens-always-travel--ui-544"></a>
+## Track tokens always travel — UI-544 (2026-11-17)
+
+The owner: "when I use Wisdom of Elrond, I choose a nation on the Politics track, it becomes active and advances, but it
+jumps instead of moving smoothly. The tokens must always animate, never jump. The same for the Ring on the Corruption
+track and the Fellowship track: make sure the animation plays whatever effect causes it."
+
+- **Why they jumped.** The glide was a USS `left` transition, which plays only when its class is resolved before the
+  write. That failed in four cases:
+  - a card's own choice, where the class and the place were written in the same frame (Wisdom of Elrond, the Kings'
+    Wisdom);
+  - a change made while the panel was closed (no layout to travel on);
+  - a resize during a move (the transition was cancelled);
+  - a marker lit as a choice (its glow's transition list has no `left`).
+- **Now (`TokenGlide`).** A nation token with its halo, and the Corruption, journey and Mordor markers, stand on their
+  new place at once. An offset (translate) from where they were last seen eases back to nothing, so the move is seen
+  whatever caused it and whatever classes or glows are on.
+  - The move is remembered by track position, so a change seen while the panel was closed travels when it opens. A
+    new layout of an unchanged position (a resize) places at once.
+  - Timing: a nation one step in 0.7 s (the opponent's beat's pace), 0.15 s more for each further step; an activation
+    turns the token over first (0.3 s), then it travels. A Fellowship marker takes 0.35 s, 0.15 s for each further cell,
+    at most 1.2 s, eased out.
+  - Placed at once: the first view, another match, a quiet view (a catch-up after an absence, Skip's last view) and
+    Reduced motion (which keeps its short accent).
+- **Not covered yet:** entering Mordor (the journey marker leaving for the Mordor track) still places the Mordor
+  marker at once.
+
+Tests: PlayMode `TrackGlideTests`:
+- the own step turns over then travels;
+- a step made while closed travels on opening;
+- three Corruption move the Ring cell by cell;
+- a quiet view places at once;
+- frames `ui544-*`.
+
+Updated to the longer travel: `FellowshipMotionNetworkTests` and `PoliticalPanelTests`.
+
+Playtest:
+- [ ] Play Wisdom of Elrond. Expect the chosen nation's token to turn over to its active side, then travel to its new
+  place.
+- [ ] Gain three Corruption at once (e.g. a Hunt tile with the panel closed, then open it). Expect the Ring to travel
+  along the track.
+- [ ] Say if the pace reads well.
+
+<a id="the-chosen-companions-stand-apart--ui-545"></a>
+## The chosen companions stand apart — UI-545 (2026-11-17)
+
+The owner: "choosing a group from the Fellowship, they all glow and you cannot see who is chosen; it must differ clearly".
+
+- **The chosen look.** A chosen companion (separating a group, an effect's companions, the next Guide) stops glowing and
+  pulsing. It wears a solid pale-gold rim on a full warm plate, a little raised (1.06), with a green ✓ in its corner
+  (`FellowshipRoster.ChosenMarkName`).
+- **The others.** The companions still to choose keep the pulsing gold glow. Unchosen again, a companion glows again.
+- **Style.** Colours and a texture-free badge only, no filter.
+
+Tests: EditMode `FellowshipGuideChoiceTests.AChosenCompanionStandsApartFromTheOnesStillToChoose`; PlayMode
+`FellowshipGuideNetworkTests` (the separation's first chosen companion; frame `ui545-chosen-companion`).
+
 <a id="the-rest-of-a-cards-way--ui-493"></a>
 ## The rest of a card's way — UI-493 (2026-11-04)
 
@@ -5127,7 +5184,7 @@ Wey", and the credit (the seat's tooltip, a saved game's row) begins "AlphaWOTR,
   are not carried over). Owner, 2026-11-17 (follow-up): the server refuses the CPU outside a Play vs CPU room
   (`CpuOnlyInPlayVsCpu`, "The CPU plays only in games started with Play vs CPU."), knowing the room as the client does: a
   private room named "Play vs CPU" (`CpuNames.PlayVsCpuRoom`), so such a room opened again from the games list still offers
-  Add CPU. The legacy demo against the CPU ("Play demo vs CPU") is a CPU room's only; a game one hosts does not show it. A seat's medallions and chips, should they show, are disabled for AlphaWOTR with the reason
+  Add CPU. The legacy demo against the CPU ("Play demo vs CPU") is gone from every room (owner, 2026-11-17: "then we only click Ready and Start game"). A seat's medallions and chips, should they show, are disabled for AlphaWOTR with the reason
   (`RulesChoices.CpuBaseGame`, "Games against the CPU use the base game."). The server's refusals read: `CpuBaseGameOnly` "Games against the CPU use the base game. Switch the
   expansions and variants off, then add the CPU."; `CpuBusy` "The CPU is playing as many games as it can right now. Try
   again in a few minutes."

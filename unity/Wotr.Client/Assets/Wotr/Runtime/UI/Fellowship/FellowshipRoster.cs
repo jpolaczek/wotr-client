@@ -57,6 +57,7 @@ namespace Wotr.Client
                     button.Add(badge);
                     button.Add(VersionsBadge());
                     button.Add(AlternateBadge());
+                    button.Add(ChosenMark());
                     button.Add(HomelandLabel());
                     button.userData = new DraftToken(DraftObject.FellowshipPortrait, id);
                     portraits.Add(id, button);
@@ -173,7 +174,12 @@ namespace Wotr.Client
                 var lure = enabled && LureChoice.Eliminates(view, item.Key);
                 // Inspection and keyboard focus remain available for non-candidates.
                 item.Value.SetEnabled(true);
-                item.Value.EnableInClassList("legal-target", enabled && kind.HasValue);
+                // UI-545 (owner, 2026-11-17: "choosing a group from the Fellowship, they all glow and you cannot see who is
+                // chosen"): a chosen companion stands still in the chosen look with its ✓; only the ones still to choose glow.
+                var chosen = draft.Kind == CommandKind.SelectGuide ? draft.Payload.GuideId == item.Key
+                    : draft.Kind is CommandKind.SeparateCompanions or CommandKind.ChooseEffect && draft.Payload.Ids.Contains(item.Key);
+                item.Value.EnableInClassList("selected", chosen);
+                item.Value.EnableInClassList("legal-target", enabled && kind.HasValue && !chosen);
                 item.Value.EnableInClassList(LureChoice.EliminateClass, lure);
                 // UI-229/UI-240: a portrait whose click chooses the next Guide or separates the companion glows and
                 // pulses, and its tooltip starts with what the click does.
@@ -183,8 +189,6 @@ namespace Wotr.Client
                 if (lure)
                     lured.Add(item.Key);
                 ShowLight(item.Key, item.Value);
-                item.Value.EnableInClassList("selected", draft.Kind == CommandKind.SelectGuide ? draft.Payload.GuideId == item.Key
-                    : draft.Kind is CommandKind.SeparateCompanions or CommandKind.ChooseEffect && draft.Payload.Ids.Contains(item.Key));
             }
             Choosing = offering;
             RunPulse();
@@ -209,10 +213,21 @@ namespace Wotr.Client
         {
             var offer = offers.TryGetValue(id, out var text) ? text : "";
             var skill = offer.Length == 0 && skills.TryGetValue(id, out var line) ? line : "";
-            ChoiceGlow.Apply(button, offer.Length > 0 && !lured.Contains(id) || skill.Length > 0);
+            // UI-545: a chosen companion does not glow with the ones still to choose; its own look says it is chosen.
+            ChoiceGlow.Apply(button, !button.ClassListContains("selected") && (offer.Length > 0 && !lured.Contains(id) || skill.Length > 0));
             var lead = offer.Length > 0 ? offer : skill;
             if (descriptions.TryGetValue(id, out var description))
                 button.tooltip = lead.Length > 0 ? lead + "\n" + description : description;
+        }
+
+        // UI-545: the ✓ a chosen companion wears in its corner (shown by the chosen look, Interaction.uss).
+        public const string ChosenMarkName = "companion-chosen-mark";
+
+        private static Label ChosenMark()
+        {
+            var mark = new Label("✓") { name = ChosenMarkName, pickingMode = PickingMode.Ignore };
+            mark.AddToClassList(ChosenMarkName);
+            return mark;
         }
 
         private void RunPulse() => pulse.Run(offering || turnChoices && portraits.Keys.Any(skills.ContainsKey));

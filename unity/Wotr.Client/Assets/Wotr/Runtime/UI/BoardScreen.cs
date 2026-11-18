@@ -660,6 +660,20 @@ namespace Wotr.Client
         {
             if (view == null)
                 return;
+            // UI-544: a quiet view (a catch-up, Skip's last view) and another match place the track tokens at once.
+            TokenGlide.Quiet = quiet || quietTracks || View == null || View.MatchId != view.MatchId;
+            try
+            {
+                ApplyView(view);
+            }
+            finally
+            {
+                TokenGlide.Quiet = false;
+            }
+        }
+
+        private void ApplyView(PlayerView view)
+        {
             IsFixture = false;
             var previous = presentedFellowship ?? (View?.MatchId == view.MatchId ? View.Fellowship : null);
             presentedFellowship = null;

@@ -63,7 +63,7 @@ namespace Wotr.EditorTests
             Assert.AreEqual(DisplayStyle.None, hosted.Root.Q<Button>("seat-shadow-remove").style.display.value, "No Add CPU in a hosted room.");
             Assert.AreEqual(DisplayStyle.Flex, hosted.Rules.Root.style.display.value);
             Assert.AreEqual(DisplayStyle.None, hosted.Root.Q<Label>("waiting-cpu-base-game").style.display.value);
-            Assert.AreEqual(DisplayStyle.None, hosted.Root.Q<Button>("room-demo").style.display.value, "No demo vs CPU in a hosted room.");
+            Assert.IsNull(hosted.Root.Q<Button>("room-demo"), "Owner, 2026-11-17: no demo vs CPU in any room.");
             room.Shadow = "Guest";
             hosted.Update(room);
             Assert.AreEqual(DisplayStyle.Flex, hosted.Root.Q<Button>("seat-shadow-remove").style.display.value, "A guest can still be removed.");
@@ -74,7 +74,7 @@ namespace Wotr.EditorTests
             Assert.AreEqual(DisplayStyle.Flex, cpu.Root.Q<Button>("seat-shadow-remove").style.display.value);
             Assert.AreEqual(DisplayStyle.None, cpu.Rules.Root.style.display.value, "No expansions or modes against the CPU.");
             Assert.AreEqual(DisplayStyle.Flex, cpu.Root.Q<Label>("waiting-cpu-base-game").style.display.value);
-            Assert.AreEqual(DisplayStyle.Flex, cpu.Root.Q<Button>("room-demo").style.display.value);
+            Assert.IsNull(cpu.Root.Q<Button>("room-demo"), "Ready and Start game are the CPU room's way into its game.");
 
             // A Play vs CPU room opened again from the games list is known by what Play vs CPU made (as the server knows it).
             var reopenedEmpty = new WaitingRoomScreen();

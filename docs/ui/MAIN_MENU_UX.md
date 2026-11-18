@@ -370,7 +370,7 @@ existing for both players”. Server: `DELETE /api/matches/{id}` (MENU-21), unch
 <a id="demo-przeciw-cpu--demo-04-2026-10-15"></a>
 ## Demo v CPU — DEMO-04 (2026-10-15)
 
-- The waiting room has a action third fixed button “Play demo vs CPU” (`room-demo`), visible to both
+- (Removed 2026-11-17, owner: the room keeps only Ready and Start game.) The waiting room had a third fixed button “Play demo vs CPU” (`room-demo`), visible to both
   room members. It is greyed out when the room is either not waiting or is in screen operation.
 - `WaitingRoomController.Demo`: `POST api/rooms/{id}/demo`, then `openMatch` returned batch as at
   startup. Error 409 `MatchAlreadyStarted` gives the message “The game in this room has started.

@@ -99,3 +99,25 @@ a gilded crowned helm, no actor likeness). `scripts/build_figure_art.py` now bui
 have raw images and lists the rest as `pending` in `docs/sources/ART-FIGURES.json` (the Lords and Kings characters,
 ART-06 and ART-07), instead of refusing to build.
 
+<a id="saruman-and-gandalf-the-white-told-apart--art-11-2026-11-17"></a>
+## Saruman and Gandalf the White told apart — ART-11 (2026-11-17)
+
+The owner: "Saruman's and Gandalf the White's figures are too alike; rework them". Both wore white robes with a white
+beard, so on the map only the staff told them apart.
+
+- **Saruman** (Shadow) is now unmistakably dark:
+  - a black cloak lined with crimson over robes of many colours (iridescent violet, crimson and green);
+  - a white-and-grey beard and a small white-hand emblem;
+  - a black iron staff crowned with a dark orb.
+- **Gandalf the White** (Free Peoples) is unmistakably bright:
+  - shining white robes under a pale silver-blue cloak;
+  - a plain white staff and a sword.
+
+  He has no glow or outline, so no gold rim is mistaken for a choice glow.
+- **Generation.** Both were made with the same generator, model and style as the other figures ([prompts](v3/prompts.json),
+  [journal](v3/generations.jsonl)), and `scripts/build_figure_art.py` rebuilt `characters-v1`. The other atlases are
+  unchanged (`--check` passes with the pinned Pillow 12.3.0).
+- **Rejected** (in `rejected/`):
+  - `saruman-white-robes`, `gandalf-white-like-saruman`: the old pair;
+  - `gandalf-white-gold-halo`: a first new Gandalf with a gold halo around the figure.
+- **Check.** PlayMode `WizardFigureTests` sets both on the map near Orthanc (frame `art11-wizards`).

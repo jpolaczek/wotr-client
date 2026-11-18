@@ -54,7 +54,7 @@ The opponent's place has the “Remove” button (from OBS-04 each place has its
 - action column (in the frame, as in the menu):
   - „Ready” / „Not ready” (`room-ready`);
   - ‘Start game’ (`start-game`) — for the guest greyed with tooltip ‘Only the host starts the game’.
-  - „Play demo vs CPU” (`room-demo`, DEMO-04);
+  - (removed 2026-11-17, owner: "Play demo vs CPU" (`room-demo`, DEMO-04) left the room; Ready and Start game remain);
   - interval;
   - „Settings” (`open-interface`);
   - "Back" (`waiting-back`) — just that word. Tooltip says the host closes the room and the guest

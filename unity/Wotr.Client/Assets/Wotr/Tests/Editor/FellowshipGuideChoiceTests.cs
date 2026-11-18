@@ -107,6 +107,36 @@ namespace Wotr.EditorTests
             Assert.IsFalse(FellowshipActions.RosterChoice(view, "base.character.merry"), "Only the Hunt panel's roster takes them.");
         }
 
+        // UI-545 (owner, 2026-11-17: "choosing a group from the Fellowship, they all glow and you cannot see who is chosen"):
+        // a chosen companion stops glowing and wears the chosen look with its ✓; the ones still to choose keep the glow.
+        [Test]
+        public void AChosenCompanionStandsApartFromTheOnesStillToChoose()
+        {
+            var view = View();
+            view.Decision.Kind = DecisionKind.Action;
+            view.Options.Clear();
+            view.Options.Add(new ActionOption { Kind = CommandKind.SeparateCompanions, Enabled = true,
+                EligibleIds = { "base.character.strider", "base.character.merry" } });
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.SeparateCompanions);
+            draft.Payload.Ids.Add("base.character.strider");
+            var roster = new FellowshipRoster();
+            roster.Apply(view);
+            roster.Context(view, draft, new ActionDieContext(), true);
+            var strider = roster.Root.Q<Button>("fellowship-portrait-base.character.strider");
+            var merry = roster.Root.Q<Button>("fellowship-portrait-base.character.merry");
+            Assert.IsTrue(strider.ClassListContains("selected"), "Strider is chosen.");
+            Assert.IsFalse(strider.ClassListContains(ChoiceGlow.ClassName), "A chosen companion does not glow with the others.");
+            Assert.IsFalse(strider.ClassListContains("legal-target"));
+            Assert.IsNotNull(strider.Q<Label>(FellowshipRoster.ChosenMarkName), "It wears its ✓.");
+            Assert.IsFalse(merry.ClassListContains("selected"));
+            Assert.IsTrue(merry.ClassListContains(ChoiceGlow.ClassName), "Merry, still to choose, glows.");
+            draft.Payload.Ids.Clear();
+            roster.Context(view, draft, new ActionDieContext(), true);
+            Assert.IsFalse(strider.ClassListContains("selected"));
+            Assert.IsTrue(strider.ClassListContains(ChoiceGlow.ClassName), "Unchosen again, Strider glows again.");
+        }
+
         private static PlayerView View() => new PlayerView
         {
             You = Side.FreePeoples,

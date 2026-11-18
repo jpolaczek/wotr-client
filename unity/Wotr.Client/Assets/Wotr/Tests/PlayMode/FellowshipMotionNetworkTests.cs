@@ -48,7 +48,8 @@ namespace Wotr.PlayTests
             Assert.Less(middle, origin - 2, "The progress marker leaves its old cell.");
             Assert.Greater(middle, start + 2, "The progress marker is still on its way.");
             LayoutTests.Save(room.Fp.Viewport, "ui95-fellowship-motion.png");
-            await Task.Delay(500, room.Token);
+            // UI-544: a longer way takes longer (0.35 s and 0.15 s for each further cell: five cells back in 0.95 s).
+            await Task.Delay(1100, room.Token);
             Assert.That(marker.worldBound.center.x, Is.EqualTo(start).Within(1.5f), "The marker settles on step 0.");
             Assert.AreEqual(0, room.Fp.Board.Map.Figures.ActiveCount);
             await shadowFlew;

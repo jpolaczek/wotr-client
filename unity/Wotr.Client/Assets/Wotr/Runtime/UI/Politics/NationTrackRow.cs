@@ -58,8 +58,12 @@ namespace Wotr.Client
             Token.Add(Emblem(id));
             track.Add(Token);
             Root.Add(ActionColumn(id, activate));
+            // UI-544: the token and its halo travel together, one step in 0.7 s (the opponent's beat's pace), longer for more.
+            glide = new TokenGlide(steps => .55 + .15 * steps, Token, glow);
             Root.RegisterCallback<GeometryChangedEvent>(_ => PositionToken());
         }
+
+        private readonly TokenGlide glide;
 
         private VisualElement ActionColumn(string id, Action<string> activate)
         {
@@ -123,15 +127,17 @@ namespace Wotr.Client
             Root.EnableInClassList("nation-at-war", nation.StepsToWar == 0);
             // UI-327: an activation turns the token over to its active side; the first side is simply shown.
             var shown = Token.ClassListContains("active-nation") || Token.ClassListContains("passive-nation");
-            if (shown && Token.ClassListContains("active-nation") != nation.Active)
+            var turning = shown && Token.ClassListContains("active-nation") != nation.Active;
+            if (turning)
                 TokenFlip.Turn(Token, () => ShowSide(nation.Active));
             else
                 ShowSide(nation.Active);
-            PositionToken();
+            // UI-544: an activation turns the token over first, then it travels (as the opponent's beat plays them).
+            PositionToken(turning ? 2 * TokenFlip.HalfSeconds : 0);
             label.tooltip = PoliticalActions.Describe(nation);
         }
 
-        private void PositionToken()
+        private void PositionToken(double delay = 0)
         {
             if (Nation == null || Root.contentRect.height <= 0)
                 return;
@@ -143,6 +149,7 @@ namespace Wotr.Client
             Token.style.top = top;
             Token.style.left = left;
             PlaceGlow(left, top, size);
+            glide.Placed(3 - Nation.StepsToWar, left, delay);
         }
 
         // The glow is a little larger than the medallion and centred on it.

@@ -391,7 +391,8 @@ plus the delta badge in `Runtime/Map/MapObservedTrace.cs` and `FigureDelta.cs`.
     [below](#polityka-zamknieta--ui-342)), at the latest at the release.
   - A panel the player closes during the presentation is not reopened by its later beats.
   - The nation's token is traced. An **activation** lights the crest first, then the token travels its recorded steps
-    (an eased 0.6 s `left` transition only while `presenting-politics` is set; a jump under Reduced motion). Since
+    (an eased 0.6 s `left` transition only while `presenting-politics` is set; a jump under Reduced motion; since UI-544
+    `TokenGlide` for every change, own or the opponent's, presented or not). Since
     UI-315 the settled panel, then the lit row and token, then a 0.7 s slide and a hold (§6.19).
   - **Reaching war** adds the short caption "At war" beside the War station.
   - A before-value the record lacks comes from the presented view.
