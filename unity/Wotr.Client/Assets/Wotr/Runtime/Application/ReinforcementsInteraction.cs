@@ -15,7 +15,6 @@ namespace Wotr.Client
         private readonly Action<Action> edit;
         private readonly Func<bool> busy;
         private readonly Func<bool> muster;
-        private readonly Func<string, bool> recruitAtOnly;
         private readonly Action<ComponentAction> ability;
         private readonly Action<Action> complete;
         private readonly BranchCarry carry;
@@ -27,14 +26,13 @@ namespace Wotr.Client
 
         public bool Planning => view != null && ReinforcementPlans.Active(view, draft);
 
-        public ReinforcementsInteraction(BoardScreen board, Action<Action> edit, Func<bool> busy, Func<bool> muster, Func<string, bool> recruitAtOnly,
+        public ReinforcementsInteraction(BoardScreen board, Action<Action> edit, Func<bool> busy, Func<bool> muster,
             Action<ComponentAction> ability, Action<Action> complete, BranchCarry carry, RecruitFlightInteraction flights)
         {
             this.board = board;
             this.edit = edit;
             this.busy = busy;
             this.muster = muster;
-            this.recruitAtOnly = recruitAtOnly;
             this.ability = ability;
             this.complete = complete;
             this.carry = carry;
@@ -143,9 +141,9 @@ namespace Wotr.Client
                 edit(() => ReinforcementPlans.Choose(draft, view, id));
             else if (muster())
             {
-                // UI-142: one legal settlement makes the choice complete; otherwise its settlements light up.
-                if (recruitAtOnly(id))
-                    return;
+                // UI-547 (owner, 2026-11-18): a Muster recruits in a settlement of the figure's nation, a choice the rule
+                // itself gives, so the figure's settlements light up and the player clicks one, even when only one is legal
+                // now. (UI-142 recruited there at once.)
                 edit(() => MusterActions.Select(draft, view, board.ActionDie, id));
             }
             // The lit settlements may lie off screen: the view moves there.

@@ -69,7 +69,7 @@ namespace Wotr.PlayTests
 
         // UI-538 (owner, 2026-11-16): a figure taken up lights its own settlements; the settlements only the other figures
         // may take turn pale grey, still and no targets. The figure has two settlements or more, so its click only takes it
-        // up (UI-142 would send a figure with one).
+        // up (UI-547: so does a figure with one, MusterOneSettlementTests).
         private static async Task<RecruitmentOption> TakeUp(BoardScreen board, MountedFlowClient client, CancellationToken token)
         {
             var recruitment = board.View.Options.First(o => o.Kind == CommandKind.Recruit && o.Enabled).Recruitment;

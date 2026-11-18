@@ -44,6 +44,34 @@ namespace Wotr.EditorTests
             Assert.AreEqual("mount-gram", first.Payload.Placements.Single().RegionId);
         }
 
+        // UI-547 (owner, 2026-11-18: "if the card says the unit always appears in Minas Tirith, it appears there as soon as
+        // the unit is clicked; if it says a settlement in Gondor and Minas Tirith happens to be the only possible choice, it
+        // is shown as an option on the map and the player clicks it"). Dáin's recruitment names Erebor for each figure, so a
+        // figure's click places it there; the Misty Mountains' card allows two regions, so with Mount Gram alone left a
+        // figure is only taken up and Mount Gram lights for its click.
+        [Test]
+        public void AFigureWhoseCardNamesItsRegionIsPlacedByItsClickAndAChosenRegionWaits()
+        {
+            var dain = Dain();
+            var draft = Draft();
+            Assert.IsTrue(EventRecruitDraft.Select(draft, dain, "elite-0"));
+            Assert.AreEqual("erebor", draft.Payload.Placements.Single(p => p.UnitId == "elite-0").RegionId, "Placed at once in Erebor.");
+            Assert.AreEqual("", draft.ReserveId, "Nothing is left taken up.");
+            Assert.IsTrue(EventRecruitDraft.Select(draft, dain, "leader-0"));
+            Assert.IsTrue(draft.Ready(dain), "Both figures stand in Erebor.");
+
+            var misty = Misty().Options[0];
+            foreach (var group in misty.Recruitment)
+                group.Targets = new List<string> { "mount-gram" };
+            misty.EventRecruitment.Limits.RemoveAll(limit => limit.RegionId == "moria");
+            var chosen = Draft();
+            Assert.IsTrue(EventRecruitDraft.Select(chosen, misty, "regular-0"));
+            Assert.IsEmpty(chosen.Payload.Placements, "The only legal region is not taken for the player.");
+            CollectionAssert.AreEqual(new[] { "mount-gram" }, EventRecruitDraft.Targets(chosen, misty).ToList(), "It lights for the click.");
+            Assert.IsTrue(EventRecruitDraft.Region(chosen, misty, "mount-gram"));
+            Assert.AreEqual("mount-gram", chosen.Payload.Placements.Single().RegionId);
+        }
+
         [Test]
         public void RegionAndSharedKindLimitsPreventIllegalPlanWithoutChoosingComposition()
         {
@@ -238,6 +266,29 @@ namespace Wotr.EditorTests
             }
             option.EligibleIds = option.Recruitment.SelectMany(g => g.ReserveIds).ToList();
             return new PlayerView { Decision = new DecisionView { Kind = DecisionKind.EffectChoice, Presentation = "RecruitmentPlan" }, Options = new List<ActionOption> { option } };
+        }
+
+        // Dáin's recruitment (Kings): one Dwarven Regular or Elite and one Dwarven Leader, both in Erebor, which the card names.
+        private static ActionOption Dain()
+        {
+            var option = new ActionOption
+            {
+                Kind = CommandKind.ChooseEffect,
+                Minimum = 2,
+                Maximum = 2,
+                Targets = new List<string> { "erebor" },
+                EventRecruitment = new EventRecruitmentOption()
+            };
+            foreach (var kind in new[] { UnitKind.Regular, UnitKind.Elite, UnitKind.Leader })
+                option.Recruitment.Add(new RecruitmentOption
+                {
+                    Nation = "dwarves", Kind = kind, Targets = new List<string> { "erebor" }, RegionFixed = true,
+                    ReserveIds = new List<string> { kind.ToString().ToLowerInvariant() + "-0" }
+                });
+            option.EventRecruitment.Limits.Add(new RecruitmentLimit { Nation = "dwarves", RegionId = "erebor", Kinds = new List<UnitKind> { UnitKind.Regular, UnitKind.Elite }, Maximum = 1 });
+            option.EventRecruitment.Limits.Add(new RecruitmentLimit { Nation = "dwarves", RegionId = "erebor", Kinds = new List<UnitKind> { UnitKind.Leader }, Maximum = 1 });
+            option.EligibleIds = option.Recruitment.SelectMany(g => g.ReserveIds).ToList();
+            return option;
         }
 
         private static ActionOption Pits()
