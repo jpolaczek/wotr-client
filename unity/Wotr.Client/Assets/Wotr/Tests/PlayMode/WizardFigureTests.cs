@@ -8,10 +8,11 @@ using Wotr.Contracts;
 
 namespace Wotr.PlayTests
 {
-    // ART-11 (owner, 2026-11-17: "Saruman's and Gandalf the White's figures are too alike; rework them"): Saruman stands dark,
-    // in black and crimson with an iridescent robe and a black staff, Gandalf the White bright, in white under a pale
-    // silver-blue cloak with a white staff and a sword; side by side on the map they are told apart at a glance.
-    // Frame: art11-wizards.
+    // ART-11 (owner, 2026-11-17: "Saruman's and Gandalf the White's figures are too alike; rework them"; 2026-11-18: "Saruman
+    // is now black and red; he must stay white, only clearly different from Gandalf the White"): Saruman stands in white
+    // with a broad black stripe down the front, a black sash and a black clawed staff, no cloak; Gandalf the White in white
+    // under a pale silver-blue cloak with a white staff and a sword. Side by side on the map they are told apart at a
+    // glance. Frame: art11-wizards.
     public sealed class WizardFigureTests
     {
         [UnityTest]

@@ -121,3 +121,26 @@ beard, so on the map only the staff told them apart.
   - `saruman-white-robes`, `gandalf-white-like-saruman`: the old pair;
   - `gandalf-white-gold-halo`: a first new Gandalf with a gold halo around the figure.
 - **Check.** PlayMode `WizardFigureTests` sets both on the map near Orthanc (frame `art11-wizards`).
+
+<a id="saruman-white-again--art-11-second-pass-2026-11-18"></a>
+## Saruman white again — ART-11, second pass (2026-11-18)
+
+The owner: "Saruman is now black and red; he must stay white, only clearly different from Gandalf the White". Saruman
+keeps the white of his order and is told apart by everything but the robe's colour:
+
+- **Saruman** (Shadow):
+  - cold white robes with a tall stiff collar and wide sleeves;
+  - a black inner robe showing down the front in one broad black stripe;
+  - a black sash with a small white-hand emblem;
+  - white hair streaked with black;
+  - a black iron staff crowned with claw-like spikes;
+  - no cloak, no sword, no blue and no brown leather.
+- **Gandalf the White** is unchanged: a pale silver-blue cloak, a plain white staff, a sword on a brown belt.
+
+  On the map, Saruman reads as white and black, Gandalf as white and blue.
+- **Generation.** Same generator, model and style ([prompts](v3/prompts.json), [journal](v3/generations.jsonl)).
+  `scripts/build_figure_art.py` rebuilt `characters-v1`, and `--check` passes.
+- **Rejected** (in `rejected/`):
+  - `saruman-black-crimson`: the first pass;
+  - `saruman-ivory-robes`: a first white try whose robes read cream and whose beard was short.
+- **Unchanged.** The battle portraits.
