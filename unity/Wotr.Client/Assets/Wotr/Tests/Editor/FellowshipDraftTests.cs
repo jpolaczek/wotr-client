@@ -37,6 +37,36 @@ namespace Wotr.EditorTests
             Assert.IsFalse(TravelDraft.Step(draft, view, board, "moria"));
         }
 
+        // UI-548 (owner, 2026-11-18, a revealed Fellowship at Fords of Bruinen, 4 of 4 to Lórien with the ✓ grey): a step lights
+        // only when the route can still end on a legal destination from it. Lórien, a sanctuary the server leaves out of a
+        // reveal's targets, does not light as the last step, but still lights while range is left to walk on from it.
+        [Test]
+        public void ARevealsLastStepNeverLightsASanctuaryItCannotEndIn()
+        {
+            var board = BoardPresentation.Load();
+            var around = board.Regions["dimrill-dale"].Neighbors.ToList();
+            CollectionAssert.Contains(around, "lorien");
+            var view = View(CommandKind.RevealFellowship);
+            var option = view.Options[0];
+            option.EligibleDice.Clear();
+            var travel = new TravelOption { Id = "fellowship", Origin = "dimrill-dale", Range = 1 };
+            travel.Targets.AddRange(around.Where(id => id != "lorien"));
+            option.Travel.Add(travel);
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.RevealFellowship);
+            var next = TravelDraft.Next(draft, view, board).ToList();
+            CollectionAssert.DoesNotContain(next, "lorien", "The last step does not light Lórien.");
+            CollectionAssert.IsSubsetOf(around.Where(id => id != "lorien").ToList(), next, "Every other end lights.");
+            Assert.IsFalse(TravelDraft.Step(draft, view, board, "lorien"), "Nor can it be clicked.");
+
+            travel.Range = 2;
+            travel.Targets.AddRange(board.Regions["lorien"].Neighbors.Where(id => id != "lorien" && !travel.Targets.Contains(id)));
+            CollectionAssert.Contains(TravelDraft.Next(draft, view, board).ToList(), "lorien", "With a step left it may be passed through.");
+            Assert.IsTrue(TravelDraft.Step(draft, view, board, "lorien"));
+            CollectionAssert.DoesNotContain(TravelDraft.Next(draft, view, board).ToList(), "lorien");
+            StringAssert.EndsWith("Revealed, it cannot end in a Free Peoples City or Stronghold.", DecisionObjects.Confirm(view, draft));
+        }
+
         // UI-219: the step that uses all of the Progress completes the route and sends it; a shorter legal route and
         // a stay with Progress left wait for ✓, and an end that is not a legal destination never completes.
         [TestCase(CommandKind.DeclareFellowship)]
