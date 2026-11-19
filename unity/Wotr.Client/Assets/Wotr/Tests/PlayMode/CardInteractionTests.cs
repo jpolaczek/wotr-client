@@ -313,6 +313,40 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0, backend.Commands, "Choosing a die never sends a command.");
         }
 
+        // UI-550 (owner, 2026-11-18: "after Huorns another card of that kind may be played; the cards that cannot be played
+        // should be greyed and the ones that can lit"): in the Ents' free follow-up no die is chosen, yet the one Character
+        // event it accepts is lit and the Strategy card it does not accept steps back and says why. Frame:
+        // ui550-ents-follow-up.
+        [UnityTest]
+        public IEnumerator AFreePlayLightsTheCardsItAcceptsAndGreysTheRest()
+        {
+            var view = new BoardFixture().View;
+            const string character = "base.fp.character.19";
+            const string strategy = "base.fp.strategy.02";
+            view.Hand.Add(character);
+            view.Hand.Add(strategy);
+            view.Decision = new DecisionView { Kind = DecisionKind.Reaction, Window = "ents.follow-up" };
+            view.DecisionOwner = view.You;
+            view.Options.Add(new ActionOption { Kind = CommandKind.PlayEvent, Events = {
+                new EventPlayOption { CardId = character, Costs = { new EventCostOption { Face = DieFace.Character } } } } });
+            view.Options.Add(new ActionOption { Kind = CommandKind.DeclineReaction });
+            var backend = new FrozenBackend(view);
+            using var client = new MountedMatchClient("http://localhost", view.MatchId, backend);
+            client.Apply(view);
+            client.SetOnline();
+            yield return Settle();
+            var characterCard = client.Board.Hand.Q<Button>(character);
+            var strategyCard = client.Board.Hand.Q<Button>(strategy);
+            Assert.IsTrue(characterCard.ClassListContains("playable-card"), "The card the free play accepts is lit.");
+            Assert.IsFalse(characterCard.ClassListContains(HandCard.UnplayableClass));
+            Assert.IsTrue(strategyCard.ClassListContains(HandCard.UnplayableClass), "A card it does not accept is greyed.");
+            Assert.Less(strategyCard.resolvedStyle.opacity, .6f);
+            Assert.AreEqual(1f, characterCard.resolvedStyle.opacity);
+            Assert.AreEqual("Cannot be played now", strategyCard.Q<Label>("hand-card-hint").text, "It says why.");
+            LayoutTests.Save(client.Viewport, "ui550-ents-follow-up.png");
+            Assert.AreEqual(0, backend.Commands);
+        }
+
         private static void MovePointer(VisualElement target)
         {
             CardGestures.Move(target);
