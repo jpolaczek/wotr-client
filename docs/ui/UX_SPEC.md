@@ -95,6 +95,12 @@ stays, because the player chose it. Tests: `BoardInteractionTests.UI279NoLegalCo
 `SovereignPanelNetworkTests`, `KingsCards02NetworkTests`; `MatchTestRoom.NoCard` clicks No card for every own Combat
 choice.
 
+UI-550 (owner, 2026-11-18): "when there is a choice, the unavailable options are greyed". A general rule: every choice
+the player makes lights what it accepts and greys, never hides, what it does not, with the reason in its hint or
+tooltip. The hand follows it for every card choice, with or without a die: the Ents' free follow-up after Huorns,
+Treebeard or Entmoot lights the Character events it accepts and greys the rest with "Cannot be played now" (ARMY_MAP_UX
+AM02a).
+
 <a id="panel-posiłków-bez-kart--ui-150"></a>
 ## Meal Panel without cards — UI-150
 

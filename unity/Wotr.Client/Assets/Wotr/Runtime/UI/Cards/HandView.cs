@@ -99,18 +99,22 @@ namespace Wotr.Client
             context = die;
             if (view == null)
                 return;
-            var anyPlayable = false;
             var combat = CombatCardCondition.Eligible(view);
-            var dieChosen = DieChosen();
+            var eligibility = cards.Values.ToDictionary(card => card.Id, card => Eligible(card.Id));
+            var anyPlayable = eligibility.Values.Any(eligible => eligible);
+            // UI-550 (owner, 2026-11-18: "the cards that cannot be played should be greyed and the ones that can lit; a general
+            // rule: when there is a choice, the unavailable options are greyed"): whenever the player's own decision lets them
+            // choose a card — a die chosen (UI-124), a free play such as the Ents' follow-up, a reaction, a discard or a
+            // cost — the cards it does not accept step back.
+            var choosing = DieChosen() || anyPlayable && OwnDecision();
             foreach (var card in cards.Values)
             {
                 // UI-111: a card that cannot be committed in this battle is dimmed and says why.
                 card.Slot.EnableInClassList("combat-unavailable", combat != null && !combat.Contains(card.Id));
                 card.Slot.EnableInClassList("selected", draft.Payload.CardId == card.Id || draft.Payload.Ids.Contains(card.Id));
-                var eligible = Eligible(card.Id);
+                var eligible = eligibility[card.Id];
                 card.State(eligible, Discarding(), Hint(card.Id, eligible));
-                card.Slot.EnableInClassList(HandCard.UnplayableClass, dieChosen && !eligible);
-                anyPlayable |= eligible;
+                card.Slot.EnableInClassList(HandCard.UnplayableClass, choosing && !eligible);
             }
             drawer.Highlight(anyPlayable || CardActions.CanDraw(view, draft, context, "character") ||
                 CardActions.CanDraw(view, draft, context, "strategy"), Discarding());
@@ -241,6 +245,8 @@ namespace Wotr.Client
         private bool DieChosen() => view.Decision?.Kind == DecisionKind.Action && context != null &&
             context.DieId.Length > 0 && draft.Kind != CommandKind.DiscardCards;
 
+        private bool OwnDecision() => view.Decision != null && view.DecisionOwner == view.You;
+
         // Choosing a card as a cost is not a play.
         private bool Playable(string id) => !Discarding() && Eligible(id);
 
@@ -258,7 +264,8 @@ namespace Wotr.Client
                 return "Click, then Use its reaction";
             if (eligible)
                 return discard ? "Click to discard face down" : PlayHint(id);
-            return "Choose a matching die to play";
+            // UI-550: outside the action phase no die is chosen; the card is just not one this decision accepts.
+            return view.Decision?.Kind == DecisionKind.Action ? "Choose a matching die to play" : "Cannot be played now";
         }
 
         private string PlayHint(string id) => Alternatives(id) ? "Click to choose how to pay" : "Click to play" + PaidWith(id);

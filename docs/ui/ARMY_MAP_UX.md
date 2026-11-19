@@ -285,6 +285,7 @@ The owner prepares the evidence in his task; UI-132 takes the joint course.
 | --- | --- | --- |
 | AM01 | UI-124 | The selected die distinguishes card from the possible green glow (Muster, Army, Character, Event, Will), the remaining extinguished with explanation. |
 | AM02 | UI-124 | Without dice no distinction and extinguish; change dice without rebuilding and moving cards. |
+| AM02a | UI-550 | Owner, 2026-11-18: "the cards that cannot be played should be greyed and the ones that can lit; a general rule: when there is a choice, the unavailable options are greyed". Whenever the player's own decision lets them choose a card without a die (the Ents' free follow-up after Huorns, Treebeard or Entmoot, a reaction, a discard or a cost), the cards it accepts are lit and the rest are greyed with "Cannot be played now" (`HandView.Refresh`). In the action phase without a die nothing is lit or greyed (UI-443). Test: PlayMode `CardInteractionTests.AFreePlayLightsTheCardsItAcceptsAndGreysTheRest` (frame `ui550-ents-follow-up`). |
 | AM03 | UI-125 | Army graphics set with page and state variants in 1× and 2×; contract `UiArtKitTests`; preview. |
 | AM04 | UI-126 | The view of the entire map shows the token of each force; switching levels with hysteresis without rebuilding. |
 | AM05 | UI-126 | Figures on the stand: silhouettes, base game sides, coats (≤ 2 + ‘+’), number; centered hitbox. |
