@@ -2621,6 +2621,24 @@ the Black Captain's row turns him; screenshots `ui438-shadow-entries-*`, `ui438-
 Port to `ability-chips`: nothing — it has no version split (`CharacterRosterVersions` is expansions-only); the tab names
 apply only to the expansions' alternative cards.
 
+<a id="the-roster-reads-alike-and-shows-the-opponent-on-request--ui-551-ui-552"></a>
+## The roster reads alike and shows the opponent on request — UI-551, UI-552 (2026-11-19)
+
+The owner: "the characters tab falls apart" (UI-551), and "the opponent's characters should be there too, only hidden
+behind an optional filter" (UI-552).
+
+- **Removed reads like the other sections** (UI-551). Its fold's title has the sections' size (14 px) and indent, its arrow
+  is small and inline, and its rows stand in line with On board's (the fold adds no indent). Every section title carries
+  `CharacterRosterPanel.SectionTitleClass`.
+- **The opponent's characters** (UI-552). An "Opponent" chip beside the panel's title shows or hides them; it is off until
+  the player turns it on, and the choice holds for the session. They stand in their own section, "Opponent's
+  characters", read-only: a click opens the character's card, as a figure's does on the map. The view carries the
+  opponent's characters on the map only, so those are the ones listed (`CharacterRosterPresentation.OpponentRows`).
+
+Tests: EditMode `CharacterRosterPanelTests.TheOpponentFilterListsTheirCharactersOnTheMapInTheirOwnSection`; PlayMode
+`CharacterRosterPanelNetworkTests.WhiteReturnsThroughOneStableInspectedFigureAndReconnect` (the removed Saruman: the fold
+aligned with On board, then the filter on and off; frames `ui551-roster-removed`, `ui552-roster-opponents`).
+
 <a id="a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436"></a>
 ## A character's window is compact, shows its place as a picture and opens in one place — UI-436 (2026-11-01)
 

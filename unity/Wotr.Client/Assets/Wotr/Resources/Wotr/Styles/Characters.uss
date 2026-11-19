@@ -348,3 +348,33 @@
     background-color: rgb(46, 34, 24);
     -unity-background-scale-mode: scale-and-crop;
 }
+
+/* UI-551 (owner, 2026-11-19: "the characters tab falls apart"): the Removed fold reads like the other sections. Its title has
+   their size and indent, its arrow is small and inline, and its rows stand in line with theirs (no fold indent). */
+#board-screen .characters-panel .roster-section-title,
+#board-screen .characters-panel #characters-removed > .unity-foldout__toggle .unity-foldout__text {
+    font-size: 14px;
+    color: rgb(226, 214, 186);
+    -unity-font-style: normal;
+    margin: 6px 0 2px 2px;
+    padding: 0;
+}
+#board-screen .characters-panel #characters-removed { margin: 0; padding: 0; }
+#board-screen .characters-panel #characters-removed > .unity-foldout__toggle { margin: 0; padding: 0; }
+#board-screen .characters-panel #characters-removed > .unity-foldout__toggle > .unity-toggle__input { padding: 0; margin: 0; }
+#board-screen .characters-panel #characters-removed > .unity-foldout__toggle .unity-foldout__text { margin-left: 2px; }
+#board-screen .characters-panel #characters-removed > .unity-foldout__content { margin: 0; padding: 0; }
+/* UI-552: the opponent filter, a small chip beside the title; lit while it shows the opponent's characters. */
+#board-screen .characters-panel .character-header > .roster-filter {
+    width: auto;
+    min-width: 76px;
+    height: 24px;
+    min-height: 24px;
+    margin: 0 6px 0 auto;
+    padding: 0 8px;
+    font-size: 12px;
+}
+#board-screen .characters-panel .character-header > .roster-filter.selected {
+    border-color: rgb(214, 176, 92);
+    color: rgb(250, 236, 200);
+}

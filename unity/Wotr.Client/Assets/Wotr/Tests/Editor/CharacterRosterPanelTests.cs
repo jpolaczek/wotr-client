@@ -438,6 +438,32 @@ namespace Wotr.EditorTests
             Assert.IsFalse(CharacterRosterPresentation.Rows(view).Any(r => r.FigureId == "public-gimli"));
         }
 
+        // UI-552 (owner, 2026-11-19: "the opponent's characters should be there too, only hidden behind an optional filter"):
+        // the Shadow's roster lists the Free Peoples' Gimli on the map only while its filter is on, in its own section.
+        [Test]
+        public void TheOpponentFilterListsTheirCharactersOnTheMapInTheirOwnSection()
+        {
+            var view = Read("CharacterRosterShadowWire.json");
+            var panel = new CharacterRosterPanel(new VisualElement(), BoardPresentation.Load(), _ => { });
+            try
+            {
+                panel.Apply(view);
+                Assert.IsFalse(panel.ShowsOpponents);
+                Assert.IsNull(panel.Root.Q<Button>("character-roster-base.character.gimli"), "Hidden while the filter is off.");
+                panel.ShowOpponents(true);
+                var row = panel.Root.Q("characters-section-Opponent").Q<Button>("character-roster-base.character.gimli");
+                Assert.IsNotNull(row, "The Free Peoples' Gimli in the opponent's section.");
+                Assert.IsTrue(panel.Root.Q<Button>(CharacterRosterPanel.OpponentFilterName).ClassListContains("selected"));
+                CollectionAssert.AreEqual(new[] { "base.character.gimli" }, CharacterRosterPresentation.OpponentRows(view).Select(r => r.FigureId));
+                panel.ShowOpponents(false);
+                Assert.IsNull(panel.Root.Q<Button>("character-roster-base.character.gimli"), "Gone again.");
+            }
+            finally
+            {
+                panel.ShowOpponents(false);
+            }
+        }
+
         [Test]
         public void EmptyOlderRosterIsHonestAndRemovedStartsCollapsed()
         {
