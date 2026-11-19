@@ -104,6 +104,9 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(removed.Q<Toggle>());
             await room.Settle();
             Assert.IsTrue(removed.value);
+            LayoutTests.Save(room.Sh.Viewport, "ui551-roster-removed.png");
+            AssertRemovedAligned(board);
+            await ShowOpponents(room, board);
             var row = removed.Q<Button>("character-roster-" + id);
             PointerGestureEvents.ClickAt(row);
             await room.Settle();
@@ -113,6 +116,48 @@ namespace Wotr.PlayTests
             Assert.IsFalse(board.Characters.Inspector.Root.Q<Button>("locate-character").enabledSelf);
             Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q<Label>("character-entry").resolvedStyle.display);
             Assert.AreEqual(revision, board.View.Revision);
+        }
+
+        // UI-551 (owner, 2026-11-19: "the characters tab falls apart"): the Removed fold's title reads like On board's, at its
+        // indent, and its rows stand in line with the other sections' rows.
+        private static void AssertRemovedAligned(BoardScreen board)
+        {
+            var root = board.Characters.Root;
+            var section = new[] { "characters-section-OnBoard", "characters-section-NotInPlay" }.Select(name => root.Q(name))
+                .First(e => e.resolvedStyle.display == DisplayStyle.Flex && e.worldBound.width > 0);
+            var title = section.Q<Label>(className: CharacterRosterPanel.SectionTitleClass);
+            var fold = root.Q<Foldout>("characters-removed").Q<Label>(className: "unity-foldout__text");
+            Assert.AreEqual(title.resolvedStyle.fontSize, fold.resolvedStyle.fontSize, .5f, "The fold's title has the sections' size.");
+            Assert.LessOrEqual(Math.Abs(fold.worldBound.xMin - title.worldBound.xMin), 16f,
+                "Near " + section.name + "'s title (its small arrow before it): " + fold.worldBound.xMin.ToString("0") + " vs " + title.worldBound.xMin.ToString("0"));
+            var rows = section.Q(className: "character-roster-grid").worldBound.xMin;
+            var removedRows = root.Q("characters-section-Removed").Q(className: "character-roster-grid").worldBound.xMin;
+            Assert.AreEqual(rows, removedRows, .5f, "Removed rows stand in line with " + section.name + "'s.");
+        }
+
+        // UI-552 (owner, 2026-11-19: "the opponent's characters should be there too, only hidden behind an optional filter"):
+        // off at first; on, the opponent's characters on the map stand in their own section, read-only; off again, gone.
+        private static async Task ShowOpponents(MatchTestRoom room, BoardScreen board)
+        {
+            var root = board.Characters.Root;
+            var section = root.Q("characters-section-Opponent");
+            var opponents = board.View.Characters.Where(c => c.Side != board.View.You && CharacterLibrary.Find(c.DefinitionId) != null)
+                .Select(c => "character-roster-" + c.Id).ToList();
+            Assert.IsFalse(board.Characters.ShowsOpponents, "The filter is off at first.");
+            Assert.AreEqual(DisplayStyle.None, section.resolvedStyle.display);
+            var filter = root.Q<Button>(CharacterRosterPanel.OpponentFilterName);
+            PointerGestureEvents.ClickAt(filter);
+            await room.Settle();
+            Assert.IsTrue(board.Characters.ShowsOpponents);
+            Assert.IsTrue(filter.ClassListContains("selected"));
+            var shown = section.Query<Button>().ToList().Where(b => b.name.StartsWith("character-roster-")).ToList();
+            CollectionAssert.AreEquivalent(opponents, shown.Select(b => b.name), "The opponent's characters on the map.");
+            Assert.IsFalse(shown.Any(b => b.ClassListContains("legal-target")), "Read-only.");
+            LayoutTests.Save(room.Sh.Viewport, "ui552-roster-opponents.png");
+            PointerGestureEvents.ClickAt(filter);
+            await room.Settle();
+            Assert.IsFalse(board.Characters.ShowsOpponents);
+            Assert.AreEqual(0, section.Query<Button>().ToList().Count(b => b.name.StartsWith("character-roster-")), "Hidden again.");
         }
 
         private static async Task Inspection()

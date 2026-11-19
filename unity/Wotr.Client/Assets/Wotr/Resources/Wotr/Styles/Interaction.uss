@@ -486,11 +486,12 @@
     background-color: rgba(170, 125, 35, 0.92);
     scale: 1.06 1.06;
 }
+/* UI-551: the mark stays inside the panel when its companion stands in the top row (BoardCompletionLayoutTests). */
 .companion-token > .companion-chosen-mark {
     display: none;
     position: absolute;
-    right: -5px;
-    top: -6px;
+    right: -3px;
+    top: -2px;
     width: 17px;
     height: 17px;
     margin: 0;
