@@ -64,10 +64,36 @@ namespace Wotr.Client
             if (travel.Flight)
                 return travel.Targets;
             var last = route.Count == 0 ? travel.Origin : route[route.Count - 1];
-            if (System.Math.Max(0, route.Count - 1) >= travel.Range || travel.BlockedRegions.Contains(last) || route.Count > 1 && travel.StopRegions.Contains(last))
+            var used = System.Math.Max(0, route.Count - 1);
+            if (used >= travel.Range || travel.BlockedRegions.Contains(last) || route.Count > 1 && travel.StopRegions.Contains(last))
                 return Enumerable.Empty<string>();
+            // UI-548 (owner, 2026-11-18: "I was revealed and must choose the Fellowship's route, but when I choose the last
+            // step, Lórien, the ✓ stays grey"): a step lights only when the route can still end on a legal destination from
+            // it within its range. A revealed Fellowship never ends in a Free Peoples City or Stronghold, which the server
+            // leaves out of its targets, so such a sanctuary lights only while range is left to walk on from it.
             return data.Regions.TryGetValue(last, out var region)
-                ? region.Neighbors.Where(id => !travel.BlockedRegions.Contains(id)) : Enumerable.Empty<string>();
+                ? region.Neighbors.Where(id => !travel.BlockedRegions.Contains(id) && Finishable(travel, data, id, travel.Range - used - 1))
+                : Enumerable.Empty<string>();
+        }
+
+        // Whether a legal destination lies within `left` steps of this region (the region itself included), passing no stop.
+        private static bool Finishable(TravelOption travel, BoardPresentation data, string region, int left)
+        {
+            var seen = new HashSet<string> { region };
+            var frontier = new Queue<(string Region, int Left)>();
+            frontier.Enqueue((region, left));
+            while (frontier.Count > 0)
+            {
+                var (here, steps) = frontier.Dequeue();
+                if (travel.Targets.Contains(here))
+                    return true;
+                if (steps <= 0 || travel.StopRegions.Contains(here) || !data.Regions.TryGetValue(here, out var definition))
+                    continue;
+                foreach (var next in definition.Neighbors)
+                    if (!travel.BlockedRegions.Contains(next) && seen.Add(next))
+                        frontier.Enqueue((next, steps - 1));
+            }
+            return false;
         }
 
         public static bool Step(TurnDraft draft, PlayerView view, BoardPresentation data, string region)
