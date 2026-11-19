@@ -684,7 +684,7 @@ The user's decision with 2026-10-14: the game does not use a double click. `Draf
 | Over-hand — card recoil (miniature or preview) | One click of card or the content of its preview. |
 | Response Hunt (Ring, Guide, Random) | The answer click ends step; drop on the tile stays. |
 | siege extension — figure extension | The figure click extends the siege. |
-| Reserve chip at one settlement (UI-130) | The chip click recruits in the only legal settlement; with several settlements they shine. |
+| Reserve chip at one settlement (UI-130) | Since UI-547 the chip click takes the figure up and its settlements shine, one or more; the settlement's click recruits (UI-142 recruited in the only one at once). |
 | Army — Selection of the whole (UI-127) | Army click selects the whole; switch select/unselect (UI-140). |
 | End of route Fellowship/figure | Figures: click the destination (UI-105). Fellowship: the step that uses all of the Progress, or ✓ for a shorter route (UI-219). |
 | dice reroll and losses in battle | Each click switches/cyclically changes the selection; aggregate ✓ He's staying. |

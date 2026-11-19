@@ -87,8 +87,9 @@ not submit it. The single option glows, and its tooltip says what the click does
   draw step (its own click draws every tile) and the server places a single drawn tile itself, a rule of the game (EXP-15
   D8), not a click the client sends; Sequential corruption keeps its Draw again.
 
-A click that completes a choice still sends it at once (UI-142): recruiting at the only settlement, a card with one
-payment method, and awakening a king to his only destination. The player's own "Skip cards this battle" policy (UI-11)
+A click that completes a choice still sends it at once (UI-142): a card with one payment method, and awakening a king
+to his only destination. Recruiting at the only settlement no longer does: since UI-547 the settlement lights and is
+clicked, unless the card itself names it. The player's own "Skip cards this battle" policy (UI-11)
 stays, because the player chose it. Tests: `BoardInteractionTests.UI279NoLegalCombatCardWaitsForTheNoCardClick…`,
 `SpecialDiceNetworkTests.AnEyeForcedAmongTheDiceWaitsForItsClick`, `RulerDiceTests`, `ExpansionCorruptionNetworkTests`,
 `SovereignPanelNetworkTests`, `KingsCards02NetworkTests`; `MatchTestRoom.NoCard` clicks No card for every own Combat
@@ -122,7 +123,7 @@ The national lanes between regions are narrower (2,3 instead of 3,0 map units) a
 <a id="bez-dwukliku--ui-142"></a>
 ## No double click — UI-142
 
-Decision of the user from 2026-10-14: The game does not use two clicks. The click that completes the selection, performs it immediately, without Confirm: Guide, answer Hunt,  figure Extensions siege, entry of character from the Characters line (when cost allows one entry), reserve token with one legal settlement,  card to discard from an excess hand (miniature or preview content). Where the click selects only a part of the larger choice (set of losses, reroll, route, versions and Guide when preparing Fellowship,  figure march), selection ends with a public click of the target or one ✓.  card to play: the first click armed, the second one plays (UI-91 The second click is a simple click in the same decision, and after the approved step (new revision, decision or merger) is omitted, so it does not repeat the step. Earlier mentions of the two clicks in the job descriptions below and in the remaining documents are historical; this section applies. [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md), ‘The two-click inventory — UI-142 ”.
+Decision of the user from 2026-10-14: The game does not use two clicks. The click that completes the selection, performs it immediately, without Confirm: Guide, answer Hunt,  figure Extensions siege, entry of character from the Characters line (when cost allows one entry), reserve token with one legal settlement (retired by UI-547: the settlement is clicked),  card to discard from an excess hand (miniature or preview content). Where the click selects only a part of the larger choice (set of losses, reroll, route, versions and Guide when preparing Fellowship,  figure march), selection ends with a public click of the target or one ✓.  card to play: the first click armed, the second one plays (UI-91 The second click is a simple click in the same decision, and after the approved step (new revision, decision or merger) is omitted, so it does not repeat the step. Earlier mentions of the two clicks in the job descriptions below and in the remaining documents are historical; this section applies. [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md), ‘The two-click inventory — UI-142 ”.
 
 <a id="przyciski--ui-138"></a>
 ## Buttons — UI-138
@@ -156,9 +157,9 @@ The pool icon in the panel header Hunt opens a compact list of tiles in the Hunt
 <a id="u05--rekrutacja-polityka-i-postacie"></a>
 ## U05 — Recruitment, politics and characters
 
-Muster  → reserve chip in the Meals panel → Legal settlement (from UI-135 The only recruitment window; the pallet in the preview region and the tray pallet are gone). Hover terrain only distinguishes it. Click settlement or drag to settlement recruit; from UI-142 click a token that has one legal settlement, recruits there right away. Other budget at dice, termination earlier by ✓ Each location is saved; next settlement The lone commander, the reserves and the limits have a real preview of the effects, unimagined bans UI.
+Muster  → reserve chip in the Meals panel → Legal settlement (from UI-135 The only recruitment window; the pallet in the preview region and the tray pallet are gone). Hover terrain only distinguishes it. Click settlement or drag to settlement recruit; from UI-142 click a token that has one legal settlement, recruits there right away (retired by UI-547: its one settlement lights and is clicked). Other budget at dice, termination earlier by ✓ Each location is saved; next settlement The lone commander, the reserves and the limits have a real preview of the effects, unimagined bans UI.
 
-from UI-130  ([ARMY_MAP_UX](ARMY_MAP_UX.md)) the Muster selection opens the Meals Panel at the left slat (since UI-181 the Muster die only lights the Reserve tab, since UI-317 only while it can recruit): the line of each own nation, budget slots and ✓ during the sequence. From UI-134, the line is one line with a graphical policy track (active or passive), the reserves and the move icons on the track and the activation of Narya when the server allows them; The status and reason for the lock are in the tooltip. The chip click moves the view to the legal settlement; from UI-150 card, which die can play, are only in hand. The settlement highlight button on this figure, click on settlement to recruit without Confirm; At one legal settlement click the token immediately (UI-142, formerly two-click), and drag is a shortcut. The settlement click on the map means the line of its nation and restores the closed panel; click settlement, which the selected figure cannot occupy, shows the reason for the server in the tray. from UI-135 Muster paid for with the master's token or skill is a plan in the same panel (slots, figure with × one ✓), and the warning about a lone leader is in the tooltip of the token. The closed panel returns with the “Reinforcements” button in the tray. from UI-131 the same panel supports recruitment with cards  („ EventRecruitment ”, „ ReserveFigures), Kings and Balrog's rulers: the header calls the source, slots count the planned figure,  figure with × return to the reserve in the panel and from the map (spirits in the regions of the plan), and one ✓ approve the whole together with the tray. The selected die distinguishes card from playable (UI-124) and from UI-136 also the Green Light tabs Characters and Politics, the Fellowship and decks when server options allow it to be used.
+from UI-130  ([ARMY_MAP_UX](ARMY_MAP_UX.md)) the Muster selection opens the Meals Panel at the left slat (since UI-181 the Muster die only lights the Reserve tab, since UI-317 only while it can recruit): the line of each own nation, budget slots and ✓ during the sequence. From UI-134, the line is one line with a graphical policy track (active or passive), the reserves and the move icons on the track and the activation of Narya when the server allows them; The status and reason for the lock are in the tooltip. The chip click moves the view to the legal settlement; from UI-150 card, which die can play, are only in hand. The settlement highlight button on this figure, click on settlement to recruit without Confirm; At one legal settlement click the token immediately (UI-142, formerly two-click; retired by UI-547), and drag is a shortcut. The settlement click on the map means the line of its nation and restores the closed panel; click settlement, which the selected figure cannot occupy, shows the reason for the server in the tray. from UI-135 Muster paid for with the master's token or skill is a plan in the same panel (slots, figure with × one ✓), and the warning about a lone leader is in the tooltip of the token. The closed panel returns with the “Reinforcements” button in the tray. from UI-131 the same panel supports recruitment with cards  („ EventRecruitment ”, „ ReserveFigures), Kings and Balrog's rulers: the header calls the source, slots count the planned figure,  figure with × return to the reserve in the panel and from the map (spirits in the regions of the plan), and one ✓ approve the whole together with the tray. The selected die distinguishes card from playable (UI-124) and from UI-136 also the Green Light tabs Characters and Politics, the Fellowship and decks when server options allow it to be used.
 
 Policy: click or Enter/Space On the left, the Politics page opens all tracks on a common Peace → War scale. Hover/fokus shows only the text of the bookmark. Own nations are first; checkbox Show opponent (from UI-197 The signature “Opponent”) shows the opponent by default. The chip stands in the actual position. From UI-197 (user notification from 2026-10-16 The coat of arms of the nation in the side medallion, over a soft golden glow. The coat of arms of the active nation is fuller and shines more, and the passive coat of arms is dim; the legend in the column header shows both appearances. The column of names no longer has a coat of arms, so the panel has 256 pt 290 . The state is supplemented by a outline and tooltip. The panel remains after the cursor leaves; ×/Esc closes it with the choice and cost. No scroll and separate track to open at each nation.
 
@@ -5159,7 +5160,7 @@ figure; a second click on the figure releases it, another figure's click switche
   chosen-settlement mark for these sources.
 - After a placement a card's armed token stays armed with its group's next free figure while it has a region (UI-213);
   a Muster die's second figure and a ruler's next figure are taken up by their own click.
-- Unchanged: UI-142 (a figure with one legal settlement is recruited at once), UI-454 (carrying a figure), UI-538's pale
+- Unchanged: UI-142 (a figure with one legal settlement is recruited at once; retired by UI-547), UI-454 (carrying a figure), UI-538's pale
   grey while a figure is taken up, the Reserve opening with a ruler's ability (UI-450).
 - Monsters Roused (Fate, UI-431): its halves are still chosen by their regions; the West half's region waits in its
   recruitment plan (`EventRecruitDraft.Preselect`) and takes the plan's first figure, marked as UI-538's chosen placement.
@@ -5224,3 +5225,34 @@ Wey", and the credit (the seat's tooltip, a saved game's row) begins "AlphaWOTR,
 Tests: EditMode `AlphaWotrSeatTests` (the seat's name and credit, the base-game rules, the saved game's row, the console's
 waiting line and its return), `PveRoomTests.AHostedRoomOffersNoCpuAndACpuRoomNoRules`; PlayMode `MainMenuLayoutTests`
 (a hosted room's empty seat has no Add CPU), `PveRoomLayoutTests`, `PveInvitationNetworkTests` (in a Play vs CPU room).
+
+<a id="one-legal-region-is-still-clicked--ui-547"></a>
+## One legal region is still clicked — UI-547 (2026-11-18)
+
+The owner: "if we recruit a unit and there is only one possible region, we do not place it automatically, unless the
+effect by definition has no choice. If the card says the unit always appears in Minas Tirith, it appears there as soon
+as the unit is clicked; if it says it appears in a settlement in Gondor and Minas Tirith happens to be the only possible
+choice, it is shown as an option on the map and the player clicks it".
+
+- **The rule.** A recruit is placed without a click on the map only when the effect itself names one region for it.
+  When the effect lets the player choose and only one region is legal now, that region lights and the player clicks it.
+- **A Muster die.** The rule's choice is a settlement of the figure's nation, so the figure's click only takes it up; its
+  settlements light, one or more, and the settlement's click recruits. UI-142's recruitment at once is retired.
+- **A card's recruitment plan.** A figure whose region the card itself names (`RecruitmentOption.RegionFixed`, sent by
+  the server) is placed there by its click. Any other figure is taken up and its legal regions light, one or more.
+- **The server** places recruits on its own only when the card leaves no choice (`RecruitmentPlan.Automatic`). It always
+  asks for a recruitment region the card lets the player choose, even when only one is legal (Half-Orcs, Olog-Hai,
+  Cirdan's Ships, the Riders of Théoden, Éomer, Rage of the Dunlendings, the Rangers of the North, the Fate cards' regions).
+
+Playtest:
+- [ ] Muster with a die when a nation has a single free settlement. Expect the figure to be taken up and that settlement
+  to light; nothing is recruited until you click it.
+- [ ] Play a card that recruits "in a settlement of Gondor" with only Minas Tirith free (or Half-Orcs with one eligible
+  region). Expect that region to light and wait for your click.
+- [ ] Play a card that names its region (Dáin's recruitment in Erebor, the King of the Dead Revealed in Minas Morgul)
+  when a figure must be chosen. Expect the figure to appear there as soon as you click it.
+
+Tests: EditMode `EventRecruitDraftTests.AFigureWhoseCardNamesItsRegionIsPlacedByItsClickAndAChosenRegionWaits`;
+PlayMode `MusterOneSettlementTests.AFigureWithOneLegalSettlementWaitsForThatSettlementsClick` (frame
+`ui547-muster-one-settlement`); server (PR #26) `NewPowerTellsTheFixedOrthancEliteFromTheRegularsChoice` and the
+recruitment region tests that now click a lone region (`RecruitRegionFixture.Only`).

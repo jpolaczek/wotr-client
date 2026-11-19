@@ -52,15 +52,6 @@ namespace Wotr.Client
             return true;
         }
 
-        // UI-142: a reserve with exactly one legal settlement is a complete choice: its click recruits there.
-        public bool RecruitAtOnly(string id)
-        {
-            if (!Active || string.IsNullOrEmpty(id))
-                return false;
-            var targets = MusterActions.FigureTargets(view, board.ActionDie, id);
-            return targets.Count == 1 && CommitFigure(id, targets[0]);
-        }
-
         public bool Drop(DraftToken source, DraftToken target)
         {
             if (!Active || busy() || source == null || target == null)

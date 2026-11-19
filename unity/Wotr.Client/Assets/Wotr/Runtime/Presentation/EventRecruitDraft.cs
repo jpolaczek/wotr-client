@@ -53,6 +53,10 @@ namespace Wotr.Client
             var group = Armable(draft, option, id);
             if (group == null)
                 return false;
+            // UI-547 (owner, 2026-11-18): a figure whose region the card itself names is placed there by its click. A figure
+            // whose card allows several regions is taken up and its regions light, even when only one is legal now.
+            if (Fixed(draft, option, group) is { } named)
+                return Drop(draft, option, id, named);
             // UI-539: the one region chosen before a figure is the one Monsters Roused's West half carries (Preselect):
             // with nothing placed yet and no token armed, a token click fills it. An armed token is switched or released
             // instead (UI-213).
@@ -62,6 +66,10 @@ namespace Wotr.Client
             draft.Change(_ => draft.ReserveId = draft.ReserveId == id ? "" : id);
             return true;
         }
+
+        // The one region the card names for this figure's group, when it can take the figure now; null otherwise.
+        private static string Fixed(TurnDraft draft, ActionOption option, RecruitmentOption group) =>
+            group.RegionFixed && group.Targets.Count == 1 && CanPlace(draft, option, group, group.Targets[0]) ? group.Targets[0] : null;
 
         // UI-454 (owner, 2026-11-03): a token taken up to be carried is armed, never placed (not even in the chosen region)
         // nor released, so the regions it may be dropped on light.
