@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -40,6 +41,9 @@ namespace Wotr.PlayTests
             }
             CollectionAssert.AreEqual(new[] { SoundCue.ActionAccepted, SoundCue.DecisionRequired }, played, "One effect, then one alert.");
             Assert.AreEqual(1f, sounds.CurrentSource.volume, 0.0001f, "The alert at the Alerts level.");
+            // UI-555 (owner, 2026-11-19): "Sound" is the section's title once; its main switch says what it does.
+            Assert.AreEqual("Play sounds", settings.Q<Toggle>("sound-enabled").label);
+            Assert.AreEqual(1, settings.Query<Label>().ToList().Count(l => l.text == "Sound"), "One \"Sound\", the title.");
             settings.Q<Toggle>("sound-enabled").value = false;
             yield return null;
             Assert.IsFalse(sounds.Policy.Levels.Enabled);

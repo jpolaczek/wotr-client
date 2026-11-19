@@ -100,7 +100,7 @@ Besides this sequence, we play one clip at a time; more important can be less im
 <a id="settings-i-gra-w-tle"></a>
 ## Settings and background game
 
-Sound section in existing Settings: main Sound switch, Effects and Alerts sliders, Background alerts and listen button. UI labels in English, local record according to the previous preferences. By default Sound enabled, Effects 40%, Alerts 60%, Background alerts enabled. Older scale, motion and screen settings remain preserved. Moving the slider does not create continuous beeping; listening starts consciously.
+Sound section in existing Settings: main switch ("Play sounds" since UI-555, owner 2026-11-19: the section's title already reads "Sound"), Effects and Alerts sliders, Background alerts and listen button. UI labels in English, local record according to the previous preferences. By default Sound enabled, Effects 40%, Alerts 60%, Background alerts enabled. Older scale, motion and screen settings remain preserved. Moving the slider does not create continuous beeping; listening starts consciously.
 
 Without focus you can hear only the new required decision or the end of the currently open batch. battle requiring its own choice gives the usual `DecisionRequired`; the very beginning of battle, both tracks and other effects remain silent. The background filter works before priority selection. Disable background alerts means complete silence without focus. Without repeating reminders, system notifications and catching up on return.
 
