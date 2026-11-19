@@ -87,8 +87,9 @@ not submit it. The single option glows, and its tooltip says what the click does
   draw step (its own click draws every tile) and the server places a single drawn tile itself, a rule of the game (EXP-15
   D8), not a click the client sends; Sequential corruption keeps its Draw again.
 
-A click that completes a choice still sends it at once (UI-142): recruiting at the only settlement, a card with one
-payment method, and awakening a king to his only destination. The player's own "Skip cards this battle" policy (UI-11)
+A click that completes a choice still sends it at once (UI-142): a card with one payment method, and awakening a king
+to his only destination. Recruiting at the only settlement no longer does: since UI-547 the settlement lights and is
+clicked, unless the card itself names it. The player's own "Skip cards this battle" policy (UI-11)
 stays, because the player chose it. Tests: `BoardInteractionTests.UI279NoLegalCombatCardWaitsForTheNoCardClick…`,
 `SpecialDiceNetworkTests.AnEyeForcedAmongTheDiceWaitsForItsClick`, `RulerDiceTests`, `ExpansionCorruptionNetworkTests`,
 `SovereignPanelNetworkTests`, `KingsCards02NetworkTests`; `MatchTestRoom.NoCard` clicks No card for every own Combat
