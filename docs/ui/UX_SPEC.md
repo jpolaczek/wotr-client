@@ -101,6 +101,12 @@ tooltip. The hand follows it for every card choice, with or without a die: the E
 Treebeard or Entmoot lights the Character events it accepts and greys the rest with "Cannot be played now" (ARMY_MAP_UX
 AM02a).
 
+UI-553 (owner, 2026-11-19): "reading a card in Effects, the tooltip covers the card's text". A tooltip never covers a
+surface the player reads: a card's text unrolled in Effects and the card inspector carry `RuntimeTooltip.AvoidClass`.
+The tooltip still stands below its source, or above it when the bottom has no room. When that would cover a reading
+surface, it takes the first of below, above, right and left that covers none and not its own source (Test: PlayMode
+`RuntimeTooltipTests.ATooltipNeverCoversTheCardTextBeingRead`, frame `ui553-tooltip-avoids-card`).
+
 <a id="panel-posiłków-bez-kart--ui-150"></a>
 ## Meal Panel without cards — UI-150
 

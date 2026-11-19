@@ -56,6 +56,8 @@ namespace Wotr.Client
         public CardInspector()
         {
             Root.AddToClassList("card-inspector");
+            // UI-553: a tooltip never covers the card being read.
+            Root.AddToClassList(RuntimeTooltip.AvoidClass);
             Root.style.display = DisplayStyle.None;
             var header = BoardScreen.Row("card-header");
             FloatingWindow.MarkHandle(header);
