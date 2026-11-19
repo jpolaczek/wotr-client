@@ -6,6 +6,8 @@ namespace Wotr.Client
 {
     public sealed class BattleDieButton : Button
     {
+        public const string RerolledClass = "battle-die-rerolled";
+
         public BattleDieButton(BattleDieView die, string source, BattleView battle, Action choose) : base(choose)
         {
             name = "battle-die-" + die.Id;
@@ -13,6 +15,9 @@ namespace Wotr.Client
             AddToClassList("action");
             AddToClassList("battle-die");
             EnableInClassList("battle-hit", die.Hit || die.RerollHit || die.ConvertedHit);
+            // UI-549 (owner, 2026-11-18: "the green checks must not be covered by the dice beside them"): a rerolled die
+            // holds two faces, the arrow and its mark, so its cell is wider.
+            EnableInClassList(RerolledClass, die.Reroll.HasValue);
             tooltip = BattleRollText.Describe(die, source, battle);
             var results = BoardScreen.Row("battle-result-row");
             results.pickingMode = PickingMode.Ignore;
