@@ -4,7 +4,8 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    public enum CharacterRosterSection { OnBoard, NotInPlay, Removed }
+    // UI-552: the opponent's characters on the map, shown in their own section behind the roster's filter.
+    public enum CharacterRosterSection { OnBoard, NotInPlay, Removed, Opponent }
 
     // Inspection only. Entry permission and dynamic values remain server-owned.
     public static class CharacterRosterPresentation
@@ -87,8 +88,18 @@ namespace Wotr.Client
             if (own != null)
                 return own;
             var figure = view?.Characters.FirstOrDefault(c => c.Id == id);
-            if (figure == null)
-                return null;
+            return figure == null ? null : Figure(figure);
+        }
+
+        // UI-552 (owner, 2026-11-19: "the opponent's characters should be there too, only hidden behind an optional filter"):
+        // the opponent's characters the view shows on the map (it carries no other figure of theirs), each a read-only row.
+        public static IEnumerable<CharacterRosterView> OpponentRows(PlayerView view) =>
+            (view?.Characters ?? new List<CharacterView>()).Where(c => c.Side != view.You && CharacterLibrary.Find(c.DefinitionId) != null)
+                .Select(Figure).Where(row => row.Identity != "gollum" && row.Identity != "smeagol");
+
+        // A public figure as a row: on the board, with the values its card and the view give.
+        private static CharacterRosterView Figure(CharacterView figure)
+        {
             var card = CharacterLibrary.Find(figure.DefinitionId);
             return new CharacterRosterView
             {

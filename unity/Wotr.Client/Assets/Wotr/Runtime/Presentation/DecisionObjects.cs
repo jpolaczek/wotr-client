@@ -8,7 +8,9 @@ namespace Wotr.Client
     {
         public static string Prompt(PlayerView view, TurnDraft draft) => "Select the highlighted " + Objects(view, draft);
 
-        public static string Confirm(PlayerView view, TurnDraft draft) => Prompt(view, draft) + ", then confirm.";
+        // UI-548: a revealed Fellowship's route also says where it may not end, which is why such a region does not light.
+        public static string Confirm(PlayerView view, TurnDraft draft) => Prompt(view, draft) + ", then confirm." +
+            (draft.Kind == CommandKind.RevealFellowship ? " Revealed, it cannot end in a Free Peoples City or Stronghold." : "");
 
         public static string Objects(PlayerView view, TurnDraft draft) => draft.Kind switch
         {

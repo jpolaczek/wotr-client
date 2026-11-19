@@ -18,6 +18,8 @@ namespace Wotr.Client
         public EffectUnroll()
         {
             Root.AddToClassList("effect-unroll");
+            // UI-553: a tooltip never covers the card's text being read.
+            Root.AddToClassList(RuntimeTooltip.AvoidClass);
             Root.style.position = Position.Absolute;
             Root.style.display = DisplayStyle.None;
             Root.Add(text);

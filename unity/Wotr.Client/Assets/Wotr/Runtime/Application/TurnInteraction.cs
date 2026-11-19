@@ -123,7 +123,7 @@ namespace Wotr.Client
                 () => SelectionBusy);
             recruitFlights = new RecruitFlightInteraction(board);
             reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.BacksReserve,
-                id => muster.RecruitAtOnly(id), ChooseComponent, CompleteChoice, branchCarry, recruitFlights);
+                ChooseComponent, CompleteChoice, branchCarry, recruitFlights);
             politics = new PoliticalContextInteraction(board, EditSelection, () => SelectionBusy);
             travel = new TravelContextInteraction(board, EditSelection,
                 () => SelectionBusy);

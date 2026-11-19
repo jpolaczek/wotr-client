@@ -25,6 +25,8 @@ namespace Wotr.PlayTests
         private const string Legolas = "base.character.legolas";
         private const string Merry = "base.character.merry";
         private const string Mithril = "base.fp.character.05";
+        private const string AxeAndBow = "base.fp.character.06";
+        private const string Balrog = "base.sh.character.17";
         private const string Smeagol = "lords.character.smeagol";
 
         [UnityTest]
@@ -338,6 +340,97 @@ namespace Wotr.PlayTests
             yield return stage.Released();
         }
 
+        // UI-546 (owner, 2026-11-18: "when a card's effect triggers during a battle or the Hunt, we must see an animation
+        // presenting that card, so it is clear where the effects come from"): Axe and Bow answering the Hunt comes out of
+        // the Free Peoples' hand and stands beside the Hunt window, "Takes effect", before its entry is marked. Its second
+        // entry (the damage changed) presents it no more, and the entries whose source is no card present nothing.
+        // Frame: ui546-hunt-card.
+        [UnityTest]
+        public IEnumerator ACardAnsweringTheHuntIsPresentedOnceBeforeItsEffect()
+        {
+            using var stage = Watching();
+            yield return stage.Ready();
+            var roll = Snapshot("BeforeDraw", 6, 2);
+            var script = new Script(stage).Entry(HuntReportKind.Started, Snapshot("BeforeDraw")).Entry(HuntReportKind.Rolled, roll)
+                .Entry(HuntReportKind.TileDrawn, Tile(roll, 2)).Entry(HuntReportKind.DamageDetermined, Tile(roll, 2))
+                .Entry(HuntReportKind.Reaction, Tile(roll, 2), source: AxeAndBow).Entry(HuntReportKind.DamageChanged, Tile(roll, 1), source: AxeAndBow)
+                .Entry(HuntReportKind.HuntCompleted, Done(Tile(roll, 1)));
+            var steps = script.Finish();
+            stage.Play(script.Latest, null, steps);
+            var appearances = 0;
+            var others = new List<string>();
+            var shown = false;
+            var saved = false;
+            var shownAt = -1f;
+            var litAt = -1f;
+            var deadline = Time.realtimeSinceStartup + 25;
+            while (Time.realtimeSinceStartup < deadline && (litAt < 0 || shown))
+            {
+                var time = Time.realtimeSinceStartup;
+                var now = Presented(stage, AxeAndBow);
+                if (Triggered(stage) && !now)
+                    others.Add(stage.Board.Cards.CardId);
+                if (now && !shown)
+                {
+                    appearances++;
+                    shownAt = shownAt < 0 ? time : shownAt;
+                    Assert.IsTrue(stage.Board.Hunt.IsOpen, "The Hunt window is open: the card answers it.");
+                    Assert.IsFalse(PresentationGlow.IsLit(stage.Board.TableEffects.Tab), "Its entry is not marked yet.");
+                }
+                if (now && !saved && time - shownAt > CardFlight.Seconds + .3f)
+                {
+                    Assert.AreEqual(CardTriggerPresenter.TriggerNote, stage.Board.Cards.Note);
+                    Assert.IsFalse(stage.Board.Cards.Root.worldBound.Overlaps(stage.Board.Hunt.Root.worldBound),
+                        "Beside the Hunt window, never over it.");
+                    LayoutTests.Save(stage.Texture, "ui546-hunt-card.png");
+                    saved = true;
+                }
+                if (litAt < 0 && PresentationGlow.IsLit(stage.Board.TableEffects.Tab))
+                    litAt = time;
+                shown = now;
+                yield return null;
+            }
+            Assert.AreEqual(1, appearances, "Presented once for its two entries.");
+            CollectionAssert.IsEmpty(others, "No other source is presented as a card.");
+            Assert.IsTrue(saved, "It stood to be read.");
+            Assert.Greater(litAt, shownAt + (float)CardTriggerPresenter.HoldSeconds, "Its entry is marked after the card was read.");
+            yield return stage.Released();
+        }
+
+        // UI-546: the Shadow's Balrog of Moria, an Event revealed as the action began, is not presented again by the Hunt
+        // it starts.
+        [UnityTest]
+        public IEnumerator AnEventThatStartsTheHuntIsNotPresentedTwice()
+        {
+            using var stage = Watching(viewer: Side.FreePeoples);
+            yield return stage.Ready();
+            var roll = Snapshot("BeforeDraw", 6, 2);
+            var script = new Script(stage).Entry(HuntReportKind.Started, Snapshot("BeforeDraw"), source: Balrog)
+                .Entry(HuntReportKind.Rolled, roll, source: Balrog).Entry(HuntReportKind.HuntCompleted, Done(roll), source: Balrog);
+            var steps = script.Finish();
+            steps[0].Kind = "EventPlayed";
+            steps[0].Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.Event, Id = Balrog, Deck = "character" });
+            stage.Play(script.Latest, null, steps);
+            var revealed = false;
+            var triggered = false;
+            var deadline = Time.realtimeSinceStartup + 25;
+            while (Time.realtimeSinceStartup < deadline && stage.Playback.Holding)
+            {
+                revealed |= Presented(stage, Balrog) && stage.Board.Cards.Note == CardRevealPresenter.PlayedNote;
+                triggered |= Triggered(stage);
+                yield return null;
+            }
+            Assert.IsTrue(revealed, "The Event was revealed.");
+            Assert.IsFalse(triggered, "Its Hunt does not present it again.");
+            yield return stage.Released();
+        }
+
+        private static bool Presented(PresentedBoardStage stage, string card) => stage.Board.Cards.CardId == card &&
+            stage.Board.Cards.Root.resolvedStyle.display == DisplayStyle.Flex;
+
+        private static bool Triggered(PresentedBoardStage stage) => stage.Board.Cards.Note == CardTriggerPresenter.TriggerNote &&
+            stage.Board.Cards.Root.resolvedStyle.display == DisplayStyle.Flex;
+
         [UnityTest]
         public IEnumerator HidingMarksTheRingAndHealingTheCorruptionTrack()
         {
@@ -438,9 +531,10 @@ namespace Wotr.PlayTests
         }
 
         // The Shadow watches a hidden Fellowship at Rivendell: progress 1, corruption 2, Gimli its Guide, four Companions.
-        internal static PresentedBoardStage Watching(bool revealed = false, int width = 1366, float scale = 1f, bool reduced = false)
+        internal static PresentedBoardStage Watching(bool revealed = false, int width = 1366, float scale = 1f, bool reduced = false,
+            Side viewer = Side.Shadow)
         {
-            var stage = new PresentedBoardStage(width, scale, reduced, Side.Shadow);
+            var stage = new PresentedBoardStage(width, scale, reduced, viewer);
             var fellowship = stage.Before.Fellowship;
             fellowship.RegionId = "rivendell";
             fellowship.Progress = 1;

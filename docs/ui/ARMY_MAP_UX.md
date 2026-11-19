@@ -195,8 +195,8 @@ The Muster (die Muster, Army/Muster as Muster, Will of the West as Muster) windo
 - The reserve token clicks it; legal settlement with `Targets` shine on the map, the other
   settlement nations fade with the reason in the tooltip.
 - The settlement highlighted click recruits immediately (sequence step as today).
-- The chip click at exactly one legal settlement recruits there (from UI-142 instead of a double
-  click; with several settlement these settlements shine).
+- The chip click at exactly one legal settlement recruited there (UI-142); since UI-547 that settlement shines like
+  several do and its click recruits.
 - Draging a token to settlement is a shortcut (R16).
 - The settlement click on the map at the active Muster mark the line of its nation; the pallet in
   the region panel is abbreviated and uses the same reasons.
@@ -285,6 +285,7 @@ The owner prepares the evidence in his task; UI-132 takes the joint course.
 | --- | --- | --- |
 | AM01 | UI-124 | The selected die distinguishes card from the possible green glow (Muster, Army, Character, Event, Will), the remaining extinguished with explanation. |
 | AM02 | UI-124 | Without dice no distinction and extinguish; change dice without rebuilding and moving cards. |
+| AM02a | UI-550 | Owner, 2026-11-18: "the cards that cannot be played should be greyed and the ones that can lit; a general rule: when there is a choice, the unavailable options are greyed". Whenever the player's own decision lets them choose a card without a die (the Ents' free follow-up after Huorns, Treebeard or Entmoot, a reaction, a discard or a cost), the cards it accepts are lit and the rest are greyed with "Cannot be played now" (`HandView.Refresh`). In the action phase without a die nothing is lit or greyed (UI-443). Test: PlayMode `CardInteractionTests.AFreePlayLightsTheCardsItAcceptsAndGreysTheRest` (frame `ui550-ents-follow-up`). |
 | AM03 | UI-125 | Army graphics set with page and state variants in 1× and 2×; contract `UiArtKitTests`; preview. |
 | AM04 | UI-126 | The view of the entire map shows the token of each force; switching levels with hysteresis without rebuilding. |
 | AM05 | UI-126 | Figures on the stand: silhouettes, base game sides, coats (≤ 2 + ‘+’), number; centered hitbox. |
@@ -392,8 +393,8 @@ The dead branch of the Army drop was removed: `DraftGesture.Drop` rejects armies
 - The reserve chip (`MusterActions.Select`) button saves one step back: step up recruiting with
   selected figure without settlement, so the map only shines settlement with this figure
   (`MusterActions.Targets`); click settlement sends a step. The two-click of the chip recruited when
-  figure had exactly one legal settlement; since UI-142 does this single click of the chip
-  (BOARD_INTERACTION_UX, “The two-clicker – UI-142”).
+  figure had exactly one legal settlement; UI-142 made it this single click of the chip
+  (BOARD_INTERACTION_UX, “The two-clicker – UI-142”), and UI-547 retired it: the one settlement is clicked.
 - The settlement click on the map means the line of its nation (`reinforcement-focused`, event
   `RegionRecruitPalette.Inspected`). The region's pallet gives the reason for the server
   (`ReinforcementRows.PaletteReason`) instead of the "Unavailable here with the remaining budget"

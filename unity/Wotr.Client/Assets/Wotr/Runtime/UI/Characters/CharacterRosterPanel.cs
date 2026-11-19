@@ -36,6 +36,12 @@ namespace Wotr.Client
         private readonly Dictionary<CharacterRosterSection, VisualElement> sections = new Dictionary<CharacterRosterSection, VisualElement>();
         private readonly Foldout removed = new Foldout { text = "Removed", value = false, name = "characters-removed" };
         private readonly Label empty = new Label("No named characters in this view") { name = "characters-empty" };
+        // UI-552 (owner, 2026-11-19): the opponent's characters, behind a filter that is off until the player turns it on;
+        // the choice holds for the session.
+        public const string OpponentFilterName = "characters-opponent-filter";
+        public const string SectionTitleClass = "roster-section-title";
+        private static bool opponents;
+        private Button opponentFilter;
         private VisualElement sovereigns;
         private readonly ChoicePulse pulse;
         private bool rosterOffered;
@@ -80,6 +86,11 @@ namespace Wotr.Client
             var header = BoardScreen.Row("character-header");
             FloatingWindow.MarkHandle(header);
             header.Add(BoardScreen.Title("CHARACTERS"));
+            opponentFilter = BoardScreen.Button("Opponent", ToggleOpponents);
+            opponentFilter.name = OpponentFilterName;
+            opponentFilter.AddToClassList("roster-filter");
+            header.Add(opponentFilter);
+            ShowFilter();
             var close = IconButton.Create("close", "Close", Close);
             close.name = "close-characters";
             header.Add(close);
@@ -87,13 +98,70 @@ namespace Wotr.Client
             AddSection(CharacterRosterSection.OnBoard, "On board", Root);
             AddSection(CharacterRosterSection.NotInPlay, "Not in play", Root);
             Root.Add(removed);
+            StyleRemovedFold();
             AddSection(CharacterRosterSection.Removed, "", removed);
+            AddSection(CharacterRosterSection.Opponent, "Opponent's characters", Root);
             Root.Add(empty);
             hover = new DrawerHover(surface, Tab, Root, element => Contains(Inspector.Root, element), RefreshVisibility);
             BindInspection(surface);
         }
 
         public bool Lists(string figureId) => rows.ContainsKey(figureId);
+
+        // UI-551: the theme's fold indents its toggle, arrow and content; inline styles (which outrank the theme) put its
+        // title at the sections' indent, with a small arrow before it, and its rows in line with theirs.
+        private void StyleRemovedFold()
+        {
+            removed.style.marginLeft = 0;
+            removed.style.paddingLeft = 0;
+            var toggle = removed.Q<Toggle>();
+            toggle.style.marginLeft = 0;
+            toggle.style.paddingLeft = 0;
+            var input = toggle.Q(className: "unity-toggle__input");
+            if (input != null)
+            {
+                input.style.marginLeft = 0;
+                input.style.paddingLeft = 0;
+            }
+            var arrow = toggle.Q(className: "unity-foldout__checkmark");
+            if (arrow != null)
+            {
+                arrow.style.marginLeft = 0;
+                arrow.style.marginRight = 2;
+                arrow.style.width = 10;
+                arrow.style.height = 10;
+            }
+            var text = toggle.Q<Label>(className: "unity-foldout__text");
+            if (text != null)
+            {
+                text.AddToClassList(SectionTitleClass);
+                text.style.marginLeft = 0;
+                text.style.paddingLeft = 0;
+            }
+            removed.contentContainer.style.marginLeft = 0;
+            removed.contentContainer.style.paddingLeft = 0;
+        }
+
+        public bool ShowsOpponents => opponents;
+
+        // UI-552: the filter's click shows or hides the opponent's characters.
+        private void ToggleOpponents() => ShowOpponents(!opponents);
+
+        public void ShowOpponents(bool shown)
+        {
+            opponents = shown;
+            ShowFilter();
+            if (view == null)
+                return;
+            Apply(view);
+            RefreshSelection();
+        }
+
+        private void ShowFilter()
+        {
+            opponentFilter.EnableInClassList("selected", opponents);
+            opponentFilter.tooltip = opponents ? "Click to hide the opponent's characters" : "Click to show the opponent's characters on the map";
+        }
 
         public void ShowSovereigns(bool shown)
         {
@@ -123,8 +191,14 @@ namespace Wotr.Client
         private void AddSection(CharacterRosterSection kind, string title, VisualElement parent)
         {
             var section = new VisualElement { name = "characters-section-" + kind };
+            // UI-551 (owner, 2026-11-19: "the characters tab falls apart"): every section's title, the Removed fold's included,
+            // reads alike at one indent (SectionTitleClass, Characters.uss).
             if (title.Length > 0)
-                section.Add(new Label(title));
+            {
+                var label = new Label(title);
+                label.AddToClassList(SectionTitleClass);
+                section.Add(label);
+            }
             var grid = BoardScreen.Row("character-roster-grid");
             section.Add(grid);
             sections.Add(kind, grid);
@@ -136,7 +210,8 @@ namespace Wotr.Client
             if (view != null && (view.MatchId != latest.MatchId || view.You != latest.You))
                 Close();
             view = latest;
-            var entries = CharacterRosterPresentation.Rows(view).ToArray();
+            var entries = CharacterRosterPresentation.Rows(view)
+                .Concat(opponents ? CharacterRosterPresentation.OpponentRows(view) : Enumerable.Empty<CharacterRosterView>()).ToArray();
             var ids = entries.Select(row => row.FigureId).ToHashSet();
             foreach (var id in rows.Keys.Where(id => !ids.Contains(id)).ToArray())
             {
@@ -165,7 +240,7 @@ namespace Wotr.Client
                 ObserveRow(row.Root, id);
                 ObserveAbilities(row, id);
             }
-            var grid = sections[CharacterRosterPresentation.Section(entry)];
+            var grid = sections[entry.Side != view.You ? CharacterRosterSection.Opponent : CharacterRosterPresentation.Section(entry)];
             if (row.Root.parent != grid)
             {
                 var focused = row.Root.panel?.focusController.focusedElement == row.Root;

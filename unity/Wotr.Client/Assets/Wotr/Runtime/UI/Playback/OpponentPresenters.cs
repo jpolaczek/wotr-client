@@ -19,6 +19,7 @@ namespace Wotr.Client
         private readonly StagedBoard staged;
         private readonly PoliticsPresenter politics;
         private readonly CardRevealPresenter cards;
+        private readonly CardTriggerPresenter triggers;
         private readonly CardRollPresenter rolls;
         private readonly CharacterPresenter characters;
         private readonly FellowshipReading fellowshipPanel;
@@ -60,6 +61,9 @@ namespace Wotr.Client
             Playback.Register(camera);
             cards = new CardRevealPresenter(board, staged, Playback, camera, layer);
             Playback.Register(cards);
+            // UI-546: a card whose effect a battle or Hunt step is, presented before the effect plays in its window.
+            triggers = new CardTriggerPresenter(board, staged, camera);
+            Playback.Register(triggers);
             // UI-492: a card's dice, between its reveal and what they cause.
             Playback.Register(rolls);
             characters = new CharacterPresenter(board, staged, Trace, camera);
@@ -119,7 +123,7 @@ namespace Wotr.Client
         private bool Reading()
         {
             reading &= board.Cards.Pinned && board.Cards.Root.resolvedStyle.display != DisplayStyle.None;
-            return reading || cards.Reading;
+            return reading || cards.Reading || triggers.Reading;
         }
 
         private bool Escape()
@@ -151,6 +155,7 @@ namespace Wotr.Client
             Trace.Clear();
             politics.Released();
             cards.Released();
+            triggers.Released();
             rolls.Released();
             characters.Released();
             hunt.Released();

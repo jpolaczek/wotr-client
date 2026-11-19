@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,6 +10,9 @@ namespace Wotr.Client
     public sealed class RuntimeTooltip : IDisposable
     {
         public const string RichHoverClass = "rich-hover";
+        // UI-553 (owner, 2026-11-19: "reading a card in Effects, the tooltip covers the card's text"): a surface the player
+        // reads (a card's text unrolled in Effects, the card inspector) carries this class, and a tooltip never covers it.
+        public const string AvoidClass = "tooltip-avoid";
         // UI-409: a source whose tooltip is styled text (a roster row's parts); others stay plain.
         public const string FormattedClass = "formatted-tooltip";
         private readonly VisualElement root;
@@ -181,17 +186,43 @@ namespace Wotr.Client
                 return;
             var bounds = root.WorldToLocal(source.worldBound);
             var size = label.layout.size;
-            var x = Mathf.Clamp(bounds.xMin, 8, Mathf.Max(8, root.contentRect.width - size.x - 8));
-            var y = bounds.yMax + 6;
-            if (y + size.y > root.contentRect.height - 8)
-                y = bounds.yMin - size.y - 6;
-            y = Mathf.Clamp(y, 8, Mathf.Max(8, root.contentRect.height - size.y - 8));
+            var (x, y) = Place(bounds, size);
             if (Mathf.Abs(label.layout.x - x) > .5f)
                 label.style.left = x;
             if (Mathf.Abs(label.layout.y - y) > .5f)
                 label.style.top = y;
             label.style.visibility = Visibility.Visible;
         }
+
+        // Below the source, else above it; UI-553: the first of below, above, right and left that covers no reading surface.
+        private (float X, float Y) Place(Rect bounds, Vector2 size)
+        {
+            var avoided = Avoided();
+            var candidates = new[]
+            {
+                new Vector2(bounds.xMin, bounds.yMax + 6),
+                new Vector2(bounds.xMin, bounds.yMin - size.y - 6),
+                new Vector2(bounds.xMax + 6, bounds.yMin),
+                new Vector2(bounds.xMin - size.x - 6, bounds.yMin)
+            }.Select(Clamp).ToList();
+            var first = bounds.yMax + 6 + size.y > root.contentRect.height - 8 ? candidates[1] : candidates[0];
+            if (avoided.Count == 0)
+                return (first.x, first.y);
+            var free = candidates.FirstOrDefault(c => !avoided.Any(r => r.Overlaps(new Rect(c, size))) &&
+                !new Rect(c, size).Overlaps(bounds));
+            var chosen = free == default ? first : free;
+            return (chosen.x, chosen.y);
+
+            Vector2 Clamp(Vector2 point) => new Vector2(
+                Mathf.Clamp(point.x, 8, Mathf.Max(8, root.contentRect.width - size.x - 8)),
+                Mathf.Clamp(point.y, 8, Mathf.Max(8, root.contentRect.height - size.y - 8)));
+        }
+
+        // The reading surfaces shown now, in the tooltip's coordinates.
+        private List<Rect> Avoided() => root.Query(className: AvoidClass).ToList()
+            .Where(e => e.resolvedStyle.display != DisplayStyle.None && e.resolvedStyle.visibility == Visibility.Visible &&
+                e.worldBound.width > 0 && e.worldBound.height > 0)
+            .Select(e => root.WorldToLocal(e.worldBound)).ToList();
 
         public void Dismiss()
         {

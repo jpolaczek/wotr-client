@@ -105,6 +105,93 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0f, marker.resolvedStyle.translate.x, .01f);
         }
 
+        // UI-554 (owner, 2026-11-19: "check the Corruption ring's move back; at least once I saw the ring jump instead of
+        // sliding smoothly"): healing two Corruption, alone or with a declaration that resets the Progress, slides the Ring
+        // back through the cells between. Frames: ui554-*.
+        [UnityTest]
+        public IEnumerator HealingSlidesTheRingBack([Values(false, true)] bool declared)
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, Side.FreePeoples);
+            stage.Before.Fellowship.Corruption = 5;
+            stage.Before.Fellowship.Progress = 3;
+            yield return stage.Ready();
+            stage.Board.Fellowship.Open();
+            yield return Frames(10);
+            var marker = stage.Board.Root.Q("corruption-track-marker");
+            var start = marker.worldBound.center.x;
+            var latest = stage.Latest();
+            latest.Fellowship.Corruption = 3;
+            if (declared)
+                latest.Fellowship.Progress = 0;
+            stage.Board.Apply(latest);
+            var samples = new List<float>();
+            for (var t = 0f; t < 1.6f; t += Time.unscaledDeltaTime)
+            {
+                samples.Add(marker.worldBound.center.x);
+                yield return null;
+            }
+            var end = marker.worldBound.center.x;
+            Assert.Less(end, start - 20, "Two cells back.");
+            Assert.GreaterOrEqual(samples.Count(x => Between(x, start, end)), 3, "Seen on its way back: " + string.Join(", ", samples.Select(x => x.ToString("0"))));
+            Assert.AreEqual(0f, marker.resolvedStyle.translate.x, .01f);
+            LayoutTests.Save(stage.Texture, "ui554-heal-" + (declared ? "declared" : "alone") + ".png");
+        }
+
+        // UI-554: the player's own Athelas heals after its dice; the Ring slides back while the window stays, and the view
+        // the presentation releases moves it no more.
+        [UnityTest]
+        public IEnumerator AthelasSlidesTheRingBackAfterItsDice()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, Side.FreePeoples);
+            stage.Before.Fellowship.Corruption = 4;
+            yield return stage.Ready();
+            stage.Board.Fellowship.Open();
+            yield return Frames(10);
+            var marker = stage.Board.Root.Q("corruption-track-marker");
+            var start = marker.worldBound.center.x;
+            var latest = stage.Latest();
+            latest.Fellowship.Corruption = 2;
+            var played = stage.Step(1);
+            played.Actor = Side.FreePeoples;
+            played.Kind = "EventPlayed";
+            played.Facts.FellowshipBefore = Outcome(stage.Before.Fellowship, 4);
+            played.Facts.FellowshipAfter = Outcome(stage.Before.Fellowship, 2);
+            var roll = stage.Step(2);
+            roll.Actor = null;
+            roll.Automatic = true;
+            roll.Kind = "HealingRoll";
+            roll.ActionId = played.ActionId;
+            roll.Facts.SourceId = "base.fp.character.09";
+            roll.Facts.Rolls.AddRange(new[] { 3, 5, 1 });
+            roll.Facts.HitTarget = 3;
+            roll.Facts.Hits = 2;
+            stage.Play(latest, null, played, roll);
+            var samples = new List<float>();
+            var deadline = Time.realtimeSinceStartup + 12;
+            while (Time.realtimeSinceStartup < deadline && stage.Playback.Holding)
+            {
+                samples.Add(marker.worldBound.center.x);
+                yield return null;
+            }
+            for (var i = 0; i < 30; i++)
+            {
+                samples.Add(marker.worldBound.center.x);
+                yield return null;
+            }
+            var end = marker.worldBound.center.x;
+            Assert.Less(end, start - 20, "Two cells back.");
+            Assert.GreaterOrEqual(samples.Count(x => Between(x, start, end)), 3, "Seen on its way back: " + string.Join(", ", samples.Select(x => x.ToString("0"))));
+            var jumps = samples.Zip(samples.Skip(1), (a, b) => Mathf.Abs(b - a)).Max();
+            Assert.Less(jumps, Mathf.Abs(start - end) * .6f, "No frame moves it most of the way at once.");
+            LayoutTests.Save(stage.Texture, "ui554-athelas.png");
+        }
+
+        private static HuntOutcomeView Outcome(FellowshipView fellowship, int corruption) => new HuntOutcomeView
+        {
+            RegionId = fellowship.RegionId, Progress = fellowship.Progress, MordorStep = fellowship.MordorStep,
+            Corruption = corruption, Hidden = fellowship.Hidden, GuideId = fellowship.Guide
+        };
+
         [UnityTest]
         public IEnumerator AQuietViewPlacesTheTokenAtOnce()
         {

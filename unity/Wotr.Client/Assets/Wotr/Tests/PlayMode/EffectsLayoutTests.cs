@@ -84,6 +84,10 @@ namespace Wotr.PlayTests
                     foreach (var source in visibleSources)
                         Inside(source.worldBound, board.TableEffects.Root.worldBound);
                     // UI-446 (owner): Inspect unrolls an ability's descriptions as plain text, as a hover does; it opens no details.
+                    // Inspect is the programmatic path: the pointer leaves the tiles first, so the tile it rested on (whose tooltip
+                    // would appear meanwhile) does not unroll again over the inspected one.
+                    CardGestures.Move(board.Phase);
+                    yield return Frames();
                     board.TableEffects.Inspect("kings.character.theoden.corrupted");
                     yield return Frames();
                     Check(board);

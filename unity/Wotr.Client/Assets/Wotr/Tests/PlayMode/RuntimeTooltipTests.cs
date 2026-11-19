@@ -63,6 +63,38 @@ namespace Wotr.PlayTests
             Assert.IsEmpty(tip.text, "Detached views must not retain private text.");
         }
 
+        // UI-553 (owner, 2026-11-19: "reading a card in Effects, the tooltip covers the card's text"): a tooltip stands below
+        // its source as before, unless that covers a reading surface (RuntimeTooltip.AvoidClass); then it takes the first of
+        // above, right and left that covers none.
+        [UnityTest]
+        public IEnumerator ATooltipNeverCoversTheCardTextBeingRead()
+        {
+            using var client = Create();
+            var button = Probe(client, "Remove The Palantír of Orthanc · Spend this die and give one Elven Ring to the Shadow.");
+            var card = new VisualElement { name = "probe-card-text" };
+            card.style.position = Position.Absolute;
+            card.style.left = 20;
+            card.style.top = 300;
+            card.style.width = 420;
+            card.style.height = 140;
+            client.Board.Root.Add(card);
+            yield return Settle();
+            var tip = Hint(client);
+            Move(button);
+            yield return new WaitForSecondsRealtime(.35f);
+            Visible(tip, button.tooltip);
+            Assert.GreaterOrEqual(tip.worldBound.yMin, button.worldBound.yMax, "Without a reading surface it stands below, as before.");
+            Move(client.Board.Phase);
+            yield return Settle();
+            card.AddToClassList(RuntimeTooltip.AvoidClass);
+            Move(button);
+            yield return new WaitForSecondsRealtime(.35f);
+            Visible(tip, button.tooltip);
+            Assert.IsFalse(tip.worldBound.Overlaps(card.worldBound), "It does not cover the card being read: " + tip.worldBound + " vs " + card.worldBound);
+            Assert.IsFalse(tip.worldBound.Overlaps(button.worldBound), "Nor its own source.");
+            LayoutTests.Save(client.Viewport, "ui553-tooltip-avoids-card.png");
+        }
+
         [UnityTest]
         public IEnumerator DragCancelAndRemovedActionSourcesNeverLeaveDescriptions()
         {
