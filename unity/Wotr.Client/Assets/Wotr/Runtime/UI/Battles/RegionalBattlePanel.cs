@@ -70,6 +70,12 @@ namespace Wotr.Client
         private string foldedForStep = "";
         private readonly Button fold;
         private readonly Label foldedStep = new Label { name = "battle-folded-step", enableRichText = false };
+        // UI-556 (owner, 2026-11-19, after the window stayed folded into the next round: "don't change this behaviour, just
+        // make the button that unfolds the battle easier to see"): folded, the plaque carries a worded Show battle button
+        // on the warm field beside its step, and the header's unfold symbol keeps the warm field too.
+        public const string UnfoldName = "battle-unfold";
+        private readonly VisualElement foldedRow = BoardScreen.Row("battle-folded-row");
+        private readonly Button unfold;
 
         public RegionalBattlePanel(VisualElement tray, VisualElement dock, MapCanvas map)
         {
@@ -92,7 +98,16 @@ namespace Wotr.Client
             Root.Add(header);
             foldedStep.AddToClassList("battle-folded-step");
             foldedStep.pickingMode = PickingMode.Ignore;
-            Root.Add(foldedStep);
+            unfold = BoardScreen.Button("Show battle", () => SetFolded(false));
+            unfold.name = UnfoldName;
+            unfold.tooltip = UnfoldTooltip;
+            unfold.AddToClassList("battle-unfold");
+            var unfoldIcon = new VisualElement { pickingMode = PickingMode.Ignore };
+            unfoldIcon.AddToClassList("battle-unfold-icon");
+            unfold.Add(unfoldIcon);
+            foldedRow.Add(foldedStep);
+            foldedRow.Add(unfold);
+            Root.Add(foldedRow);
             scene.AddToClassList("battle-scene");
             attackerEmblem.AddToClassList("battle-scene-emblem");
             defenderEmblem.AddToClassList("battle-scene-emblem");
@@ -355,6 +370,7 @@ namespace Wotr.Client
             Folded = value;
             Root.EnableInClassList(FoldedClass, value);
             IconButton.SetIcon(fold, value ? "expand" : "collapse");
+            fold.EnableInClassList("selected", value);
             fold.tooltip = value ? UnfoldTooltip : FoldTooltip;
             Position();
         }

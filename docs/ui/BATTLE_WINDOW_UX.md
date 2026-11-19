@@ -628,3 +628,11 @@ some figures) holds while that step lasts; the next such step folds it again, an
 player's losses or reroll) still unfolds it. `BattleFoldTests.AnAdvanceFoldsTheWindowAndAnUnfoldHoldsForTheStep` checks
 it.
 
+## The plaque's unfold button is easy to see — UI-556 (2026-11-19)
+
+The owner found the window still folded into the next round after Hold position (the retreat decision is a UI-527 step
+on the map), first called it a serious bug, then decided: "don't change this behaviour, just make the button that unfolds
+the battle easier to see". The folding stays as UI-527 describes. Folded, the plaque now carries a worded **Show
+battle** button on the warm field beside its step, with the unfold symbol on its left, and the header's unfold symbol
+keeps the warm field while the window is folded. `BattleFoldTests.TheFoldedPlaqueKeepsItsButtonsInFourLayouts` checks
+the button in four layouts (inside the plaque, beside the step, its words fit) and unfolds the window with it.
