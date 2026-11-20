@@ -13,10 +13,16 @@ namespace Wotr.Client
     // track position: a change seen while the panel was closed travels when the panel opens, and a new layout of an
     // unchanged position (a resize) places at once. A first placement, Reduced motion and a quiet view (Skip, a catch-up)
     // place at once.
+    // UI-557 (owner, 2026-11-20: animations "sometimes start late"): a change seen while its panel was closed travels only
+    // when the panel shows it within FreshSeconds (a panel opened for that very step). A later opening finds the token at
+    // its place, so an old move never plays inside a later one (the opponent's presentation opening the panel).
     public sealed class TokenGlide
     {
+        public const double FreshSeconds = 0.6;
         // A quiet view (Skip, a catch-up after an absence) places every token at once.
         public static bool Quiet { get; set; }
+        private int unplacedPosition = -1;
+        private double unplacedAt;
         private readonly VisualElement[] elements;
         private readonly Func<int, double> seconds;
         private IVisualElementScheduledItem tick;
@@ -44,9 +50,11 @@ namespace Wotr.Client
         {
             var previous = shownPosition;
             var seen = shownLeft + offset;
+            var stale = unplacedPosition == position && Now() - unplacedAt > FreshSeconds;
+            unplacedPosition = -1;
             shownPosition = position;
             shownLeft = left;
-            if (previous < 0 || previous == position || Quiet || !Motion(elements[0]) || Mathf.Abs(seen - left) < .5f)
+            if (previous < 0 || previous == position || stale || Quiet || !Motion(elements[0]) || Mathf.Abs(seen - left) < .5f)
             {
                 // A resize keeps a travel under way going to the new place.
                 if (previous == position && Moving && !Quiet)
@@ -60,6 +68,16 @@ namespace Wotr.Client
             Set(from);
             tick ??= elements[0].schedule.Execute(Step).Every(16);
             tick.Resume();
+        }
+
+        // UI-557: the token's position changed while the caller could not place it (its panel closed or not laid out yet);
+        // the moment counts from the first sight of that position.
+        public void Unplaced(int position)
+        {
+            if (position == unplacedPosition)
+                return;
+            unplacedPosition = position == shownPosition ? -1 : position;
+            unplacedAt = Now();
         }
 
         // Ends any travel at its place (Skip, a closed match).

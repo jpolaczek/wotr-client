@@ -4852,7 +4852,8 @@ track and the Fellowship track: make sure the animation plays whatever effect ca
   new place at once. An offset (translate) from where they were last seen eases back to nothing, so the move is seen
   whatever caused it and whatever classes or glows are on.
   - The move is remembered by track position, so a change seen while the panel was closed travels when it opens. A
-    new layout of an unchanged position (a resize) places at once.
+    new layout of an unchanged position (a resize) places at once. Since UI-557 the travel on opening happens only when
+    the panel opens within 0.6 s of the change (a panel opened for that step); a later opening finds the token in place.
   - Timing: a nation one step in 0.7 s (the opponent's beat's pace), 0.15 s more for each further step; an activation
     turns the token over first (0.3 s), then it travels. A Fellowship marker takes 0.35 s, 0.15 s for each further cell,
     at most 1.2 s, eased out.
@@ -5286,3 +5287,43 @@ Tests: EditMode `EventRecruitDraftTests.AFigureWhoseCardNamesItsRegionIsPlacedBy
 PlayMode `MusterOneSettlementTests.AFigureWithOneLegalSettlementWaitsForThatSettlementsClick` (frame
 `ui547-muster-one-settlement`); server (PR #26) `NewPowerTellsTheFixedOrthancEliteFromTheRegularsChoice` and the
 recruitment region tests that now click a lone region (`RecruitRegionFixture.Only`).
+
+## Animations start at once — UI-557 (2026-11-20)
+
+The owner: "animations sometimes start late. For example, I played The Red Arrow, it moves Rohan on the Political
+Track, but the animation started only later, when the computer made its move. Let's analyse this, find the problem and
+every way it can happen, and fix it so all animations start at once."
+
+Where an animation could start late:
+1. **The player's own result was coalesced into the opponent's quick answer** (the reported case).
+   - After a command the client fetches the new view and holds it until its history is read: at most 1 s, usually one
+     round trip.
+   - The computer acts within half a second of the command (its worker checks every 0.5 s). Its view could arrive while
+     the player's own view still waited.
+   - The playback then applied only the newest view (UI-304's coalescing), after the computer's presentation. So
+     everything the player's own move changed appeared late: the tokens on the tracks, figures, cards and dice.
+   - Fixed: the own result is applied before any cue of a later revision begins (`PresentationPlayback.Own`,
+     OPPONENT_ACTIONS_UX §7.1). The opponent's views still coalesce.
+2. **A track change made while its panel was closed travelled when the panel next opened.** The panels are Politics and
+   the Fellowship's Corruption and journey tracks; UI-544 made that change travel on opening.
+   - When the opponent's presentation opened the panel later, the old move played inside the opponent's, as if they had
+     made it.
+   - Fixed: the travel on opening plays only when the panel opens within 0.6 s of the change (a panel opened for that
+     step). Otherwise the token already stands at its place.
+3. **The computer acting before the client even fetched its own result.** This happens when the computer commits within
+   one round trip of the command. The client's fetch then returns the computer's view, the own view never reaches the
+   client, and the own changes again appear after the computer's presentation.
+   - Rare: the worker must wake and decide within about 0.1 s.
+   - Open: closing it needs the server to send the resulting view with the command's receipt (a contract change).
+
+By design, not a delay: a presentation waits while the game window has no focus and resumes on the player's return
+(UI-490).
+
+Checks:
+- EditMode `OpponentPresentationQueueTests`:
+  - `TheOwnResultIsAppliedBeforeTheOpponentsQuickAnswerPlays`;
+  - `TheOwnResultWhoseHistoryIsReadDoesNotWaitForTheAnswersHistory`;
+  - `TheOwnResultPlaysItsOwnCuesFirstThenShowsBeforeTheAnswer`;
+  - `AnOwnResultThatIsTheLatestViewIsReleasedAsAlways`.
+- PlayMode `TrackGlideTests`: `AnOldStepWhileThePanelWasClosedIsInPlaceWhenItOpens` and
+  `AnOldCorruptionChangeWhileThePanelWasClosedIsInPlaceWhenItOpens`, beside UI-544's opening at once.

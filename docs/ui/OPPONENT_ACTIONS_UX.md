@@ -1002,6 +1002,10 @@ Code: `Runtime/Application/Playback` — `PresentationPlayback` (pure, clock-dri
   (a cue no presenter shows takes no time). Views arriving meanwhile replace `Latest`; their cues queue behind the
   current beat; a coalesced revision is never applied on its own. A private-only update (same revision) waits for the
   release while holding and is applied at once otherwise.
+- **The player's own result (UI-557, 2026-11-20).** The one exception to coalescing: the view of the player's own accepted
+  command (`PresentationPlayback.Own`, from the command's receipt) is applied as soon as its history is read (or waited
+  its second) and its own cues played, before any cue of a later revision begins. The opponent's quick answer (the
+  computer's) no longer swallows it, so the player's own move shows at once and the answer plays on it.
 - **Gate.** While holding, `TurnInteraction.Hold` closes every new-command path: `SelectionBusy` (map, figures, dice,
   cards, contexts, Characters), `Drop`, `CanChoose`, the `Submit` guard, the tray, the console (Pass, Back, ✓, plaques),
   rings and the battle policy. Inspection, the menu, the Log, pennants and connection feedback stay usable; a command

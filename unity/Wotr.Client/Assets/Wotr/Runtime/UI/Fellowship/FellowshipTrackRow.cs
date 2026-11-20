@@ -192,14 +192,18 @@ namespace Wotr.Client
         }
 
         // UI-544: only a new position travels (TokenGlide remembers the cell last shown), so a first layout or a resize
-        // places the marker at once, and a move made while the panel was closed travels when it opens.
+        // places the marker at once. UI-557: a move made while the panel was closed travels when it opens only if that is
+        // at once (the panel opened for the step); later, the marker stands at its place.
         private void Place()
         {
             if (selected < 0)
                 return;
             var cell = cells[selected].layout;
             if (float.IsNaN(cell.width) || cell.width <= 0)
+            {
+                glide.Unplaced(selected);
                 return;
+            }
             // An absolute marker counts from inside the lane's border (UI-231: the Mordor band has one); a cell's layout
             // counts from outside it. On the bordered band the marker sits one pixel inside its round stone on both
             // axes — the band's height differs between the panel's layouts, and scaled sub-pixel rounding cannot push

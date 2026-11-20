@@ -139,8 +139,13 @@ namespace Wotr.Client
 
         private void PositionToken(double delay = 0)
         {
-            if (Nation == null || Root.contentRect.height <= 0)
+            if (Nation == null)
                 return;
+            if (Root.contentRect.height <= 0)
+            {
+                glide.Unplaced(3 - Nation.StepsToWar);
+                return;
+            }
             var size = Mathf.Min(26, Root.contentRect.height - 4);
             Token.style.width = Token.style.minWidth = size;
             Token.style.height = size;

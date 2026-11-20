@@ -64,15 +64,78 @@ namespace Wotr.PlayTests
             yield return Frames(5);
             stage.Board.Nations.Open();
             var samples = new List<float>();
+            var offsets = new List<float>();
             for (var t = 0f; t < 1.4f; t += Time.unscaledDeltaTime)
             {
                 if (stage.Board.Nations.IsOpen && token.worldBound.width > 0)
                     samples.Add(token.worldBound.center.x);
+                offsets.Add(token.resolvedStyle.translate.x);
                 yield return null;
             }
             var end = token.worldBound.center.x;
             Assert.Greater(Mathf.Abs(end - start), 10);
             Assert.IsTrue(samples.Any(x => Between(x, start, end)), "The step made while closed travels on opening.");
+            // UI-557: the travel is the token's own (its offset), not only the drawer's slide.
+            Assert.IsTrue(offsets.Any(x => Mathf.Abs(x) > 2), "The token itself travels: " + string.Join(", ", offsets.Select(x => x.ToString("0"))));
+        }
+
+        // UI-557 (owner, 2026-11-20: "I played The Red Arrow, it moves Rohan on the Political Track, but the animation started
+        // only later, when the computer made its move"): a step made while the panel was closed travels on an opening at
+        // once (above), and a later opening finds the token at its place, so the old move never plays inside a later one.
+        [UnityTest]
+        public IEnumerator AnOldStepWhileThePanelWasClosedIsInPlaceWhenItOpens()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false);
+            yield return stage.Ready();
+            var nation = stage.Before.Nations.First(n => n.StepsToWar >= 2);
+            stage.Board.Nations.Open();
+            yield return Frames(10);
+            var token = Token(stage, nation.Id);
+            var start = token.worldBound.center.x;
+            stage.Board.Nations.Close();
+            yield return Frames(30);
+            stage.Board.Apply(Step(stage, nation.Id));
+            yield return new WaitForSecondsRealtime((float)TokenGlide.FreshSeconds + .5f);
+            stage.Board.Nations.Open();
+            // The drawer's own opening moves the whole panel, so the token's travel is its offset from its place.
+            var offsets = new List<float>();
+            for (var t = 0f; t < 1.4f; t += Time.unscaledDeltaTime)
+            {
+                offsets.Add(token.resolvedStyle.translate.x);
+                yield return null;
+            }
+            var end = token.worldBound.center.x;
+            Assert.Greater(Mathf.Abs(end - start), 10, "The token stands one step on.");
+            Assert.IsTrue(offsets.All(x => Mathf.Abs(x) < .5f), "No old travel on a late opening: " +
+                string.Join(", ", offsets.Select(x => x.ToString("0"))));
+        }
+
+        [UnityTest]
+        public IEnumerator AnOldCorruptionChangeWhileThePanelWasClosedIsInPlaceWhenItOpens()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false);
+            yield return stage.Ready();
+            stage.Board.Fellowship.Open();
+            yield return Frames(10);
+            var marker = stage.Board.Root.Q("corruption-track-marker");
+            var start = marker.worldBound.center.x;
+            stage.Board.Fellowship.Close();
+            yield return Frames(30);
+            var latest = stage.Latest();
+            latest.Fellowship.Corruption += 3;
+            stage.Board.Apply(latest);
+            yield return new WaitForSecondsRealtime((float)TokenGlide.FreshSeconds + .5f);
+            stage.Board.Fellowship.Open();
+            var offsets = new List<float>();
+            for (var t = 0f; t < 1.4f; t += Time.unscaledDeltaTime)
+            {
+                offsets.Add(marker.resolvedStyle.translate.x);
+                yield return null;
+            }
+            var end = marker.worldBound.center.x;
+            Assert.Greater(end - start, 20, "Three cells on.");
+            Assert.IsTrue(offsets.All(x => Mathf.Abs(x) < .5f), "No old travel on a late opening: " +
+                string.Join(", ", offsets.Select(x => x.ToString("0"))));
         }
 
         [UnityTest]
