@@ -4903,7 +4903,9 @@ anything — we must see an animation presenting that card, so it is clear where
   effect", then shrinks into that window, and the effect plays.
 - **Which cards.** Any card the recorded step names as its cause in a battle or the Hunt, whichever side's: a reaction
   to the Hunt (Axe and Bow, Mithril Coat and Sting), a card that starts a Hunt, a card's hits in a battle. Each card is
-  presented once per battle or Hunt.
+  presented once per battle or Hunt; since UI-558 (owner, 2026-11-20: a pre-roll's card "fired twice", again just before
+  the Combat roll) once per battle round across presentations, so Charge's extra attack shows its card once and its
+  losses and the Combat roll flow on without it.
 
 Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-card-taking-effect-is-shown--ui-546).
 
@@ -4914,6 +4916,8 @@ Playtest:
 - [ ] In a battle, let a combat card such as one dealing an automatic hit take effect. Expect the card before the hit
   lands.
 - [ ] Say whether 2.5 s is long enough to read the card (a click holds it).
+- [ ] UI-558: in a battle, play Charge (Free Peoples, with an Elite in the battle) or face it. Expect Charge to be shown once,
+  at its extra attack. Then the losses and the Combat roll follow without Charge being shown again.
 
 <a id="the-rest-of-a-cards-way--ui-493"></a>
 ## The rest of a card's way — UI-493 (2026-11-04)

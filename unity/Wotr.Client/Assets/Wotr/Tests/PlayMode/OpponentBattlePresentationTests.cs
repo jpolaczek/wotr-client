@@ -307,6 +307,54 @@ namespace Wotr.PlayTests
 
         private const string AutomaticHit = "base.sh.strategy.06";
 
+        // UI-558 (owner, 2026-11-20: "cards and effects that cause a roll before the combat phase fire twice ... It should
+        // happen once, from the first pre-roll, as with Charge, smoothly into the combat phase"). A card's extra attack before
+        // the Combat roll presents the card once. The losses it causes are the other side's decision (another action, a
+        // later presentation), and they and the Combat roll after them play without the card again.
+        [UnityTest]
+        public IEnumerator AnExtraAttacksCardIsPresentedOnceThenItsLossesAndTheRollFlowOn()
+        {
+            using var stage = Attack(out var fight);
+            fight.Record(Faces);
+            yield return Open(stage, fight);
+            var pre = fight.Next();
+            var attack = pre.Record(battle => battle.SpecialAttacks.Add(new BattleAttackView
+            {
+                Side = battle.Attacker.Side, SourceId = AutomaticHit,
+                Dice = { new BattleDieView { Id = "special-0", Result = 6, HitTarget = 5, Hit = true } }
+            }));
+            attack.Facts.SourceId = AutomaticHit;
+            stage.Play(pre.Latest(), null, pre.Steps.ToArray());
+            yield return stage.Until(() => Presented(stage, AutomaticHit));
+            yield return stage.Released();
+            var after = pre.Next();
+            string defender = null;
+            after.Change(battle => defender = battle.Defender.Units.First().Id);
+            var loss = after.Record(battle => battle.Defender.Units.RemoveAll(u => u.Id == defender));
+            loss.Facts.SourceId = AutomaticHit;
+            loss.Facts.LossDetails.Add(new ActionLossFact { Figure = stage.Unit(defender), Operation = BattleLossKind.Remove, RegionId = "osgiliath", Hits = 1 });
+            after.Record(battle =>
+            {
+                Roll(battle.Attacker, "attacker-", 5, 2);
+                Roll(battle.Defender, "defender-", 3);
+            });
+            foreach (var step in after.Steps)
+                step.ActionId = "presented-losses-action";
+            var final = after.Latest();
+            PresentedBoardStage.Place(final, new[] { defender }, "casualties");
+            stage.Play(final, null, after.Steps.ToArray());
+            var again = false;
+            var deadline = Time.realtimeSinceStartup + 10;
+            while (!Rolled(stage).Any(die => die.StartsWith("battle-die-attacker-")) && Time.realtimeSinceStartup < deadline)
+            {
+                again |= Presented(stage, AutomaticHit);
+                yield return null;
+            }
+            Assert.IsTrue(Rolled(stage).Any(die => die.StartsWith("battle-die-attacker-")), "The Combat roll plays.");
+            Assert.IsFalse(again, "The card is not presented again before its losses and the roll.");
+            yield return stage.Released();
+        }
+
         private static bool Presented(PresentedBoardStage stage, string card) => stage.Board.Cards.CardId == card &&
             stage.Board.Cards.Root.resolvedStyle.display == DisplayStyle.Flex;
 

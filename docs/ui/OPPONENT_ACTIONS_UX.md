@@ -1650,6 +1650,14 @@ anything — we must see an animation presenting that card, so it is clear where
     entry's mark, the damage, the hit.
 - **Once.** A card is presented once per battle or Hunt of an action. An Event the action played was revealed already
   (`CardRevealPresenter`) and is not presented again.
+- **Once per battle round (UI-558, 2026-11-20).** The owner: "cards and effects that cause a roll before the combat phase
+  fire twice: once when it is their time, then again just before the real roll, with its sound. It should happen once,
+  from the first pre-roll, as with Charge, smoothly into the combat phase."
+  - Why it fired twice: the losses of an extra attack (Charge) are the other side's decision, so they are another action
+    and a later presentation, and they named the card as their cause again, just before the Combat roll.
+  - Now in a battle a card is presented once per round, across presentations. It is also not presented when the battle
+    already shows that card's extra attack (a pre-roll of the player's own, applied straight to the board).
+  - `OpponentBattlePresentationTests.AnExtraAttacksCardIsPresentedOnceThenItsLossesAndTheRollFlowOn` checks it.
 - **Not presented here:**
   - a combat card's reveal, which turns face up in the battle window (UI-311);
   - a card's dice, which have their own window naming the card (UI-541);
