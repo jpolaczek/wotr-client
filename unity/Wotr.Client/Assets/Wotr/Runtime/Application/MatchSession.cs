@@ -61,6 +61,7 @@ namespace Wotr.Client
             playback = new PlaybackBinding(board, notices, Present, turns.Hold);
             presenters = new OpponentPresenters(board, playback);
             connection.Updated += playback.Receive;
+            turns.CommandAnswered += Answered;
             connection.StatusChanged += ConnectionChanged;
             this.sounds = sounds == null ? null : new GameSounds(sounds, board, turns);
             presenters.Sounds.Target = this.sounds;
@@ -91,6 +92,13 @@ namespace Wotr.Client
                 if (!disposed && board.Root.panel != null)
                     seen.Displayed(view.Revision);
             });
+        }
+
+        // UI-557: the player's own result is applied before the opponent's quick answer is presented.
+        private void Answered(GameCommand command, CommandReceipt receipt, bool recovering)
+        {
+            if (receipt.Accepted)
+                playback.Playback.Own(receipt.Revision);
         }
 
         private static bool SameCpu(CpuSeatState a, CpuSeatState b) =>
@@ -204,6 +212,7 @@ namespace Wotr.Client
             lifetime.Cancel();
             lifetime.Dispose();
             connection.Updated -= playback.Receive;
+            turns.CommandAnswered -= Answered;
             presenters.Dispose();
             playback.Dispose();
             connection.StatusChanged -= ConnectionChanged;

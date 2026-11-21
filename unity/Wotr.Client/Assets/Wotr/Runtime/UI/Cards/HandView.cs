@@ -106,7 +106,10 @@ namespace Wotr.Client
             // rule: when there is a choice, the unavailable options are greyed"): whenever the player's own decision lets them
             // choose a card — a die chosen (UI-124), a free play such as the Ents' follow-up, a reaction, a discard or a
             // cost — the cards it does not accept step back.
-            var choosing = DieChosen() || anyPlayable && OwnDecision();
+            // UI-560 (owner, 2026-11-21: "after the Ents' cards attacking Isengard, when another card may be played, the invalid
+            // options are not greyed"): the server opens the Ents' follow-up even when no Character Event in hand qualifies
+            // (it then offers no PlayEvent at all), so the window itself is the choice and every card it cannot take steps back.
+            var choosing = DieChosen() || OwnDecision() && (anyPlayable || ReactionSkip.FreeEvent(view));
             foreach (var card in cards.Values)
             {
                 // UI-111: a card that cannot be committed in this battle is dimmed and says why.

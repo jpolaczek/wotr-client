@@ -90,6 +90,81 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { "first", "second" }, presenter.Begun);
         }
 
+        // UI-557 (owner, 2026-11-20: "I played The Red Arrow, it moves Rohan on the Political Track, but the animation
+        // started only later, when the computer made its move"): the computer answered while the player's own result still
+        // waited for its history; the own view is applied before the answer plays, not coalesced into it.
+        [Test]
+        public void TheOwnResultIsAppliedBeforeTheOpponentsQuickAnswerPlays()
+        {
+            var presenter = Timed(PresentationCueKind.March, .5);
+            var released = 0;
+            playback.Released += () => released++;
+            playback.Own(1);
+            playback.Receive(View(1));
+            Tick(.1);
+            playback.Receive(View(2));
+            playback.Enqueue(new[] { March(2, "answer") });
+            playback.HistoryRead(2);
+            Tick(0);
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented, "The own result shows first.");
+            Assert.AreEqual("answer", Key(playback.Current), "Then the answer plays on it.");
+            Assert.AreEqual(1, released, "The own result ends its presentation's state, as if the answer came later.");
+            CollectionAssert.AreEqual(new[] { true }, holds, "Commands stay held for the answer.");
+            Tick(.5);
+            CollectionAssert.AreEqual(new long[] { 0, 1, 2 }, presented);
+            CollectionAssert.AreEqual(new[] { true, false }, holds);
+            CollectionAssert.AreEqual(new[] { "answer" }, presenter.Begun);
+            Assert.AreEqual(2, released);
+        }
+
+        [Test]
+        public void TheOwnResultWhoseHistoryIsReadDoesNotWaitForTheAnswersHistory()
+        {
+            Timed(PresentationCueKind.March, .5);
+            playback.Own(1);
+            playback.Receive(View(1));
+            playback.Receive(View(2));
+            playback.HistoryRead(1);
+            Tick(0);
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented, "The own result shows once its own history is read.");
+            CollectionAssert.AreEqual(new[] { true }, holds);
+            Tick(PresentationPlayback.HistoryWait);
+            CollectionAssert.AreEqual(new long[] { 0, 1, 2 }, presented, "The answer's history that does not come waits its second.");
+            CollectionAssert.AreEqual(new[] { true, false }, holds);
+        }
+
+        [Test]
+        public void TheOwnResultPlaysItsOwnCuesFirstThenShowsBeforeTheAnswer()
+        {
+            var presenter = Timed(PresentationCueKind.March, .5);
+            playback.Own(1);
+            playback.Receive(View(1));
+            playback.Receive(View(2));
+            playback.Enqueue(new[] { March(1, "own"), March(2, "answer") });
+            playback.HistoryRead(2);
+            Tick(0);
+            Assert.AreEqual("own", Key(playback.Current));
+            CollectionAssert.AreEqual(new long[] { 0 }, presented, "The own result's dice (Athelas) play before it is applied.");
+            Tick(.5);
+            Assert.AreEqual("answer", Key(playback.Current));
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented);
+            Tick(.5);
+            CollectionAssert.AreEqual(new long[] { 0, 1, 2 }, presented);
+            CollectionAssert.AreEqual(new[] { "own", "answer" }, presenter.Begun);
+        }
+
+        [Test]
+        public void AnOwnResultThatIsTheLatestViewIsReleasedAsAlways()
+        {
+            Timed(PresentationCueKind.March, .5);
+            playback.Own(1);
+            playback.Receive(View(1));
+            playback.HistoryRead(1);
+            Tick(0);
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented);
+            CollectionAssert.AreEqual(new[] { true, false }, holds);
+        }
+
         [Test]
         public void AHistoryStillMissingAfterOneSecondReleasesTheViewAndItsLateCuesNeverPlay()
         {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,6 +9,10 @@ namespace Wotr.Client
     // and later shrinks into the place it goes to. Only its translate, scale and opacity change — none touches the layout
     // or the card's own placement — eased. UI-321: under Skip animations it takes no time and the card simply stands.
     // Clear leaves the card as it stands.
+    // UI-562 (owner, 2026-11-21: "watching the opponent play a card, very often the card flashes in the middle for a fraction
+    // of a second before the smooth animation starts"): the card window keeps its appearance's opacity transition after its
+    // first opening (Appearance.HostClass), so the hide faded from the window's last opacity and the card stood at its place
+    // for a few frames before its flight. The flight owns the card's opacity: transitions are off from Hide to Clear.
     public sealed class CardFlight
     {
         public const double Seconds = .6;
@@ -31,8 +36,10 @@ namespace Wotr.Client
         // Before the card has its place: nothing of it shows yet (at once under Skip animations).
         public void Hide()
         {
-            if (!reduced)
-                card.style.opacity = 0;
+            if (reduced)
+                return;
+            card.style.transitionDuration = new StyleList<TimeValue>(new List<TimeValue> { new TimeValue(0) });
+            card.style.opacity = 0;
         }
 
         // From the place it comes from, in world points (or, without one, a fade in place), to where it stands now.
@@ -67,6 +74,7 @@ namespace Wotr.Client
             card.style.translate = StyleKeyword.Null;
             card.style.scale = StyleKeyword.Null;
             card.style.opacity = StyleKeyword.Null;
+            card.style.transitionDuration = StyleKeyword.Null;
         }
 
         public static bool Laid(VisualElement element) =>

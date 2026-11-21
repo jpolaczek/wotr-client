@@ -1002,6 +1002,10 @@ Code: `Runtime/Application/Playback` — `PresentationPlayback` (pure, clock-dri
   (a cue no presenter shows takes no time). Views arriving meanwhile replace `Latest`; their cues queue behind the
   current beat; a coalesced revision is never applied on its own. A private-only update (same revision) waits for the
   release while holding and is applied at once otherwise.
+- **The player's own result (UI-557, 2026-11-20).** The one exception to coalescing: the view of the player's own accepted
+  command (`PresentationPlayback.Own`, from the command's receipt) is applied as soon as its history is read (or waited
+  its second) and its own cues played, before any cue of a later revision begins. The opponent's quick answer (the
+  computer's) no longer swallows it, so the player's own move shows at once and the answer plays on it.
 - **Gate.** While holding, `TurnInteraction.Hold` closes every new-command path: `SelectionBusy` (map, figures, dice,
   cards, contexts, Characters), `Drop`, `CanChoose`, the `Submit` guard, the tray, the console (Pass, Back, ✓, plaques),
   rings and the battle policy. Inspection, the menu, the Log, pennants and connection feedback stay usable; a command
@@ -1646,6 +1650,14 @@ anything — we must see an animation presenting that card, so it is clear where
     entry's mark, the damage, the hit.
 - **Once.** A card is presented once per battle or Hunt of an action. An Event the action played was revealed already
   (`CardRevealPresenter`) and is not presented again.
+- **Once per battle round (UI-558, 2026-11-20).** The owner: "cards and effects that cause a roll before the combat phase
+  fire twice: once when it is their time, then again just before the real roll, with its sound. It should happen once,
+  from the first pre-roll, as with Charge, smoothly into the combat phase."
+  - Why it fired twice: the losses of an extra attack (Charge) are the other side's decision, so they are another action
+    and a later presentation, and they named the card as their cause again, just before the Combat roll.
+  - Now in a battle a card is presented once per round, across presentations. It is also not presented when the battle
+    already shows that card's extra attack (a pre-roll of the player's own, applied straight to the board).
+  - `OpponentBattlePresentationTests.AnExtraAttacksCardIsPresentedOnceThenItsLossesAndTheRollFlowOn` checks it.
 - **Not presented here:**
   - a combat card's reveal, which turns face up in the battle window (UI-311);
   - a card's dice, which have their own window naming the card (UI-541);
@@ -1704,3 +1716,21 @@ player's own action replays its automatic rolls too (only their own decision ste
 `OpponentBattlePresentationTests.AMissedRollIsNamedOnItsHeadingLongEnoughToRead` and
 `OpponentHuntPresentationTests.AMissOpensTheHuntShowsTheRollAndOnlyThenMovesTheProgress` check the words, the place
 and the hold.
+
+## A played card never shows before its flight — UI-562 (2026-11-21)
+
+The owner: "watching the opponent play a card, very often the card flashes in the middle for a fraction of a second
+before the smooth animation starts."
+
+The card window keeps its appearance's opacity transition after its first opening (`Appearance.HostClass`). A later
+card's hide (UI-316's `CardFlight.Hide`) therefore faded from the window's last opacity, so for about three frames the
+card stood at its reading place before its flight set off from the opponent's hand. The first card of a session never
+showed it, which is why the earlier checks missed it.
+
+The flight now owns the card's opacity: from `Hide` to `Clear` the card's transitions are off, so the card is unseen at
+its place until the flight sets off, and the flight's own fade is exact. The window's appearance and closing fades are
+back after `Clear`.
+
+`OpponentCardPresentationTests.ALaterCardNeverShowsAtItsPlaceBeforeItsFlight` opens and closes the window first, as a
+game does, then checks every frame before the flight.
+

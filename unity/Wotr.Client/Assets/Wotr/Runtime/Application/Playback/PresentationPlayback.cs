@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Wotr.Contracts;
 
 namespace Wotr.Client
@@ -16,6 +17,12 @@ namespace Wotr.Client
     // UI-490 (owner, 2026-11-04): the clock also stops while the window has no focus, and the presentation resumes where it
     // was on the player's return, with what arrived meanwhile behind it. Only a backlog over MostCuesAway is given up: the
     // latest state, as a lost focus always showed before, until the player returns.
+    // UI-557 (owner, 2026-11-20: "I played The Red Arrow, it moves Rohan on the Political Track, but the animation started
+    // only later, when the computer made its move"): the view of the player's own accepted command (Own, from its receipt)
+    // is not coalesced into the opponent's next one. A quick answer arrived while the own view still waited for its history,
+    // so the own result showed only at the end of the opponent's presentation. Now the own view is applied as soon as its
+    // history is read (or waited for) and its own cues played, before any cue of a later revision begins. The opponent's
+    // views still coalesce: only the newest of those is applied (UI-304).
     public sealed class PresentationPlayback : IDisposable
     {
         public const double HistoryWait = 1.0;
@@ -28,6 +35,9 @@ namespace Wotr.Client
         private readonly Func<double> clock;
         private readonly List<ICuePresenter> presenters = new List<ICuePresenter>();
         private readonly Queue<PresentationCue> queue = new Queue<PresentationCue>();
+        // UI-557: the revisions of the player's own accepted commands, and the held views that may be one of them.
+        private readonly HashSet<long> own = new HashSet<long>();
+        private readonly List<Held> held = new List<Held>();
         private IPresentationBeat beat;
         private int next;
         private double elapsed;
@@ -64,6 +74,13 @@ namespace Wotr.Client
 
         public void Register(ICuePresenter presenter) => presenters.Add(presenter);
 
+        // UI-557: the revision an accepted command of the player's own produced (its receipt's).
+        public void Own(long revision)
+        {
+            if (!disposed && revision > PresentedRevision)
+                own.Add(revision);
+        }
+
         // A view the connection accepted. Applied at once when nothing is to be presented, so a failure still reaches
         // MatchConnection's QUAL-09 retry; otherwise it waits for its history and its cues.
         public void Receive(PlayerView view)
@@ -78,6 +95,7 @@ namespace Wotr.Client
                 Present(view);
                 return;
             }
+            Keep(view);
             SetHold(true);
             if (!focused)
                 HeldAway?.Invoke(view);
@@ -177,6 +195,8 @@ namespace Wotr.Client
             disposed = true;
             FinishBeat();
             queue.Clear();
+            held.Clear();
+            own.Clear();
         }
 
         // UI-490: a long absence does not replay minutes. Over the cap, this absence shows the latest state.
@@ -191,7 +211,15 @@ namespace Wotr.Client
         private void ReleaseOnceRead(double now)
         {
             if (historyRevision >= Latest.Revision || now - receivedAt >= HistoryWait)
+            {
                 Release();
+                return;
+            }
+            // UI-557: the own result whose history is read (or waited its second) does not wait for the newer view's.
+            var result = held.LastOrDefault(entry => own.Contains(entry.View.Revision) && entry.View.Revision > PresentedRevision &&
+                entry.View.Revision < Latest.Revision && (entry.View.Revision <= historyRevision || now - entry.At >= HistoryWait));
+            if (result != null)
+                PresentOwn(result.View);
         }
 
         // A disconnect, or a backlog over the cap of an absence, shows the latest state without any catch-up.
@@ -210,6 +238,7 @@ namespace Wotr.Client
             {
                 Report(error);
                 PresentedRevision = Latest.Revision;
+                Forget();
             }
             SetHold(false);
             NotifyReleased();
@@ -240,11 +269,64 @@ namespace Wotr.Client
                 var cue = queue.Dequeue();
                 if (cue.Revision <= PresentedRevision)
                     continue;
+                // UI-557: the player's own result shows before the opponent's later move begins.
+                var result = OwnResult(cue.Revision - 1);
+                if (result != null)
+                    PresentOwn(result);
                 Current = cue;
                 next = 0;
                 return true;
             }
             return false;
+        }
+
+        // UI-557: a held view of the player's own command, received and older than the latest, up to this revision.
+        private PlayerView OwnResult(long through) => held
+            .Where(entry => own.Contains(entry.View.Revision) && entry.View.Revision <= through &&
+                entry.View.Revision > PresentedRevision && entry.View.Revision < Latest.Revision)
+            .Select(entry => entry.View)
+            .LastOrDefault();
+
+        // UI-557: the own view is applied as if the opponent's answer had not arrived yet: its presentation's state ends
+        // (Released), and the gate stays held for the newer view.
+        private void PresentOwn(PlayerView view)
+        {
+            try
+            {
+                Present(view);
+            }
+            catch (Exception error)
+            {
+                Report(error);
+                PresentedRevision = view.Revision;
+            }
+            Forget();
+            NotifyReleased();
+        }
+
+        private void Keep(PlayerView view)
+        {
+            held.RemoveAll(entry => entry.View.Revision == view.Revision);
+            held.Add(new Held(view, clock()));
+        }
+
+        // Everything up to the presented revision is behind the board now.
+        private void Forget()
+        {
+            held.RemoveAll(entry => entry.View.Revision <= PresentedRevision);
+            own.RemoveWhere(revision => revision <= PresentedRevision);
+        }
+
+        private sealed class Held
+        {
+            public PlayerView View { get; }
+            public double At { get; }
+
+            public Held(PlayerView view, double at)
+            {
+                View = view;
+                At = at;
+            }
         }
 
         private IPresentationBeat Begin(ICuePresenter presenter, PresentationCue cue, double now)
@@ -291,6 +373,7 @@ namespace Wotr.Client
                 if (++failures < ApplyAttempts)
                     return;
                 PresentedRevision = Latest.Revision;
+                Forget();
             }
             failures = 0;
             SetHold(false);
@@ -313,6 +396,7 @@ namespace Wotr.Client
         {
             present(view);
             PresentedRevision = view.Revision;
+            Forget();
         }
 
         private void FinishBeat()

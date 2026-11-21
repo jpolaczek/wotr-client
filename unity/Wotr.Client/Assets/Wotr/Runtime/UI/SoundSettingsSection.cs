@@ -10,7 +10,9 @@ namespace Wotr.Client
     {
         public VisualElement Root { get; } = new VisualElement { name = "sound-settings" };
         private readonly InterfacePreferences preferences;
-        private readonly Toggle sound = new Toggle("Sound") { name = "sound-enabled" };
+        // UI-555 (owner, 2026-11-19: "Settings has Sound twice and one of them has nothing to change"): the section's title is
+        // "Sound"; its main switch says what it does.
+        private readonly Toggle sound = new Toggle("Play sounds") { name = "sound-enabled" };
         private readonly Toggle background = new Toggle("Background alerts") { name = "background-alerts" };
         private readonly SliderInt effects;
         private readonly SliderInt alerts;

@@ -105,6 +105,15 @@ namespace Wotr.PlayTests
                     Assert.AreEqual(DisplayStyle.Flex, go.resolvedStyle.display, "The buttons stay · " + label);
                     Assert.IsTrue(plaque.Contains(go.worldBound.center), "Inside the plaque · " + label);
                     Assert.IsTrue(plaque.Contains(battles.Root.Q<Button>("action-StopBattle").worldBound.center), label);
+                    // UI-556 (owner, 2026-11-19): "make the button that unfolds the battle easier to see".
+                    var show = battles.Root.Q<Button>(RegionalBattlePanel.UnfoldName);
+                    Assert.AreEqual(DisplayStyle.Flex, show.resolvedStyle.display, "The plaque has a worded Show battle · " + label);
+                    Assert.AreEqual("Show battle", show.text, label);
+                    Assert.IsTrue(plaque.Contains(show.worldBound.min) && plaque.Contains(show.worldBound.max), "Inside the plaque · " + label);
+                    Assert.IsFalse(show.worldBound.Overlaps(step.worldBound), "Beside the step, not over it · " + label);
+                    var words = show.MeasureTextSize(show.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                    Assert.LessOrEqual(words.x, show.contentRect.width + 0.5f, "Its words fit · " + label);
+                    Assert.IsTrue(fold.ClassListContains("selected"), "The header's unfold symbol is on the warm field · " + label);
                     LayoutTests.Save(target, $"ui521-folded-{width}-{scale:0.00}.png");
                     CardNetworkTests.Click(go);
                     var deadline = Time.realtimeSinceStartup + 5;
@@ -112,9 +121,11 @@ namespace Wotr.PlayTests
                         yield return null;
                     Assert.AreEqual(1, backend.Commands, "A folded button still sends · " + label);
                     Assert.AreEqual(CommandKind.ContinueBattle, backend.Last.Kind, label);
-                    CardNetworkTests.Click(fold);
+                    CardNetworkTests.Click(show);
                     yield return Frames(6);
-                    Assert.IsFalse(battles.Folded, label);
+                    Assert.IsFalse(battles.Folded, "Show battle unfolds it · " + label);
+                    Assert.IsFalse(fold.ClassListContains("selected"), label);
+                    Assert.AreEqual(DisplayStyle.None, show.parent.resolvedStyle.display, "Unfolded, the window has no Show battle · " + label);
                     Assert.AreEqual(DisplayStyle.Flex, battles.Root.Q("battle-forces").resolvedStyle.display, "Unfolded, the forces return · " + label);
                     client.Panel.targetTexture = client.Viewport;
                     target.Release();

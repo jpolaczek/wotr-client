@@ -18,6 +18,12 @@ namespace Wotr.Client
     // - A combat card's reveal stays the battle window's own. A card's dice keep their window (CardRollPresenter), which
     //   names the card.
     // - A click on the card pins it, and the presentation holds until it is closed. Skip closes an unpinned card.
+    // - UI-558 (owner, 2026-11-20: "cards and effects that cause a roll before the combat phase fire twice: once when it is
+    //   their time, then again just before the real roll, with its sound. It should happen once, from the first pre-roll,
+    //   as with Charge, smoothly into the combat phase"): in a battle a card is presented once per round, across
+    //   presentations. The losses its extra attack causes are the other side's decision, a later presentation, and they
+    //   and the Combat roll after them flow on without it. A card whose extra attack the battle already shows is not
+    //   presented again either (its pre-roll was the player's own, applied straight to the board).
     public sealed class CardTriggerPresenter : ICuePresenter
     {
         public const double HoldSeconds = 2.5;
@@ -29,6 +35,8 @@ namespace Wotr.Client
         // The cards presented in this presentation (by action, battle or Hunt and card) and the action's revealed Events.
         private readonly HashSet<string> presented = new HashSet<string>();
         private readonly HashSet<string> events = new HashSet<string>();
+        // UI-558: the cards presented in a battle round (battle, round and card), kept across presentations.
+        private readonly HashSet<string> rounds = new HashSet<string>();
         private TriggerBeat beat;
         private string shown = "";
 
@@ -54,8 +62,11 @@ namespace Wotr.Client
                 return null;
             }
             var card = Trigger(cue);
-            if (card == null || events.Contains(cue.ActionId + "/" + card) || !presented.Add(Scope(cue) + "/" + card))
+            if (card == null || events.Contains(cue.ActionId + "/" + card) || SeenInItsRound(cue, card) ||
+                !presented.Add(Scope(cue) + "/" + card))
                 return null;
+            if (cue.BattleId.Length > 0)
+                rounds.Add(RoundKey(cue, card));
             return Present(cue, card, now);
         }
 
@@ -81,6 +92,24 @@ namespace Wotr.Client
             var source = cue.Hunt?.SourceId is { Length: > 0 } entry ? entry : cue.Cause;
             return source.Length > 0 && CardLibrary.Cards.ContainsKey(source) ? source : null;
         }
+
+        // UI-558: this battle round already presented the card, or already shows its extra attack.
+        private bool SeenInItsRound(PresentationCue cue, string card)
+        {
+            if (cue.BattleId.Length == 0)
+                return false;
+            if (rounds.Contains(RoundKey(cue, card)))
+                return true;
+            var battle = staged.View.Battle;
+            return battle != null && battle.Id == cue.BattleId && battle.Round == Round(cue) &&
+                battle.SpecialAttacks.Any(attack => attack.SourceId == card);
+        }
+
+        // The cue's round: its own snapshot's, else the round the board presents for that battle.
+        private int Round(PresentationCue cue) => cue.Battle?.Round ??
+            (staged.View.Battle?.Id == cue.BattleId ? staged.View.Battle.Round : 0);
+
+        private string RoundKey(PresentationCue cue, string card) => cue.BattleId + "/" + Round(cue) + "/" + card;
 
         private static string Scope(PresentationCue cue) =>
             cue.ActionId + "/" + (cue.HuntChainId.Length > 0 ? cue.HuntChainId : cue.BattleId);

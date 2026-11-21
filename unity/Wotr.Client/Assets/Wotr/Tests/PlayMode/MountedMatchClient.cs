@@ -95,6 +95,12 @@ namespace Wotr.PlayTests
             playback = new PlaybackBinding(Board, Activity, Present, held => interaction.Hold(held));
             Presenters = new OpponentPresenters(Board, playback);
             Presenters.Sounds.Target = Sounds;
+            // UI-557: as MatchSession does, the player's own result is applied before the opponent's quick answer.
+            interaction.CommandAnswered += (command, receipt, recovering) =>
+            {
+                if (receipt.Accepted)
+                    Playback.Own(receipt.Revision);
+            };
             Connection.Updated += Refresh;
             Connection.StatusChanged += status =>
             {

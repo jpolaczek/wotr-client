@@ -100,6 +100,11 @@ the player makes lights what it accepts and greys, never hides, what it does not
 tooltip. The hand follows it for every card choice, with or without a die: the Ents' free follow-up after Huorns,
 Treebeard or Entmoot lights the Character events it accepts and greys the rest with "Cannot be played now" (ARMY_MAP_UX
 AM02a).
+UI-560 (owner, 2026-11-21: "after the Ents' cards attacking Isengard, when another card may be played, the invalid
+options are not greyed"): the server opens that follow-up even when no Character Event in hand qualifies, and then offers
+only Pass (no PlayEvent). The hand used to grey only when some card qualified, so it looked fully playable. The window
+itself is now the choice: every card it cannot take is greyed with "Cannot be played now"
+(`CardInteractionTests.AFreePlayWithNoCardItAcceptsGreysTheWholeHand`).
 
 UI-553 (owner, 2026-11-19): "reading a card in Effects, the tooltip covers the card's text". A tooltip never covers a
 surface the player reads: a card's text unrolled in Effects and the card inspector carry `RuntimeTooltip.AvoidClass`.
@@ -4852,7 +4857,8 @@ track and the Fellowship track: make sure the animation plays whatever effect ca
   new place at once. An offset (translate) from where they were last seen eases back to nothing, so the move is seen
   whatever caused it and whatever classes or glows are on.
   - The move is remembered by track position, so a change seen while the panel was closed travels when it opens. A
-    new layout of an unchanged position (a resize) places at once.
+    new layout of an unchanged position (a resize) places at once. Since UI-557 the travel on opening happens only when
+    the panel opens within 0.6 s of the change (a panel opened for that step); a later opening finds the token in place.
   - Timing: a nation one step in 0.7 s (the opponent's beat's pace), 0.15 s more for each further step; an activation
     turns the token over first (0.3 s), then it travels. A Fellowship marker takes 0.35 s, 0.15 s for each further cell,
     at most 1.2 s, eased out.
@@ -4902,7 +4908,9 @@ anything — we must see an animation presenting that card, so it is clear where
   effect", then shrinks into that window, and the effect plays.
 - **Which cards.** Any card the recorded step names as its cause in a battle or the Hunt, whichever side's: a reaction
   to the Hunt (Axe and Bow, Mithril Coat and Sting), a card that starts a Hunt, a card's hits in a battle. Each card is
-  presented once per battle or Hunt.
+  presented once per battle or Hunt; since UI-558 (owner, 2026-11-20: a pre-roll's card "fired twice", again just before
+  the Combat roll) once per battle round across presentations, so Charge's extra attack shows its card once and its
+  losses and the Combat roll flow on without it.
 
 Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-card-taking-effect-is-shown--ui-546).
 
@@ -4913,6 +4921,8 @@ Playtest:
 - [ ] In a battle, let a combat card such as one dealing an automatic hit take effect. Expect the card before the hit
   lands.
 - [ ] Say whether 2.5 s is long enough to read the card (a click holds it).
+- [ ] UI-558: in a battle, play Charge (Free Peoples, with an Elite in the battle) or face it. Expect Charge to be shown once,
+  at its extra attack. Then the losses and the Combat roll follow without Charge being shown again.
 
 <a id="the-rest-of-a-cards-way--ui-493"></a>
 ## The rest of a card's way — UI-493 (2026-11-04)
@@ -5286,3 +5296,60 @@ Tests: EditMode `EventRecruitDraftTests.AFigureWhoseCardNamesItsRegionIsPlacedBy
 PlayMode `MusterOneSettlementTests.AFigureWithOneLegalSettlementWaitsForThatSettlementsClick` (frame
 `ui547-muster-one-settlement`); server (PR #26) `NewPowerTellsTheFixedOrthancEliteFromTheRegularsChoice` and the
 recruitment region tests that now click a lone region (`RecruitRegionFixture.Only`).
+
+## Animations start at once — UI-557 (2026-11-20)
+
+The owner: "animations sometimes start late. For example, I played The Red Arrow, it moves Rohan on the Political
+Track, but the animation started only later, when the computer made its move. Let's analyse this, find the problem and
+every way it can happen, and fix it so all animations start at once."
+
+Where an animation could start late:
+1. **The player's own result was coalesced into the opponent's quick answer** (the reported case).
+   - After a command the client fetches the new view and holds it until its history is read: at most 1 s, usually one
+     round trip.
+   - The computer acts within half a second of the command (its worker checks every 0.5 s). Its view could arrive while
+     the player's own view still waited.
+   - The playback then applied only the newest view (UI-304's coalescing), after the computer's presentation. So
+     everything the player's own move changed appeared late: the tokens on the tracks, figures, cards and dice.
+   - Fixed: the own result is applied before any cue of a later revision begins (`PresentationPlayback.Own`,
+     OPPONENT_ACTIONS_UX §7.1). The opponent's views still coalesce.
+2. **A track change made while its panel was closed travelled when the panel next opened.** The panels are Politics and
+   the Fellowship's Corruption and journey tracks; UI-544 made that change travel on opening.
+   - When the opponent's presentation opened the panel later, the old move played inside the opponent's, as if they had
+     made it.
+   - Fixed: the travel on opening plays only when the panel opens within 0.6 s of the change (a panel opened for that
+     step). Otherwise the token already stands at its place.
+3. **The computer acting before the client even fetched its own result.** This happens when the computer commits within
+   one round trip of the command. The client's fetch then returns the computer's view, the own view never reaches the
+   client, and the own changes again appear after the computer's presentation.
+   - Rare: the worker must wake and decide within about 0.1 s.
+   - Open: closing it needs the server to send the resulting view with the command's receipt (a contract change).
+
+By design, not a delay: a presentation waits while the game window has no focus and resumes on the player's return
+(UI-490).
+
+Checks:
+- EditMode `OpponentPresentationQueueTests`:
+  - `TheOwnResultIsAppliedBeforeTheOpponentsQuickAnswerPlays`;
+  - `TheOwnResultWhoseHistoryIsReadDoesNotWaitForTheAnswersHistory`;
+  - `TheOwnResultPlaysItsOwnCuesFirstThenShowsBeforeTheAnswer`;
+  - `AnOwnResultThatIsTheLatestViewIsReleasedAsAlways`.
+- PlayMode `TrackGlideTests`: `AnOldStepWhileThePanelWasClosedIsInPlaceWhenItOpens` and
+  `AnOldCorruptionChangeWhileThePanelWasClosedIsInPlaceWhenItOpens`, beside UI-544's opening at once.
+
+## Deselecting the last companion gives the die back — UI-561 (2026-11-21)
+
+The owner: "when I click a Character die, the Fellowship's members and the Fellowship's march light up. When I click a
+member, the places it can move to light on the map, and so do the other members. When I deselect it, the members still
+light and I can choose them, but I can no longer click the Fellowship's march."
+
+The first member's click turns the chosen die into a separation; deselecting that member left an empty separation, and
+the panel's march waits while a separation is built. Now, in the action phase, deselecting the last companion of a
+separation drops the separation and keeps the die: the march (the track's symbol and the figure on the map) and every
+companion are offered again, as before the first click. It is the same from the Fellowship panel's portraits and from
+the tray's. `FellowshipPanelNetworkTests.DeselectingTheLastCompanionOffersTheMarchAgain` checks it.
+
+Playtest:
+- [ ] Choose a Character die, click a companion in the Fellowship panel, click it again. Expect the track's march symbol
+  to glow and move the Fellowship on its click.
+
