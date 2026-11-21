@@ -76,7 +76,10 @@ namespace Wotr.Client
                         if (guide)
                             draft.Change(p => p.GuideId = id);
                         else
+                        {
                             TravelDraft.ToggleCompanion(draft, view, option, id);
+                            FellowshipActions.DropEmptySeparation(view, draft);
+                        }
                     });
                 button.AddToClassList("companion-portrait");
                 Illustrate(button, id);

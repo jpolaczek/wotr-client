@@ -17,6 +17,46 @@ namespace Wotr.PlayTests
         [UnityTest]
         public IEnumerator HideKeepsProgressAndSpendsTheExactDieOnce() => MatchTestRoom.Wait(Action(false));
 
+        // UI-561 (owner, 2026-11-21: "when I deselect it, the members still light and I can choose them, but I can no longer
+        // click the Fellowship's march"): a member clicked with the Character die starts a separation; deselecting it returns
+        // to the die alone, with the march offered again.
+        [UnityTest]
+        public IEnumerator DeselectingTheLastCompanionOffersTheMarchAgain() => MatchTestRoom.Wait(Deselect());
+
+        private static async Task Deselect()
+        {
+            using var room = await UI10TestRoom.Connect("ui34-panel-move");
+            var board = room.Fp.Board;
+            var die = board.View.Dice.Single(d => d.Owner == Side.FreePeoples && d.Face == DieFace.WillOfTheWest).Id;
+            PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(die));
+            await room.Settle();
+            WillFaceGestures.Turn(room.Fp, DieFace.Character);
+            await room.Settle();
+            Assert.IsTrue(board.Map.FellowshipMarker.MoveOffered, "The chosen die offers the march.");
+            CardGestures.Move(board.Fellowship.Status);
+            await room.Settle();
+            var separation = board.View.Options.SingleOrDefault(o => o.Kind == CommandKind.SeparateCompanions);
+            Assert.IsNotNull(separation, "The scenario offers a separation.");
+            var companion = board.Fellowship.Root.Q<Button>("fellowship-portrait-" + separation.EligibleIds.First());
+            var march = board.Fellowship.Root.Q<Button>("fellowship-progress");
+            Assert.IsTrue(march.ClassListContains(FellowshipTrackRow.MoveClass), "The track's march glows for the die.");
+            PointerGestureEvents.ClickAt(companion);
+            await room.Settle();
+            Assert.IsFalse(march.ClassListContains(FellowshipTrackRow.MoveClass), "Separating, the track's march waits.");
+            PointerGestureEvents.ClickAt(companion);
+            await room.Settle();
+            Assert.AreEqual(die, board.ActionDie.DieId, "The die stays chosen.");
+            Assert.IsTrue(march.enabledInHierarchy && march.ClassListContains(FellowshipTrackRow.MoveClass),
+                "Deselected, the track's march glows and can be clicked again.");
+            Assert.IsTrue(board.Map.FellowshipMarker.MoveOffered, "So does the figure on the map.");
+            Assert.IsTrue(companion.enabledInHierarchy, "The companion can be chosen again.");
+            // The scenario is MoveKeepsTheMapRegion's too: nothing is sent, and the die is put back.
+            Assert.AreEqual(0, room.Boundary.Commands);
+            PointerGestureEvents.ClickAt(board.Console.Actions.Cancel);
+            await room.Settle();
+            Assert.AreEqual("", board.ActionDie.DieId);
+        }
+
         private static async Task Action(bool move)
         {
             using var room = await UI10TestRoom.Connect(move ? "ui34-panel-move" : "ui34-panel-hide");

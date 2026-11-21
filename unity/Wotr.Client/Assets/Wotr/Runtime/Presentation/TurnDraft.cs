@@ -41,6 +41,19 @@ namespace Wotr.Client
             HuntChoice = null;
             ArmedSource = "";
         }
+        // UI-561: drops the chosen action and keeps its die (and a Will die's face), as when only the die was chosen.
+        public void Unchoose()
+        {
+            Remember();
+            Kind = null;
+            Payload = new CommandPayload { DieId = Payload.DieId };
+            MoveFocus = -1;
+            ReserveId = "";
+            CompanionFocus = -1;
+            HuntChoice = null;
+            ArmedSource = "";
+        }
+
         public void Clear()
         {
             Kind = null;

@@ -5336,3 +5336,20 @@ Checks:
   - `AnOwnResultThatIsTheLatestViewIsReleasedAsAlways`.
 - PlayMode `TrackGlideTests`: `AnOldStepWhileThePanelWasClosedIsInPlaceWhenItOpens` and
   `AnOldCorruptionChangeWhileThePanelWasClosedIsInPlaceWhenItOpens`, beside UI-544's opening at once.
+
+## Deselecting the last companion gives the die back — UI-561 (2026-11-21)
+
+The owner: "when I click a Character die, the Fellowship's members and the Fellowship's march light up. When I click a
+member, the places it can move to light on the map, and so do the other members. When I deselect it, the members still
+light and I can choose them, but I can no longer click the Fellowship's march."
+
+The first member's click turns the chosen die into a separation; deselecting that member left an empty separation, and
+the panel's march waits while a separation is built. Now, in the action phase, deselecting the last companion of a
+separation drops the separation and keeps the die: the march (the track's symbol and the figure on the map) and every
+companion are offered again, as before the first click. It is the same from the Fellowship panel's portraits and from
+the tray's. `FellowshipPanelNetworkTests.DeselectingTheLastCompanionOffersTheMarchAgain` checks it.
+
+Playtest:
+- [ ] Choose a Character die, click a companion in the Fellowship panel, click it again. Expect the track's march symbol
+  to glow and move the Fellowship on its click.
+

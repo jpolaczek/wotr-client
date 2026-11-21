@@ -115,8 +115,23 @@ namespace Wotr.Client
             else if (kind == CommandKind.RespondEffect)
                 ReactionDraft.Choose(draft, RosterReaction(view, id).Id);
             else
+            {
                 TravelDraft.ToggleCompanion(draft, view, DraftOptions.For(view, draft), id);
+                DropEmptySeparation(view, draft);
+            }
             return true;
+        }
+
+        // UI-561 (owner, 2026-11-21: "when I click a Character die, the Fellowship's members and the Fellowship's march light up.
+        // When I click a member, the places it can move to light on the map, and so do the other members. When I deselect it,
+        // the members still light and I can choose them, but I can no longer click the Fellowship's march"): deselecting the
+        // last companion of a separation in the action phase drops the separation and keeps the die. The march and every
+        // companion are offered again, as before the first click.
+        public static void DropEmptySeparation(PlayerView view, TurnDraft draft)
+        {
+            if (draft.Kind == CommandKind.SeparateCompanions && draft.Payload.Ids.Count == 0 &&
+                view?.Decision?.Kind == DecisionKind.Action)
+                draft.Unchoose();
         }
 
         public static bool Immediate(CommandKind? kind) => kind == CommandKind.SelectGuide;
