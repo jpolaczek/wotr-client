@@ -12,6 +12,10 @@ namespace Wotr.Client
     {
         private const string FreeEventWindow = "ents.follow-up";
 
+        // UI-560: the player's own free play of a Character Event (the Ents' follow-up), open even when no card qualifies.
+        public static bool FreeEvent(PlayerView view) => view?.Decision?.Kind == DecisionKind.Reaction &&
+            view.DecisionOwner == view.You && view.Decision.Window == FreeEventWindow;
+
         public static ActionOption Option(PlayerView view)
         {
             if (view?.Decision?.Kind != DecisionKind.Reaction || view.DecisionOwner != view.You || view.Winner.HasValue)

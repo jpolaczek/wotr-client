@@ -347,6 +347,38 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0, backend.Commands);
         }
 
+        // UI-560 (owner, 2026-11-21: "after the Ents' cards attacking Isengard, when another card may be played, the invalid
+        // options are not greyed"): the follow-up opens even when no Character Event in hand qualifies, and the server then
+        // offers no PlayEvent, only Pass. Every card in hand is greyed and says why.
+        [UnityTest]
+        public IEnumerator AFreePlayWithNoCardItAcceptsGreysTheWholeHand()
+        {
+            var view = new BoardFixture().View;
+            const string character = "base.fp.character.19";
+            const string strategy = "base.fp.strategy.02";
+            view.Hand.Add(character);
+            view.Hand.Add(strategy);
+            view.Decision = new DecisionView { Kind = DecisionKind.Reaction, Window = "ents.follow-up" };
+            view.DecisionOwner = view.You;
+            view.Options.Clear();
+            view.Options.Add(new ActionOption { Kind = CommandKind.DeclineReaction });
+            var backend = new FrozenBackend(view);
+            using var client = new MountedMatchClient("http://localhost", view.MatchId, backend);
+            client.Apply(view);
+            client.SetOnline();
+            yield return Settle();
+            foreach (var id in new[] { character, strategy })
+            {
+                var card = client.Board.Hand.Q<Button>(id);
+                Assert.IsFalse(card.ClassListContains("playable-card"), id);
+                Assert.IsTrue(card.ClassListContains(HandCard.UnplayableClass), "Greyed: " + id);
+                Assert.Less(card.resolvedStyle.opacity, .6f, id);
+                Assert.AreEqual("Cannot be played now", card.Q<Label>("hand-card-hint").text, id);
+            }
+            LayoutTests.Save(client.Viewport, "ui560-ents-follow-up-none.png");
+            Assert.AreEqual(0, backend.Commands);
+        }
+
         private static void MovePointer(VisualElement target)
         {
             CardGestures.Move(target);

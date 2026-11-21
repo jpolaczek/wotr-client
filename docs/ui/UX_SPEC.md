@@ -100,6 +100,11 @@ the player makes lights what it accepts and greys, never hides, what it does not
 tooltip. The hand follows it for every card choice, with or without a die: the Ents' free follow-up after Huorns,
 Treebeard or Entmoot lights the Character events it accepts and greys the rest with "Cannot be played now" (ARMY_MAP_UX
 AM02a).
+UI-560 (owner, 2026-11-21: "after the Ents' cards attacking Isengard, when another card may be played, the invalid
+options are not greyed"): the server opens that follow-up even when no Character Event in hand qualifies, and then offers
+only Pass (no PlayEvent). The hand used to grey only when some card qualified, so it looked fully playable. The window
+itself is now the choice: every card it cannot take is greyed with "Cannot be played now"
+(`CardInteractionTests.AFreePlayWithNoCardItAcceptsGreysTheWholeHand`).
 
 UI-553 (owner, 2026-11-19): "reading a card in Effects, the tooltip covers the card's text". A tooltip never covers a
 surface the player reads: a card's text unrolled in Effects and the card inspector carry `RuntimeTooltip.AvoidClass`.
