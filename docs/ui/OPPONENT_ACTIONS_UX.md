@@ -1716,3 +1716,21 @@ player's own action replays its automatic rolls too (only their own decision ste
 `OpponentBattlePresentationTests.AMissedRollIsNamedOnItsHeadingLongEnoughToRead` and
 `OpponentHuntPresentationTests.AMissOpensTheHuntShowsTheRollAndOnlyThenMovesTheProgress` check the words, the place
 and the hold.
+
+## A played card never shows before its flight — UI-562 (2026-11-21)
+
+The owner: "watching the opponent play a card, very often the card flashes in the middle for a fraction of a second
+before the smooth animation starts."
+
+The card window keeps its appearance's opacity transition after its first opening (`Appearance.HostClass`). A later
+card's hide (UI-316's `CardFlight.Hide`) therefore faded from the window's last opacity, so for about three frames the
+card stood at its reading place before its flight set off from the opponent's hand. The first card of a session never
+showed it, which is why the earlier checks missed it.
+
+The flight now owns the card's opacity: from `Hide` to `Clear` the card's transitions are off, so the card is unseen at
+its place until the flight sets off, and the flight's own fade is exact. The window's appearance and closing fades are
+back after `Clear`.
+
+`OpponentCardPresentationTests.ALaterCardNeverShowsAtItsPlaceBeforeItsFlight` opens and closes the window first, as a
+game does, then checks every frame before the flight.
+

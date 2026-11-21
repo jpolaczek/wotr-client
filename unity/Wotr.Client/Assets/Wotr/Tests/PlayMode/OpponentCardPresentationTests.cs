@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
@@ -81,6 +82,38 @@ namespace Wotr.PlayTests
             var place = cards.Root.worldBound;
             Assert.Less(early.width, place.width, "It starts small.");
             Assert.Less(Vector2.Distance(early.center, hand), Vector2.Distance(place.center, hand), "It comes out of the hand count.");
+            yield return stage.Released();
+            stage.AssertFinal(latest);
+        }
+
+        // UI-562 (owner, 2026-11-21: "watching the opponent play a card, very often the card flashes in the middle for a fraction
+        // of a second before the smooth animation starts"). In a game the card window has opened before, and its appearance's
+        // opacity transition made the hide fade from full opacity at the card's place. Now nothing of the card shows there
+        // before its flight sets off from the opponent's hand.
+        [UnityTest]
+        public IEnumerator ALaterCardNeverShowsAtItsPlaceBeforeItsFlight([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            yield return stage.Ready();
+            var cards = stage.Board.Cards;
+            cards.Show("base.fp.character.01");
+            yield return new WaitForSecondsRealtime(.5f);
+            cards.Close();
+            yield return new WaitForSecondsRealtime(1f);
+            var latest = Play(stage, "grey-havens");
+            var before = new List<float>();
+            var flying = false;
+            for (var frame = 0; frame < 240 && !flying; frame++)
+            {
+                var style = cards.Root.resolvedStyle;
+                flying = style.scale.value.x < .99f || Mathf.Abs(style.translate.x) > .5f;
+                if (!flying && style.display == DisplayStyle.Flex)
+                    before.Add(style.opacity);
+                yield return null;
+            }
+            Assert.IsTrue(flying, "The flight sets off.");
+            Assert.IsTrue(before.All(opacity => opacity < .02f), "Unseen at its place before its flight: " +
+                string.Join(", ", before.Select(opacity => opacity.ToString("0.00"))));
             yield return stage.Released();
             stage.AssertFinal(latest);
         }
