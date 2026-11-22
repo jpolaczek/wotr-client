@@ -104,6 +104,7 @@ namespace Wotr.Client
             tray.RulerTokenChosen += ChooseRulerToken;
             tray.DirectChosen += DirectBattleChoice;
             tray.CardInspected += id => { if (view?.Battle != null) board.Cards.ShowCombat(id); else board.Cards.Show(id, true); };
+            tray.CharacterInspected += (id, anchor) => board.Characters.Show(id, true, anchor);
             tray.DraftEdited += EditChoice;
             tray.ChoiceCompleted += CompleteChoice;
             tray.Cancel += Back;
@@ -432,7 +433,7 @@ namespace Wotr.Client
                 board.Hover.Toggle(region);
         }
 
-        private void FinishSequence() => Choose(CommandKind.FinishActionSequence);
+        private void FinishSequence() => AskIfMovesLeft(UnusedMoves.Sequence(view), () => Choose(CommandKind.FinishActionSequence));
 
         // UI-108: a double-click (or Enter) on a Characters row brings that figure into play for the chosen cost.
         private bool EnterCharacter(string figure)
@@ -477,8 +478,24 @@ namespace Wotr.Client
 
         private void Confirm()
         {
-            if (sender.Pending != null || previewLegal)
+            if (sender.Pending != null)
                 _ = Submit();
+            else if (previewLegal)
+                AskIfMovesLeft(UnusedMoves.Flights(view, draft), () =>
+                {
+                    if (sender.Pending == null && previewLegal)
+                        _ = Submit();
+                });
+        }
+
+        // UI-571 (owner, 2026-11-22): the ✓, the tray's Finish and Enter ask first while the action leaves moves unused,
+        // when Settings says so; the question's End action sends what the click would have sent.
+        private void AskIfMovesLeft(string note, Action send)
+        {
+            if (note == null || !board.AsksAboutUnusedMoves)
+                send();
+            else
+                board.MovesLeftQuestion.Ask(note + " End the action anyway?", send);
         }
 
         // UI-482: the empty homelands leave as a ✓ would; the server still validates them.

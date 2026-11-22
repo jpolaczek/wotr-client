@@ -650,6 +650,124 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-571 (owner, 2026-11-22: "an optional question when ending a move with the confirm at the bottom"): with Settings'
+        // "Ask before ending with moves left" on (the default), the console's ✓ that would end a recruitment with a point
+        // left asks first and sends nothing; Back keeps the action, End action sends the Finish. With the setting off the
+        // ✓ sends at once. Frame: ui571-question.png.
+        [UnityTest]
+        public IEnumerator UI571TheFinishAsksWhileMovesAreLeft()
+        {
+            const string key = "wotr.tests.ui571";
+            PlayerPrefs.DeleteKey(key);
+            var preferences = new InterfacePreferences(key);
+            var fixture = new BoardFixture();
+            fixture.View.Decision.Kind = DecisionKind.ActionSequence;
+            fixture.View.Dice.First(d => d.Id == "muster").Location = DieLocation.Resolving;
+            fixture.View.ActionSequence = new ActionSequenceView { Kind = CommandKind.Recruit, Owner = Side.FreePeoples,
+                DieId = "muster", Face = DieFace.Muster, CompletedSteps = 1, Remaining = 1 };
+            fixture.View.Options.Add(new ActionOption { Kind = CommandKind.Recruit, Enabled = true });
+            fixture.View.Options.Add(new ActionOption { Kind = CommandKind.FinishActionSequence });
+            try
+            {
+                using var test = new Harness(fixture.View, preferences);
+                yield return Settle();
+                var question = test.Board.MovesLeftQuestion;
+                var finish = test.Board.Console.Actions.Confirm;
+                Assert.IsTrue(finish.enabledSelf, "The ✓ finishes the sequence.");
+                var sent = test.Backend.Commands;
+                PointerGestureEvents.ClickAt(finish);
+                yield return Settle();
+                Assert.IsTrue(question.IsOpen, "A point is left: the ✓ asks first.");
+                Assert.AreEqual(sent, test.Backend.Commands, "Nothing is sent while it asks.");
+                Assert.AreEqual("1 recruitment point is still unused. End the action anyway?",
+                    question.Root.Q<Label>("unused-moves-note").text);
+                Assert.AreEqual("Back", question.Root.Q<Button>("unused-moves-cancel").text);
+                LayoutTests.Save(test.Viewport, "ui571-question.png");
+                PointerGestureEvents.ClickAt(question.Root.Q<Button>("unused-moves-cancel"));
+                yield return Settle();
+                Assert.IsFalse(question.IsOpen);
+                Assert.AreEqual(sent, test.Backend.Commands, "Back keeps the action.");
+                PointerGestureEvents.ClickAt(finish);
+                yield return Settle();
+                Assert.IsTrue(question.IsOpen);
+                PointerGestureEvents.ClickAt(question.Root.Q<Button>("unused-moves-confirm"));
+                yield return new WaitForSecondsRealtime(.2f);
+                Assert.IsFalse(question.IsOpen);
+                Assert.AreEqual(sent + 1, test.Backend.Commands);
+                Assert.AreEqual(CommandKind.FinishActionSequence, test.Backend.Last.Kind, "End action sends the Finish.");
+                preferences.SetConfirmUnusedMoves(false);
+                test.Reset();
+                yield return Settle();
+                PointerGestureEvents.ClickAt(finish);
+                yield return new WaitForSecondsRealtime(.2f);
+                Assert.IsFalse(question.IsOpen, "Switched off, the ✓ never asks.");
+                Assert.AreEqual(sent + 2, test.Backend.Commands);
+                Assert.AreEqual(CommandKind.FinishActionSequence, test.Backend.Last.Kind);
+            }
+            finally
+            {
+                PlayerPrefs.DeleteKey(key);
+            }
+        }
+
+        // UI-572 (owner, 2026-11-22: "when the Fellowship enters a region from which it may go onto the Mordor track, show a
+        // window asking whether to enter (only once); afterwards only light the button on the map"): the first offer of a
+        // game asks; Not now leaves the gate glowing and the game never asks again; Enter Mordor sends what the gate's click
+        // sends. Frame: ui572-question.png.
+        [UnityTest]
+        public IEnumerator UI572TheFirstMordorOfferAsksOnce()
+        {
+            const string key = "wotr.tests.ui572";
+            PlayerPrefs.DeleteKey(key);
+            PlayerPrefs.DeleteKey(MordorQuestionMemory.Key);
+            var preferences = new InterfacePreferences(key);
+            var fixture = new BoardFixture();
+            fixture.View.Decision.Kind = DecisionKind.FellowshipPhase;
+            fixture.View.Fellowship.RegionId = "morannon";
+            fixture.View.Fellowship.MordorStep = null;
+            fixture.View.Options.Add(new ActionOption { Kind = CommandKind.EnterMordor, Enabled = true });
+            try
+            {
+                using var test = new Harness(fixture.View, preferences);
+                yield return Settle();
+                var question = test.Board.MordorQuestion;
+                var gate = test.Board.Map.MordorTrack.GateButton("morannon");
+                Assert.IsTrue(question.IsOpen, "The first offer asks.");
+                StringAssert.StartsWith("The Fellowship stands at Morannon and may step onto the Mordor track now",
+                    question.Root.Q<Label>("enter-mordor-note").text);
+                Assert.AreEqual("Enter Mordor", question.Root.Q<Button>("enter-mordor-confirm").text);
+                Assert.AreEqual("Not now", question.Root.Q<Button>("enter-mordor-cancel").text);
+                LayoutTests.Save(test.Viewport, "ui572-question.png");
+                var sent = test.Backend.Commands;
+                PointerGestureEvents.ClickAt(question.Root.Q<Button>("enter-mordor-cancel"));
+                yield return Settle();
+                Assert.IsFalse(question.IsOpen);
+                Assert.AreEqual(sent, test.Backend.Commands, "Not now sends nothing.");
+                Assert.IsTrue(gate.ClassListContains(MapMordorTrack.OfferedGateClass), "The gate still glows.");
+                test.Reset();
+                yield return Settle();
+                Assert.IsFalse(question.IsOpen, "Only once a game.");
+                PlayerPrefs.DeleteKey(MordorQuestionMemory.Key);
+                test.Reset();
+                yield return Settle();
+                Assert.IsTrue(question.IsOpen);
+                PointerGestureEvents.ClickAt(question.Root.Q<Button>("enter-mordor-confirm"));
+                yield return new WaitForSecondsRealtime(.2f);
+                Assert.IsFalse(question.IsOpen);
+                Assert.AreEqual(CommandKind.EnterMordor, test.Backend.Last.Kind, "Enter Mordor sends the gate's command.");
+                preferences.SetAskToEnterMordor(false);
+                PlayerPrefs.DeleteKey(MordorQuestionMemory.Key);
+                test.Reset();
+                yield return Settle();
+                Assert.IsFalse(question.IsOpen, "Switched off, the gate alone.");
+            }
+            finally
+            {
+                PlayerPrefs.DeleteKey(key);
+                PlayerPrefs.DeleteKey(MordorQuestionMemory.Key);
+            }
+        }
+
         // UI-179: a row is the emblem, the name and the reserves, without the political track or its actions; outside
         // a recruitment the tab shows the reserves, inert. A reserve token brings its settlements into view (UI-134);
         // the Muster die's step toward war is the Politics arrow (UI-178). UI-150: the cards stay in the hand.
@@ -1433,12 +1551,12 @@ namespace Wotr.PlayTests
             public RenderTexture Viewport => viewport;
             public Harness(bool stress = false) : this(new BoardFixture(stress)) { }
             public Harness(BoardFixture fixture) : this(fixture.View) { }
-            public Harness(PlayerView view)
+            public Harness(PlayerView view, InterfacePreferences preferences = null)
             {
                 Bootstrap = Object.FindAnyObjectByType<ClientBootstrap>();
                 if (Bootstrap == null)
                     Bootstrap = new GameObject("Board interaction test").AddComponent<ClientBootstrap>();
-                Bootstrap.ShowFixture();
+                Bootstrap.ShowFixture(preferences);
                 var panel = Bootstrap.GetComponent<UIDocument>().panelSettings;
                 panel.scale = 1;
                 viewport = new RenderTexture(1366, 768, 24);

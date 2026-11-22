@@ -107,6 +107,73 @@ namespace Wotr.Client
             var previous = shown;
             var battle = Copy(cue.Battle);
             KeepReveals(previous, battle);
+            if (OwnRoll(previous, battle) is { } you)
+            {
+                var room = MakeRoom(previous, you);
+                return new DrawGate(layer, "Roll", true, () => RollPlace(previous, you, room), GateAlign.BottomLeft, at =>
+                {
+                    room?.RemoveFromHierarchy();
+                    return Shown(cue, previous, battle, at);
+                });
+            }
+            return Shown(cue, previous, battle, now);
+        }
+
+        public const string RollRoomName = "battle-roll-gate-room";
+
+        // UI-570 (owner, 2026-11-22: "the Roll button shows over other parts of the battle window"): before either side has
+        // rolled, the column keeps no row for its dice, so while the roll waits it gets one where its dice will stand.
+        private VisualElement MakeRoom(BattleView battle, Side side)
+        {
+            var column = Column(battle, side);
+            if (column == null || column.Q("battle-roll-reserved") != null)
+                return null;
+            var room = new VisualElement { name = RollRoomName, pickingMode = PickingMode.Ignore };
+            room.AddToClassList(RollRoomName);
+            column.Add(room);
+            return room;
+        }
+
+        // UI-570 (owner, 2026-11-22: "show it in the bottom-left corner, where the row of the actual dice starts"): the row the
+        // column keeps for its roll level with the other side's dice (UI-437), else the room it made for it, else the column's
+        // bottom-left corner, inset.
+        private UnityEngine.Rect? RollPlace(BattleView battle, Side side, VisualElement room)
+        {
+            var column = Column(battle, side);
+            if (column == null || !PresentationTargets.Shown(column))
+                return null;
+            var row = column.Q("battle-roll-reserved")?.Q(className: "battle-dice");
+            if (row != null && row.worldBound.width > 0 && !float.IsNaN(row.worldBound.width))
+                return row.worldBound;
+            if (room != null && PresentationTargets.Shown(room))
+            {
+                var place = room.worldBound;
+                return UnityEngine.Rect.MinMaxRect(place.xMin, place.yMin, place.xMax, place.yMax - RollGateInset / 2);
+            }
+            var bounds = column.worldBound;
+            return UnityEngine.Rect.MinMaxRect(bounds.xMin + RollGateInset, bounds.yMin, bounds.xMax, bounds.yMax - RollGateInset);
+        }
+
+        private const float RollGateInset = 14;
+
+        // UI-570 (owner, 2026-11-22): with Settings' "Roll my own dice and draws" on, a new roll of the player's own force (its
+        // combat roll, a special attack of its own) waits in the open window behind Roll; the previous state stays shown until
+        // the click. The owner, the same day: "after we mark and click Reroll we no longer need the extra Roll; we may skip it
+        // there because we already have a button for that action — apply it everywhere as a rule": a Leader re-roll rerolls
+        // dice already shown, after the player's own Reroll selected, and never waits. The player's side, or null.
+        private Side? OwnRoll(BattleView previous, BattleView battle)
+        {
+            if (!board.ConfirmsOwnDraws || previous == null || !Window.IsOpen || board.View == null)
+                return null;
+            var you = board.View.You;
+            var shownDice = new HashSet<string>(Dice(previous).Select(die => die.Id));
+            var rolled = Dice(battle).Where(die => Changed(previous, die)).Select(die => die.Id).ToList();
+            var fresh = rolled.Where(id => !shownDice.Contains(id)).ToList();
+            return fresh.Count > 0 && RollResults(battle, fresh).Any(result => result.Side == you) ? you : (Side?)null;
+        }
+
+        private IPresentationBeat Shown(PresentationCue cue, BattleView previous, BattleView battle, double now)
+        {
             Show(battle);
             if (!Window.IsOpen || previous == null)
                 return null;

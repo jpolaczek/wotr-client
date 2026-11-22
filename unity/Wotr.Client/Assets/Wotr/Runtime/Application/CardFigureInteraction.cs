@@ -28,6 +28,7 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
+            board.Hover.Panel.CountedChoice = Active;
             if (!Active)
                 return;
             HighlightFigures();

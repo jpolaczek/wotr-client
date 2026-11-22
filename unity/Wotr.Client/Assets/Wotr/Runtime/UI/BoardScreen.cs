@@ -75,6 +75,10 @@ namespace Wotr.Client
         public PauseBanner Pause { get; }
         public event Action ResumeRequested;
         public GameDeletedNotice GameDeleted { get; } = new GameDeletedNotice();
+        // UI-571: the ✓'s question before it ends an action with moves left.
+        public BoardQuestion MovesLeftQuestion { get; } = new BoardQuestion(ConfirmationDialog.UnusedMoves());
+        // UI-572: the question the first offer of the Mordor track asks in a game.
+        public BoardQuestion MordorQuestion { get; } = new BoardQuestion(ConfirmationDialog.EnterMordor());
         public DecisionWindow DecisionWindow { get; } = new DecisionWindow();
         // UI-161: the results an Elven Ring can give the chosen die, above that die.
         public RingFacePicker RingPicker { get; } = new RingFacePicker();
@@ -163,6 +167,13 @@ namespace Wotr.Client
         }
         public WindowLayout Windows { get; }
         private readonly InterfacePreferences preferences;
+        // UI-571: the ✓ asks before it ends an action with moves left, when Settings says so (no preferences: never).
+        public bool AsksAboutUnusedMoves => preferences?.ConfirmUnusedMoves == true;
+        // UI-572: the first offer of the Mordor track in a game asks, when Settings says so (no preferences: never).
+        public bool AsksToEnterMordor => !Observing && !replaying && preferences?.AskToEnterMordor == true;
+        // UI-570: the player's own draws wait for a click, when Settings says so; never for an observer or a replay.
+        public bool ConfirmsOwnDraws => !Observing && !replaying && preferences?.ConfirmOwnDraws == true;
+        private bool replaying;
         public BoardEdgeLayout Edges { get; }
 
         public BoardScreen(WindowLayout windows = null, InterfacePreferences preferences = null)
@@ -354,6 +365,7 @@ namespace Wotr.Client
             decisionDock.Add(CardCosts.Root);
             decisionDock.Add(Components.Root);
             Battles = new RegionalBattlePanel(Tray, decisionDock, Map);
+            Battles.CharacterInspected = (id, anchor) => Characters.Show(id, true, anchor);
             Battles.AttachPolicy(BattlePolicy.Root);
             _ = new BattleWindowHover(Root, Map, Battles, Cards);
             Hover.Excluded = Battles.IsRegion;
@@ -443,6 +455,8 @@ namespace Wotr.Client
             Root.Add(Pause.Layer);
             Root.Add(Menu.Root);
             Root.Add(GameDeleted.Root);
+            Root.Add(MovesLeftQuestion.Root);
+            Root.Add(MordorQuestion.Root);
             Escape.Attach();
             Family = new WindowFamily(Root, () => Escape.Roots);
             AttachFamily();
@@ -772,6 +786,7 @@ namespace Wotr.Client
         public void SetConnection(string state)
         {
             figuresLive = state is "Connected" or "Replay";
+            replaying = state == "Replay";
             Map.Figures.SetConnected(figuresLive);
             var stopped = state is "CorruptSave" or "UnsupportedSaveVersion"
                 or ClientCompatibility.ClientUpdateRequired or ClientCompatibility.ServerUpdateRequired;

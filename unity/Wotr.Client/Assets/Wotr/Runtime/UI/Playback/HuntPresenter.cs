@@ -23,6 +23,13 @@ namespace Wotr.Client
         private readonly FellowshipJoin join;
         // UI-520: a roll's result named under the Hunt's dice.
         private readonly PresentationMarks plates;
+        private readonly PresentationLayer layer;
+        // UI-573: the Free Peoples' answer, beside the Hunt window, and what the Hunt showed before it for its result.
+        private readonly HuntResponseWindow answers;
+        private int? lastDamage;
+        private int? lastCorruption;
+        // The answer holds the Hunt long enough to take in; the window itself stays while that Hunt lasts.
+        public const double AnswerSeconds = 1.2;
 
         public HuntPresenter(BoardScreen board, StagedBoard staged, PresentationLayer layer, FellowshipReading reading,
             PresentationSoundSink sounds)
@@ -31,6 +38,8 @@ namespace Wotr.Client
             this.staged = staged;
             this.reading = reading;
             this.sounds = sounds;
+            this.layer = layer;
+            answers = new HuntResponseWindow(board, layer);
             mark = new PresentationMark(layer);
             plates = new PresentationMarks(layer, "presentation-hunt-plate");
             join = new FellowshipJoin(board, staged, reading, mark);
@@ -52,16 +61,95 @@ namespace Wotr.Client
             if (cue.Kind != PresentationCueKind.Hunt || entry == null || cue.HuntChainId.Length == 0)
                 return null;
             plates.End();
+            Follow(entry);
+            if (StartsGated(entry))
+            {
+                // The window opens on the Hunt's start; its steps wait behind Start the Hunt.
+                Stage(cue, entry);
+                return new DrawGate(layer, "Start the Hunt", true, HuntPlace, GateAlign.RightCentre, at => Play(cue, entry, at)).Compact();
+            }
+            if (DrawGated(entry))
+                return new DrawGate(layer, "Draw a Hunt tile", false, HuntPlace, GateAlign.RightCentre, at => Staged(cue, entry, at)).Compact();
+            if (RerollGated(entry))
+                return new DrawGate(layer, "Re-roll the Hunt", true, HuntPlace, GateAlign.RightCentre, at => Staged(cue, entry, at)).Compact();
+            return Staged(cue, entry, now);
+        }
+
+        // UI-570 (owner, 2026-11-22: "the Start the Hunt button is terribly large and runs over other parts of the interface",
+        // "it is crooked", "the buttons should not jump"): every Hunt gate stands small at the right end of the Hunt window's
+        // summary row, which is a gate's height with its text centred on it (HuntPanel.Summary) — the same place for each.
+        private UnityEngine.Rect? HuntPlace() => DrawGate.Bounds(board.Hunt.Summary);
+
+        private IPresentationBeat Staged(PresentationCue cue, HuntReportEntryView entry, double now)
+        {
+            Stage(cue, entry);
+            return Play(cue, entry, now);
+        }
+
+        private void Stage(PresentationCue cue, HuntReportEntryView entry)
+        {
             staged.Hunt(cue.HuntChainId, entry);
             board.StageHunt(staged.View);
+        }
+
+        private IPresentationBeat Play(PresentationCue cue, HuntReportEntryView entry, double now)
+        {
             if (entry.Kind == HuntReportKind.GuideChanged && join.Joins(entry.Outcome.GuideId))
                 return join.Begin(entry.Outcome.GuideId, now);
             var steps = Steps(cue, entry);
             return steps.Count == 0 ? null : new StepsBeat(now, EndRing, steps);
         }
 
+        // UI-570 (owner, 2026-11-22: "leave it as in the rules, but add a 'start the hunt' button at the beginning for both
+        // players"): with Settings' "Roll my own dice and draws" on, every Hunt waits behind Start the Hunt for both players.
+        // The Shadow's roll follows that click, as its reroll follows its own Reroll selected ("we already have a button for
+        // that action"), so neither waits again.
+        private bool StartsGated(HuntReportEntryView entry) =>
+            board.ConfirmsOwnDraws && board.View != null && entry.Kind == HuntReportKind.Started;
+
+        // UI-570 (owner, 2026-11-22: "add buttons for the Hunt's re-roll"): the Shadow chooses its re-rolls and clicks Reroll
+        // selected (its own button, so its re-roll never waits); the Free Peoples see that re-roll behind Re-roll the Hunt.
+        private bool RerollGated(HuntReportEntryView entry) =>
+            board.ConfirmsOwnDraws && board.View?.You == Side.FreePeoples && entry.Kind == HuntReportKind.Rerolled;
+
+        // By the rules the Shadow draws the Hunt's tiles, so its own presentation of a tile drawn waits behind Draw a Hunt
+        // tile; a tile drawn again for the Free Peoples (Mithril Coat and Sting, Nenya) is theirs and waits for them.
+        private bool DrawGated(HuntReportEntryView entry) =>
+            board.ConfirmsOwnDraws && board.View != null &&
+            (entry.Kind == HuntReportKind.TileDrawn && board.View.You == Side.Shadow ||
+             entry.Kind == HuntReportKind.TileReplaced && board.View.You == Side.FreePeoples);
+
+        // UI-573: the answer's window leaves with a new Hunt and takes what the Hunt's next entries show as its result.
+        private void Follow(HuntReportEntryView entry)
+        {
+            if (entry.Kind == HuntReportKind.Started)
+                answers.Close();
+            if (answers.Root != null)
+                answers.Result(Result(entry));
+            if (entry.Hunt != null)
+                lastDamage = entry.Hunt.Damage;
+            lastCorruption = entry.Outcome?.Corruption ?? lastCorruption;
+        }
+
+        private string Result(HuntReportEntryView entry)
+        {
+            if (entry.Kind == HuntReportKind.DamageChanged && lastDamage is { } before && entry.Hunt != null && entry.Hunt.Damage != before)
+                return HuntResponseCaptions.DamageChange(before, entry.Hunt.Damage);
+            if (entry.Kind is HuntReportKind.CompanionLeft or HuntReportKind.CharacterEliminated && entry.CharacterId.Length > 0)
+                return HuntResponseCaptions.Left(entry.CharacterId);
+            if (entry.Kind == HuntReportKind.Corruption && lastCorruption is { } was && entry.Outcome != null && entry.Outcome.Corruption != was)
+                return HuntResponseCaptions.Corruption(was, entry.Outcome.Corruption);
+            return "";
+        }
+
+        // UI-573: the Shadow and an observer see what the Free Peoples answer; the Free Peoples know their own answers.
+        private bool ShowsAnswers() => board.Observing || board.View?.You == Side.Shadow;
+
         public void Released()
         {
+            answers.Close();
+            lastDamage = null;
+            lastCorruption = null;
             join.End();
             EndRing();
             plates.End();
@@ -92,6 +180,8 @@ namespace Wotr.Client
                     steps.Add((() => Guide(entry.Outcome.GuideId), seconds));
                     break;
                 case HuntReportKind.Response or HuntReportKind.Reaction:
+                    if (ShowsAnswers() && HuntResponseCaptions.For(entry, entry.Outcome?.GuideId) is { } caption)
+                        steps.Add((() => answers.Show(caption), AnswerSeconds));
                     steps.Add((() => reading.Open(), PresentationPace.PanelSettleSeconds));
                     steps.Add((() => mark.Show(() => Response(entry)), seconds));
                     break;

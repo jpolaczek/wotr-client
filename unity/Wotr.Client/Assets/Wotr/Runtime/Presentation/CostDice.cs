@@ -58,7 +58,7 @@ namespace Wotr.Client
             kind is CommandKind.DiscardPalantir or CommandKind.DiscardProtection or CommandKind.DiscardDenethor or
                 CommandKind.DiscardLore or CommandKind.DiscardGates or CommandKind.DiscardWelcome or CommandKind.DiscardBaradPalantir;
 
-        private static bool RingRemoval(CommandKind? kind) =>
+        public static bool RingRemoval(CommandKind? kind) =>
             kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardLore;
 
         private static bool Contains(IReadOnlyCollection<string> ids, string id)

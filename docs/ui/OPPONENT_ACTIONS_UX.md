@@ -1586,6 +1586,32 @@ Tests:
 - PlayMode `OpponentFreePeoplesActingNetworkTests` (Dead Men).
 
 <a id="the-attack-is-seen--ui-542"></a>
+## A card's random draw is seen — UI-565 (2026-11-22)
+
+The owner: "we need an extra UI that shows what is drawn, as in Challenge of the King; the user must see the draw
+clearly". Battle dice, the Hunt's tiles, a card's dice (UI-541) and the Kings' corruption tiles already had their windows;
+what a card drew at random outside them was only a line in the log. It now stands in the card's dice window
+(`CardRollPresenter`, `presentation-card-dice`), read-only, in the middle of the safe area (a draw has no region, so the
+camera stays):
+
+- **Challenge of the King** (`ChallengeDraw`, its three tiles in `Facts.Targets`): the card's name and its rule ("Three
+  Hunt tiles · three Eyes eliminate Strider or Aragorn, else the Eyes leave the game"); after 0.4 s the three printed
+  tiles (`HuntTileFace`, the size of a tile put into play) turn up one by one over 1.5 s, each with the card sound; then
+  the result: "No Eye · the tiles return to the pool", "1 Eye leaves the game", "2 Eyes leave the game", or "Three Eyes ·
+  Aragorn is eliminated" (the King the action takes off the board, from its figure change). The Eyes that leave the game
+  dim (`presentation-card-dice-item-out`).
+- **Lure of the Ring** (`CompanionSelected`, its Companion in `Facts.Targets`): "A Companion of the Fellowship, at
+  random"; the Fellowship's portraits (as its panel lists them) stand in a row and a light runs over them for 1.5 s,
+  stopping on the Companion picked, with the card sound; the others dim and the result names him ("Legolas is picked").
+  The server records the Companion as a fact since UI-565 (`wotr-server` `LureCompanionStep`); a pick recorded before it
+  has no fact and stays a line in the log, as the cues are made only from recorded facts.
+- **The order and who sees it** are UI-541's: the draw plays before what its action causes (the King's elimination);
+  both sides and observers see it, the player who played the card too (`PresentationSelection.OwnRollShows`), with no
+  replay of their own card or cost and no camera move.
+
+Not in this window: a random card discarded from a hand (Worn with Sorrow and Toil) keeps the discard's own scene; the
+Hunt's draws, a replaced Hunt tile and a battle's dice keep their windows.
+
 ## The attack is seen — UI-542 (2026-11-17)
 
 The owner: "if the CPU or the other player attacks, the camera does not centre on the region and nothing shows what
@@ -1733,4 +1759,40 @@ back after `Clear`.
 
 `OpponentCardPresentationTests.ALaterCardNeverShowsAtItsPlaceBeforeItsFlight` opens and closes the window first, as a
 game does, then checks every frame before the flight.
+
+## The player's own draws wait for a click — UI-570 (owner, 2026-11-22)
+
+The owner: "we also need an extra option, toggled in Settings, so that EVERY draw of a tile or a die or anything else does
+not happen by itself but needs a confirmation, pressing a button with a die's picture or 'Perform hunt' or the like". The
+owner chose the client (the server keeps drawing as before; the click only lets the result show) and the player's own
+draws only, and not the action dice rolled at a turn's start. Settings › Play: *Roll my own dice and draws*, on by
+default like the other two Play switches (owner, the same day: "all three new options should be on by default";
+`InterfacePreferences.ConfirmOwnDraws`); never for an observer or a replay (`BoardScreen.ConfirmsOwnDraws`).
+
+With it on, the beat that would show one of the player's own draws waits behind `DrawGate`, a gold button in the
+presentation layer over the place the result will show (a die's picture for a roll, the draw's words for a tile or a
+pick). The presentation holds while it waits; the click starts the beat as it would have played; Enter or Space press it
+(it takes focus); Skip or Esc end the presentation and the result shows at once.
+
+| Draw | Button | Where it waits |
+| --- | --- | --- |
+| The player's own card's dice (UI-541) | *Roll* | in the card's window, over its dice row (`CardRollPresenter`) |
+| The player's own card's random draw (UI-565) | *Draw tiles* / *Draw* | in the card's window, over its row |
+| Every Hunt's start, for both players (owner: "leave it as in the rules, but add a 'start the hunt' button at the beginning for both players") | *Start the Hunt* | a small button at the right end of the open Hunt window's summary row, inside the window (`HuntPresenter`); the Shadow's roll follows the click |
+| The Shadow's Hunt re-roll, for the Free Peoples (owner: "add buttons for the Hunt's re-roll"; the Shadow's own *Reroll selected* is its button) | *Re-roll the Hunt* | the same small button in that row, for the Free Peoples only |
+| A Hunt tile the Shadow draws (by the rules, the Shadow's) | *Draw a Hunt tile* | the same small button in that row, for the Shadow only |
+| A tile drawn again for the Free Peoples (Mithril Coat and Sting, Nenya) | *Draw a Hunt tile* | the same small button in that row, for the Free Peoples only |
+| The player's own force's combat roll or special attack | *Roll* | from the bottom-left of the row its column keeps for its dice (level with the other side's roll); when no side has rolled yet, the column makes such a row under its card while the roll waits (`battle-roll-gate-room`), so the button covers nothing (`BattlePresenter`) |
+
+The owner's rule, the same day: "after we mark and click Reroll we no longer need the extra Roll … apply it everywhere":
+a draw that follows a click whose only purpose is that draw never waits — a battle's Leader re-roll (the player's own
+*Reroll selected*), a Hunt reroll (the Shadow's own choice of dice) and a Kings corruption attempt's tiles (its own
+*Draw*). Only a draw no such button caused waits: the combat roll after the cards, a card's dice or draw, a Hunt tile;
+the Hunt's own roll follows *Start the Hunt*. By the rules (Almanac, the Hunt) the Shadow rolls the Hunt, takes its
+re-rolls and draws its tiles; the Free Peoples draw a tile only for Mithril Coat and Sting (and Challenge of the King,
+UI-565's window). Not covered: the action dice of a turn's start
+(owner), the player's own card draws (they have no presentation of their own) and a Kings corruption attempt (its tiles
+are drawn by the attempt's own click). Tests: PlayMode `OpponentHuntPresentationTests.TheHuntWaitsForStartAndEachSideDrawsItsOwnTiles` (both viewers),
+`OpponentBattlePresentationTests.TheViewersOwnRollWaitsForRoll`,
+`OpponentCardRollPresentationTests.OwnAthelasWaitsForRollWhenSettingsAsk` (frames `ui570-*`).
 

@@ -18,7 +18,10 @@ namespace Wotr.Client
         // UI-491 (owner, 2026-11-04): a quiet battle decision's caption, before what it causes.
         BattleChoice,
         // UI-492 (owner, 2026-11-04): a card's dice rolled outside a battle, before the losses they cause.
-        Roll
+        Roll,
+        // UI-565 (owner, 2026-11-22: "the user must see the draw clearly"): what a card draws at random outside the Hunt
+        // and a battle (Challenge of the King's three Hunt tiles, the Companion Lure of the Ring picks), before what it causes.
+        RandomDraw
     }
 
     // UI-303: the immutable cue contract. One visible result of a recorded step, its place in the action and the authorized
@@ -63,6 +66,10 @@ namespace Wotr.Client
         public int? Hits { get; }
         public string Source { get; }
         public string RollKind { get; }
+        // UI-565: what a card picked at random that is no Hunt tile (the Companion of Lure of the Ring; a draw's tiles are in
+        // Tiles), and what the draw did when a later step of its action says it (Strider or Aragorn eliminated by three Eyes).
+        public IReadOnlyList<string> Drawn { get; }
+        public string Note { get; }
         // UI-305: the revision holds the player's own decision, so this cue is a shared result of their own click (a
         // roll, their retreat or advance). It still plays in its window, but the camera never moves for it.
         public bool OwnCommand { get; internal set; }
@@ -104,6 +111,8 @@ namespace Wotr.Client
             Hits = payload.Hits;
             Source = payload.Source ?? "";
             RollKind = payload.RollKind ?? "";
+            Drawn = payload.Drawn.ToArray();
+            Note = payload.Note ?? "";
             Cause = (step.Facts.SourceId ?? "").Length > 0 ? step.Facts.SourceId : step.Context.DefinitionId ?? "";
         }
 
@@ -135,6 +144,8 @@ namespace Wotr.Client
         public int? Hits { get; set; }
         public string Source { get; set; }
         public string RollKind { get; set; }
+        public List<string> Drawn { get; } = new List<string>();
+        public string Note { get; set; }
     }
 
     // A cue copies its contract objects once, when it is made; a handful of small objects per revision (a battle snapshot is

@@ -145,8 +145,9 @@ namespace Wotr.Client
             WithdrawOffer();
             removal.style.display = action == null ? DisplayStyle.None : DisplayStyle.Flex;
             removal.SetEnabled(enabled && action?.Enabled == true);
-            removal.tooltip = action == null ? "" : "Remove " + Source.Title + " · " + EffectsPresentation.RemovalCost(view, action) +
-                (action.Enabled ? "" : " Select an eligible die.");
+            removal.tooltip = action == null ? "" : "Remove " + Source.Title + " · " + (action.Enabled || action.Reason.Length == 0
+                ? EffectsPresentation.RemovalCost(view, action) + (action.Enabled ? "" : " Select an eligible die.")
+                : action.Reason);
             removable = enabled && action?.Enabled == true ? action : null;
             title.EnableInClassList("legal-target", action?.Enabled == true);
             Refresh();

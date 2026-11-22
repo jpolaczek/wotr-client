@@ -48,7 +48,7 @@ namespace Wotr.Client
             Trace = new MapObservedTrace(board.Map);
             Skip = new SkipControl(board, layer, Playback, SkipNow);
             // UI-492/UI-541: a card's dice window; its retirement goes first, so the next action's scene begins without it.
-            rolls = new CardRollPresenter(board, Trace, Sounds, camera.SafeArea);
+            rolls = new CardRollPresenter(board, layer, Trace, Sounds, camera.SafeArea);
             Playback.Register(new CardRollWindowRetirement(rolls));
             // UI-333: before any scene, a finished battle's window steps aside for the next one; UI-342: so does the
             // Politics panel the presentation opened.

@@ -113,6 +113,13 @@ namespace Wotr.Client
                 board.Menu.OpenQuestion.Close();
                 return;
             }
+            // UI-571/UI-572: Escape answers the board's question first: the game goes on as it was.
+            foreach (var question in new[] { board.MovesLeftQuestion, board.MordorQuestion })
+                if (question.IsOpen)
+                {
+                    question.Close();
+                    return;
+                }
             // MENU-22: a deleted game keeps its notice until Main menu.
             if (board.GameDeleted.IsOpen)
                 return;

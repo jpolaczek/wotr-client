@@ -76,12 +76,28 @@ def publish_backend(channel, name, entries):
     publish(channel, name, COMMIT[:12], entries, extra)
 
 
+def clear_archives(client):
+    """A fresh fetch: no cached archive and no tracked Contracts archive either."""
+    for folder in (BOOTSTRAP.CACHE, BOOTSTRAP.VENDORED):
+        if (client / folder).is_dir():
+            for path in (client / folder).iterdir():
+                path.unlink()
+
+
+def archives(client):
+    return sorted(path.name for folder in (BOOTSTRAP.CACHE, BOOTSTRAP.VENDORED) if (client / folder).is_dir()
+                  for path in (client / folder).iterdir())
+
+
 def client_root(folder):
     root = folder / "client"
     write(root, {
         "unity/Wotr.Client/Packages/manifest.json":
             '{\n  "dependencies": {\n    "com.wotr.contracts": "file:../../../src/Wotr.Contracts",\n'
             '    "com.unity.test-framework": "1.6.0"\n  },\n  "testables": ["com.wotr.contracts"]\n}\n',
+        "unity/Wotr.Client/Packages/packages-lock.json":
+            '{\n  "dependencies": {\n    "com.wotr.contracts": {\n      "version": "file:../../../src/Wotr.Contracts",\n'
+            '      "depth": 0,\n      "source": "local-tarball",\n      "dependencies": {}\n    }\n  }\n}\n',
         "unity/Wotr.Client/Assets/Wotr/Resources/board.json": "old",
         "unity/Wotr.Client/Assets/Wotr/Resources/board.json.meta": "guid: board",
         "unity/Wotr.Client/Assets/Wotr/Resources/asset-manifest.json": "client owned",
@@ -112,7 +128,12 @@ class BootstrapTests(unittest.TestCase):
 
     def test_pin_writes_lock_unity_reference_and_resources(self):
         manifest = (self.client / BOOTSTRAP.UNITY_MANIFEST).read_text()
-        self.assertIn(f'"com.wotr.contracts": "file:../../../.deps/{CONTRACTS}-0.1.0.tgz"', manifest)
+        # DIST-23: Unity compiles against the tracked archive under packages/, not the untracked cache.
+        self.assertIn(f'"com.wotr.contracts": "file:../../../packages/{CONTRACTS}-0.1.0.tgz"', manifest)
+        self.assertIn(f'"version": "file:../../../packages/{CONTRACTS}-0.1.0.tgz"',
+                      (self.client / BOOTSTRAP.UNITY_PACKAGES_LOCK).read_text())
+        self.assertTrue((self.client / BOOTSTRAP.VENDORED / f"{CONTRACTS}-0.1.0.tgz").is_file())
+        self.assertFalse((self.client / BOOTSTRAP.CACHE / f"{CONTRACTS}-0.1.0.tgz").exists())
         self.assertIn('"testables": ["com.wotr.contracts"]', manifest)
         self.assertEqual('{"regions": 1}', self.resource("board.json").read_text())
         self.assertEqual("guid: board", self.resource("board.json.meta").read_text())
@@ -121,10 +142,22 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual("0.1.0", packages[CONTRACTS]["version"])
 
     def test_fresh_checkout_fetches_only_the_locked_bytes(self):
+        clear_archives(self.client)
+        BOOTSTRAP.fetch(self.client, self.environ)
+        self.assertEqual(sorted([f"{CONTRACTS}-0.1.0.tgz", f"{CONTENT}-1.0.0.tgz"]), archives(self.client))
+        self.assertTrue((self.client / BOOTSTRAP.VENDORED / f"{CONTRACTS}-0.1.0.tgz").is_file())
+
+    # DIST-23 (owner, 2026-11-22): a plain copy of the repository (a GitHub ZIP, no .deps/) holds the archive Unity's
+    # manifest names, so it builds without this script.
+    def test_a_copy_without_the_cache_has_the_archive_unity_compiles_against(self):
         for path in (self.client / BOOTSTRAP.CACHE).iterdir():
             path.unlink()
-        BOOTSTRAP.fetch(self.client, self.environ)
-        self.assertTrue((self.client / BOOTSTRAP.CACHE / f"{CONTRACTS}-0.1.0.tgz").is_file())
+        manifest = json.loads((self.client / BOOTSTRAP.UNITY_MANIFEST).read_text())
+        reference = manifest["dependencies"][CONTRACTS]
+        tracked = (self.client / BOOTSTRAP.UNITY_MANIFEST).parent / reference[len("file:"):]
+        self.assertTrue(tracked.resolve().is_file(), reference)
+        lock = next(p for p in self.lock()["packages"] if p["name"] == CONTRACTS)
+        self.assertEqual(lock["sha256"], BOOTSTRAP.digest(tracked.read_bytes()))
 
     def test_changed_archive_is_rejected_before_use(self):
         archive = f"{CONTENT}-1.0.0.tgz"
@@ -137,7 +170,7 @@ class BootstrapTests(unittest.TestCase):
         self.assertFalse((self.client / BOOTSTRAP.CACHE / archive).exists())
 
     def test_corrupt_cache_is_replaced_by_a_verified_download(self):
-        cached = self.client / BOOTSTRAP.CACHE / f"{CONTRACTS}-0.1.0.tgz"
+        cached = self.client / BOOTSTRAP.VENDORED / f"{CONTRACTS}-0.1.0.tgz"
         cached.write_bytes(b"corrupt")
         BOOTSTRAP.fetch(self.client, self.environ)
         self.assertEqual((self.channel / cached.name).read_bytes(), cached.read_bytes())
@@ -170,9 +203,19 @@ class BootstrapTests(unittest.TestCase):
             BOOTSTRAP.fetch(self.client, self.environ)
         self.resource("cards.json").write_text('{"cards": 2}')
         path = self.client / BOOTSTRAP.UNITY_MANIFEST
-        path.write_text(path.read_text().replace(".deps/", "elsewhere/"))
+        path.write_text(path.read_text().replace("../packages/", "../elsewhere/"))
         with self.assertRaisesRegex(BOOTSTRAP.DependencyError, "must reference"):
             BOOTSTRAP.fetch(self.client, self.environ)
+
+    # DIST-23: a new Contracts pin replaces the tracked archive and both of Unity's references.
+    def test_new_contracts_replace_the_tracked_archive(self):
+        publish_contracts(self.channel, "0.2.0")
+        publish_content(self.channel, "1.1.0", BASE_FILES, contracts="0.2.0")
+        BOOTSTRAP.pin(self.client, self.environ, [f"{CONTRACTS}@0.2.0", f"{CONTENT}@1.1.0"])
+        self.assertEqual([f"{CONTRACTS}-0.2.0.tgz"], sorted(p.name for p in (self.client / BOOTSTRAP.VENDORED).iterdir()))
+        self.assertIn(f"packages/{CONTRACTS}-0.2.0.tgz", (self.client / BOOTSTRAP.UNITY_MANIFEST).read_text())
+        self.assertIn(f"packages/{CONTRACTS}-0.2.0.tgz", (self.client / BOOTSTRAP.UNITY_PACKAGES_LOCK).read_text())
+        BOOTSTRAP.fetch(self.client, self.environ)
 
     def test_new_content_removes_only_files_the_previous_pin_managed(self):
         publish_content(self.channel, "1.1.0", {"board.json": BASE_FILES["board.json"]})
@@ -325,8 +368,7 @@ class GitHubChannelTests(unittest.TestCase):
         self.base = {"WOTR_DEPS_GITHUB_API": self.github.url(self.github.api)}
         BOOTSTRAP.pin(self.client, dict(self.base, WOTR_DEPS_TOKEN=self.SECRET),
                       [f"{CONTRACTS}@0.1.0", f"{CONTENT}@1.0.0"], "github:owner/server")
-        for path in (self.client / BOOTSTRAP.CACHE).iterdir():
-            path.unlink()
+        clear_archives(self.client)
         self.github.storage_headers.clear()
 
     def written_text(self):
@@ -336,7 +378,7 @@ class GitHubChannelTests(unittest.TestCase):
     def test_missing_private_access_is_explained_without_another_version(self):
         with self.assertRaisesRegex(BOOTSTRAP.DependencyError, "not available anonymously"):
             BOOTSTRAP.fetch(self.client, self.base)
-        self.assertEqual([], list((self.client / BOOTSTRAP.CACHE).iterdir()))
+        self.assertEqual([], archives(self.client))
 
     def test_explicit_anonymous_mode_ignores_every_credential_source(self):
         environment = dict(self.base, WOTR_DEPS_ANONYMOUS="1",
@@ -346,7 +388,7 @@ class GitHubChannelTests(unittest.TestCase):
             gh_token.assert_not_called()
         with self.assertRaisesRegex(BOOTSTRAP.DependencyError, "not available anonymously"):
             BOOTSTRAP.fetch(self.client, environment)
-        self.assertEqual([], list((self.client / BOOTSTRAP.CACHE).iterdir()))
+        self.assertEqual([], archives(self.client))
 
     def test_token_reaches_only_the_api_and_is_never_written_or_reported(self):
         BOOTSTRAP.fetch(self.client, dict(self.base, WOTR_DEPS_TOKEN=self.SECRET))
@@ -357,8 +399,7 @@ class GitHubChannelTests(unittest.TestCase):
             BOOTSTRAP.pin(self.client, dict(self.base, WOTR_DEPS_TOKEN=self.SECRET), [f"{CONTRACTS}@9.9.9"])
         self.assertIn("is missing from owner/server", str(refused.exception))
         self.assertNotIn(self.SECRET, str(refused.exception))
-        for path in (self.client / BOOTSTRAP.CACHE).iterdir():
-            path.unlink()
+        clear_archives(self.client)
         wrong = dict(self.base, WOTR_DEPS_TOKEN="wrong-" + self.SECRET)
         with self.assertRaises(BOOTSTRAP.DependencyError) as denied:
             BOOTSTRAP.fetch(self.client, wrong)

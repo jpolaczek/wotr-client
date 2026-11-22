@@ -85,7 +85,7 @@ namespace Wotr.Client
         public static string Trigger(PresentationCue cue)
         {
             if (cue.Kind is PresentationCueKind.Card or PresentationCueKind.Cost or PresentationCueKind.Die
-                or PresentationCueKind.SpentDie or PresentationCueKind.Roll)
+                or PresentationCueKind.SpentDie or PresentationCueKind.Roll or PresentationCueKind.RandomDraw)
                 return null;
             if (cue.BattleId.Length == 0 && cue.HuntChainId.Length == 0 && cue.Hunt == null && cue.Battle == null)
                 return null;
@@ -148,18 +148,8 @@ namespace Wotr.Client
         {
             var view = staged.View;
             var table = view.Effects.Any(effect => effect.SourceId == card) || view.Players.Any(player => player.TableCards.Contains(card));
-            var from = table ? board.TableEffects.Tab : Owner(card) is { } side ? board.HandOf(side) : null;
+            var from = table ? board.TableEffects.Tab : CardLibrary.Owner(card) is { } side ? board.HandOf(side) : null;
             return from != null && PresentationTargets.Shown(from) ? from.worldBound : (Rect?)null;
-        }
-
-        // The side whose card it is, by its identity (base.fp.…, base.sh.…).
-        private static Side? Owner(string card)
-        {
-            if (card.Contains(".fp."))
-                return Side.FreePeoples;
-            if (card.Contains(".sh."))
-                return Side.Shadow;
-            return null;
         }
 
         // The safe map area in the card's stage, inset, as an Event's reveal stands in it.

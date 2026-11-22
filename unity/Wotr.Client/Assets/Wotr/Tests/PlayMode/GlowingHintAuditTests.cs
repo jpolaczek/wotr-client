@@ -141,7 +141,8 @@ namespace Wotr.PlayTests
             await Audit(room, client, "lore", "Click a lit die to change its result with Lore", () => OwnDice(client, Candidates(client)));
         }
 
-        // Lords: a removal paid with a die and a Ring waits for the Ring, which glows in its console socket.
+        // Lords: a removal paid with a die and a Ring starts at the Ring (UI-563). With the die chosen each Ring socket is lit
+        // and clickable; it does not pulse, since with a Ring any die could pay (the owner: "everything would always be lit").
         private static async Task RingPayment()
         {
             using var room = await Connect("lords-lore-remove", ScenarioKind.CardPack, openPanels: false);
@@ -149,10 +150,15 @@ namespace Wotr.PlayTests
             var die = client.Board.View.Dice.First(d => d.Owner == Side.FreePeoples && d.Face == DieFace.Army);
             var rings = client.Board.View.Options.Single(o => o.Kind == CommandKind.DiscardLore).EligibleIds;
             await ComponentGestures.Cost(room, client, die.Id);
-            await ComponentGestures.Remove(client, "lords.sh.character.26");
-            await room.Settle();
-            client.Board.TableEffects.Close();
-            await Audit(room, client, "ring-payment", "Click a lit Elven Ring", () => Sockets(client, rings));
+            await Audit(room, client, "ring-payment", null, () =>
+            {
+                foreach (var ring in rings)
+                {
+                    var socket = client.Board.Console.Rings.For(ring);
+                    Assert.IsTrue(socket.enabledInHierarchy && socket.ClassListContains("legal-target"), "The socket of " + ring + " is lit.");
+                }
+                return Task.CompletedTask;
+            });
         }
 
         // A deck choice (UI-390) — Kings Palantír of Anárion's extra card, the base Palantír of Orthanc's draw: the decks the
@@ -178,6 +184,22 @@ namespace Wotr.PlayTests
             await Audit(room, client, "mordor-gate", "gate on the map", async () =>
             {
                 await GlowingTargetChecks.AssertVisiblyOffered(client.Board, client.Board.Map.MordorTrack.GateButton("morannon"), "Morannon's gate");
+                // UI-572 (owner, 2026-11-22: "easy to miss"): the offered gate stands larger and names itself; the other
+                // gate keeps its size and has no caption.
+                var map = client.Board.Map;
+                var gate = map.MordorTrack.GateButton("morannon");
+                var caption = map.MordorTrack.Caption;
+                Assert.IsTrue(gate.ClassListContains(MapMordorTrack.OfferedGateClass));
+                Assert.AreEqual(MapMordorTrack.GateCaption, caption.text);
+                Assert.AreEqual(DisplayStyle.Flex, caption.resolvedStyle.display, "The offered gate names itself.");
+                Assert.Greater(gate.resolvedStyle.scale.value.x, 1.3f, "The offered gate stands larger.");
+                Assert.AreSame(map, caption.parent);
+                Assert.Greater(map.IndexOf(caption), map.IndexOf(map.Stands.Layer), "The caption stands above every marker.");
+                Assert.LessOrEqual(caption.worldBound.xMin, gate.worldBound.xMin + 1, "From its gate's left edge…");
+                Assert.Greater(caption.worldBound.xMax, gate.worldBound.xMax, "…toward the track's stones.");
+                Assert.Greater(caption.worldBound.yMin, gate.worldBound.center.y, "Under its gate.");
+                var other = map.MordorTrack.GateButton("minas-morgul");
+                Assert.AreEqual(1f, other.resolvedStyle.scale.value.x, .01f, "The gate not offered keeps its size.");
                 if (client.Board.Map.FellowshipMarker.DeclareOffered)
                     await GlowingTargetChecks.AssertVisiblyOffered(client.Board, client.Board.Map.FellowshipMarker.Root, "the Fellowship figure");
             }, "morannon");

@@ -58,18 +58,20 @@ namespace Wotr.PlayTests
                 var die = room.Fp.Board.View.Dice.First(d => d.Owner == Side.FreePeoples && d.Face == DieFace.Army);
                 var ring = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.DiscardLore).EligibleIds[1];
                 await ComponentGestures.Cost(room, room.Fp, die.Id);
-                await ComponentGestures.Remove(room.Fp, "lords.sh.character.26");
+                // UI-563: an Army die alone leaves Lore greyed; the Ring, paid on its socket (UI-272), comes first.
+                room.Fp.Board.TableEffects.Inspect("lords.sh.character.26");
                 await room.Settle();
-                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("confirm-decision"));
-                // UI-272: the Ring is paid on its socket; the tray lists neither Rings nor dice.
+                var remove = room.Fp.Board.TableEffects.Root.Q<Button>("remove-table-lords.sh.character.26");
+                Assert.IsFalse(remove.enabledSelf);
+                StringAssert.Contains("needs an Elven Ring", remove.tooltip);
+                await ComponentGestures.Ring(room, room.Fp, ring);
                 Assert.IsNull(room.Fp.Board.Tray.Q<Button>("lore-no-ring"));
                 Assert.IsNull(room.Fp.Board.Tray.Q<Button>("ring-cost-" + ring));
-                StringAssert.StartsWith("Click a lit Elven Ring", room.Fp.Board.Console.Status.Hint.text);
                 Assert.AreEqual(DieLocation.Available, room.Fp.Board.View.Dice.Single(d => d.Id == die.Id).Location);
                 await CheckLayout(room, room.Fp, "lore-remove");
                 Assert.AreEqual(Side.FreePeoples, room.Sh.Board.View.Rings.Single(r => r.Id == ring).Owner);
                 var revision = room.Fp.Board.View.Revision;
-                CardNetworkTests.Click(room.Fp.Board.Console.Rings.For(ring));
+                await ComponentGestures.Remove(room.Fp, "lords.sh.character.26");
                 await room.At(revision + 1);
                 Assert.IsFalse(room.Sh.Board.View.Effects.Any(e => e.SourceId == "lords.sh.character.26"));
                 Assert.AreEqual(Side.Shadow, room.Sh.Board.View.Rings.Single(r => r.Id == ring).Owner);

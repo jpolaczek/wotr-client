@@ -271,7 +271,14 @@ namespace Wotr.Client
             return view.Decision?.Kind == DecisionKind.Action ? "Choose a matching die to play" : "Cannot be played now";
         }
 
-        private string PlayHint(string id) => Alternatives(id) ? "Click to choose how to pay" : "Click to play" + PaidWith(id);
+        private string PlayHint(string id) => (Alternatives(id) ? "Click to choose how to pay" : "Click to play" + PaidWith(id)) + Note(id);
+
+        // UI-568: what the card leaves out if played now (Faramir's Rangers without an army in Osgiliath).
+        private string Note(string id)
+        {
+            var note = CardPlayNotes.Play(view, id);
+            return note.Length > 0 ? " · " + note : "";
+        }
 
         private string PaidWith(string id)
         {

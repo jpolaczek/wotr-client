@@ -82,7 +82,10 @@ namespace Wotr.Client
             var move = !busy() && step < MordorTrackGeometry.LastStep && Offered(CommandKind.MoveFellowship);
             board.Map.MordorTrack.Offer(enter ? 0 : move ? step.Value + 1 : -1, enter ? fellowship.RegionId : "");
             if (enter)
+            {
                 RevealGate(fellowship.RegionId);
+                AskToEnter(fellowship.RegionId);
+            }
             board.Map.FellowshipMarker.OfferHide(!busy() && !fellowship.Hidden && Offered(CommandKind.HideFellowship));
             board.Map.FellowshipMarker.OfferMove(!busy() && !step.HasValue && fellowship.Hidden && Offered(CommandKind.MoveFellowship));
             board.Map.FellowshipMarker.OfferDeclare(!busy() && !step.HasValue && draft.Kind == null && Offered(CommandKind.DeclareFellowship));
@@ -98,6 +101,27 @@ namespace Wotr.Client
             gateRevealed = view.Decision.Id;
             board.Map.Reveal(new[] { region });
         }
+
+        // UI-572 (owner, 2026-11-22: "when the Fellowship enters a region from which it may go onto the Mordor track, show a
+        // window asking whether to enter the track of Mordor (only once); afterwards only light the button on the map"):
+        // the first offer in a game asks; Enter Mordor sends what the gate's click sends, Not now leaves the gate glowing.
+        private void AskToEnter(string region)
+        {
+            var match = view.MatchId ?? "";
+            if (!board.AsksToEnterMordor || board.MordorQuestion.IsOpen || MordorQuestionMemory.Asked(match))
+                return;
+            MordorQuestionMemory.Remember(match);
+            board.MordorQuestion.Ask(EntryNote(region), () =>
+            {
+                if (!busy() && Offered(CommandKind.EnterMordor))
+                    Gate(region);
+            });
+        }
+
+        public static string EntryNote(string region) =>
+            "The Fellowship stands at " + (region == "minas-morgul" ? "Minas Morgul" : "Morannon") +
+            " and may step onto the Mordor track now; from there it goes only along the track toward Mount Doom. " +
+            "You may also enter later: while you may, the gate glows on the map.";
 
         private bool Offered(CommandKind kind) => FellowshipActions.Option(view, board.ActionDie, kind, draft) != null ||
             FellowshipCardActions.Choice(view, kind).Length > 0;

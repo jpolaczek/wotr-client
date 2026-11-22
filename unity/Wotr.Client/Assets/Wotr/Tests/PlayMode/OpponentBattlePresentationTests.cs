@@ -178,6 +178,73 @@ namespace Wotr.PlayTests
             yield return stage.Released();
         }
 
+        // UI-570 (owner, 2026-11-22): with Settings' "Roll my own dice and draws" on, the viewer's own force's roll waits in
+        // the open window behind Roll, from the bottom-left of the row kept for its dice ("where the row of the actual dice
+        // starts"); the opponent's roll plays at once, and the viewer's Leader re-roll, which follows their own Reroll
+        // selected, never waits ("we already have a button for that action"). Frame: ui570-battle-gate.png.
+        [UnityTest]
+        public IEnumerator TheViewersOwnRollWaitsForRoll()
+        {
+            using var stage = Attack(out var fight, viewer: Side.FreePeoples);
+            stage.Preferences.SetConfirmOwnDraws(true);
+            yield return Open(stage, fight);
+            var round = fight.Next();
+            round.Record(battle => Roll(battle.Attacker, "a", 6, 5, 2, 1));
+            round.Record(battle => Roll(battle.Defender, "d", 6, 3));
+            round.Record(battle =>
+            {
+                var die = battle.Defender.Dice.Single(d => d.Id == "d1");
+                die.Reroll = 5;
+                die.RerollHit = true;
+                battle.Defender.Hits = 2;
+            });
+            stage.Play(round.Latest(), null, round.Steps.ToArray());
+            yield return stage.Until(() => Rolled(stage).Count == 4);
+            Assert.IsNull(stage.Board.Root.Q<Button>(DrawGate.Name), "The opponent's roll never waits.");
+            Button gate = null;
+            yield return stage.Until(() => (gate = stage.Board.Root.Q<Button>(DrawGate.Name)) != null);
+            Assert.AreEqual("Roll", gate.Q<Label>(className: DrawGate.Name + "-text").text);
+            yield return new WaitForSecondsRealtime(1f);
+            Assert.IsNull(stage.Board.Battles.Presented.Q("battle-die-d0"), "The own dice wait for the click.");
+            var column = stage.Board.Battles.Presented.Q("battle-defender").worldBound;
+            Assert.Less(gate.worldBound.xMin - column.xMin, 40, "From the column's left…");
+            Assert.Greater(gate.worldBound.center.y, column.center.y, "…in its lower part, where the dice row starts.");
+            stage.Save("ui570-battle-gate.png");
+            PointerGestureEvents.ClickAt(gate);
+            yield return stage.Until(() => Rolled(stage).SequenceEqual(new[] { "battle-die-d0", "battle-die-d1" }));
+            yield return stage.Until(() => Rolled(stage).SequenceEqual(new[] { "battle-die-d1" }));
+            Assert.IsNull(stage.Board.Root.Q<Button>(DrawGate.Name), "The re-roll after the player's own Reroll selected never waits.");
+            yield return stage.Released();
+        }
+
+        // UI-570 (owner, 2026-11-22: "the Roll button shows over other parts of the battle window"): when the viewer's own
+        // force rolls first, no column keeps a dice row yet; the viewer's column makes one under its card for the button,
+        // which covers none of the column's parts, and gives it back once the dice show. Frame: ui570-battle-first-roll.png.
+        [UnityTest]
+        public IEnumerator TheViewersFirstRollMakesRoomForRollUnderItsCard()
+        {
+            using var stage = Attack(out var fight, viewer: Side.FreePeoples);
+            stage.Preferences.SetConfirmOwnDraws(true);
+            yield return Open(stage, fight);
+            var round = fight.Next();
+            round.Record(battle => Roll(battle.Defender, "d", 6, 3));
+            round.Record(battle => Roll(battle.Attacker, "a", 6, 5, 2, 1));
+            stage.Play(round.Latest(), null, round.Steps.ToArray());
+            Button gate = null;
+            yield return stage.Until(() => (gate = stage.Board.Root.Q<Button>(DrawGate.Name)) != null);
+            yield return new WaitForSecondsRealtime(.3f);
+            var column = stage.Board.Battles.Presented.Q("battle-defender");
+            Assert.IsNotNull(column.Q(BattlePresenter.RollRoomName), "A row for the dice under the card.");
+            foreach (var part in column.Children().Where(part => part.name != BattlePresenter.RollRoomName && part.worldBound.height > 0))
+                Assert.IsFalse(gate.worldBound.Overlaps(part.worldBound), part.name + " stays clear of Roll.");
+            Assert.IsTrue(column.worldBound.Contains(gate.worldBound.min) && column.worldBound.Contains(gate.worldBound.max), "Inside its column.");
+            stage.Save("ui570-battle-first-roll.png");
+            PointerGestureEvents.ClickAt(gate);
+            yield return stage.Until(() => Rolled(stage).Contains("battle-die-d0"));
+            Assert.IsNull(stage.Board.Battles.Presented.Q(BattlePresenter.RollRoomName), "The dice take the row.");
+            yield return stage.Released();
+        }
+
         // UI-520 (owner): a roll's result stands named on its side's roll heading, "No hits" too, long enough to read.
         [UnityTest]
         public IEnumerator AMissedRollIsNamedOnItsHeadingLongEnoughToRead()

@@ -18,16 +18,19 @@ namespace Wotr.Client
         private readonly Action<CommandKind> direct;
         // UI-322: the live window's last stacks; null where nothing is compared (a report, a presented state).
         private readonly BattleStackMemory stacks;
+        // UI-564: opens a character's window (as the Characters tab does) from its portrait.
+        private readonly Action<string, VisualElement> character;
         private readonly bool moving;
         private static readonly IReadOnlyList<EffectChoiceView> NoChips = new EffectChoiceView[0];
 
         public BattleContext(VisualElement root, BattleView battle, PlayerView view, TurnDraft draft,
             Action<Action> edit, Action<string> inspect, CardInspector cards = null, Action<Action> complete = null,
-            BattleStackMemory stacks = null, Action<CommandKind> direct = null)
+            BattleStackMemory stacks = null, Action<CommandKind> direct = null, Action<string, VisualElement> character = null)
         {
             this.complete = complete;
             this.direct = direct;
             this.stacks = stacks;
+            this.character = character;
             moving = Appearance.Moving(root) && !ValuePulse.Quiet;
             var row = BoardScreen.Row("battle-forces");
             row.name = "battle-forces";
@@ -135,7 +138,7 @@ namespace Wotr.Client
             Action other = null;
             ChoiceTarget(portrait, view, draft, edit, () => character.Id, otherwise: () => other?.Invoke());
             other = ReactionSource(portrait, character, view, draft) ?? EvilKnowledgeSource(portrait, character, view, draft) ??
-                Points(portrait, view, draft, edit, new[] { character.Id });
+                Points(portrait, view, draft, edit, new[] { character.Id }) ?? Details(portrait, character, draft == null || edit == null);
             cell.Add(portrait);
             var name = new Label((cancelled ? "⦸ " : "") + CharacterLibrary.ShortName(view, character.Id))
                 { name = "battle-character-name", pickingMode = PickingMode.Ignore, enableRichText = false };
@@ -263,6 +266,31 @@ namespace Wotr.Client
                 portrait.tooltip = tooltip;
             });
             return () => complete(() => BattleReactions.Choose(draft, reaction.Id));
+        }
+
+        // UI-564 (owner, 2026-11-22: "during a battle, a click on a hero taking part in it should show information about him,
+        // skills and so on, as in the Characters tab"): a portrait whose click chooses nothing opens the character's window,
+        // in the live window, a presented battle and a report alike. Where no choice handler listens (no draft), its own press
+        // does it; otherwise the choice handler falls through to it.
+        public const string DetailsHint = "Click for this character's abilities";
+
+        private Action Details(VisualElement portrait, CharacterView figure, bool alone)
+        {
+            if (character == null)
+                return null;
+            void Open() => character(figure.Id, portrait);
+            if (alone)
+                ObjectPress.Register(portrait, Open);
+            // After the choice handler's refresh, which restores the tooltip it found: a portrait chosen for a card's choice
+            // says that choice instead.
+            void Hint()
+            {
+                if (!portrait.ClassListContains(ChoiceGlow.ClassName) && !portrait.tooltip.Contains(DetailsHint))
+                    portrait.tooltip = TooltipText.Lines(portrait.tooltip, DetailsHint);
+            }
+            Hint();
+            refresh.Add(Hint);
+            return Open;
         }
 
         // UI-439: a portrait whose click uses an ability now (a reaction, Evil Knowledge) wears that ability's icon.

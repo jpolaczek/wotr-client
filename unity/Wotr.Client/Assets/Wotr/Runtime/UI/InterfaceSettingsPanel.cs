@@ -24,6 +24,7 @@ namespace Wotr.Client
         private readonly VisualElement interfaceColumn = new VisualElement { name = "interface-options" };
         private readonly DisplaySettingsSection display;
         private readonly SoundSettingsSection sound;
+        private readonly PlaySettingsSection play;
 
         // MENU-12: two columns — the interface (size, motion, window positions) and the display (window mode and
         // resolution). MENU-20: the server comes from the build's configuration file, never from Settings. AUDIO-03: the
@@ -54,6 +55,8 @@ namespace Wotr.Client
             display = new DisplaySettingsSection(preferences, screen ?? new UnityDisplayScreen());
             columns.Add(display.Root);
             AddFigureSizes(display.Root);
+            play = new PlaySettingsSection(preferences);
+            display.Root.Add(play.Root);
             preferences.Changed += Render;
             Root.RegisterCallback<KeyDownEvent>(KeyDown, TrickleDown.TrickleDown);
             Render();
@@ -100,7 +103,7 @@ namespace Wotr.Client
             var button = BoardScreen.Button("Settings", open);
             button.name = "open-interface";
             button.AddToClassList("interface-button");
-            button.tooltip = "Interface size, figure size, motion, sound, window mode and resolution.";
+            button.tooltip = "Interface size, figure size, motion, sound, window mode, resolution and play confirmations.";
             return button;
         }
 
@@ -150,6 +153,7 @@ namespace Wotr.Client
             motion.SetValueWithoutNotify(preferences.ReducedMotion);
             display.Render();
             sound.Render();
+            play.Render();
         }
 
         public void Show()

@@ -1068,6 +1068,9 @@ on its region, a row of three kinds would shrink in 17 regions and one of four i
 
 ## A chosen figure shines, one left behind goes dark — UI-536 (2026-11-12)
 
+Since UI-574 (owner, 2026-11-22) a card's choice of figures leaves nothing behind: there only a figure that cannot be chosen
+goes dark (CARD_CHOICES_UX).
+
 The owner: when an army moves and its region panel opens to choose who marches, it must be unmistakable which figures
 are chosen; chosen figures glow very clearly and go clearly dark when clicked, so there is no ambiguity and no mistaken
 move. Until now a figure that could be chosen but was not wore UI-301's thick pulsing gold rim on a warm plate, while a

@@ -738,3 +738,26 @@ words change every half second. Only the ring rotates; no filter is used (unity-
 Tests: EditMode `ConsoleThinkingTests`; PlayMode `CpuThinkingLayoutTests` (`effects-inspection`: the ring turns inside the
 console and clear of its actions at 1366 × 768 at 125 % and 1920 × 1080 at 100 %; reduced motion keeps it still).
 
+## Ending an action with moves left — UI-571 (owner, 2026-11-22)
+
+The owner: "an optional (a Settings toggle) question when ending a move with the confirm at the bottom: a window says we
+did not make every possible move and asks whether we really want to end". Settings' **Play** section (under the figures'
+size) has *Ask before ending with moves left*, on by default (beside it, UI-572's *Ask when the Fellowship can enter
+Mordor*, FELLOWSHIP_UX, and UI-570's *Roll my own dice and draws*, OPPONENT_ACTIONS_UX) (`InterfacePreferences.ConfirmUnusedMoves`, settings
+version 5).
+
+While it is on, a Finish that would leave moves unused asks first (`UnusedMovesQuestion`, the menus'
+`ConfirmationDialog` as `unused-moves-*`): *End the action?* with what is left and *End action* / *Back*. Nothing is
+sent while it asks; *Back*, Esc or a click beside the window keep the action; focus starts on *Back*, so Enter never
+ends the action by itself. What counts (`UnusedMoves`):
+
+- a die's action of several steps (`ActionSequence`) ended by the ✓: the server's remaining steps while its option for
+  another step is enabled — "You moved 1 of 2 armies this die allows. Another army can still move.", "1 recruitment
+  point is still unused.", or the figures not yet moved that may go somewhere other than where they stand;
+- a card's flights of Nazgûl and other Shadow characters confirmed by the ✓, the tray's Finish movement or Enter: the
+  figures not yet moved that may still go somewhere.
+
+A step sent within the action, a card's own Finish without moving (UI-430) and every other confirmation never ask.
+Tests: EditMode `UnusedMovesTests`, `InterfacePreferencesTests.PlayConfirmationsHaveTheirDefaultsAndSurviveReload`;
+PlayMode `BoardInteractionTests.UI571TheFinishAsksWhileMovesAreLeft` (frame `ui571-question.png`). The test clients
+switch the question off (`MountedMatchClient.StandardPreferences`), so the suites keep ending actions early.

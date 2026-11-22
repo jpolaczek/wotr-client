@@ -481,6 +481,11 @@
 .hunt-panel .draft-status { white-space: normal; margin-top: 2px; margin-bottom: 2px; }
 .hunt-panel #hunt-step { color: rgb(231, 209, 160); margin: 2px 0; }
 .hunt-panel #hunt-source { font-size: 12px; margin: 2px 0 4px 0; white-space: normal; }
+/* UI-570 (owner, 2026-11-22: "the button is crooked", "the buttons should not jump"): the summary's row is a Hunt gate's
+   height with its text centred on it, so a gate stands level with the text at the row's right end, the same place for
+   every gate. */
+.hunt-panel #hunt-summary { flex-direction: row; align-items: center; min-height: 30px; margin: 2px 0 4px 0; }
+.hunt-panel #hunt-summary > #hunt-source { flex-grow: 1; flex-shrink: 1; margin: 0; }
 .hunt-panel .action { height: 32px; min-height: 32px; padding: 0 6px; margin: 0 6px 2px 0; }
 .hunt-panel #hunt-roll { margin: 3px 0; }
 .hunt-panel .hunt-roll-results, .hunt-panel .hunt-roll-overview, .hunt-panel .hunt-roll-modifiers, .hunt-panel .hunt-natural-result { flex-direction: row; align-items: center; flex-wrap: nowrap; }
@@ -873,6 +878,9 @@
     font-size: 15px;
 }
 .interface-settings-panel .sound-settings { margin-top: 8px; }
+/* UI-571: Play under the figures' size in the display column; its switches keep the 34-point target of every toggle. */
+.interface-settings-panel .play-settings { margin-top: 8px; }
+.interface-settings-panel #play-heading { margin: 0 0 2px 0; }
 .interface-settings-panel .sound-level { margin: 0 0 2px 0; }
 .interface-settings-panel .unity-toggle { min-height: 34px; margin-bottom: 2px; }
 .interface-settings-panel #reset-window-layout,
@@ -915,6 +923,18 @@
     -unity-text-align: middle-center;
 }
 #board-screen .hover-force-header > .hover-select-all.all-selected { color: rgb(247, 213, 120); }
+/* UI-569: why a near region is out of the moving Companions' reach, under the region's name. */
+.region-hover #hover-reach-note { margin: 2px 0 4px 0; color: rgb(236, 196, 120); white-space: normal; }
+/* UI-567 (owner, 2026-11-22): a Shadow force's Move Nazgûl beside its Select all; dark until a Character die is chosen. */
+#board-screen .hover-force-header > .hover-move-nazgul {
+    flex-shrink: 0;
+    min-width: 96px;
+    height: 22px;
+    margin: 0 0 0 6px;
+    padding: 0 8px;
+    font-size: 12px;
+    -unity-text-align: middle-center;
+}
 .hover-unit-row, .hover-portraits { flex-direction: row; flex-wrap: wrap; align-items: center; }
 .hover-unit-row > .unity-label { width: 26px; font-size: 11px; -unity-text-align: middle-center; }
 .region-hover .action { width: 32px; min-width: 32px; height: 32px; min-height: 32px; padding: 0; margin: 1px; font-size: 17px; }
@@ -1495,6 +1515,15 @@
     background-color: rgba(8, 7, 6, 0.62);
 }
 .region-hover .illustrated-figure.left-behind > .figure-art-image { opacity: 0.32; }
+/* UI-574 (owner, 2026-11-22): in a card's choice of figures, only a figure that cannot be chosen goes dark — the same dark
+   as one left behind — while those that may still be chosen keep their lit rim. */
+.region-hover .illustrated-figure.unavailable-figure {
+    border-width: 2px;
+    border-color: rgba(128, 112, 88, 0.45);
+    background-color: rgba(8, 7, 6, 0.62);
+}
+.region-hover .illustrated-figure.unavailable-figure > .figure-art-image { opacity: 0.32; }
+.region-hover .illustrated-figure.unavailable-figure > .icon-glow { opacity: 0; }
 .region-hover .illustrated-figure.left-behind > .icon-glow { opacity: 0; }
 /* The pointer still rests on a figure just clicked dark, so under the pointer only its rim lightens: it stays dark. */
 .region-hover .illustrated-figure.left-behind:hover { border-color: rgba(200, 178, 128, 0.5); }

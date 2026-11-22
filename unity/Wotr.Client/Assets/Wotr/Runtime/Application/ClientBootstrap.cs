@@ -116,7 +116,8 @@ namespace Wotr.Client
             MapScreenPointer.Update(flow?.Board?.Map);
         }
 
-        public void ShowFixture()
+        // UI-571: a test may give the fixture board its Settings (no preferences: the board asks nothing).
+        public void ShowFixture(InterfacePreferences preferences = null)
         {
             updates?.Dispose();
             updates = null;
@@ -126,7 +127,7 @@ namespace Wotr.Client
             ui?.Dispose();
             ui = null;
             root.Clear();
-            BoardScreen = new BoardScreen();
+            BoardScreen = new BoardScreen(null, preferences);
             root.Add(BoardScreen.Root);
             BoardScreen.ShowFixture();
         }

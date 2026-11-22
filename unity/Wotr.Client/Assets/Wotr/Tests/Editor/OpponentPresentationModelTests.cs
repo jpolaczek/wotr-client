@@ -805,6 +805,61 @@ namespace Wotr.EditorTests
             }
         }
 
+        // UI-565 (owner, 2026-11-22: "the user must see the draw clearly"): Challenge of the King's three Hunt tiles are one
+        // draw for both sides, named by the card, before the elimination three Eyes cause, with the King its action takes
+        // off the board; the side that played it sees it too. Lure of the Ring's pick names its Companion.
+        [Test]
+        public void ACardsRandomDrawShowsForBothSidesBeforeWhatItCauses()
+        {
+            var tiles = new[] { "base.hunt.standard.eye.1.1", "base.hunt.standard.eye.1.2", "base.hunt.standard.eye.1.3" };
+            foreach (var viewer in new[] { Side.FreePeoples, Side.Shadow })
+            {
+                var model = new OpponentPresentationModel(viewer, Data);
+                model.Baseline(new ActionLogPage[0], 1);
+                var played = Step("played", 2, 1, Side.FreePeoples, "EventPlayed");
+                played.Facts.Figures.Add(new ActionFigureChange
+                {
+                    Before = new ActionParticipant { Id = "base.character.strider", DefinitionId = "base.character.strider", Side = Side.FreePeoples },
+                    From = "minas-tirith", To = "eliminated"
+                });
+                var draw = Step("draw", 2, 2, null, "ChallengeDraw");
+                draw.Context.DefinitionId = "base.fp.character.14";
+                draw.Facts.Targets.AddRange(tiles);
+                model.Advance(2);
+                var cues = model.Merge(new[] { Page(played, draw) }).ToList();
+                var drawn = cues.FindIndex(cue => cue.Kind == PresentationCueKind.RandomDraw);
+                Assert.GreaterOrEqual(drawn, 0, viewer.ToString());
+                CollectionAssert.AreEqual(tiles, cues[drawn].Tiles);
+                Assert.AreEqual("base.fp.character.14", cues[drawn].Source);
+                Assert.AreEqual("base.character.strider", cues[drawn].Note, "Three Eyes name the King they eliminate.");
+                Assert.AreEqual(viewer == Side.FreePeoples, cues[drawn].OwnCommand);
+                Assert.IsFalse(PresentationCamera.Frames(cues[drawn]), "A draw has no region: the camera stays.");
+                var caused = cues.FindIndex(cue => cue.Figures.Count > 0);
+                if (caused >= 0)
+                    Assert.Greater(caused, drawn, viewer + ": the King leaves after the draw.");
+                Assert.AreEqual(1, cues.Count(cue => cue.Kind == PresentationCueKind.RandomDraw), "One window for the three tiles.");
+
+                var lure = new OpponentPresentationModel(viewer, Data);
+                lure.Baseline(new ActionLogPage[0], 1);
+                var lured = Step("lured", 2, 1, Side.Shadow, "EventPlayed");
+                var picked = Step("picked", 2, 2, null, "CompanionSelected");
+                picked.Context.DefinitionId = "base.sh.character.13";
+                picked.Facts.Targets.Add("base.character.gimli");
+                lure.Advance(2);
+                var pick = lure.Merge(new[] { Page(lured, picked) }).Single(cue => cue.Kind == PresentationCueKind.RandomDraw);
+                CollectionAssert.AreEqual(new[] { "base.character.gimli" }, pick.Drawn);
+                Assert.IsEmpty(pick.Tiles);
+                Assert.AreEqual(viewer == Side.Shadow, pick.OwnCommand);
+            }
+            // A pick recorded before UI-565 has no target: it stays a line in the log.
+            var old = new OpponentPresentationModel(Side.FreePeoples, Data);
+            old.Baseline(new ActionLogPage[0], 1);
+            var before = Step("picked", 2, 2, null, "CompanionSelected");
+            old.Advance(2);
+            Assert.IsFalse(old.Merge(new[] { Page(Step("lured", 2, 1, Side.Shadow, "EventPlayed"), before) })
+                .Any(cue => cue.Kind == PresentationCueKind.RandomDraw));
+        }
+
         // The board's difference lists the figures on the first step; the dice were rolled before they fell.
         [Test]
         public void ACardsDiceComeBeforeTheFiguresTheyTake()

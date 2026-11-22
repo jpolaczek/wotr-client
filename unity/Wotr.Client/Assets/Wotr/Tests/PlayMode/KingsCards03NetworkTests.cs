@@ -153,12 +153,13 @@ namespace Wotr.PlayTests
             using (var room = await Connect("kings-palantir-removal", ScenarioKind.CardPack))
             {
                 var option = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.DiscardBaradPalantir);
-                await ComponentGestures.Cost(room, room.Fp, option.EligibleDice[0]);
-                await ComponentGestures.Remove(room.Fp, "kings.sh.strategy.25");
+                // UI-563: a die that needs a Ring, then the Ring, then the card, whose click sends the removal.
+                var die = option.EligibleDice.FirstOrDefault(id => !option.DiceWithoutRing.Contains(id)) ?? option.EligibleDice[0];
+                await ComponentGestures.Cost(room, room.Fp, die);
+                await ComponentGestures.Ring(room, room.Fp, option.EligibleIds[0]);
                 await Layout(room, room.Fp, "palantir-remove");
-                await KingsCardNetworkChecks.Reconnect(room, room.Fp);
                 var revision = room.Fp.Board.View.Revision;
-                CardNetworkTests.Click(room.Fp.Board.Console.Rings.For(option.EligibleIds[0]));
+                await ComponentGestures.Remove(room.Fp, "kings.sh.strategy.25");
                 await room.At(revision + 1);
                 var table = room.Sh.Board.View.Players.Single(p => p.Side == Side.Shadow).TableCards;
                 Assert.IsFalse(table.Contains("kings.sh.strategy.25"));

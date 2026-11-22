@@ -164,3 +164,28 @@
     border-radius: 10px;
 }
 #board-screen.compact-edge-board .board-dropdowns .fellowship-panel .mordor-track .fellowship-track-marker { top: 2px; height: 20px; }
+
+/* UI-572 (owner, 2026-11-22: "the button that enters the Mordor track is easy to miss"): the offered gate stands half
+   as large again with a thicker gold rim and swells with the shared 750 ms pulse; its caption stands under it above
+   every marker, at its own size, and takes no pointer (the gate's own click enters). */
+.map .mordor-gate.mordor-gate-offered,
+.map .mordor-gate.mordor-gate-offered:hover {
+    scale: 1.45 1.45;
+    border-width: 4px;
+    border-radius: 12px;
+}
+.motion-enabled .map .choice-glow-pulse .mordor-gate.mordor-gate-offered { scale: 1.65 1.65; }
+.map .mordor-gate-caption {
+    position: absolute;
+    margin: 0;
+    padding: 1px 7px;
+    border-width: 1px;
+    border-radius: 4px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(26, 24, 23, 0.92);
+    color: rgb(255, 224, 150);
+    font-size: 12px;
+    white-space: nowrap;
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-text-align: middle-center;
+}

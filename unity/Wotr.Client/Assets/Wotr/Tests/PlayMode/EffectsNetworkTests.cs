@@ -105,24 +105,32 @@ namespace Wotr.PlayTests
             using var room = await Connect("effects-palantir", ScenarioKind.BaseAcceptance);
             var actor = room.Fp;
             var before = actor.Board.View;
-            var die = before.Dice.First(d => d.Owner == Side.FreePeoples && d.Face == DieFace.Army && d.Location == DieLocation.Available);
+            var will = before.Dice.First(d => d.Owner == Side.FreePeoples && d.Face == DieFace.WillOfTheWest && d.Location == DieLocation.Available);
+            var die = before.Dice.First(d => d.Owner == Side.FreePeoples && d.Face == DieFace.Character && d.Location == DieLocation.Available);
             var ring = before.Options.Single(o => o.Kind == CommandKind.DiscardPalantir).EligibleIds[0];
-            await ComponentGestures.Cost(room, actor, die.Id);
+            await ComponentGestures.Cost(room, actor, will.Id);
             await Open(room, actor);
-            // UI-446 (owner): the lit card prepares its removal exactly as its × does (UI-430's board rule).
             var tile = actor.Board.TableEffects.Root.Q<Button>("effect-source-" + Palantir);
-            Assert.IsTrue(tile.ClassListContains("legal-target"), "The removable card is lit.");
-            Assert.IsFalse(ReadOnlyControl.Is(tile), "Its click prepares the removal.");
-            Assert.AreEqual(actor.Board.TableEffects.Root.Q<Button>("remove-table-" + Palantir).tooltip, tile.tooltip);
-            PointerGestureEvents.ClickAt(tile);
-            await room.Settle();
-            Assert.AreSame(actor.Board.TableEffects.DecisionHost, actor.Board.Tray.parent);
-            Assert.AreEqual(Palantir, actor.Board.TableEffects.SelectedSource);
-            Assert.AreEqual(DisplayStyle.Flex, actor.Board.TableEffects.Details.resolvedStyle.display, "The payment shows the details.");
-            StringAssert.Contains("give one Elven Ring to the Shadow", actor.Board.TableEffects.Root.Q<Label>("effect-removal-cost").text);
-            Assert.IsNull(actor.Board.Tray.Q<Button>("confirm-decision"));
+            var remove = actor.Board.TableEffects.Root.Q<Button>("remove-table-" + Palantir);
+            Assert.IsTrue(tile.ClassListContains("legal-target"), "A Will of the West die pays alone: the card is lit.");
+            // UI-563 (owner, 2026-11-22: "The Palantír of Orthanc lights when a Character die is chosen, though removing it
+            // needs Will of the West ... on that basis everything would always be lit"): a die that needs a Ring leaves it
+            // greyed and says how; the Ring's way starts at the Ring.
+            await ComponentGestures.Cost(room, actor, die.Id);
+            Assert.IsFalse(tile.ClassListContains("legal-target"), "A Character die alone does not light it.");
+            Assert.IsFalse(remove.enabledSelf, "Its × is greyed.");
+            StringAssert.Contains("needs an Elven Ring", remove.tooltip);
+            Assert.IsTrue(ReadOnlyControl.Is(tile), "Its click does nothing.");
+            await ComponentGestures.Ring(room, actor, ring);
+            if (!actor.Board.TableEffects.IsOpen)
+                await Open(room, actor);
+            // UI-446 (owner): the lit card prepares its removal exactly as its × does (UI-430's board rule).
+            Assert.IsTrue(tile.ClassListContains("legal-target"), "With an Elven Ring chosen the die pays: the card is lit.");
+            Assert.IsFalse(ReadOnlyControl.Is(tile), "Its click removes it.");
+            Assert.AreEqual(remove.tooltip, tile.tooltip);
+            StringAssert.Contains("give one Elven Ring to the Shadow", remove.tooltip);
             Assert.AreEqual(before.Revision, actor.Board.View.Revision);
-            PointerGestureEvents.ClickAt(actor.Board.Console.Rings.For(ring));
+            PointerGestureEvents.ClickAt(tile);
             await room.At(before.Revision + 1);
             Assert.IsFalse(room.Sh.Board.View.Effects.Any(e => e.SourceId == Palantir));
             Assert.AreEqual(Side.Shadow, room.Sh.Board.View.Rings.Single(r => r.Id == ring).Owner);

@@ -521,8 +521,172 @@
 .presentation-card-dice-waiting {
     opacity: 0;
 }
+/* UI-568: what the card then leaves out (Faramir's Rangers without an army in Osgiliath), with the result. */
+.presentation-card-dice-note {
+    margin: 4px 0 0 0;
+    padding: 0;
+    max-width: 330px;
+    white-space: normal;
+    font-size: 13px;
+    color: rgb(236, 196, 120);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+    -unity-text-align: middle-center;
+}
+/* UI-565 (owner, 2026-11-22): what a card draws at random, in the same window: Challenge of the King's Hunt tiles turn
+   up one by one at the size of a tile put into play, and the Eyes that leave the game dim; for Lure of the Ring a light
+   runs over the Fellowship's Companions and stays on the one picked while the others dim. */
+.presentation-card-dice-rule-wrapped {
+    max-width: 330px;
+    white-space: normal;
+}
+.presentation-card-dice-drawn {
+    align-items: center;
+    min-height: 96px;
+}
+.presentation-card-dice-drawn > .presentation-card-dice-item {
+    margin: 0 4px;
+}
+.presentation-card-dice-portrait {
+    width: 68px;
+    height: 92px;
+    align-items: center;
+    padding: 2px;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: rgba(0, 0, 0, 0);
+}
+.presentation-card-dice-portrait > .figure-art-image {
+    width: 60px;
+    height: 66px;
+}
+.presentation-card-dice-portrait-name {
+    margin: 2px 0 0 0;
+    padding: 0;
+    font-size: 11px;
+    color: rgb(214, 205, 182);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+    -unity-text-align: middle-center;
+}
+.presentation-card-dice-portrait.presentation-card-dice-item-lit {
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.presentation-card-dice-item-out {
+    opacity: 0.35;
+}
 
 /* UI-493: the name of a table card leaving, beside the Effects tab. */
 .presentation-caption.presentation-caption-name {
     -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
 }
+
+/* UI-570 (owner, 2026-11-22): the button that lets one of the player's own rolls or draws show (Settings › Play): over
+   the place the result will show, a gold plate with a die's picture for a roll, its words alone for a draw. */
+.presentation-draw-gate {
+    position: absolute;
+    flex-direction: row;
+    align-items: center;
+    min-height: 44px;
+    margin: 0;
+    padding: 4px 14px 4px 8px;
+    border-width: 2px;
+    border-radius: 8px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(60, 44, 16, 0.96);
+}
+.presentation-draw-gate:hover { background-color: rgba(92, 68, 24, 0.98); }
+.presentation-draw-gate > .presentation-draw-gate-die {
+    width: 32px;
+    height: 32px;
+    margin: 0 8px 0 0;
+}
+.presentation-draw-gate > .presentation-draw-gate-text {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    color: rgb(255, 230, 170);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+/* UI-570 (owner, 2026-11-22: "the Start the Hunt button is terribly large and runs over other parts of the interface"):
+   in the Hunt window's summary row the gate is a small button inside the window. */
+.presentation-draw-gate.presentation-draw-gate-compact {
+    min-height: 28px;
+    padding: 1px 10px 1px 5px;
+    border-width: 1px;
+    border-radius: 5px;
+}
+.presentation-draw-gate.presentation-draw-gate-compact > .presentation-draw-gate-die {
+    width: 20px;
+    height: 20px;
+    margin: 0 6px 0 0;
+}
+.presentation-draw-gate.presentation-draw-gate-compact > .presentation-draw-gate-text {
+    font-size: 13px;
+}
+
+/* UI-573 (owner, 2026-11-22: "a better visualization of what the Free Peoples player does during the Hunt, which skills
+   of which characters they use"): beside the Hunt window, the Free Peoples' answer — a portrait, the Ring or a card's
+   parchment, the answer's title and printed text, then what it did. Read-only; textures and opacity only. */
+.presentation-hunt-response {
+    position: absolute;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 340px;
+    padding: 8px 12px 10px 8px;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: rgb(176, 141, 79);
+    background-color: rgba(26, 24, 23, 0.95);
+}
+.presentation-hunt-response-picture {
+    width: 64px;
+    height: 72px;
+    flex-shrink: 0;
+    margin: 0 10px 0 0;
+    border-width: 2px;
+    border-radius: 6px;
+    border-color: rgb(141, 199, 218);
+    background-color: rgba(20, 36, 48, 0.9);
+    -unity-background-scale-mode: scale-to-fit;
+}
+.presentation-hunt-response-picture > .figure-art-image {
+    width: 100%;
+    height: 100%;
+}
+.presentation-hunt-response-ring {
+    background-image: resource("Wotr/Art/UI/icons/ring");
+}
+.presentation-hunt-response-card {
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+}
+.presentation-hunt-response-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+.presentation-hunt-response-title {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    white-space: normal;
+    color: rgb(249, 223, 157);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+.presentation-hunt-response-detail {
+    margin: 3px 0 0 0;
+    padding: 0;
+    font-size: 13px;
+    white-space: normal;
+    color: rgb(214, 205, 182);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+.presentation-hunt-response-result {
+    align-self: flex-start;
+    margin: 6px 0 0 0;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: rgb(231, 228, 215);
+    background-color: rgba(60, 52, 40, 0.9);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+

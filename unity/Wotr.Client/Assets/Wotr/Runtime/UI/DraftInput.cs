@@ -288,7 +288,7 @@ namespace Wotr.Client
             if (FloatingWindow.IsDragging(evt.target as VisualElement) || ActionCard.ContainsInput(evt.target as VisualElement) ||
                 CharacterRosterPanel.ContainsInput(evt.target as VisualElement) ||
                 CompanionSetupChoices.ContainsInput(evt.target as VisualElement) || BoardMenu.ContainsInput(evt.target as VisualElement) ||
-                GameChatPanel.ContainsInput(evt.target as VisualElement))
+                GameChatPanel.ContainsInput(evt.target as VisualElement) || ConfirmationDialog.ContainsInput(evt.target as VisualElement))
                 return;
             if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
             {
