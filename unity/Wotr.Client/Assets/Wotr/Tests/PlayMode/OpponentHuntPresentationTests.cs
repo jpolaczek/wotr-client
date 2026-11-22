@@ -73,9 +73,11 @@ namespace Wotr.PlayTests
             stage.Preferences.SetConfirmOwnDraws(true);
             yield return stage.Ready();
             var roll = Snapshot("BeforeDraw", 6, 2);
+            var rerolled = Snapshot("BeforeDraw", 6, 5);
+            rerolled.Dice[1].First = 2;
             var script = new Script(stage).Entry(HuntReportKind.Started, Snapshot("BeforeDraw"))
-                .Entry(HuntReportKind.Rolled, roll).Entry(HuntReportKind.TileDrawn, Tile(roll, 1))
-                .Entry(HuntReportKind.TileReplaced, Tile(roll, 0)).Entry(HuntReportKind.HuntCompleted, Done(Tile(roll, 0)));
+                .Entry(HuntReportKind.Rolled, roll).Entry(HuntReportKind.Rerolled, rerolled).Entry(HuntReportKind.TileDrawn, Tile(rerolled, 1))
+                .Entry(HuntReportKind.TileReplaced, Tile(rerolled, 0)).Entry(HuntReportKind.HuntCompleted, Done(Tile(rerolled, 0)));
             var steps = script.Finish();
             if (viewer == Side.FreePeoples)
             {
@@ -90,17 +92,37 @@ namespace Wotr.PlayTests
             yield return new WaitForSecondsRealtime(1.5f);
             Assert.IsNull(Die(stage, "d0"), "No dice until the click.");
             Assert.IsTrue(stage.Playback.Holding);
+            // The owner: "the button is terribly large and runs over other parts of the interface" — small, inside the window.
+            var window = stage.Board.Hunt.Root.worldBound;
+            Assert.IsTrue(window.Contains(start.worldBound.min) && window.Contains(start.worldBound.max), "Inside the Hunt window.");
+            Assert.LessOrEqual(start.worldBound.height, 34f, "A small button in the window's row.");
             LayoutTests.Save(stage.Texture, "ui570-hunt-start-" + viewer + ".png");
+            var gates = 1;
             PointerGestureEvents.ClickAt(start);
             yield return stage.Until(() => Die(stage, "d0") != null);
             Assert.IsNull(Gate(stage), "The roll follows Start the Hunt.");
+            if (viewer == Side.FreePeoples)
+            {
+                // The owner: "add buttons for the Hunt's re-roll" — the Shadow's re-roll waits for the Free Peoples' click; the
+                // Shadow's own Reroll selected is its button, so it never waits for the Shadow.
+                Button reroll = null;
+                yield return stage.Until(() => (reroll = Gate(stage)) != null);
+                Assert.AreEqual("Re-roll the Hunt", Text(reroll));
+                LayoutTests.Save(stage.Texture, "ui570-hunt-reroll.png");
+                PointerGestureEvents.ClickAt(reroll);
+                gates++;
+                // The clicked button leaves on the presentation's next tick.
+                yield return stage.Until(() => Gate(stage) != reroll);
+            }
             Button draw = null;
             yield return stage.Until(() => (draw = Gate(stage)) != null);
             Assert.AreEqual("Draw a Hunt tile", Text(draw));
             Assert.IsNull(draw.Q<DiePips>(), "A draw's button wears its words alone.");
             PointerGestureEvents.ClickAt(draw);
+            gates++;
             yield return new WaitForSecondsRealtime(.5f);
             Assert.IsNull(Gate(stage), viewer + ": one tile draw is theirs — the Shadow's own draw or the Free Peoples' Mithril.");
+            Assert.AreEqual(viewer == Side.FreePeoples ? 3 : 2, gates, viewer + ": Start, " + (viewer == Side.FreePeoples ? "Re-roll, " : "") + "one draw.");
             yield return stage.Released();
         }
 

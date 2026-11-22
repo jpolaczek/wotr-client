@@ -58,12 +58,18 @@ namespace Wotr.Client
             {
                 // The window opens on the Hunt's start; its steps wait behind Start the Hunt.
                 Stage(cue, entry);
-                return new DrawGate(layer, "Start the Hunt", true, () => board.Hunt.Dice.Root, at => Play(cue, entry, at), GateAlign.TopLeft);
+                return new DrawGate(layer, "Start the Hunt", true, HuntRow, at => Play(cue, entry, at), GateAlign.RightCentre).Compact();
             }
             if (DrawGated(entry))
-                return new DrawGate(layer, "Draw a Hunt tile", false, () => board.Hunt.Tile.Root, at => Staged(cue, entry, at));
+                return new DrawGate(layer, "Draw a Hunt tile", false, HuntRow, at => Staged(cue, entry, at), GateAlign.RightCentre).Compact();
+            if (RerollGated(entry))
+                return new DrawGate(layer, "Re-roll the Hunt", true, HuntRow, at => Staged(cue, entry, at), GateAlign.RightCentre).Compact();
             return Staged(cue, entry, now);
         }
+
+        // UI-570 (owner, 2026-11-22: "the Start the Hunt button is terribly large and runs over other parts of the interface"): the
+        // Hunt's gates stand small at the right end of the window's summary row, where its dice and tile show, inside the window.
+        private VisualElement HuntRow() => board.Hunt.Dice.Root.parent;
 
         private IPresentationBeat Staged(PresentationCue cue, HuntReportEntryView entry, double now)
         {
@@ -91,6 +97,11 @@ namespace Wotr.Client
         // that action"), so neither waits again.
         private bool StartsGated(HuntReportEntryView entry) =>
             board.ConfirmsOwnDraws && board.View != null && entry.Kind == HuntReportKind.Started;
+
+        // UI-570 (owner, 2026-11-22: "add buttons for the Hunt's re-roll"): the Shadow chooses its re-rolls and clicks Reroll
+        // selected (its own button, so its re-roll never waits); the Free Peoples see that re-roll behind Re-roll the Hunt.
+        private bool RerollGated(HuntReportEntryView entry) =>
+            board.ConfirmsOwnDraws && board.View?.You == Side.FreePeoples && entry.Kind == HuntReportKind.Rerolled;
 
         // By the rules the Shadow draws the Hunt's tiles, so its own presentation of a tile drawn waits behind Draw a Hunt
         // tile; a tile drawn again for the Free Peoples (Mithril Coat and Sting, Nenya) is theirs and waits for them.

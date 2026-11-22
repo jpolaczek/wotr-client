@@ -6,7 +6,9 @@ namespace Wotr.Client
 {
     // UI-570: where the button stands on its place — centred over it, from its top-left corner or from its bottom-left
     // corner (owner, 2026-11-22, of the battle: "show it in the bottom-left corner, where the row of the actual dice starts").
-    public enum GateAlign { Centre, TopLeft, BottomLeft }
+    // RightCentre: inside a row's right end, centred on its height (the Hunt window's summary row, owner: "the button is
+    // terribly large and runs over other parts of the interface").
+    public enum GateAlign { Centre, TopLeft, BottomLeft, RightCentre }
 
     // UI-570 (owner, 2026-11-22: "every draw of a tile or a die or anything else should not happen by itself but need a
     // confirmation, pressing a button with a die's picture or 'Perform hunt' or the like"; the owner chose the client and
@@ -20,6 +22,9 @@ namespace Wotr.Client
     public sealed class DrawGate : IPresentationBeat
     {
         public const string Name = "presentation-draw-gate";
+        // A smaller button for a window's row (the Hunt window).
+        public const string CompactClass = Name + "-compact";
+        private const float RowInset = 4;
         private readonly PresentationLayer layer;
         private readonly Func<Rect?> place;
         private readonly GateAlign align;
@@ -53,6 +58,13 @@ namespace Wotr.Client
         }
 
         // A button with a die's picture (a roll) or the draw's words alone (a tile, a pick).
+        // The gate as a window row's smaller button.
+        public DrawGate Compact()
+        {
+            Button.AddToClassList(CompactClass);
+            return this;
+        }
+
         public static Button Create(string text, bool die, Action click)
         {
             var button = new Button(click) { name = Name, text = "" };
@@ -125,6 +137,7 @@ namespace Wotr.Client
                 {
                     GateAlign.TopLeft => local.position,
                     GateAlign.BottomLeft => new Vector2(local.xMin, local.yMax - size.y),
+                    GateAlign.RightCentre => new Vector2(local.xMax - size.x - RowInset, local.center.y - size.y / 2),
                     _ => local.center - size / 2
                 };
             }

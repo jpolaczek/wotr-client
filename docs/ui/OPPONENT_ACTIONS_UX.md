@@ -1778,9 +1778,10 @@ pick). The presentation holds while it waits; the click starts the beat as it wo
 | --- | --- | --- |
 | The player's own card's dice (UI-541) | *Roll* | in the card's window, over its dice row (`CardRollPresenter`) |
 | The player's own card's random draw (UI-565) | *Draw tiles* / *Draw* | in the card's window, over its row |
-| Every Hunt's start, for both players (owner: "leave it as in the rules, but add a 'start the hunt' button at the beginning for both players") | *Start the Hunt* | from the start of the open Hunt window's dice row (`HuntPresenter`); the Shadow's roll follows the click |
-| A Hunt tile the Shadow draws (by the rules, the Shadow's) | *Draw a Hunt tile* | over the Hunt window's tile, for the Shadow only |
-| A tile drawn again for the Free Peoples (Mithril Coat and Sting, Nenya) | *Draw a Hunt tile* | over the Hunt window's tile, for the Free Peoples only |
+| Every Hunt's start, for both players (owner: "leave it as in the rules, but add a 'start the hunt' button at the beginning for both players") | *Start the Hunt* | a small button at the right end of the open Hunt window's summary row, inside the window (`HuntPresenter`); the Shadow's roll follows the click |
+| The Shadow's Hunt re-roll, for the Free Peoples (owner: "add buttons for the Hunt's re-roll"; the Shadow's own *Reroll selected* is its button) | *Re-roll the Hunt* | the same small button in that row, for the Free Peoples only |
+| A Hunt tile the Shadow draws (by the rules, the Shadow's) | *Draw a Hunt tile* | the same small button in that row, for the Shadow only |
+| A tile drawn again for the Free Peoples (Mithril Coat and Sting, Nenya) | *Draw a Hunt tile* | the same small button in that row, for the Free Peoples only |
 | The player's own force's combat roll or special attack | *Roll* | from the bottom-left of the row its column keeps for its dice, else of the column (`BattlePresenter`) |
 
 The owner's rule, the same day: "after we mark and click Reroll we no longer need the extra Roll … apply it everywhere":

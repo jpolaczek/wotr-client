@@ -607,4 +607,19 @@
     color: rgb(255, 230, 170);
     -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
 }
-
+/* UI-570 (owner, 2026-11-22: "the Start the Hunt button is terribly large and runs over other parts of the interface"):
+   in the Hunt window's summary row the gate is a small button inside the window. */
+.presentation-draw-gate.presentation-draw-gate-compact {
+    min-height: 28px;
+    padding: 1px 10px 1px 5px;
+    border-width: 1px;
+    border-radius: 5px;
+}
+.presentation-draw-gate.presentation-draw-gate-compact > .presentation-draw-gate-die {
+    width: 20px;
+    height: 20px;
+    margin: 0 6px 0 0;
+}
+.presentation-draw-gate.presentation-draw-gate-compact > .presentation-draw-gate-text {
+    font-size: 13px;
+}
