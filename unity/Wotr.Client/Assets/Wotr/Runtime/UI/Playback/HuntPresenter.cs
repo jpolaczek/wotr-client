@@ -24,6 +24,12 @@ namespace Wotr.Client
         // UI-520: a roll's result named under the Hunt's dice.
         private readonly PresentationMarks plates;
         private readonly PresentationLayer layer;
+        // UI-573: the Free Peoples' answer, beside the Hunt window, and what the Hunt showed before it for its result.
+        private readonly HuntResponseWindow answers;
+        private int? lastDamage;
+        private int? lastCorruption;
+        // The answer holds the Hunt long enough to take in; the window itself stays while that Hunt lasts.
+        public const double AnswerSeconds = 1.2;
 
         public HuntPresenter(BoardScreen board, StagedBoard staged, PresentationLayer layer, FellowshipReading reading,
             PresentationSoundSink sounds)
@@ -33,6 +39,7 @@ namespace Wotr.Client
             this.reading = reading;
             this.sounds = sounds;
             this.layer = layer;
+            answers = new HuntResponseWindow(board, layer);
             mark = new PresentationMark(layer);
             plates = new PresentationMarks(layer, "presentation-hunt-plate");
             join = new FellowshipJoin(board, staged, reading, mark);
@@ -54,6 +61,7 @@ namespace Wotr.Client
             if (cue.Kind != PresentationCueKind.Hunt || entry == null || cue.HuntChainId.Length == 0)
                 return null;
             plates.End();
+            Follow(entry);
             if (StartsGated(entry))
             {
                 // The window opens on the Hunt's start; its steps wait behind Start the Hunt.
@@ -67,23 +75,10 @@ namespace Wotr.Client
             return Staged(cue, entry, now);
         }
 
-        // UI-570 (owner, 2026-11-22: "the Start the Hunt button is terribly large and runs over other parts of the interface"): the
-        // Hunt's gates stand small at the window's right edge, inside it, level with its dice once they show (else with the
-        // summary row where they will): the row itself may run wider than the window.
-        private UnityEngine.Rect? HuntPlace()
-        {
-            var window = board.Hunt.Root;
-            if (!PresentationTargets.Shown(window))
-                return null;
-            var dice = board.Hunt.Dice.Root;
-            var row = PresentationTargets.Shown(dice) && dice.worldBound.height > 0 ? dice : dice.parent;
-            var line = row.worldBound;
-            var bounds = window.worldBound;
-            // The owner: "the button is uneven" — its right edge on the window content's right edge, where the report's › and the
-            // Hunt's owner line end.
-            var right = bounds.xMax - window.resolvedStyle.paddingRight - window.resolvedStyle.borderRightWidth;
-            return UnityEngine.Rect.MinMaxRect(bounds.xMin, line.yMin, right, line.yMax);
-        }
+        // UI-570 (owner, 2026-11-22: "the Start the Hunt button is terribly large and runs over other parts of the interface",
+        // "it is crooked", "the buttons should not jump"): every Hunt gate stands small at the right end of the Hunt window's
+        // summary row, which is a gate's height with its text centred on it (HuntPanel.Summary) — the same place for each.
+        private UnityEngine.Rect? HuntPlace() => DrawGate.Bounds(board.Hunt.Summary);
 
         private IPresentationBeat Staged(PresentationCue cue, HuntReportEntryView entry, double now)
         {
@@ -124,8 +119,37 @@ namespace Wotr.Client
             (entry.Kind == HuntReportKind.TileDrawn && board.View.You == Side.Shadow ||
              entry.Kind == HuntReportKind.TileReplaced && board.View.You == Side.FreePeoples);
 
+        // UI-573: the answer's window leaves with a new Hunt and takes what the Hunt's next entries show as its result.
+        private void Follow(HuntReportEntryView entry)
+        {
+            if (entry.Kind == HuntReportKind.Started)
+                answers.Close();
+            if (answers.Root != null)
+                answers.Result(Result(entry));
+            if (entry.Hunt != null)
+                lastDamage = entry.Hunt.Damage;
+            lastCorruption = entry.Outcome?.Corruption ?? lastCorruption;
+        }
+
+        private string Result(HuntReportEntryView entry)
+        {
+            if (entry.Kind == HuntReportKind.DamageChanged && lastDamage is { } before && entry.Hunt != null && entry.Hunt.Damage != before)
+                return HuntResponseCaptions.DamageChange(before, entry.Hunt.Damage);
+            if (entry.Kind is HuntReportKind.CompanionLeft or HuntReportKind.CharacterEliminated && entry.CharacterId.Length > 0)
+                return HuntResponseCaptions.Left(entry.CharacterId);
+            if (entry.Kind == HuntReportKind.Corruption && lastCorruption is { } was && entry.Outcome != null && entry.Outcome.Corruption != was)
+                return HuntResponseCaptions.Corruption(was, entry.Outcome.Corruption);
+            return "";
+        }
+
+        // UI-573: the Shadow and an observer see what the Free Peoples answer; the Free Peoples know their own answers.
+        private bool ShowsAnswers() => board.Observing || board.View?.You == Side.Shadow;
+
         public void Released()
         {
+            answers.Close();
+            lastDamage = null;
+            lastCorruption = null;
             join.End();
             EndRing();
             plates.End();
@@ -156,6 +180,8 @@ namespace Wotr.Client
                     steps.Add((() => Guide(entry.Outcome.GuideId), seconds));
                     break;
                 case HuntReportKind.Response or HuntReportKind.Reaction:
+                    if (ShowsAnswers() && HuntResponseCaptions.For(entry, entry.Outcome?.GuideId) is { } caption)
+                        steps.Add((() => answers.Show(caption), AnswerSeconds));
                     steps.Add((() => reading.Open(), PresentationPace.PanelSettleSeconds));
                     steps.Add((() => mark.Show(() => Response(entry)), seconds));
                     break;

@@ -99,6 +99,9 @@ namespace Wotr.PlayTests
             // The owner: "the button is uneven" — its right edge is the report's › right edge.
             var next = stage.Board.Hunt.Root.Query<Button>().ToList().Where(b => b.worldBound.width > 0).OrderBy(b => b.worldBound.xMax).Last();
             Assert.AreEqual(next.worldBound.xMax, start.worldBound.xMax, 1.5f, "Level with the window's right column.");
+            // "It is crooked": centred on the summary's row, which is the gate's height.
+            Assert.AreEqual(stage.Board.Hunt.Summary.worldBound.center.y, start.worldBound.center.y, 1.5f, "Centred on the summary's row.");
+            var place = start.worldBound;
             LayoutTests.Save(stage.Texture, "ui570-hunt-start-" + viewer + ".png");
             var gates = 1;
             PointerGestureEvents.ClickAt(start);
@@ -112,6 +115,8 @@ namespace Wotr.PlayTests
                 yield return stage.Until(() => (reroll = Gate(stage)) != null);
                 Assert.AreEqual("Re-roll the Hunt", Text(reroll));
                 yield return new WaitForSecondsRealtime(.3f);
+                Assert.AreEqual(place.center.y, reroll.worldBound.center.y, 1.5f, "The buttons do not jump: the same row.");
+                Assert.AreEqual(place.xMax, reroll.worldBound.xMax, 1.5f, "The same right end.");
                 var shown = stage.Board.Hunt.Root.worldBound;
                 Assert.IsTrue(shown.Contains(reroll.worldBound.min) && shown.Contains(reroll.worldBound.max), "Inside the Hunt window, its dice shown.");
                 LayoutTests.Save(stage.Texture, "ui570-hunt-reroll.png");
@@ -123,6 +128,10 @@ namespace Wotr.PlayTests
             Button draw = null;
             yield return stage.Until(() => (draw = Gate(stage)) != null);
             Assert.AreEqual("Draw a Hunt tile", Text(draw));
+            yield return new WaitForSecondsRealtime(.3f);
+            // The owner: "Draw a Hunt tile shows in a strange place; it should be where Start the Hunt was — the buttons should not jump".
+            Assert.AreEqual(place.center.y, draw.worldBound.center.y, 1.5f, "Where Start the Hunt stood.");
+            Assert.AreEqual(place.xMax, draw.worldBound.xMax, 1.5f);
             Assert.IsNull(draw.Q<DiePips>(), "A draw's button wears its words alone.");
             PointerGestureEvents.ClickAt(draw);
             gates++;
@@ -130,6 +139,64 @@ namespace Wotr.PlayTests
             Assert.IsNull(Gate(stage), viewer + ": one tile draw is theirs — the Shadow's own draw or the Free Peoples' Mithril.");
             Assert.AreEqual(viewer == Side.FreePeoples ? 3 : 2, gates, viewer + ": Start, " + (viewer == Side.FreePeoples ? "Re-roll, " : "") + "one draw.");
             yield return stage.Released();
+        }
+
+        // UI-573 (owner, 2026-11-22: "a better visualization of what the Free Peoples player does during the Hunt, which skills
+        // of which characters they use"): the Shadow sees each Free Peoples answer in a window beside the Hunt window — the
+        // card that answered and what it did to the damage, then the Ring and the Corruption it took; the Free Peoples, whose
+        // answers they are, see no such window. Frames: ui573-*.png.
+        [UnityTest]
+        public IEnumerator TheShadowSeesEachFreePeoplesAnswerBesideTheHunt([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = viewer == Side.Shadow ? Watching() : new PresentedBoardStage(1366, 1f, false, Side.FreePeoples);
+            yield return stage.Ready();
+            var roll = Snapshot("BeforeDraw", 6, 2);
+            var script = new Script(stage).Entry(HuntReportKind.Started, Snapshot("BeforeDraw")).Entry(HuntReportKind.Rolled, roll)
+                .Entry(HuntReportKind.TileDrawn, Tile(roll, 2)).Entry(HuntReportKind.Reaction, Tile(roll, 2), source: Mithril)
+                .Entry(HuntReportKind.DamageChanged, Tile(roll, 1), source: Mithril)
+                .Entry(HuntReportKind.Response, Tile(roll, 1), response: HuntResponse.Ring)
+                .Then(o => o.Corruption += 1).Entry(HuntReportKind.Corruption, Tile(roll, 1))
+                .Entry(HuntReportKind.HuntCompleted, Done(Tile(roll, 1)));
+            var corruption = stage.Before.Fellowship.Corruption;
+            var steps = script.Finish();
+            if (viewer == Side.FreePeoples)
+            {
+                steps[0].Actor = Side.FreePeoples;
+                steps[0].Costs.Clear();
+            }
+            stage.Play(script.Latest, null, steps);
+            if (viewer == Side.FreePeoples)
+            {
+                yield return stage.Until(() => stage.Playback.Presenting);
+                while (stage.Playback.Presenting)
+                {
+                    Assert.IsNull(Answer(stage), "The Free Peoples know their own answers.");
+                    yield return null;
+                }
+                yield return stage.Released();
+                yield break;
+            }
+            VisualElement answer = null;
+            yield return stage.Until(() => (answer = Answer(stage)) != null);
+            Assert.AreEqual(CardLibrary.Title(Mithril), answer.Q<Label>(HuntResponseWindow.TitleName).text);
+            Assert.IsNotNull(answer.Q(className: HuntResponseWindow.Name + "-card"), "The card's parchment.");
+            Assert.IsFalse(answer.worldBound.Overlaps(stage.Board.Hunt.Root.worldBound), "Beside the Hunt window, not over it.");
+            yield return stage.Until(() => Result(Answer(stage) ?? answer) == "Hunt damage 2 → 1");
+            LayoutTests.Save(stage.Texture, "ui573-card-answer.png");
+            yield return stage.Until(() => (answer = Answer(stage)) != null && answer.Q(className: HuntResponseWindow.Name + "-ring") != null);
+            Assert.AreEqual("The Ring-bearers take the damage", answer.Q<Label>(HuntResponseWindow.TitleName).text);
+            yield return stage.Until(() => Result(Answer(stage) ?? answer) == HuntResponseCaptions.Corruption(corruption, corruption + 1));
+            LayoutTests.Save(stage.Texture, "ui573-ring-answer.png");
+            yield return stage.Released();
+            Assert.IsNull(Answer(stage), "It leaves with the release.");
+        }
+
+        private static VisualElement Answer(PresentedBoardStage stage) => stage.Board.Root.Q(HuntResponseWindow.Name);
+
+        private static string Result(VisualElement answer)
+        {
+            var label = answer.Q<Label>(HuntResponseWindow.ResultName);
+            return label != null && label.resolvedStyle.display == DisplayStyle.Flex ? label.text : "";
         }
 
         private static Button Gate(PresentedBoardStage stage) => stage.Board.Root.Q<Button>(DrawGate.Name);
@@ -410,6 +477,8 @@ namespace Wotr.PlayTests
             var steps = script.Finish();
             var buttons = Controls(stage);
             stage.Play(script.Latest, null, steps);
+            // UI-573: the Shadow reads the card's answer beside the Hunt first; then its tab is marked.
+            yield return stage.Until(() => Answer(stage) != null);
             yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.TableEffects.Tab));
             Assert.AreEqual(buttons + 1, Controls(stage), "Only the Skip target is added: no response, Continue or result window.");
             yield return stage.Released();

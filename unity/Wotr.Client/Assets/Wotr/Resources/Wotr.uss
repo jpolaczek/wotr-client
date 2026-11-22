@@ -481,6 +481,11 @@
 .hunt-panel .draft-status { white-space: normal; margin-top: 2px; margin-bottom: 2px; }
 .hunt-panel #hunt-step { color: rgb(231, 209, 160); margin: 2px 0; }
 .hunt-panel #hunt-source { font-size: 12px; margin: 2px 0 4px 0; white-space: normal; }
+/* UI-570 (owner, 2026-11-22: "the button is crooked", "the buttons should not jump"): the summary's row is a Hunt gate's
+   height with its text centred on it, so a gate stands level with the text at the row's right end, the same place for
+   every gate. */
+.hunt-panel #hunt-summary { flex-direction: row; align-items: center; min-height: 30px; margin: 2px 0 4px 0; }
+.hunt-panel #hunt-summary > #hunt-source { flex-grow: 1; flex-shrink: 1; margin: 0; }
 .hunt-panel .action { height: 32px; min-height: 32px; padding: 0 6px; margin: 0 6px 2px 0; }
 .hunt-panel #hunt-roll { margin: 3px 0; }
 .hunt-panel .hunt-roll-results, .hunt-panel .hunt-roll-overview, .hunt-panel .hunt-roll-modifiers, .hunt-panel .hunt-natural-result { flex-direction: row; align-items: center; flex-wrap: nowrap; }

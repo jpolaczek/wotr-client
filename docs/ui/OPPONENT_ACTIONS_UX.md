@@ -1782,7 +1782,7 @@ pick). The presentation holds while it waits; the click starts the beat as it wo
 | The Shadow's Hunt re-roll, for the Free Peoples (owner: "add buttons for the Hunt's re-roll"; the Shadow's own *Reroll selected* is its button) | *Re-roll the Hunt* | the same small button in that row, for the Free Peoples only |
 | A Hunt tile the Shadow draws (by the rules, the Shadow's) | *Draw a Hunt tile* | the same small button in that row, for the Shadow only |
 | A tile drawn again for the Free Peoples (Mithril Coat and Sting, Nenya) | *Draw a Hunt tile* | the same small button in that row, for the Free Peoples only |
-| The player's own force's combat roll or special attack | *Roll* | from the bottom-left of the row its column keeps for its dice, else of the column (`BattlePresenter`) |
+| The player's own force's combat roll or special attack | *Roll* | from the bottom-left of the row its column keeps for its dice (level with the other side's roll); when no side has rolled yet, the column makes such a row under its card while the roll waits (`battle-roll-gate-room`), so the button covers nothing (`BattlePresenter`) |
 
 The owner's rule, the same day: "after we mark and click Reroll we no longer need the extra Roll … apply it everywhere":
 a draw that follows a click whose only purpose is that draw never waits — a battle's Leader re-roll (the player's own

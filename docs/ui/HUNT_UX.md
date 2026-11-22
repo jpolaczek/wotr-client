@@ -523,3 +523,25 @@ Playtest. **Scenario:** a Hunt with a re-roll and a tile, from the test scenario
 4. Press Esc. Expected: the present, with your controls back, and the window still open.
 5. In a Hunt with no reroll offered, click **Re-roll**. Expected: a line saying nothing happened at this stage, and the roll as it stood.
 6. In a chain of two Hunts, click `‹`. Expected: the first Hunt's result, named in the line.
+
+## The Free Peoples' answers beside the Hunt — UI-573 (owner, 2026-11-22)
+
+The owner: "we need a better visualization of what the Free Peoples player does during the Hunt, which skills of which
+characters they use". The Shadow and an observer now see each Free Peoples answer to the Hunt in a window beside the Hunt
+window (`HuntResponseWindow`, on the side with room, level with its top), held 1.2 seconds before the Hunt goes
+on, and kept while that Hunt lasts:
+
+- what answered, as a picture: the character's portrait, the Ring, or a table card's parchment;
+- its title and printed text (`HuntResponseCaptions`): a table card's title and text (Mithril Coat and Sting, Elven
+  Cloak…); a character's name and the printed ability of theirs that speaks of the Hunt ("Peregrin Took · Guide",
+  "Gollum · Guide · Reveal"); "The Ring-bearers take the damage"; "The Guide is the casualty:
+  Gandalf"; "A random Companion is the casualty";
+- what it did, as the Hunt's next entries show it: "Hunt damage 2 → 1", "Boromir leaves the Fellowship",
+  "Corruption 0 → 1".
+
+The window leaves with the next answer, a new Hunt or the release; it takes no pointer. The Free Peoples, whose answers
+they are, see no such window (the answered object is still marked, UI-310). Only public facts are used: the report's
+entry names the response, the reaction's source and the casualty; a character's ability is the printed one of theirs
+whose text speaks of the Hunt. Tests: EditMode `HuntResponseCaptionTests`; PlayMode
+`OpponentHuntPresentationTests.TheShadowSeesEachFreePeoplesAnswerBesideTheHunt` (both viewers, frames `ui573-*`).
+

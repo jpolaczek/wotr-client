@@ -623,3 +623,70 @@
 .presentation-draw-gate.presentation-draw-gate-compact > .presentation-draw-gate-text {
     font-size: 13px;
 }
+
+/* UI-573 (owner, 2026-11-22: "a better visualization of what the Free Peoples player does during the Hunt, which skills
+   of which characters they use"): beside the Hunt window, the Free Peoples' answer — a portrait, the Ring or a card's
+   parchment, the answer's title and printed text, then what it did. Read-only; textures and opacity only. */
+.presentation-hunt-response {
+    position: absolute;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 340px;
+    padding: 8px 12px 10px 8px;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: rgb(176, 141, 79);
+    background-color: rgba(26, 24, 23, 0.95);
+}
+.presentation-hunt-response-picture {
+    width: 64px;
+    height: 72px;
+    flex-shrink: 0;
+    margin: 0 10px 0 0;
+    border-width: 2px;
+    border-radius: 6px;
+    border-color: rgb(141, 199, 218);
+    background-color: rgba(20, 36, 48, 0.9);
+    -unity-background-scale-mode: scale-to-fit;
+}
+.presentation-hunt-response-picture > .figure-art-image {
+    width: 100%;
+    height: 100%;
+}
+.presentation-hunt-response-ring {
+    background-image: resource("Wotr/Art/UI/icons/ring");
+}
+.presentation-hunt-response-card {
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+}
+.presentation-hunt-response-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+.presentation-hunt-response-title {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    white-space: normal;
+    color: rgb(249, 223, 157);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+.presentation-hunt-response-detail {
+    margin: 3px 0 0 0;
+    padding: 0;
+    font-size: 13px;
+    white-space: normal;
+    color: rgb(214, 205, 182);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+.presentation-hunt-response-result {
+    align-self: flex-start;
+    margin: 6px 0 0 0;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: rgb(231, 228, 215);
+    background-color: rgba(60, 52, 40, 0.9);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+

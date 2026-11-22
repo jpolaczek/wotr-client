@@ -65,6 +65,9 @@ namespace Wotr.Client
         private readonly Label step = new Label { name = "hunt-step" };
         private readonly Label owner = new Label { name = "hunt-owner" };
         private readonly Label source = new Label { name = "hunt-source" };
+        // UI-570 (owner, 2026-11-22: "the buttons should not jump"): the summary's row, as tall as a Hunt gate, where every
+        // gate of the Hunt (Start the Hunt, Re-roll the Hunt, Draw a Hunt tile) stands at the right end.
+        public VisualElement Summary { get; } = new VisualElement { name = "hunt-summary" };
         // UI-90: the docked header carries the idle count; Styles/RightColumn.uss hides the empty body then.
         private readonly Label idleCount = new Label { name = "hunt-idle-count", pickingMode = PickingMode.Ignore };
         private PlayerView view;
@@ -142,7 +145,8 @@ namespace Wotr.Client
             Root.Add(Pool.Root);
             report = new HuntReportStrip(data);
             Root.Add(report.Root);
-            main.Add(source);
+            Summary.Add(source);
+            main.Add(Summary);
             main.Add(Dice.Root);
             Tile = new HuntTileView(data);
             main.Add(Tile.Root);
