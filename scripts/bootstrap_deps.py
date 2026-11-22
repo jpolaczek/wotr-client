@@ -2,10 +2,16 @@
 """Fetch and verify the client's pinned server dependencies before Unity runs (DIST-02).
 
 wotr-deps.lock.json names the exact Contracts and public content archives and their
-SHA-256. `fetch` (the default) downloads missing archives into .deps/, rejects any
-other bytes, and checks that Unity's manifest and the tracked Resources copies match
-the lock. `pin` is the only way to change the lock. Tokens come from the environment
-or the GitHub CLI and are never written or printed.
+SHA-256. `fetch` (the default) downloads missing archives, rejects any other bytes,
+and checks that Unity's manifest and the tracked Resources copies match the lock.
+`pin` is the only way to change the lock. Tokens come from the environment or the
+GitHub CLI and are never written or printed.
+
+DIST-23 (owner, 2026-11-22): the Contracts archive Unity compiles against is tracked in
+git under packages/, as the public content is under Resources, so a plain copy of the
+repository (a GitHub ZIP) opens and builds in Unity without this script. `pin` writes
+the new archive there and removes the one it replaces; the content archive and the
+test backend stay in the untracked .deps/.
 
 `fetch --test` also unpacks the pinned test backend (server and PlayMode seeder,
 DIST-03) into .deps/test/<name>/ for client integration.
@@ -27,7 +33,9 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = "wotr-deps.lock.json"
 CACHE = ".deps"
+VENDORED = "packages"
 UNITY_MANIFEST = "unity/Wotr.Client/Packages/manifest.json"
+UNITY_PACKAGES_LOCK = "unity/Wotr.Client/Packages/packages-lock.json"
 RESOURCES = "unity/Wotr.Client/Assets/Wotr/Resources"
 CONTRACTS = "com.wotr.contracts"
 CONTENT = "com.wotr.public-content"
@@ -40,6 +48,7 @@ SHA256 = re.compile(r"[0-9a-f]{64}")
 COMMIT = re.compile(r"[0-9a-f]{40}")
 PUBLIC_NAME = re.compile(r"[a-z0-9-]+\.json")
 CONTRACTS_REFERENCE = re.compile(r'("com\.wotr\.contracts"\s*:\s*)"[^"]*"')
+CONTRACTS_RESOLVED = re.compile(r'("com\.wotr\.contracts"\s*:\s*\{\s*"version"\s*:\s*)"[^"]*"')
 
 
 class DependencyError(Exception):
@@ -62,8 +71,13 @@ def write_atomic(path, data):
     os.replace(temporary, path)
 
 
+def home(package):
+    """The folder an archive lives in: the tracked packages/ for Contracts, else the untracked cache."""
+    return VENDORED if package["name"] == CONTRACTS else CACHE
+
+
 def unity_reference(package):
-    return "file:../../../" + CACHE + "/" + package["archive"]
+    return "file:../../../" + VENDORED + "/" + package["archive"]
 
 
 # --- Lock -----------------------------------------------------------------------------
@@ -239,8 +253,8 @@ def check_bytes(package, data, origin):
 
 
 def ensure(package, root, channel):
-    """Return the verified archive bytes, fetching them only when the cache lacks those exact bytes."""
-    path = root / CACHE / package["archive"]
+    """Return the verified archive bytes, fetching them only when their folder lacks those exact bytes."""
+    path = root / home(package) / package["archive"]
     if path.is_file():
         data = path.read_bytes()
         if len(data) == package["size"] and digest(data) == package["sha256"]:
@@ -373,6 +387,16 @@ def apply_contracts(root, entry):
     if count != 1:
         raise DependencyError(f"{UNITY_MANIFEST} must contain exactly one {CONTRACTS} dependency.")
     write_atomic(path, text.encode())
+    # Unity's own lock names the same archive; a stale one would be rewritten on the next open.
+    resolved = root / UNITY_PACKAGES_LOCK
+    if resolved.is_file():
+        text, count = CONTRACTS_RESOLVED.subn(r'\g<1>"' + unity_reference(entry) + '"', resolved.read_text())
+        if count == 1:
+            write_atomic(resolved, text.encode())
+    # DIST-23: only the pinned Contracts archive stays tracked.
+    for old in (root / VENDORED).glob(CONTRACTS + "-*.tgz"):
+        if old.name != entry["archive"]:
+            old.unlink()
 
 
 def pin(root, environ, requests, channel_spec=None):
@@ -399,7 +423,7 @@ def pin(root, environ, requests, channel_spec=None):
     packages = check_lock(lock)
     files = public_files(packages[CONTENT], fetched[CONTENT][1]) if CONTENT in fetched else None
     for entry, data in fetched.values():
-        write_atomic(root / CACHE / entry["archive"], data)
+        write_atomic(root / home(entry) / entry["archive"], data)
     if files is not None:
         apply_content(root, current.get(CONTENT), files)
     if CONTRACTS in fetched:

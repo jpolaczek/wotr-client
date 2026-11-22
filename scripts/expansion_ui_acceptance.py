@@ -36,10 +36,10 @@ CLASSES = (
 
 
 def pinned_commands():
-    """GameCommands.cs from the Contracts archive pinned in wotr-deps.lock.json (run bootstrap_deps.py first)."""
+    """GameCommands.cs from the Contracts archive pinned in wotr-deps.lock.json (tracked under packages/, DIST-23)."""
     lock = json.loads((ROOT / "wotr-deps.lock.json").read_text())
     contracts = next(p for p in lock["packages"] if p["name"] == "com.wotr.contracts")
-    with tarfile.open(ROOT / ".deps" / contracts["archive"], "r:gz") as archive:
+    with tarfile.open(ROOT / "packages" / contracts["archive"], "r:gz") as archive:
         return archive.extractfile("package/Runtime/GameCommands.cs").read().decode()
 
 

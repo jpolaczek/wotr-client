@@ -12,9 +12,13 @@ private archives. Boundaries and link conventions are documented in
 <a id="pierwsze-uruchomienie"></a>
 ## First launch
 
-Requirements: Python 3, Unity 6000.6.0f1 with macOS and Windows modules, .NET 10
-runtime (PlayMode only). The pinned packages are public releases of `jpolaczek/wotr-server`;
-no token is needed (`WOTR_DEPS_TOKEN` or `gh auth login` only for a private channel).
+Requirements: Unity 6000.6.0f1 with macOS and Windows modules; Python 3 for the scripts,
+tests and pinning; .NET 10 runtime (PlayMode only). The Contracts archive Unity compiles
+against is tracked under `packages/` (DIST-23), so a fresh clone or a GitHub ZIP opens and
+builds in Unity without running any script: set `WOTR_SERVER_URL` in `.env` and use
+**WoTR → Build** in the editor. The pinned packages are public releases of
+`jpolaczek/wotr-server`; no token is needed (`WOTR_DEPS_TOKEN` or `gh auth login` only for
+a private channel).
 
 ```bash
 python3 scripts/bootstrap_deps.py            # Contracts and public content from wotr-deps.lock.json
@@ -52,11 +56,11 @@ Full PlayMode requires an earlier EditMode run in the same checkout
 <a id="zależności-serwera"></a>
 ## Server dependencies
 
-`wotr-deps.lock.json` pins `com.wotr.contracts` (UPM `.tgz` from `.deps/`),
+`wotr-deps.lock.json` pins `com.wotr.contracts` (UPM `.tgz` tracked in `packages/`, DIST-23),
 `com.wotr.public-content` (copies in `Assets/Wotr/Resources` with their `.meta`),
 and test-only `wotr-server` and `wotr-seeder`. To change versions, run
 `python3 scripts/bootstrap_deps.py pin <name>@<version> …` and commit the lock,
-Unity manifest and `Resources`. `wotr-server` publishes packages as releases
+Unity manifest and lock, `packages/` (the new Contracts archive replaces the old one) and `Resources`. `wotr-server` publishes packages as releases
 named `<name>-<version>`.
 
 <a id="wersja-klienta-i-zgodność-z-serwerem"></a>
