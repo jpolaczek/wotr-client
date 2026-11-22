@@ -58,18 +58,31 @@ namespace Wotr.Client
             {
                 // The window opens on the Hunt's start; its steps wait behind Start the Hunt.
                 Stage(cue, entry);
-                return new DrawGate(layer, "Start the Hunt", true, HuntRow, at => Play(cue, entry, at), GateAlign.RightCentre).Compact();
+                return new DrawGate(layer, "Start the Hunt", true, HuntPlace, GateAlign.RightCentre, at => Play(cue, entry, at)).Compact();
             }
             if (DrawGated(entry))
-                return new DrawGate(layer, "Draw a Hunt tile", false, HuntRow, at => Staged(cue, entry, at), GateAlign.RightCentre).Compact();
+                return new DrawGate(layer, "Draw a Hunt tile", false, HuntPlace, GateAlign.RightCentre, at => Staged(cue, entry, at)).Compact();
             if (RerollGated(entry))
-                return new DrawGate(layer, "Re-roll the Hunt", true, HuntRow, at => Staged(cue, entry, at), GateAlign.RightCentre).Compact();
+                return new DrawGate(layer, "Re-roll the Hunt", true, HuntPlace, GateAlign.RightCentre, at => Staged(cue, entry, at)).Compact();
             return Staged(cue, entry, now);
         }
 
         // UI-570 (owner, 2026-11-22: "the Start the Hunt button is terribly large and runs over other parts of the interface"): the
-        // Hunt's gates stand small at the right end of the window's summary row, where its dice and tile show, inside the window.
-        private VisualElement HuntRow() => board.Hunt.Dice.Root.parent;
+        // Hunt's gates stand small at the window's right edge, inside it, level with its dice once they show (else with the
+        // summary row where they will): the row itself may run wider than the window.
+        private UnityEngine.Rect? HuntPlace()
+        {
+            var window = board.Hunt.Root;
+            if (!PresentationTargets.Shown(window))
+                return null;
+            var dice = board.Hunt.Dice.Root;
+            var row = PresentationTargets.Shown(dice) && dice.worldBound.height > 0 ? dice : dice.parent;
+            var line = row.worldBound;
+            var bounds = window.worldBound;
+            return UnityEngine.Rect.MinMaxRect(bounds.xMin, line.yMin, bounds.xMax - HuntGateInset, line.yMax);
+        }
+
+        private const float HuntGateInset = 8;
 
         private IPresentationBeat Staged(PresentationCue cue, HuntReportEntryView entry, double now)
         {

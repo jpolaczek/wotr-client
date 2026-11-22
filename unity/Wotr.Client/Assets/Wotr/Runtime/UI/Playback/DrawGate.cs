@@ -48,6 +48,8 @@ namespace Wotr.Client
             this.align = align;
             this.start = start;
             Button = Create(text, die, () => clicked = true);
+            // Its first placement guesses its size; it takes its place again as soon as its size is known.
+            Button.RegisterCallback<GeometryChangedEvent>(_ => Place());
             layer.Root.Add(Button);
             Place();
             Button.schedule.Execute(() =>

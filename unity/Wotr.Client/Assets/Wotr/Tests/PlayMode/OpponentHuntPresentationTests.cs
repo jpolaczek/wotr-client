@@ -108,6 +108,9 @@ namespace Wotr.PlayTests
                 Button reroll = null;
                 yield return stage.Until(() => (reroll = Gate(stage)) != null);
                 Assert.AreEqual("Re-roll the Hunt", Text(reroll));
+                yield return new WaitForSecondsRealtime(.3f);
+                var shown = stage.Board.Hunt.Root.worldBound;
+                Assert.IsTrue(shown.Contains(reroll.worldBound.min) && shown.Contains(reroll.worldBound.max), "Inside the Hunt window, its dice shown.");
                 LayoutTests.Save(stage.Texture, "ui570-hunt-reroll.png");
                 PointerGestureEvents.ClickAt(reroll);
                 gates++;
