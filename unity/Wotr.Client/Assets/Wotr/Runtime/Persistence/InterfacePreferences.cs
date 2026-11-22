@@ -29,8 +29,9 @@ namespace Wotr.Client
         public float FigureSize { get; private set; } = DefaultFigureSize;
         // UI-571 (owner, 2026-11-22): the ✓ that ends an action asks first while moves are left; on by default.
         public bool ConfirmUnusedMoves { get; private set; } = true;
-        // UI-570 (owner, 2026-11-22): the player's own draws wait for a click before their result shows; off by default.
-        public bool ConfirmOwnDraws { get; private set; }
+        // UI-570 (owner, 2026-11-22): the player's own draws wait for a click before their result shows; on by default (the
+        // owner: "all three new options should be on by default").
+        public bool ConfirmOwnDraws { get; private set; } = true;
         // UI-572 (owner, 2026-11-22): the first offer of the Mordor track in a game asks; on by default.
         public bool AskToEnterMordor { get; private set; } = true;
         public event Action Changed;
@@ -237,7 +238,7 @@ namespace Wotr.Client
             public bool BackgroundAlerts = true;
             public float FigureSize = DefaultFigureSize;
             public bool ConfirmUnusedMoves = true;
-            public bool ConfirmOwnDraws;
+            public bool ConfirmOwnDraws = true;
             public bool AskToEnterMordor = true;
         }
     }

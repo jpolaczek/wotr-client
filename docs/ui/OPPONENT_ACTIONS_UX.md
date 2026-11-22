@@ -1765,8 +1765,9 @@ game does, then checks every frame before the flight.
 The owner: "we also need an extra option, toggled in Settings, so that EVERY draw of a tile or a die or anything else does
 not happen by itself but needs a confirmation, pressing a button with a die's picture or 'Perform hunt' or the like". The
 owner chose the client (the server keeps drawing as before; the click only lets the result show) and the player's own
-draws only, and not the action dice rolled at a turn's start. Settings › Play: *Roll my own dice and draws*, off by
-default (`InterfacePreferences.ConfirmOwnDraws`); never for an observer or a replay (`BoardScreen.ConfirmsOwnDraws`).
+draws only, and not the action dice rolled at a turn's start. Settings › Play: *Roll my own dice and draws*, on by
+default like the other two Play switches (owner, the same day: "all three new options should be on by default";
+`InterfacePreferences.ConfirmOwnDraws`); never for an observer or a replay (`BoardScreen.ConfirmsOwnDraws`).
 
 With it on, the beat that would show one of the player's own draws waits behind `DrawGate`, a gold button in the
 presentation layer over the place the result will show (a die's picture for a roll, the draw's words for a tile or a

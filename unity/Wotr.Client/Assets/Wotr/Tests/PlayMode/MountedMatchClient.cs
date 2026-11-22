@@ -124,14 +124,15 @@ namespace Wotr.PlayTests
         }
 
         // UI-529: the tests measure and press the map's figures at their standard size; Settings' default (150 %) is
-        // InterfacePreferencesTests' and InterfaceSettingsTests'. UI-571/UI-572: they end actions early and enter Mordor by
-        // its gate without the board's questions; the questions' own tests switch them on.
+        // InterfacePreferencesTests' and InterfaceSettingsTests'. UI-570–572: they end actions early, enter Mordor by its gate
+        // and see their own draws without the board's questions and buttons; those features' own tests switch them on.
         internal static InterfacePreferences StandardPreferences(string key)
         {
             var preferences = new InterfacePreferences(key);
             preferences.SetFigureSize(1f);
             preferences.SetConfirmUnusedMoves(false);
             preferences.SetAskToEnterMordor(false);
+            preferences.SetConfirmOwnDraws(false);
             return preferences;
         }
 
