@@ -57,7 +57,7 @@ namespace Wotr.Client
             if (Gated(entry))
                 return entry.Kind == HuntReportKind.TileDrawn
                     ? new DrawGate(layer, "Draw a Hunt tile", false, () => board.Hunt.Tile.Root, at => Staged(cue, entry, at))
-                    : new DrawGate(layer, "Perform the Hunt", true, () => board.Hunt.Dice.Root, at => Staged(cue, entry, at));
+                    : new DrawGate(layer, "Perform the Hunt", true, () => board.Hunt.Dice.Root, at => Staged(cue, entry, at), GateAlign.TopLeft);
             return Staged(cue, entry, now);
         }
 

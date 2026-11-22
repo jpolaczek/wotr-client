@@ -179,7 +179,9 @@ namespace Wotr.PlayTests
         }
 
         // UI-570 (owner, 2026-11-22): with Settings' "Roll my own dice and draws" on, the viewer's own force's roll waits in
-        // the open window behind Roll; the opponent's roll plays at once. Frame: ui570-battle-gate.png.
+        // the open window behind Roll, from the bottom-left of the row kept for its dice ("where the row of the actual dice
+        // starts"); the opponent's roll plays at once, and the viewer's Leader re-roll, which follows their own Reroll
+        // selected, never waits ("we already have a button for that action"). Frame: ui570-battle-gate.png.
         [UnityTest]
         public IEnumerator TheViewersOwnRollWaitsForRoll()
         {
@@ -189,6 +191,13 @@ namespace Wotr.PlayTests
             var round = fight.Next();
             round.Record(battle => Roll(battle.Attacker, "a", 6, 5, 2, 1));
             round.Record(battle => Roll(battle.Defender, "d", 6, 3));
+            round.Record(battle =>
+            {
+                var die = battle.Defender.Dice.Single(d => d.Id == "d1");
+                die.Reroll = 5;
+                die.RerollHit = true;
+                battle.Defender.Hits = 2;
+            });
             stage.Play(round.Latest(), null, round.Steps.ToArray());
             yield return stage.Until(() => Rolled(stage).Count == 4);
             Assert.IsNull(stage.Board.Root.Q<Button>(DrawGate.Name), "The opponent's roll never waits.");
@@ -197,9 +206,14 @@ namespace Wotr.PlayTests
             Assert.AreEqual("Roll", gate.Q<Label>(className: DrawGate.Name + "-text").text);
             yield return new WaitForSecondsRealtime(1f);
             Assert.IsNull(stage.Board.Battles.Presented.Q("battle-die-d0"), "The own dice wait for the click.");
+            var column = stage.Board.Battles.Presented.Q("battle-defender").worldBound;
+            Assert.Less(gate.worldBound.xMin - column.xMin, 40, "From the column's left…");
+            Assert.Greater(gate.worldBound.center.y, column.center.y, "…in its lower part, where the dice row starts.");
             stage.Save("ui570-battle-gate.png");
             PointerGestureEvents.ClickAt(gate);
             yield return stage.Until(() => Rolled(stage).SequenceEqual(new[] { "battle-die-d0", "battle-die-d1" }));
+            yield return stage.Until(() => Rolled(stage).SequenceEqual(new[] { "battle-die-d1" }));
+            Assert.IsNull(stage.Board.Root.Q<Button>(DrawGate.Name), "The re-roll after the player's own Reroll selected never waits.");
             yield return stage.Released();
         }
 

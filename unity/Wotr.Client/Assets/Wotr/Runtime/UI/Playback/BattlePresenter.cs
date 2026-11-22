@@ -108,28 +108,41 @@ namespace Wotr.Client
             var battle = Copy(cue.Battle);
             KeepReveals(previous, battle);
             if (OwnRoll(previous, battle) is { } you)
-                return new DrawGate(layer, "Roll", true, () => RollPlace(previous, you), at => Shown(cue, previous, battle, at));
+                return new DrawGate(layer, "Roll", true, () => RollPlace(previous, you), GateAlign.BottomLeft,
+                    at => Shown(cue, previous, battle, at));
             return Shown(cue, previous, battle, now);
         }
 
-        // Where the player's roll will show: its roll heading once the force has one, else the middle of its column.
-        private VisualElement RollPlace(BattleView battle, Side side)
+        // UI-570 (owner, 2026-11-22: "show it in the bottom-left corner, where the row of the actual dice starts"): the row the
+        // column keeps for its roll level with the other side's dice (UI-437), else the column's bottom-left corner, inset.
+        private UnityEngine.Rect? RollPlace(BattleView battle, Side side)
         {
             var column = Column(battle, side);
-            var heading = column?.Q(className: "battle-roll-heading");
-            return heading != null && PresentationTargets.Shown(heading) ? heading : column;
+            if (column == null || !PresentationTargets.Shown(column))
+                return null;
+            var row = column.Q("battle-roll-reserved")?.Q(className: "battle-dice");
+            if (row != null && row.worldBound.width > 0 && !float.IsNaN(row.worldBound.width))
+                return row.worldBound;
+            var bounds = column.worldBound;
+            return UnityEngine.Rect.MinMaxRect(bounds.xMin + RollGateInset, bounds.yMin, bounds.xMax, bounds.yMax - RollGateInset);
         }
 
-        // UI-570 (owner, 2026-11-22): with Settings' "Roll my own dice and draws" on, a roll of the player's own force (its
-        // combat roll, its Leader re-roll, a special attack of its own) waits in the open window behind Roll; the previous
-        // state stays shown until the click. The player's side, or null when this is no roll of theirs.
+        private const float RollGateInset = 14;
+
+        // UI-570 (owner, 2026-11-22): with Settings' "Roll my own dice and draws" on, a new roll of the player's own force (its
+        // combat roll, a special attack of its own) waits in the open window behind Roll; the previous state stays shown until
+        // the click. The owner, the same day: "after we mark and click Reroll we no longer need the extra Roll; we may skip it
+        // there because we already have a button for that action — apply it everywhere as a rule": a Leader re-roll rerolls
+        // dice already shown, after the player's own Reroll selected, and never waits. The player's side, or null.
         private Side? OwnRoll(BattleView previous, BattleView battle)
         {
             if (!board.ConfirmsOwnDraws || previous == null || !Window.IsOpen || board.View == null)
                 return null;
             var you = board.View.You;
+            var shownDice = new HashSet<string>(Dice(previous).Select(die => die.Id));
             var rolled = Dice(battle).Where(die => Changed(previous, die)).Select(die => die.Id).ToList();
-            return rolled.Count > 0 && RollResults(battle, rolled).Any(result => result.Side == you) ? you : (Side?)null;
+            var fresh = rolled.Where(id => !shownDice.Contains(id)).ToList();
+            return fresh.Count > 0 && RollResults(battle, fresh).Any(result => result.Side == you) ? you : (Side?)null;
         }
 
         private IPresentationBeat Shown(PresentationCue cue, BattleView previous, BattleView battle, double now)

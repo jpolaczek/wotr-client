@@ -1780,9 +1780,13 @@ pick). The presentation holds while it waits; the click starts the beat as it wo
 | The player's own card's random draw (UI-565) | *Draw tiles* / *Draw* | in the card's window, over its row |
 | The Hunt's roll when the player is the Shadow | *Perform the Hunt* | over the Hunt window's dice (`HuntPresenter`) |
 | A Hunt tile drawn when the player is the Shadow | *Draw a Hunt tile* | over the Hunt window's tile |
-| The player's own force's combat roll, Leader re-roll or special attack | *Roll* | over its column's roll heading (`BattlePresenter`) |
+| The player's own force's combat roll or special attack | *Roll* | from the bottom-left of the row its column keeps for its dice, else of the column (`BattlePresenter`) |
 
-A Hunt reroll follows the Shadow's own choice of dice and never waits. Not covered: the action dice of a turn's start
+The owner's rule, the same day: "after we mark and click Reroll we no longer need the extra Roll … apply it everywhere":
+a draw that follows a click whose only purpose is that draw never waits — a battle's Leader re-roll (the player's own
+*Reroll selected*), a Hunt reroll (the Shadow's own choice of dice) and a Kings corruption attempt's tiles (its own
+*Draw*). Only a draw no such button caused waits: the combat roll after the cards, a card's dice or draw, the Hunt's
+first roll and its tile. Not covered: the action dice of a turn's start
 (owner), the player's own card draws (they have no presentation of their own) and a Kings corruption attempt (its tiles
 are drawn by the attempt's own click). Tests: PlayMode `OpponentHuntPresentationTests.TheShadowsHuntRollWaitsForPerformTheHunt`,
 `OpponentBattlePresentationTests.TheViewersOwnRollWaitsForRoll`,
