@@ -94,9 +94,10 @@ namespace Wotr.PlayTests
                 var die = view.Dice.First(d => d.Owner == Side.FreePeoples && d.Face == DieFace.Army && d.Location == DieLocation.Available);
                 var ring = view.Options.Single(o => o.Kind == CommandKind.DiscardPalantir).EligibleIds[0];
                 await ComponentGestures.Cost(room, room.Fp, die.Id);
-                await ComponentGestures.Remove(room.Fp, "base.sh.character.21");
+                // UI-563: an Army die alone cannot remove it; the Ring is chosen first, then the card.
+                room.Fp.Board.TableEffects.Inspect("base.sh.character.21");
                 await room.Settle();
-                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("confirm-decision"));
+                Assert.IsFalse(room.Fp.Board.TableEffects.Root.Q<Button>("remove-table-base.sh.character.21").enabledSelf);
                 Assert.AreEqual(DieLocation.Available, room.Fp.Board.View.Dice.Single(d => d.Id == die.Id).Location);
                 var preview = await room.Fp.Api.Post<ActionPreview>($"api/matches/{view.MatchId}/preview", new GameCommand
                 {
@@ -110,7 +111,8 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(preview.Legal, preview.Error);
                 CollectionAssert.AreEquivalent(new[] { die.Id, ring }, preview.Costs);
                 var revision = room.Fp.Board.View.Revision;
-                CardNetworkTests.Click(room.Fp.Board.Console.Rings.For(ring));
+                await ComponentGestures.Ring(room, room.Fp, ring);
+                await ComponentGestures.Remove(room.Fp, "base.sh.character.21");
                 await room.At(revision + 1);
                 Assert.IsFalse(room.Sh.Board.View.Effects.Any(e => e.SourceId == "base.sh.character.21"));
                 Assert.AreEqual(Side.Shadow, room.Sh.Board.View.Rings.Single(r => r.Id == ring).Owner);

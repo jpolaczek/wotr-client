@@ -141,7 +141,8 @@ namespace Wotr.PlayTests
             await Audit(room, client, "lore", "Click a lit die to change its result with Lore", () => OwnDice(client, Candidates(client)));
         }
 
-        // Lords: a removal paid with a die and a Ring waits for the Ring, which glows in its console socket.
+        // Lords: a removal paid with a die and a Ring starts at the Ring (UI-563). With the die chosen each Ring socket is lit
+        // and clickable; it does not pulse, since with a Ring any die could pay (the owner: "everything would always be lit").
         private static async Task RingPayment()
         {
             using var room = await Connect("lords-lore-remove", ScenarioKind.CardPack, openPanels: false);
@@ -149,10 +150,15 @@ namespace Wotr.PlayTests
             var die = client.Board.View.Dice.First(d => d.Owner == Side.FreePeoples && d.Face == DieFace.Army);
             var rings = client.Board.View.Options.Single(o => o.Kind == CommandKind.DiscardLore).EligibleIds;
             await ComponentGestures.Cost(room, client, die.Id);
-            await ComponentGestures.Remove(client, "lords.sh.character.26");
-            await room.Settle();
-            client.Board.TableEffects.Close();
-            await Audit(room, client, "ring-payment", "Click a lit Elven Ring", () => Sockets(client, rings));
+            await Audit(room, client, "ring-payment", null, () =>
+            {
+                foreach (var ring in rings)
+                {
+                    var socket = client.Board.Console.Rings.For(ring);
+                    Assert.IsTrue(socket.enabledInHierarchy && socket.ClassListContains("legal-target"), "The socket of " + ring + " is lit.");
+                }
+                return Task.CompletedTask;
+            });
         }
 
         // A deck choice (UI-390) — Kings Palantír of Anárion's extra card, the base Palantír of Orthanc's draw: the decks the

@@ -56,6 +56,13 @@ namespace Wotr.PlayTests
             return button;
         }
 
+        // UI-563: a removal paid with an Elven Ring starts at the Ring, clicked in its console socket after the die.
+        public static async Task Ring(MatchTestRoom room, MountedMatchClient client, string ring)
+        {
+            CardNetworkTests.Click(client.Board.Console.Rings.For(ring));
+            await room.Settle();
+        }
+
         public static async Task Remove(MountedMatchClient client, string card)
         {
             client.Board.TableEffects.Inspect(card);

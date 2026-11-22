@@ -5353,3 +5353,28 @@ Playtest:
 - [ ] Choose a Character die, click a companion in the Fellowship panel, click it again. Expect the track's march symbol
   to glow and move the Fellowship on its click.
 
+## A Ring's removal lights only for what pays it — UI-563 (2026-11-22)
+
+The owner: "The Palantír of Orthanc lights when a Character die is chosen, though removing it needs Will of the West. It
+says that is because a Ring can be used, but on that basis everything would always be lit, which makes no sense."
+
+The Palantír of Orthanc, the Palantír of Barad-dûr and The Lore of the Elven Rings may be removed with a Will of the West
+result, or with any Action die together with an Elven Ring given to the Shadow. While the Free Peoples held an unused Ring,
+every chosen die lit the card.
+
+Now the card and its × light only for what can pay the removal as chosen:
+- a Will of the West die;
+- or a die together with an Elven Ring the player has chosen.
+
+With any other die the × stays greyed and says how: "This die needs an Elven Ring: click a lit Elven Ring, then this card,
+to give the Ring to the Shadow · Or choose a Will of the West die." The Ring's way is die, then Ring (in its console
+socket), then the card, whose click sends the removal. Every other die-paid removal already lit only for its own dice.
+
+Checks: `EffectsNetworkTests` (Will of the West lit, Character die greyed, Ring chosen lit and sent),
+`Shadow04NetworkTests`, `KingsCards03NetworkTests`, `LordsShadowNetworkTests` and `GlowingHintAuditTests` in the new order.
+
+Playtest:
+- [ ] With The Palantír of Orthanc on the table and an Elven Ring, choose a Character die. Expect the Palantír greyed.
+  Click the glowing Elven Ring, then the Palantír: expect it removed, the Ring given to the Shadow.
+- [ ] Choose a Will of the West die instead. Expect the Palantír lit at once.
+

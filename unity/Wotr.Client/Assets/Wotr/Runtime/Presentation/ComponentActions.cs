@@ -131,9 +131,24 @@ namespace Wotr.Client
                 {
                     Key = "remove-" + id, Owner = CardLibrary.Title(id), Symbol = "×", CardId = id,
                     Detail = "Remove " + CardLibrary.Title(id) + " · Spend the selected die and any Ring or cards its removal needs",
-                    Enabled = option.EligibleDice.Contains(die) && (!context.Will || WillOfTheWestUses.Pays(option.Kind, context.WillFace))
+                    Enabled = option.EligibleDice.Contains(die) && (!context.Will || WillOfTheWestUses.Pays(option.Kind, context.WillFace)) &&
+                        RingPaysOrNeedsNone(option, draft, die),
+                    Reason = RingReason(option, draft, die)
                 };
         }
+
+        // UI-563 (owner, 2026-11-22: "The Palantír of Orthanc lights when a Character die is chosen, though removing it needs
+        // Will of the West; it says that is because a Ring can be used, but on that basis everything would always be lit,
+        // which makes no sense"): a removal paid with any die and an Elven Ring (the Palantíri, Lore) lights only for what
+        // can pay it now — a Will of the West die, or a die with an Elven Ring chosen. The Ring's way starts at the Ring: a
+        // die, then the Ring, then the card.
+        private static bool RingPaysOrNeedsNone(ActionOption option, TurnDraft draft, string die) =>
+            !CostDice.RingRemoval(option.Kind) || option.DiceWithoutRing.Contains(die) || option.EligibleIds.Contains(draft.Payload.RingId);
+
+        private static string RingReason(ActionOption option, TurnDraft draft, string die) =>
+            CostDice.RingRemoval(option.Kind) && option.EligibleDice.Contains(die) && !RingPaysOrNeedsNone(option, draft, die)
+                ? "This die needs an Elven Ring: click a lit Elven Ring, then this card, to give the Ring to the Shadow · Or choose a Will of the West die."
+                : "";
 
         public static bool Select(PlayerView view, TurnDraft draft, ComponentAction item)
         {
@@ -142,6 +157,9 @@ namespace Wotr.Client
                 return false;
             var option = DraftOptions.For(view, draft, item.Kind);
             var council = draft.Payload.CouncilTokenId;
+            // UI-563: the Elven Ring chosen for this die pays the removal with it.
+            var ring = CostDice.RingRemoval(item.Kind) && option?.DiceWithoutRing.Contains(item.DieId) != true &&
+                option?.EligibleIds.Contains(draft.Payload.RingId) == true ? draft.Payload.RingId : "";
             draft.Choose(item.Kind, item.DieId);
             ExpansionDraft.Initialize(draft, view, option, item.TokenId);
             if (item.Character != null)
@@ -156,6 +174,8 @@ namespace Wotr.Client
                 p.Stepwise = item.Kind is CommandKind.MoveArmies or CommandKind.MoveCompanions or CommandKind.MoveShadowCharacters;
                 if (item.Kind == CommandKind.DiscardProtection)
                     p.CardId = item.CardId;
+                if (ring.Length > 0)
+                    p.RingId = ring;
                 if (item.Kind == CommandKind.EnterCharacter && item.Character?.CouncilTokens.Contains(council) == true)
                     p.CouncilTokenId = council;
                 // UI-347 (D13): an entry that requires the only token it may use takes it; no button asks.
