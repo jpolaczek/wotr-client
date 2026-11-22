@@ -4,6 +4,7 @@ using System.IO;
 using NUnit.Framework;
 using Wotr.Client;
 using Wotr.Client.Updates;
+using Wotr.Contracts;
 
 namespace Wotr.EditorTests
 {
@@ -48,14 +49,31 @@ namespace Wotr.EditorTests
             Assert.AreEqual(ClientEnvironment.LocalServer, addresses.Editor);
         }
 
+        // DIST-22 (owner, 2026-11-22): the downloads address is optional; only the server is needed.
         [Test]
-        public void ABuildsFileNeedsTheServerAndTheDownloadsAddress()
+        public void ABuildsFileNeedsTheServerAndMayHaveNoDownloadsAddress()
         {
             var addresses = ServerConfiguration.Parse("{\"player\":\"https://game.example.org\",\"downloads\":\"https://downloads.example.org/\"}");
             Assert.AreEqual("https://game.example.org", addresses.Player);
             Assert.AreEqual(ClientEnvironment.LocalServer, addresses.Editor);
-            foreach (var json in new[] { "{}", "{\"player\":\"https://game.example.org\"}", "{\"player\":\" \",\"downloads\":\"https://downloads.example.org/\"}" })
+            var serverOnly = ServerConfiguration.Parse("{\"player\":\"https://game.example.org\"}");
+            Assert.AreEqual("https://game.example.org", serverOnly.Player);
+            Assert.AreEqual("", serverOnly.Downloads, "No downloads address: no updates.");
+            foreach (var json in new[] { "{}", "{\"player\":\" \",\"downloads\":\"https://downloads.example.org/\"}" })
                 Assert.Throws<InvalidOperationException>(() => ServerConfiguration.Parse(json), json);
+        }
+
+        // DIST-22: without a downloads address a refused version says the game cannot update itself; with one, it says
+        // to install the latest version, as before.
+        [Test]
+        public void ARefusedVersionSaysWhetherThisCopyCanUpdate()
+        {
+            StringAssert.Contains(VersionRefusal.CannotUpdate, VersionRefusal.Text(ClientCompatibility.ClientUpdateRequired, false));
+            StringAssert.DoesNotContain(VersionRefusal.CannotUpdate, VersionRefusal.Text(ClientCompatibility.ClientUpdateRequired, true));
+            StringAssert.Contains("cannot download or install updates", VersionRefusal.Board(false));
+            StringAssert.DoesNotContain("cannot download", VersionRefusal.Board(true));
+            Assert.AreEqual(VersionRefusal.Text(ClientCompatibility.ServerUpdateRequired, true),
+                VersionRefusal.Text(ClientCompatibility.ServerUpdateRequired, false), "A server that needs an update is not about this copy.");
         }
 
         [Test]

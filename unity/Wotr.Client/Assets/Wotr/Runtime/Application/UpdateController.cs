@@ -77,7 +77,8 @@ namespace Wotr.Client
         public static UpdateController Start(InterfaceController ui, ClientFlow flow)
         {
             var identity = ClientIdentity.Current;
-            if (Application.isEditor || identity.Development)
+            // DIST-22: a build without a downloads origin has no updater; a refused version says it cannot update.
+            if (Application.isEditor || identity.Development || !ServerConfiguration.CanUpdate)
                 return null;
             var catalog = new ReleaseCatalogClient(new GameApi(ServerConfiguration.Address));
             var installer = ClientInstallation.CanUpdateItself ? new VelopackBridge(ClientInstallation.CurrentLocator) : null;

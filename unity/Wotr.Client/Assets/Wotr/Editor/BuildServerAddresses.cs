@@ -18,9 +18,10 @@ namespace Wotr.Editor
         public static void Embed()
         {
             var addresses = ClientEnvironment.Read(ClientEnvironment.FilePath, Environment.GetEnvironmentVariable);
-            if (addresses.Player.Length == 0 || addresses.Downloads.Length == 0)
-                throw new BuildFailedException($"Set {ClientEnvironment.ServerKey} and {ClientEnvironment.DownloadsKey} in wotr-client/.env " +
-                    "(copy .env.example) or in the environment before building.");
+            // DIST-22: the downloads origin is optional; without it the game cannot update itself.
+            if (addresses.Player.Length == 0)
+                throw new BuildFailedException($"Set {ClientEnvironment.ServerKey} in wotr-client/.env (copy .env.example) or in the " +
+                    $"environment before building. {ClientEnvironment.DownloadsKey} is optional: without it the game cannot update itself.");
             ServerConfiguration.Parse(Serialize(addresses));
             Directory.CreateDirectory(Path.GetDirectoryName(ResourcePath));
             File.WriteAllText(ResourcePath, Serialize(addresses), new UTF8Encoding(false));

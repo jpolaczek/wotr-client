@@ -787,7 +787,7 @@ namespace Wotr.Client
                 : state == MatchConnection.DisplayError ? "Display error · Retrying" : "Reconnecting…";
             Connection.tooltip = state == "CorruptSave" ? "The server administrator needs to restore this saved game."
                 : state == "UnsupportedSaveVersion" ? "This game needs a compatible server version."
-                : state == ClientCompatibility.ClientUpdateRequired ? "Install the latest version to keep playing. This game stays saved on the server."
+                : state == ClientCompatibility.ClientUpdateRequired ? VersionRefusal.Board(ServerConfiguration.CanUpdate)
                 : state == ClientCompatibility.ServerUpdateRequired ? "The server needs an update for this version. This game stays saved on the server."
                 : state == MatchConnection.DisplayError ? "The latest game state could not be drawn. It is drawn again with the next update; Reconnect retries at once." : "";
             if (View == null && !IsFixture)

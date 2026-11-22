@@ -12,12 +12,17 @@ From MENU-28 host addresses are not in git (`ServerConfiguration`, `ClientEnviro
 - The source is environment variables and the untraceable file `wotr-client/.env`. Key pattern is in
   `.env.example`:
   - `WOTR_SERVER_URL` — build server;
-  - `WOTR_DOWNLOADS_URL` — original update packages;
+  - `WOTR_DOWNLOADS_URL` — original update packages; optional since DIST-22;
   - `WOTR_EDITOR_SERVER_URL` — Play mode server, default `https://localhost:7443`.
 - The editor reads them directly.
 - Build (`BuildTasks`) saves them for building time to
   `Assets/Wotr/Generated/Resources/Wotr/server-config.json`, next to the build identity, and removes
-  them after build. Without `WOTR_SERVER_URL` or `WOTR_DOWNLOADS_URL` build stops.
+  them after build. Without `WOTR_SERVER_URL` the build stops.
+- DIST-22 (owner, 2026-11-22: "let the game run without WOTR_DOWNLOADS_URL; we only need, when the version does not match
+  the required one, a message that downloading and updating the game is impossible"): without `WOTR_DOWNLOADS_URL` the
+  build has no updater. It neither offers nor downloads updates. A version the server no longer supports
+  (`ClientUpdateRequired`) says "this copy cannot download or install updates" and asks to install or build the latest
+  version, in the menu, the waiting room and on the board (`VersionRefusal`).
 - The Update Trust (`ReleaseTrust.Pinned`) takes original downloads from the same configuration.
 - In CI workflow installers save `.env` from the variable repository.
 - `PlayerPrefs` "wotr.server" is not used. Tests indicate your server by `ServerConfiguration.Use`.
