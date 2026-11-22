@@ -1515,6 +1515,15 @@
     background-color: rgba(8, 7, 6, 0.62);
 }
 .region-hover .illustrated-figure.left-behind > .figure-art-image { opacity: 0.32; }
+/* UI-574 (owner, 2026-11-22): in a card's choice of figures, only a figure that cannot be chosen goes dark — the same dark
+   as one left behind — while those that may still be chosen keep their lit rim. */
+.region-hover .illustrated-figure.unavailable-figure {
+    border-width: 2px;
+    border-color: rgba(128, 112, 88, 0.45);
+    background-color: rgba(8, 7, 6, 0.62);
+}
+.region-hover .illustrated-figure.unavailable-figure > .figure-art-image { opacity: 0.32; }
+.region-hover .illustrated-figure.unavailable-figure > .icon-glow { opacity: 0; }
 .region-hover .illustrated-figure.left-behind > .icon-glow { opacity: 0; }
 /* The pointer still rests on a figure just clicked dark, so under the pointer only its rim lightens: it stays dark. */
 .region-hover .illustrated-figure.left-behind:hover { border-color: rgba(200, 178, 128, 0.5); }

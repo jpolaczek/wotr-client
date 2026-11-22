@@ -60,6 +60,11 @@ namespace Wotr.Client
         // UI-536: a chosen figure (lit) and one left behind while the region's choice is made (dark).
         public const string SelectedClass = "selected";
         public const string LeftBehindClass = "left-behind";
+        // UI-574 (owner, 2026-11-22, Hill Trolls: "the units still available should not be totally dark while one more can be
+        // chosen; only the ones that cannot be chosen — here the elites — should be totally dark"): in a card's choice of
+        // figures (CountedChoice) a figure that may still be chosen stays lit and one that may not goes dark.
+        public const string UnavailableClass = "unavailable-figure";
+        public bool CountedChoice { get; set; }
 
         public float PreferredWidth(bool compact) => Math.Min(compact ? 520 : 440, contentsWidth);
 
@@ -354,12 +359,15 @@ namespace Wotr.Client
             // figures shine and every other figure that could join goes dark, so no figure reads as both. The invitation
             // pulse is only for a region where nothing is chosen yet.
             var choosing = figures.Keys.Any(Selected);
+            var counted = CountedChoice && figures.Keys.Any(Eligible);
             foreach (var entry in figures)
             {
                 var eligible = Eligible(entry.Key);
                 var selected = Selected(entry.Key);
-                var behind = choosing && eligible && !selected;
-                glowing |= eligible && !selected && !choosing;
+                var behind = !counted && choosing && eligible && !selected;
+                var unavailable = counted && !eligible && !selected;
+                glowing |= eligible && !selected && (!choosing || counted);
+                entry.Value.EnableInClassList(UnavailableClass, unavailable);
                 var moved = Moved(entry.Key);
                 entry.Value.EnableInClassList("eligible-figure", eligible);
                 entry.Value.EnableInClassList(SelectedClass, selected);
@@ -368,6 +376,7 @@ namespace Wotr.Client
                 var offer = eligible ? Offer(entry.Key) : "";
                 entry.Value.tooltip = descriptions[entry.Key] + (selected ? " · Selected · Click to leave behind" : offer.Length > 0
                     ? " · " + offer : behind ? " · Left behind · Click to select" : eligible ? " · Click to select"
+                    : unavailable ? " · Cannot be chosen"
                     : moved ? " · Already marched in this action" : "") +
                     (abilities.TryGetValue(entry.Key, out var lines) ? lines : "");
             }

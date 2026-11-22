@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 
@@ -92,6 +93,22 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-574 (owner, 2026-11-22, Hill Trolls): while a card's figures are chosen, a figure that may still be chosen is
+        // never dark; only one that may not be chosen is.
+        private static void AssertCountedChoice(RegionHoverPanel panel)
+        {
+            var figures = panel.Root.Query<VisualElement>(className: "illustrated-figure").ToList();
+            Assert.IsNotEmpty(figures);
+            foreach (var figure in figures)
+            {
+                Assert.IsFalse(figure.ClassListContains(RegionHoverPanel.LeftBehindClass), figure.name + ": a card's choice leaves nothing behind.");
+                if (figure.ClassListContains("eligible-figure"))
+                    Assert.IsFalse(figure.ClassListContains(RegionHoverPanel.UnavailableClass), figure.name + " may still be chosen: lit.");
+                else if (!figure.ClassListContains(RegionHoverPanel.SelectedClass))
+                    Assert.IsTrue(figure.ClassListContains(RegionHoverPanel.UnavailableClass), figure.name + " cannot be chosen: dark.");
+            }
+        }
+
         private static async Task RageMove()
         {
             using (var room = await Connect("sh-str02-rage-move", ScenarioKind.CardPack))
@@ -101,7 +118,11 @@ namespace Wotr.PlayTests
                     room.Sh.Board.Map.Select(region);
                     await room.Settle();
                     foreach (var unit in room.Sh.Board.View.Units.Where(u => u.Location == region && u.Nation == "isengard"))
+                    {
                         Click(room.Sh, "effect-choice-" + unit.Id);
+                        await room.Settle();
+                        AssertCountedChoice(room.Sh.Board.Hover.Panel);
+                    }
                 }
                 await room.Confirm(room.Sh);
                 Assert.AreEqual(6, room.Fp.Board.View.Units.Count(u => u.Nation == "isengard" && u.Location == "hollin"));

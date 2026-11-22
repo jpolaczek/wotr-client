@@ -470,3 +470,15 @@ king), `KingsCards01NetworkTests` (Wisdom's inspection on Dáin's portrait, Keep
 `KingsCards03NetworkTests` (the Palantír from its card), `SovereignPanelNetworkTests` (the cleanse's Pass); seeder
 scenarios `ui278-*`; test-menu scenarios `kings-card-wisdom`, `kings-card-recruit-or-cleanse`, `kings-card-hope`,
 `kings-card-power-waxes`, `kings-card-palantir`.
+
+## A card's figure choice darkens only what cannot be chosen — UI-574 (owner, 2026-11-22)
+
+The owner, of Hill Trolls: "while choosing the units that become elites, the units still available should not be totally
+dark while one more can be chosen; only the units that cannot be chosen — here the elites — should be totally dark". In a
+card's choice of figures in the region panel (`CardFigureDraft`, the panel's `CountedChoice`), a figure that may still be
+chosen keeps its lit, pulsing rim while more may be chosen; a chosen one shines; a figure that cannot be chosen (an elite
+for Hill Trolls, a Nazgûl, another nation's unit, or every unchosen one once the card's count is reached) goes dark
+(`unavailable-figure`, the dark of UI-536) with the tooltip "Cannot be chosen". UI-536's "left behind" dark stays for an
+army's march, where an unchosen figure does stay behind. Test: `ShadowStrategy02NetworkTests` (Rage of the Dunlendings'
+figures, after each click).
+
