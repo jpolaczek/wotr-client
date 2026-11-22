@@ -737,3 +737,7 @@
 .battle-stage.previewed-stage .battle-stage-icon { opacity: 1; }
 .hunt-stage-blocker { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .hunt-panel .hunt-pager { flex-direction: row; align-items: center; flex-shrink: 0; margin: 0 4px; }
+/* UI-570 (owner, 2026-11-22: "the Roll button shows over other parts of the battle window"): while the player's own first
+   roll waits for its Roll, the column keeps a row of the gate's height under its card, where its dice will stand. */
+.battle-roll-gate-room { height: 54px; flex-shrink: 0; }
+
