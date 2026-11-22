@@ -354,6 +354,7 @@ namespace Wotr.Client
             decisionDock.Add(CardCosts.Root);
             decisionDock.Add(Components.Root);
             Battles = new RegionalBattlePanel(Tray, decisionDock, Map);
+            Battles.CharacterInspected = (id, anchor) => Characters.Show(id, true, anchor);
             Battles.AttachPolicy(BattlePolicy.Root);
             _ = new BattleWindowHover(Root, Map, Battles, Cards);
             Hover.Excluded = Battles.IsRegion;

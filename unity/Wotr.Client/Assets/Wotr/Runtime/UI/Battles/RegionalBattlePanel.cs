@@ -77,6 +77,9 @@ namespace Wotr.Client
         private readonly VisualElement foldedRow = BoardScreen.Row("battle-folded-row");
         private readonly Button unfold;
 
+        // UI-564: a presented battle's portrait opens its character's window (BoardScreen wires the Characters panel).
+        public System.Action<string, VisualElement> CharacterInspected { get; set; }
+
         public RegionalBattlePanel(VisualElement tray, VisualElement dock, MapCanvas map)
         {
             this.tray = tray;
@@ -143,7 +146,7 @@ namespace Wotr.Client
             presented.Clear();
             presented.Add(ribbon.Root);
             BattleStages.Apply(ribbon, battle);
-            new BattleContext(presented, battle, view, null, null, null, cards).Refresh();
+            new BattleContext(presented, battle, view, null, null, null, cards, character: CharacterInspected).Refresh();
             if (Presenting)
                 return;
             trayDisplay = tray.style.display;

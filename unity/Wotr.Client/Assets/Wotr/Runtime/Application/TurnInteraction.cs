@@ -104,6 +104,7 @@ namespace Wotr.Client
             tray.RulerTokenChosen += ChooseRulerToken;
             tray.DirectChosen += DirectBattleChoice;
             tray.CardInspected += id => { if (view?.Battle != null) board.Cards.ShowCombat(id); else board.Cards.Show(id, true); };
+            tray.CharacterInspected += (id, anchor) => board.Characters.Show(id, true, anchor);
             tray.DraftEdited += EditChoice;
             tray.ChoiceCompleted += CompleteChoice;
             tray.Cancel += Back;

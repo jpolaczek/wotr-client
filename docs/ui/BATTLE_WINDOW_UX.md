@@ -644,3 +644,15 @@ that". The Combat card tiles shared the row's width (`flex-grow: 1`), so one car
 has among four cards: 24 % of the row with a 4 px gap, whether one card is offered, one stays behind unavailable, or
 four. Five or more narrow together and stay inside the row. `BattleCombatHandLayoutTests` checks one, one unavailable,
 four and six cards at 1366 and 1920 (frames `ui559-*`).
+
+## A battle portrait opens its character — UI-564 (2026-11-22)
+
+The owner: "during a battle, a click on a hero taking part in it should show information about him, skills and so on, as
+in the Characters tab." A character's portrait in the battle window acted only as a choice (a reaction, Evil Knowledge, a
+Nazgûl card's Leadership point, a card's choice) and otherwise did nothing. Now a portrait whose click chooses nothing
+opens the character's window, the one the Characters tab opens, pinned beside the portrait. This works in the live
+window and in the opponent's presented battle; a battle report does not have it yet. Its tooltip adds "Click for this character's
+abilities". A choice still comes first: a portrait lit for a choice keeps that click.
+
+`BattleCharacterDetailsTests.ABattlePortraitOpensItsCharactersWindow` checks it (frame `ui564-battle-character`).
+

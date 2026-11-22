@@ -18,6 +18,8 @@ namespace Wotr.Client
         public event Action<CommandKind> ActionChosen;
         public event Action<CommandKind> DirectChosen;
         public event Action<string> CardInspected;
+        // UI-564: a battle portrait's click opens its character's window.
+        public event Action<string, VisualElement> CharacterInspected;
         // UI-116: the second click on an armed Combat tile plays it through the same path as a double-click.
         public event Action<DraftToken> CardFinalized;
         public event Action<string> RulerTokenChosen;
@@ -448,7 +450,8 @@ namespace Wotr.Client
                 root.Add(battleRibbon.Root);
                 BattleStages.Apply(battleRibbon, view.Battle);
                 var battle = new BattleContext(root, view.Battle, view, draft, action => DraftEdited?.Invoke(action), id => CardInspected?.Invoke(id), cards,
-                    action => ChoiceCompleted?.Invoke(action), battleStacks, kind => DirectChosen?.Invoke(kind));
+                    action => ChoiceCompleted?.Invoke(action), battleStacks, kind => DirectChosen?.Invoke(kind),
+                    (id, anchor) => CharacterInspected?.Invoke(id, anchor));
                 refreshChoices.Add(battle.Refresh);
                 title.text = data.Regions[view.Battle.RegionId].Name + " · " + view.Battle.Mode + " · Round " + view.Battle.Round +
                     (view.Battle.MandatorySiegeRounds > 0 && view.Battle.Round <= view.Battle.MandatorySiegeRounds ? "/" + view.Battle.MandatorySiegeRounds : "") +
