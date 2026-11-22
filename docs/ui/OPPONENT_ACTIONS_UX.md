@@ -1760,3 +1760,30 @@ back after `Clear`.
 `OpponentCardPresentationTests.ALaterCardNeverShowsAtItsPlaceBeforeItsFlight` opens and closes the window first, as a
 game does, then checks every frame before the flight.
 
+## The player's own draws wait for a click — UI-570 (owner, 2026-11-22)
+
+The owner: "we also need an extra option, toggled in Settings, so that EVERY draw of a tile or a die or anything else does
+not happen by itself but needs a confirmation, pressing a button with a die's picture or 'Perform hunt' or the like". The
+owner chose the client (the server keeps drawing as before; the click only lets the result show) and the player's own
+draws only, and not the action dice rolled at a turn's start. Settings › Play: *Roll my own dice and draws*, off by
+default (`InterfacePreferences.ConfirmOwnDraws`); never for an observer or a replay (`BoardScreen.ConfirmsOwnDraws`).
+
+With it on, the beat that would show one of the player's own draws waits behind `DrawGate`, a gold button in the
+presentation layer over the place the result will show (a die's picture for a roll, the draw's words for a tile or a
+pick). The presentation holds while it waits; the click starts the beat as it would have played; Enter or Space press it
+(it takes focus); Skip or Esc end the presentation and the result shows at once.
+
+| Draw | Button | Where it waits |
+| --- | --- | --- |
+| The player's own card's dice (UI-541) | *Roll* | in the card's window, over its dice row (`CardRollPresenter`) |
+| The player's own card's random draw (UI-565) | *Draw tiles* / *Draw* | in the card's window, over its row |
+| The Hunt's roll when the player is the Shadow | *Perform the Hunt* | over the Hunt window's dice (`HuntPresenter`) |
+| A Hunt tile drawn when the player is the Shadow | *Draw a Hunt tile* | over the Hunt window's tile |
+| The player's own force's combat roll, Leader re-roll or special attack | *Roll* | over its column's roll heading (`BattlePresenter`) |
+
+A Hunt reroll follows the Shadow's own choice of dice and never waits. Not covered: the action dice of a turn's start
+(owner), the player's own card draws (they have no presentation of their own) and a Kings corruption attempt (its tiles
+are drawn by the attempt's own click). Tests: PlayMode `OpponentHuntPresentationTests.TheShadowsHuntRollWaitsForPerformTheHunt`,
+`OpponentBattlePresentationTests.TheViewersOwnRollWaitsForRoll`,
+`OpponentCardRollPresentationTests.OwnAthelasWaitsForRollWhenSettingsAsk` (frames `ui570-*`).
+

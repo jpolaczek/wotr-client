@@ -12,7 +12,9 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement();
         public bool IsOpen => Root.style.display.value == DisplayStyle.Flex;
         public event Action Confirmed;
+        public const string ClassName = "confirmation";
         private readonly Button cancel;
+        private readonly Label text;
         private VisualElement returnFocus;
         private int outsidePointer = -1;
 
@@ -29,23 +31,39 @@ namespace Wotr.Client
         public static ConfirmationDialog QuitAndConcede() => new ConfirmationDialog("quit-concede", "Quit and concede?",
             "Leaving a ranked game concedes it: you lose the game and your rating follows.", "Concede");
 
-        private ConfirmationDialog(string prefix, string title, string note, string confirmText)
+        // UI-571 (owner, 2026-11-22): the ✓ that would end an action with moves left asks first; the note says what is left.
+        public static ConfirmationDialog UnusedMoves() => new ConfirmationDialog("unused-moves", "End the action?", "", "End action", "Back");
+
+        // UI-572 (owner, 2026-11-22): the first time in a game the Fellowship may step onto the Mordor track.
+        public static ConfirmationDialog EnterMordor() => new ConfirmationDialog("enter-mordor", "Enter the Mordor track?", "", "Enter Mordor",
+            "Not now");
+
+        // Keys typed inside an open question belong to it, not to the board behind it.
+        public static bool ContainsInput(VisualElement element)
+        {
+            for (; element != null; element = element.parent)
+                if (element.ClassListContains(ClassName))
+                    return true;
+            return false;
+        }
+
+        private ConfirmationDialog(string prefix, string title, string note, string confirmText, string cancelText = "Cancel")
         {
             Root.name = prefix + "-confirmation";
             Root.AddToClassList("settings-scrim");
-            Root.AddToClassList("confirmation");
+            Root.AddToClassList(ClassName);
             // UI-470 (owner, 2026-11-03): the question wears the menus' thin-line chrome.
             FrontendTheme.ApplyChrome(Root);
             Root.style.display = DisplayStyle.None;
             var window = new VisualElement { name = prefix + "-window" };
             window.AddToClassList("confirm-window");
             window.Add(BoardScreen.Title(title));
-            var text = new Label(note) { name = prefix + "-note" };
+            text = new Label(note) { name = prefix + "-note" };
             text.AddToClassList("confirm-note");
             window.Add(text);
             var confirm = BoardScreen.Button(confirmText, Confirm);
             confirm.name = prefix + "-confirm";
-            cancel = BoardScreen.Button("Cancel", Close);
+            cancel = BoardScreen.Button(cancelText, Close);
             cancel.name = prefix + "-cancel";
             var actions = BoardScreen.Row("confirm-actions");
             actions.Add(confirm);
@@ -57,6 +75,8 @@ namespace Wotr.Client
             Root.RegisterCallback<PointerCancelEvent>(_ => outsidePointer = -1);
             Root.RegisterCallback<KeyDownEvent>(KeyDown, TrickleDown.TrickleDown);
         }
+
+        public void SetNote(string note) => text.text = note;
 
         public void Open()
         {

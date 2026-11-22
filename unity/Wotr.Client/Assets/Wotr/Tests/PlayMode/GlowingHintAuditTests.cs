@@ -184,6 +184,22 @@ namespace Wotr.PlayTests
             await Audit(room, client, "mordor-gate", "gate on the map", async () =>
             {
                 await GlowingTargetChecks.AssertVisiblyOffered(client.Board, client.Board.Map.MordorTrack.GateButton("morannon"), "Morannon's gate");
+                // UI-572 (owner, 2026-11-22: "easy to miss"): the offered gate stands larger and names itself; the other
+                // gate keeps its size and has no caption.
+                var map = client.Board.Map;
+                var gate = map.MordorTrack.GateButton("morannon");
+                var caption = map.MordorTrack.Caption;
+                Assert.IsTrue(gate.ClassListContains(MapMordorTrack.OfferedGateClass));
+                Assert.AreEqual(MapMordorTrack.GateCaption, caption.text);
+                Assert.AreEqual(DisplayStyle.Flex, caption.resolvedStyle.display, "The offered gate names itself.");
+                Assert.Greater(gate.resolvedStyle.scale.value.x, 1.3f, "The offered gate stands larger.");
+                Assert.AreSame(map, caption.parent);
+                Assert.Greater(map.IndexOf(caption), map.IndexOf(map.Stands.Layer), "The caption stands above every marker.");
+                Assert.LessOrEqual(caption.worldBound.xMin, gate.worldBound.xMin + 1, "From its gate's left edge…");
+                Assert.Greater(caption.worldBound.xMax, gate.worldBound.xMax, "…toward the track's stones.");
+                Assert.Greater(caption.worldBound.yMin, gate.worldBound.center.y, "Under its gate.");
+                var other = map.MordorTrack.GateButton("minas-morgul");
+                Assert.AreEqual(1f, other.resolvedStyle.scale.value.x, .01f, "The gate not offered keeps its size.");
                 if (client.Board.Map.FellowshipMarker.DeclareOffered)
                     await GlowingTargetChecks.AssertVisiblyOffered(client.Board, client.Board.Map.FellowshipMarker.Root, "the Fellowship figure");
             }, "morannon");

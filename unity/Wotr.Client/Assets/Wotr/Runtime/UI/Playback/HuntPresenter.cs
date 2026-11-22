@@ -23,6 +23,7 @@ namespace Wotr.Client
         private readonly FellowshipJoin join;
         // UI-520: a roll's result named under the Hunt's dice.
         private readonly PresentationMarks plates;
+        private readonly PresentationLayer layer;
 
         public HuntPresenter(BoardScreen board, StagedBoard staged, PresentationLayer layer, FellowshipReading reading,
             PresentationSoundSink sounds)
@@ -31,6 +32,7 @@ namespace Wotr.Client
             this.staged = staged;
             this.reading = reading;
             this.sounds = sounds;
+            this.layer = layer;
             mark = new PresentationMark(layer);
             plates = new PresentationMarks(layer, "presentation-hunt-plate");
             join = new FellowshipJoin(board, staged, reading, mark);
@@ -52,6 +54,15 @@ namespace Wotr.Client
             if (cue.Kind != PresentationCueKind.Hunt || entry == null || cue.HuntChainId.Length == 0)
                 return null;
             plates.End();
+            if (Gated(entry))
+                return entry.Kind == HuntReportKind.TileDrawn
+                    ? new DrawGate(layer, "Draw a Hunt tile", false, () => board.Hunt.Tile.Root, at => Staged(cue, entry, at))
+                    : new DrawGate(layer, "Perform the Hunt", true, () => board.Hunt.Dice.Root, at => Staged(cue, entry, at));
+            return Staged(cue, entry, now);
+        }
+
+        private IPresentationBeat Staged(PresentationCue cue, HuntReportEntryView entry, double now)
+        {
             staged.Hunt(cue.HuntChainId, entry);
             board.StageHunt(staged.View);
             if (entry.Kind == HuntReportKind.GuideChanged && join.Joins(entry.Outcome.GuideId))
@@ -59,6 +70,13 @@ namespace Wotr.Client
             var steps = Steps(cue, entry);
             return steps.Count == 0 ? null : new StepsBeat(now, EndRing, steps);
         }
+
+        // UI-570 (owner, 2026-11-22): the Shadow rolls the Hunt and draws its tiles, so with Settings' "Roll my own dice and
+        // draws" on, the Shadow's own presentation of them waits behind Perform the Hunt / Draw a Hunt tile (a reroll follows
+        // the Shadow's own choice of dice and never waits).
+        private bool Gated(HuntReportEntryView entry) =>
+            board.ConfirmsOwnDraws && board.View?.You == Side.Shadow &&
+            entry.Kind is HuntReportKind.Rolled or HuntReportKind.TileDrawn;
 
         public void Released()
         {

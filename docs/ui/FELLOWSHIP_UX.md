@@ -392,6 +392,22 @@ The Fellowship panel has no Declare position or Enter Mordor button. In the Fell
   [UX_SPEC](UX_SPEC.md#every-object-a-hint-asks-to-click-visibly-glows--ui-434)) the offered gate wears the gold
   ChoiceGlow on the map, and the hint names the map's gate in one clause with the declaration: "Declare or enter Mordor:
   click the glowing figure or gate on the map · or continue to the Hunt."
+  Since UI-572 (owner, 2026-11-22: "the button that enters the Mordor track is easy to miss") the offered gate
+  (`mordor-gate-offered`) also stands half as large again with a 4-point gold rim, swells to 1.65 with the shared 750 ms
+  pulse (still at 1.45 under Skip animations), and carries the caption *Enter Mordor* under it on the map
+  (`MapMordorTrack.Caption`, no pointer). The stones lie under every marker (UI-154), so the caption is its own element
+  added after the marker layers, placed under the gate's largest swell from its left edge toward the track's stones (clear
+  of the army beside the gate) at every camera move, and kept at its own size.
+  The owner, the same day: "when the Fellowship enters a region from which it may go onto the Mordor track, show a window
+  asking whether to enter the track of Mordor (only once); afterwards only light the button on the map". The first offer
+  of a game asks (`BoardScreen.MordorQuestion`, the menus' question as `enter-mordor-*`): *Enter the Mordor track?*, where
+  the Fellowship stands, that from there it goes only along the track, and that the glowing gate enters later; *Enter
+  Mordor* sends what the gate's click sends, *Not now*, Esc or a click beside it leave the gate glowing. The installation
+  remembers the games it has asked in (`MordorQuestionMemory`, the latest 40), so it asks once a game, also across
+  restarts. Settings' Play section switches it off (*Ask when the Fellowship can enter Mordor*, on by default). Test:
+  `BoardInteractionTests.UI572TheFirstMordorOfferAsksOnce` (frame `ui572-question.png`). The
+  gate that is not offered keeps its size and has no caption. Test:
+  `GlowingHintAuditTests.TheMordorGateAndTheFellowshipFigureGlowInTheFellowshipPhase` (frames `ui434-mordor-gate-*`).
 
 Finish phase stays in the panel; the Guide is chosen on its portrait (UI-249). Tests: `TurnConsoleStateTests.FellowshipPhaseNamesTheFigureAndTheGate`,
 the PlayMode gestures `FellowshipGestures.Declare` and `FellowshipGestures.EnterMordor`.

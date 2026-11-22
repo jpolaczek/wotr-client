@@ -19,12 +19,20 @@ namespace Wotr.Client
         public const string InactiveClass = "mordor-track-inactive";
         public const string DetailClass = "mordor-track-detail";
         public const string PulseClass = "mordor-track-pulse";
+        // UI-572 (owner, 2026-11-22: "the button that enters the Mordor track is easy to miss"): the offered gate stands
+        // larger, breathes in size as well as in gold, and its caption stands under it above every marker (the stones lie
+        // under them, UI-154), at its own size.
+        public const string OfferedGateClass = "mordor-gate-offered";
+        public const string GateCaptionClass = "mordor-gate-caption";
+        public const string GateCaption = "Enter Mordor";
         private const long PulseMilliseconds = 1200;
         // UI-157: sized to read over the ash plain at both levels of detail. UI-283 (owner's request): twice as large,
         // on steps twice as far apart.
         private static readonly Vector2 SlabDetail = new Vector2(68, 50), SlabToken = new Vector2(44, 34);
         private static readonly Vector2 CrackDetail = new Vector2(92, 76), CrackToken = new Vector2(60, 50);
         private static readonly Vector2 GateDetail = new Vector2(46, 46), GateToken = new Vector2(34, 34);
+        // The offered gate's largest swell (Mordor.uss), so the caption clears it.
+        private const float OfferedGateSwell = 1.65f;
         public VisualElement Root { get; } = new VisualElement { name = "mordor-track-stones", pickingMode = PickingMode.Ignore };
         public MordorTrackState State { get; private set; } = MordorTrackState.Outside;
         // UI-155: the step a click would play (0 enters, the next one attempts a move), and the entering gate.
@@ -41,6 +49,7 @@ namespace Wotr.Client
         private readonly Dictionary<string, Button> gates = new Dictionary<string, Button>();
         // UI-434: the gate the Fellowship may enter by glows in gold and pulses in the shared rhythm.
         private readonly ChoicePulse gatePulse;
+        public Label Caption { get; } = new Label(GateCaption) { name = "mordor-gate-caption", pickingMode = PickingMode.Ignore, enableRichText = false };
 
         public MapMordorTrack(MapCanvas map)
         {
@@ -48,6 +57,8 @@ namespace Wotr.Client
             geometry = map.Data.MordorTrack;
             Root.StretchToParentSize();
             gatePulse = new ChoicePulse(Root);
+            Caption.AddToClassList(GateCaptionClass);
+            Caption.style.display = DisplayStyle.None;
             for (var step = 0; step <= MordorTrackGeometry.LastStep; step++)
                 steps[step] = Step(step);
             foreach (var entrance in geometry.Entrances)
@@ -105,12 +116,43 @@ namespace Wotr.Client
             {
                 var offered = gate.Key == OfferedGate;
                 gate.Value.EnableInClassList(NextClass, offered);
+                gate.Value.EnableInClassList(OfferedGateClass, offered);
                 // UI-434 (owner, after UI-433): "Enter Mordor: click the glowing gate" — the gate's lit art alone (a faint
                 // halo at 34 points) read as unlit, so the offered gate wears the shared gold ChoiceGlow.
                 ChoiceGlow.Apply(gate.Value, offered);
                 gate.Value.tooltip = MordorTrackState.GateTooltip(gate.Key) + (offered ? "\nClick to enter Mordor." : "");
             }
             gatePulse.Run(OfferedGate.Length > 0);
+            PlaceCaption();
+        }
+
+        // Added to the map when first offered, after every marker layer, and kept in front of them.
+        private void PlaceCaption()
+        {
+            var entrance = OfferedGate.Length == 0 ? null : FindEntrance(OfferedGate);
+            var gate = entrance == null ? null : gates[OfferedGate];
+            if (gate == null || gate.style.display == DisplayStyle.None)
+            {
+                Caption.style.display = DisplayStyle.None;
+                return;
+            }
+            if (Caption.parent != map)
+                map.Add(Caption);
+            Caption.BringToFront();
+            var size = map.MarkerVisibility.Detail ? GateDetail : GateToken;
+            var centre = map.Camera.ToScreen(entrance.Gate);
+            // From the gate's left edge toward the track's stones, clear of the army beside the gate.
+            Caption.style.left = centre.x - size.x * OfferedGateSwell / 2;
+            Caption.style.top = centre.y + size.y * OfferedGateSwell / 2 + 2;
+            Caption.style.display = DisplayStyle.Flex;
+        }
+
+        private MordorTrackGeometry.Entrance FindEntrance(string region)
+        {
+            foreach (var entrance in geometry.Entrances)
+                if (entrance.Region == region)
+                    return entrance;
+            return null;
         }
 
         public void Layout()
@@ -122,6 +164,7 @@ namespace Wotr.Client
                     ? detail ? CrackDetail : CrackToken : detail ? SlabDetail : SlabToken);
             foreach (var entrance in geometry.Entrances)
                 Place(gates[entrance.Region], entrance.Gate, detail ? GateDetail : GateToken);
+            PlaceCaption();
         }
 
         // UI-526: where the track's steps and gates stand on the board and their size at the Detail level, in points; no

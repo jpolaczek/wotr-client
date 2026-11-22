@@ -7,8 +7,9 @@ namespace Wotr.Client
     {
         // MENU-17: version 2 starts settings of version 1 in Fullscreen. AUDIO-03: version 3 adds the sound settings;
         // older settings keep everything else and take the sound defaults. UI-529: version 4 keeps the figures' size;
-        // older settings take its default (150 %), also those a build of version 3 saved with 100 %.
-        private const int CurrentVersion = 4;
+        // older settings take its default (150 %), also those a build of version 3 saved with 100 %. UI-570/UI-571: version 5
+        // adds the play confirmations; older settings keep everything else and take their defaults.
+        private const int CurrentVersion = 5;
         public const float DefaultEffects = 0.4f;
         public const float DefaultAlerts = 0.6f;
         // UI-529 (owner, 2026-11-08): the map's figures may stand larger than their standard size, overlapping where they
@@ -26,6 +27,12 @@ namespace Wotr.Client
         public float AlertsVolume { get; private set; } = DefaultAlerts;
         public bool BackgroundAlerts { get; private set; } = true;
         public float FigureSize { get; private set; } = DefaultFigureSize;
+        // UI-571 (owner, 2026-11-22): the ✓ that ends an action asks first while moves are left; on by default.
+        public bool ConfirmUnusedMoves { get; private set; } = true;
+        // UI-570 (owner, 2026-11-22): the player's own draws wait for a click before their result shows; off by default.
+        public bool ConfirmOwnDraws { get; private set; }
+        // UI-572 (owner, 2026-11-22): the first offer of the Mordor track in a game asks; on by default.
+        public bool AskToEnterMordor { get; private set; } = true;
         public event Action Changed;
 
         public SoundLevels SoundLevels => new SoundLevels(SoundEnabled, EffectsVolume, AlertsVolume, BackgroundAlerts);
@@ -36,7 +43,7 @@ namespace Wotr.Client
             try
             {
                 var saved = JsonUtility.FromJson<Settings>(PlayerPrefs.GetString(key, "{}"));
-                if (saved?.Version is not (1 or 2 or 3 or CurrentVersion))
+                if (saved?.Version is not (1 or 2 or 3 or 4 or CurrentVersion))
                     return;
                 Scale = ValidScale(saved.Scale) ? saved.Scale : 1f;
                 ReducedMotion = saved.ReducedMotion;
@@ -48,8 +55,14 @@ namespace Wotr.Client
                 Resolution = DisplayOptions.IsPreset(resolution) ? resolution : DisplaySize.Native;
                 if (saved.Version >= 3)
                     ReadSound(saved);
-                if (saved.Version == CurrentVersion && ValidFigureSize(saved.FigureSize))
+                if (saved.Version >= 4 && ValidFigureSize(saved.FigureSize))
                     FigureSize = saved.FigureSize;
+                if (saved.Version >= 5)
+                {
+                    ConfirmUnusedMoves = saved.ConfirmUnusedMoves;
+                    ConfirmOwnDraws = saved.ConfirmOwnDraws;
+                    AskToEnterMordor = saved.AskToEnterMordor;
+                }
             }
             catch (ArgumentException) { }
         }
@@ -137,6 +150,30 @@ namespace Wotr.Client
             Save();
         }
 
+        public void SetConfirmUnusedMoves(bool value)
+        {
+            if (ConfirmUnusedMoves == value)
+                return;
+            ConfirmUnusedMoves = value;
+            Save();
+        }
+
+        public void SetConfirmOwnDraws(bool value)
+        {
+            if (ConfirmOwnDraws == value)
+                return;
+            ConfirmOwnDraws = value;
+            Save();
+        }
+
+        public void SetAskToEnterMordor(bool value)
+        {
+            if (AskToEnterMordor == value)
+                return;
+            AskToEnterMordor = value;
+            Save();
+        }
+
         public void SetBackgroundAlerts(bool value)
         {
             if (BackgroundAlerts == value)
@@ -175,7 +212,10 @@ namespace Wotr.Client
                 EffectsVolume = EffectsVolume,
                 AlertsVolume = AlertsVolume,
                 BackgroundAlerts = BackgroundAlerts,
-                FigureSize = FigureSize
+                FigureSize = FigureSize,
+                ConfirmUnusedMoves = ConfirmUnusedMoves,
+                ConfirmOwnDraws = ConfirmOwnDraws,
+                AskToEnterMordor = AskToEnterMordor
             };
             PlayerPrefs.SetString(key, JsonUtility.ToJson(settings));
             PlayerPrefs.Save();
@@ -196,6 +236,9 @@ namespace Wotr.Client
             public float AlertsVolume = DefaultAlerts;
             public bool BackgroundAlerts = true;
             public float FigureSize = DefaultFigureSize;
+            public bool ConfirmUnusedMoves = true;
+            public bool ConfirmOwnDraws;
+            public bool AskToEnterMordor = true;
         }
     }
 }

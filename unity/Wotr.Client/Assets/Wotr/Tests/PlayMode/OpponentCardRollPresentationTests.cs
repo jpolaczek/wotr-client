@@ -273,6 +273,44 @@ namespace Wotr.PlayTests
 
         private static bool Hidden(VisualElement item) => item.ClassListContains(CardRollPresenter.WindowName + "-waiting");
 
+        // UI-570 (owner, 2026-11-22): with Settings' "Roll my own dice and draws" on, the player's own Athelas opens its window
+        // and waits behind Roll: no dice and no Ring's move until the click; the opponent's Athelas plays at once.
+        [UnityTest]
+        public IEnumerator OwnAthelasWaitsForRollWhenSettingsAsk([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            stage.Preferences.SetConfirmOwnDraws(true);
+            stage.Before.Fellowship.Corruption = 4;
+            yield return stage.Ready();
+            var latest = stage.Latest();
+            latest.Fellowship.Corruption = 2;
+            var played = stage.Step(1);
+            played.Actor = Side.FreePeoples;
+            played.Kind = "EventPlayed";
+            played.Facts.FellowshipBefore = Outcome(stage.Before.Fellowship, 4);
+            played.Facts.FellowshipAfter = Outcome(stage.Before.Fellowship, 2);
+            var roll = Roll(stage, 2, new[] { 3, 5, 1 }, 3);
+            roll.Kind = "HealingRoll";
+            roll.ActionId = played.ActionId;
+            roll.Facts.SourceId = "base.fp.character.09";
+            stage.Play(latest, null, played, roll);
+            VisualElement window = null;
+            yield return stage.Until(() => (window = Window(stage)) != null);
+            var own = viewer == Side.FreePeoples;
+            var gate = stage.Board.Root.Q<Button>(DrawGate.Name);
+            Assert.AreEqual(own, gate != null, own ? "The player's own roll waits behind Roll." : "The opponent's roll never waits.");
+            if (own)
+            {
+                yield return new WaitForSecondsRealtime(1.5f);
+                Assert.IsTrue(Waiting(window, CardRollPresenter.DiceName), "No dice until the click.");
+                LayoutTests.Save(stage.Texture, "ui570-own-athelas-gate.png");
+                PointerGestureEvents.ClickAt(gate);
+            }
+            yield return stage.Until(() => !Waiting(window, CardRollPresenter.ResultName));
+            Assert.AreEqual("2 successes", window.Q<Label>(CardRollPresenter.ResultName).text);
+            yield return stage.Released();
+        }
+
         private static HuntOutcomeView Outcome(FellowshipView fellowship, int corruption) => new HuntOutcomeView
         {
             RegionId = fellowship.RegionId, Progress = fellowship.Progress, MordorStep = fellowship.MordorStep,

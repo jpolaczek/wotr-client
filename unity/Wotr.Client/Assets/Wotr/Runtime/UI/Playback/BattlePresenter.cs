@@ -107,6 +107,33 @@ namespace Wotr.Client
             var previous = shown;
             var battle = Copy(cue.Battle);
             KeepReveals(previous, battle);
+            if (OwnRoll(previous, battle) is { } you)
+                return new DrawGate(layer, "Roll", true, () => RollPlace(previous, you), at => Shown(cue, previous, battle, at));
+            return Shown(cue, previous, battle, now);
+        }
+
+        // Where the player's roll will show: its roll heading once the force has one, else the middle of its column.
+        private VisualElement RollPlace(BattleView battle, Side side)
+        {
+            var column = Column(battle, side);
+            var heading = column?.Q(className: "battle-roll-heading");
+            return heading != null && PresentationTargets.Shown(heading) ? heading : column;
+        }
+
+        // UI-570 (owner, 2026-11-22): with Settings' "Roll my own dice and draws" on, a roll of the player's own force (its
+        // combat roll, its Leader re-roll, a special attack of its own) waits in the open window behind Roll; the previous
+        // state stays shown until the click. The player's side, or null when this is no roll of theirs.
+        private Side? OwnRoll(BattleView previous, BattleView battle)
+        {
+            if (!board.ConfirmsOwnDraws || previous == null || !Window.IsOpen || board.View == null)
+                return null;
+            var you = board.View.You;
+            var rolled = Dice(battle).Where(die => Changed(previous, die)).Select(die => die.Id).ToList();
+            return rolled.Count > 0 && RollResults(battle, rolled).Any(result => result.Side == you) ? you : (Side?)null;
+        }
+
+        private IPresentationBeat Shown(PresentationCue cue, BattleView previous, BattleView battle, double now)
+        {
             Show(battle);
             if (!Window.IsOpen || previous == null)
                 return null;

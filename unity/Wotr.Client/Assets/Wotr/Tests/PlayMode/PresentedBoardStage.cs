@@ -35,6 +35,8 @@ namespace Wotr.PlayTests
         // The presented view before Ready(): a test may set its nations, control and figures.
         public PlayerView Before => before;
         public Side Viewer { get; }
+        // UI-570: the board's Settings, for a test that switches a play confirmation on.
+        public InterfacePreferences Preferences => client.Interface.Preferences;
         public Side Opponent => Viewer == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
         public string OpponentDie => Viewer == Side.FreePeoples ? Die : FreeDie;
         public string Main => Opponent == Side.Shadow ? "sauron" : "gondor";

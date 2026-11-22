@@ -25,6 +25,18 @@ namespace Wotr.Client
         private static IReadOnlyDictionary<string, CardText> cards;
         public static IReadOnlyDictionary<string, CardText> Cards => cards ??= Load();
         // UI-331: an unknown dotted identifier reads as what it is ("a card"), never as its code.
+        // The side whose card it is, by its identity (base.fp.…, base.sh.…), or null for an identity of no side.
+        public static Side? Owner(string id)
+        {
+            if (id == null)
+                return null;
+            if (id.Contains(".fp."))
+                return Side.FreePeoples;
+            if (id.Contains(".sh."))
+                return Side.Shadow;
+            return null;
+        }
+
         public static string Title(string id) => Cards.TryGetValue(id, out var card) ? card.Title
             : id.Contains('.') ? ReadableText.Neutral(id) : FigureGrid.Name(id);
         // The die face printed on a card's corner: the symbol a card shows wherever it appears.

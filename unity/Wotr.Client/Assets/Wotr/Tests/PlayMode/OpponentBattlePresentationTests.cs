@@ -178,6 +178,31 @@ namespace Wotr.PlayTests
             yield return stage.Released();
         }
 
+        // UI-570 (owner, 2026-11-22): with Settings' "Roll my own dice and draws" on, the viewer's own force's roll waits in
+        // the open window behind Roll; the opponent's roll plays at once. Frame: ui570-battle-gate.png.
+        [UnityTest]
+        public IEnumerator TheViewersOwnRollWaitsForRoll()
+        {
+            using var stage = Attack(out var fight, viewer: Side.FreePeoples);
+            stage.Preferences.SetConfirmOwnDraws(true);
+            yield return Open(stage, fight);
+            var round = fight.Next();
+            round.Record(battle => Roll(battle.Attacker, "a", 6, 5, 2, 1));
+            round.Record(battle => Roll(battle.Defender, "d", 6, 3));
+            stage.Play(round.Latest(), null, round.Steps.ToArray());
+            yield return stage.Until(() => Rolled(stage).Count == 4);
+            Assert.IsNull(stage.Board.Root.Q<Button>(DrawGate.Name), "The opponent's roll never waits.");
+            Button gate = null;
+            yield return stage.Until(() => (gate = stage.Board.Root.Q<Button>(DrawGate.Name)) != null);
+            Assert.AreEqual("Roll", gate.Q<Label>(className: DrawGate.Name + "-text").text);
+            yield return new WaitForSecondsRealtime(1f);
+            Assert.IsNull(stage.Board.Battles.Presented.Q("battle-die-d0"), "The own dice wait for the click.");
+            stage.Save("ui570-battle-gate.png");
+            PointerGestureEvents.ClickAt(gate);
+            yield return stage.Until(() => Rolled(stage).SequenceEqual(new[] { "battle-die-d0", "battle-die-d1" }));
+            yield return stage.Released();
+        }
+
         // UI-520 (owner): a roll's result stands named on its side's roll heading, "No hits" too, long enough to read.
         [UnityTest]
         public IEnumerator AMissedRollIsNamedOnItsHeadingLongEnoughToRead()

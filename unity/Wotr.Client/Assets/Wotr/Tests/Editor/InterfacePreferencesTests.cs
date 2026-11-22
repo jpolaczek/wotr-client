@@ -17,7 +17,7 @@ namespace Wotr.Tests
 
         [TestCase("not json")]
         [TestCase("{}")]
-        [TestCase("{\"Version\":5,\"Scale\":1.25,\"ReducedMotion\":true}")]
+        [TestCase("{\"Version\":6,\"Scale\":1.25,\"ReducedMotion\":true}")]
         [TestCase("{\"Version\":1,\"Scale\":99}")]
         public void UnknownOrInvalidSettingsKeepReadableDefaults(string saved)
         {
@@ -118,6 +118,34 @@ namespace Wotr.Tests
         // UI-529 (owner, 2026-11-08): the figures' size starts at 150 % (the owner's default) and goes down to the
         // standard; a choice survives a reload and notifies once; a size off the list is refused; an older save, even one
         // a version-3 build wrote with 100 %, reads the default.
+        // UI-570/UI-571 (owner, 2026-11-22): the question before ending with moves left is on by default, the confirmation of
+        // the player's own draws off; both survive a reload, and a version-4 save keeps its figure size and takes them.
+        [Test]
+        public void PlayConfirmationsHaveTheirDefaultsAndSurviveReload()
+        {
+            var preferences = new InterfacePreferences(key);
+            Assert.IsTrue(preferences.ConfirmUnusedMoves);
+            Assert.IsFalse(preferences.ConfirmOwnDraws);
+            Assert.IsTrue(preferences.AskToEnterMordor);
+            var changes = 0;
+            preferences.Changed += () => changes++;
+            preferences.SetConfirmUnusedMoves(false);
+            preferences.SetConfirmUnusedMoves(false);
+            preferences.SetConfirmOwnDraws(true);
+            preferences.SetAskToEnterMordor(false);
+            Assert.AreEqual(3, changes, "A setter saves only a change.");
+            var reloaded = new InterfacePreferences(key);
+            Assert.IsFalse(reloaded.ConfirmUnusedMoves);
+            Assert.IsTrue(reloaded.ConfirmOwnDraws);
+            Assert.IsFalse(reloaded.AskToEnterMordor);
+            PlayerPrefs.SetString(key, "{\"Version\":4,\"FigureSize\":1.25,\"ConfirmUnusedMoves\":false,\"ConfirmOwnDraws\":true}");
+            var older = new InterfacePreferences(key);
+            Assert.AreEqual(1.25f, older.FigureSize, "A version-4 save keeps its figures' size.");
+            Assert.IsTrue(older.ConfirmUnusedMoves, "A version-4 save takes the default.");
+            Assert.IsFalse(older.ConfirmOwnDraws);
+            Assert.IsTrue(older.AskToEnterMordor);
+        }
+
         [Test]
         public void FigureSizeStartsAtTheDefaultSurvivesReloadAndRefusesOtherSizes()
         {

@@ -39,15 +39,18 @@ namespace Wotr.Client
         public const string LitClass = "presentation-card-dice-item-lit";
         public const string OutClass = "presentation-card-dice-item-out";
         private readonly BoardScreen board;
+        private readonly PresentationLayer layer;
         private readonly MapObservedTrace trace;
         private readonly PresentationSoundSink sounds;
         private readonly Func<Rect> safe;
         private MapObservedTrace.TraceSet set;
         private string action = "";
 
-        public CardRollPresenter(BoardScreen board, MapObservedTrace trace, PresentationSoundSink sounds, Func<Rect> safe)
+        public CardRollPresenter(BoardScreen board, PresentationLayer layer, MapObservedTrace trace, PresentationSoundSink sounds,
+            Func<Rect> safe)
         {
             this.board = board;
+            this.layer = layer;
             this.trace = trace;
             this.sounds = sounds;
             this.safe = safe;
@@ -72,12 +75,31 @@ namespace Wotr.Client
             set.Window(region, Window, safe());
             Appearance.Arrive(Window);
             var window = Window;
-            return new StepsBeat(now, () => { }, new (Action Start, double Seconds)[]
+            var dice = new List<(Action Start, double Seconds)>
             {
-                (() => { }, OpenSeconds),
                 (() => ShowDice(window, cue), DiceSeconds),
                 (() => ShowResult(window), PresentationPace.ResultSeconds)
-            });
+            };
+            return Opened(now, cue, "Roll", true, () => window.Q(DiceName), dice);
+        }
+
+        // UI-570: the player's own roll or draw waits behind its button (Settings › Play); every other one opens and plays.
+        private IPresentationBeat Opened(double now, PresentationCue cue, string gate, bool die, Func<VisualElement> anchor,
+            List<(Action Start, double Seconds)> steps)
+        {
+            if (Gated(cue))
+                return new DrawGate(layer, gate, die, anchor, at => new StepsBeat(at, () => { }, steps));
+            steps.Insert(0, (() => { }, OpenSeconds));
+            return new StepsBeat(now, () => { }, steps);
+        }
+
+        // The player's own: a card of their side played in their own revision (or, with no side, their own revision).
+        private bool Gated(PresentationCue cue)
+        {
+            if (!board.ConfirmsOwnDraws || !cue.OwnCommand)
+                return false;
+            var owner = CardLibrary.Owner(cue.Source);
+            return owner == null || owner == board.View?.You;
         }
 
         // UI-565: the draw's window in the middle of the safe area; its things turn up within the draw's beat.
@@ -94,13 +116,13 @@ namespace Wotr.Client
             set.Window(null, Window, safe());
             Appearance.Arrive(Window);
             var window = Window;
-            var steps = new List<(Action Start, double Seconds)> { (() => { }, OpenSeconds) };
+            var steps = new List<(Action Start, double Seconds)>();
             if (tiles.Count > 0)
                 steps.AddRange(tiles.Select((_, index) => ((Action)(() => Reveal(window, cue, index)), DrawSeconds / tiles.Count)));
             else
                 steps.Add((() => Pick(window, cue, pool), DrawSeconds));
             steps.Add((() => Settle(window, cue, tiles), PresentationPace.ResultSeconds));
-            return new StepsBeat(now, () => { }, steps.ToArray());
+            return Opened(now, cue, tiles.Count > 0 ? "Draw tiles" : "Draw", false, () => window.Q(DrawnName), steps);
         }
 
         // The Companions Lure of the Ring picked from, as the Fellowship panel lists them, and the one it picked.

@@ -873,6 +873,9 @@
     font-size: 15px;
 }
 .interface-settings-panel .sound-settings { margin-top: 8px; }
+/* UI-571: Play under the figures' size in the display column; its switches keep the 34-point target of every toggle. */
+.interface-settings-panel .play-settings { margin-top: 8px; }
+.interface-settings-panel #play-heading { margin: 0 0 2px 0; }
 .interface-settings-panel .sound-level { margin: 0 0 2px 0; }
 .interface-settings-panel .unity-toggle { min-height: 34px; margin-bottom: 2px; }
 .interface-settings-panel #reset-window-layout,

@@ -579,3 +579,32 @@
 .presentation-caption.presentation-caption-name {
     -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
 }
+
+/* UI-570 (owner, 2026-11-22): the button that lets one of the player's own rolls or draws show (Settings › Play): over
+   the place the result will show, a gold plate with a die's picture for a roll, its words alone for a draw. */
+.presentation-draw-gate {
+    position: absolute;
+    flex-direction: row;
+    align-items: center;
+    min-height: 44px;
+    margin: 0;
+    padding: 4px 14px 4px 8px;
+    border-width: 2px;
+    border-radius: 8px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(60, 44, 16, 0.96);
+}
+.presentation-draw-gate:hover { background-color: rgba(92, 68, 24, 0.98); }
+.presentation-draw-gate > .presentation-draw-gate-die {
+    width: 32px;
+    height: 32px;
+    margin: 0 8px 0 0;
+}
+.presentation-draw-gate > .presentation-draw-gate-text {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    color: rgb(255, 230, 170);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+
