@@ -147,6 +147,108 @@ namespace Wotr.PlayTests
             stage.AssertFinal(latest);
         }
 
+        // UI-565 (owner, 2026-11-22: "an extra UI that shows what is drawn, as in Challenge of the King; the user must see the
+        // draw clearly"): the card's three Hunt tiles turn up one by one in its window, each with the card sound, for the side
+        // that played it and for the opponent; then the result, and the two Eyes that leave the game dim. Frames: ui565-*.
+        [UnityTest]
+        public IEnumerator ChallengeOfTheKingsTilesTurnUpOneByOne([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            yield return stage.Ready();
+            var sounds = new Recorded();
+            stage.Presenters.Sounds.Target = sounds;
+            var latest = stage.Latest();
+            var played = stage.Step(1);
+            played.Actor = Side.FreePeoples;
+            played.Kind = "EventPlayed";
+            var draw = Automatic(stage, played, "ChallengeDraw", "base.fp.character.14");
+            draw.Facts.Targets.AddRange(new[] { "base.hunt.standard.eye.1.1", "base.hunt.standard.3.0.1", "base.hunt.standard.eye.1.2" });
+            stage.Play(latest, null, played, draw);
+            VisualElement window = null;
+            yield return stage.Until(() => (window = Window(stage)) != null);
+            Assert.AreEqual("Challenge of the King", window.Q<Label>(CardRollPresenter.TitleName).text);
+            Assert.AreEqual(CardRollPresenter.DrawRule("ChallengeDraw"), window.Q<Label>(CardRollPresenter.RuleName).text);
+            var items = window.Query(className: CardRollPresenter.ItemClass).ToList();
+            Assert.AreEqual(3, items.Count);
+            Assert.AreEqual(3, window.Query(className: HuntTileFace.ClassName).ToList().Count, "Three printed tiles.");
+            Assert.IsTrue(items.All(Hidden), "The window opens before its tiles.");
+            yield return stage.Until(() => !Hidden(items[0]));
+            Assert.IsTrue(Hidden(items[2]), "The tiles turn up one by one.");
+            LayoutTests.Save(stage.Texture, "ui565-challenge-first-" + viewer + ".png");
+            yield return stage.Until(() => !Waiting(window, CardRollPresenter.ResultName));
+            Assert.AreEqual("2 Eyes leave the game", window.Q<Label>(CardRollPresenter.ResultName).text);
+            CollectionAssert.AreEqual(new[] { true, false, true }, items.Select(item => item.ClassListContains(CardRollPresenter.OutClass)),
+                "The Eyes that leave the game dim.");
+            Assert.GreaterOrEqual(sounds.Played.Count(cue => cue == SoundCue.CardMove), 3, "Each tile with its sound.");
+            Assert.AreEqual(PickingMode.Ignore, window.pickingMode, "Nothing to click.");
+            Assert.AreEqual(0, window.Query<Button>().ToList().Count);
+            var safe = stage.Presenters.Camera.SafeArea();
+            var bounds = new Rect(stage.Board.Map.WorldToLocal(window.worldBound.position), window.worldBound.size);
+            Assert.AreEqual(safe.center.x, bounds.center.x, 2f, "In the middle of the safe area.");
+            Assert.IsTrue(safe.Contains(bounds.min) && safe.Contains(bounds.max), "Inside the safe area.");
+            LayoutTests.Save(stage.Texture, "ui565-challenge-" + viewer + ".png");
+            yield return stage.Released();
+            yield return new WaitForSecondsRealtime((MapObservedTrace.FadeOutMilliseconds + 100) / 1000f);
+            Assert.IsNull(Window(stage));
+        }
+
+        // UI-565: Lure of the Ring's random Companion: a light runs over the Fellowship's portraits and stays on the one picked,
+        // the others dim, and the result names him; three Eyes of Challenge of the King name the King they eliminate.
+        [UnityTest]
+        public IEnumerator LureOfTheRingsLightStopsOnTheCompanionPicked([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            var companions = new[] { "base.character.gimli", "base.character.legolas", "base.character.boromir" };
+            // The pick changes nothing in the Fellowship: the view before it and after it list the same Companions.
+            stage.Before.Fellowship.CompanionIdentities.AddRange(companions);
+            if (viewer == Side.FreePeoples)
+                stage.Before.OwnCompanions.AddRange(companions.Select(id =>
+                    new CharacterView { Id = id, DefinitionId = id, Side = Side.FreePeoples, Location = "fellowship" }));
+            yield return stage.Ready();
+            var latest = stage.Latest();
+            var played = stage.Step(1);
+            played.Actor = Side.Shadow;
+            played.Kind = "EventPlayed";
+            var pick = Automatic(stage, played, "CompanionSelected", "base.sh.character.13");
+            pick.Facts.Targets.Add("base.character.legolas");
+            stage.Play(latest, null, played, pick);
+            VisualElement window = null;
+            yield return stage.Until(() => (window = Window(stage)) != null);
+            Assert.AreEqual("Lure of the Ring", window.Q<Label>(CardRollPresenter.TitleName).text);
+            var items = window.Query(className: CardRollPresenter.ItemClass).ToList();
+            CollectionAssert.AreEqual(companions.Select(id => CardRollPresenter.ItemClass + "-" + id), items.Select(item => item.name));
+            var lit = new HashSet<string>();
+            while (Waiting(window, CardRollPresenter.ResultName))
+            {
+                foreach (var item in items.Where(item => item.ClassListContains(CardRollPresenter.LitClass)))
+                    lit.Add(item.name);
+                yield return null;
+            }
+            Assert.Greater(lit.Count, 1, "The light runs over the Fellowship.");
+            Assert.AreEqual("Legolas is picked", window.Q<Label>(CardRollPresenter.ResultName).text);
+            CollectionAssert.AreEqual(new[] { false, true, false }, items.Select(item => item.ClassListContains(CardRollPresenter.LitClass)));
+            CollectionAssert.AreEqual(new[] { true, false, true }, items.Select(item => item.ClassListContains(CardRollPresenter.OutClass)));
+            LayoutTests.Save(stage.Texture, "ui565-lure-" + viewer + ".png");
+            yield return stage.Released();
+            Assert.AreEqual("Three Eyes · Aragorn is eliminated", CardRollPresenter.TilesResult(3, "Aragorn"));
+            Assert.AreEqual("No Eye · the tiles return to the pool", CardRollPresenter.TilesResult(0, ""));
+            Assert.AreEqual("1 Eye leaves the game", CardRollPresenter.TilesResult(1, ""));
+        }
+
+        // A card's automatic step of the given action, as EffectContext.Record makes it.
+        private static ActionLogStep Automatic(PresentedBoardStage stage, ActionLogStep played, string kind, string card)
+        {
+            var step = stage.Step(2);
+            step.Actor = null;
+            step.Automatic = true;
+            step.Kind = kind;
+            step.ActionId = played.ActionId;
+            step.Context.DefinitionId = card;
+            return step;
+        }
+
+        private static bool Hidden(VisualElement item) => item.ClassListContains(CardRollPresenter.WindowName + "-waiting");
+
         private static HuntOutcomeView Outcome(FellowshipView fellowship, int corruption) => new HuntOutcomeView
         {
             RegionId = fellowship.RegionId, Progress = fellowship.Progress, MordorStep = fellowship.MordorStep,

@@ -85,7 +85,7 @@ namespace Wotr.Client
         public static string Trigger(PresentationCue cue)
         {
             if (cue.Kind is PresentationCueKind.Card or PresentationCueKind.Cost or PresentationCueKind.Die
-                or PresentationCueKind.SpentDie or PresentationCueKind.Roll)
+                or PresentationCueKind.SpentDie or PresentationCueKind.Roll or PresentationCueKind.RandomDraw)
                 return null;
             if (cue.BattleId.Length == 0 && cue.HuntChainId.Length == 0 && cue.Hunt == null && cue.Battle == null)
                 return null;

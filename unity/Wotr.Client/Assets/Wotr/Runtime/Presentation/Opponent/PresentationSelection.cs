@@ -35,7 +35,8 @@ namespace Wotr.Client
 
         // UI-541 (owner, 2026-11-17): the player's own card that rolls dice plays them and what they cause (the Ring on the
         // corruption track, the figures they take, the Rings recovered); the player's own cost, card and dice never.
-        public static bool OwnRollShows(PresentationCue cue) => cue.Kind is PresentationCueKind.Roll or
+        // UI-565: and the player's own random draw, with what it causes.
+        public static bool OwnRollShows(PresentationCue cue) => cue.Kind is PresentationCueKind.Roll or PresentationCueKind.RandomDraw or
             PresentationCueKind.Fellowship or PresentationCueKind.Removal or PresentationCueKind.Transformation ||
             cue.Kind == PresentationCueKind.Resource && cue.Resource?.Kind == ActionCostKind.Ring;
 

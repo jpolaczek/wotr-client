@@ -1586,6 +1586,32 @@ Tests:
 - PlayMode `OpponentFreePeoplesActingNetworkTests` (Dead Men).
 
 <a id="the-attack-is-seen--ui-542"></a>
+## A card's random draw is seen — UI-565 (2026-11-22)
+
+The owner: "we need an extra UI that shows what is drawn, as in Challenge of the King; the user must see the draw
+clearly". Battle dice, the Hunt's tiles, a card's dice (UI-541) and the Kings' corruption tiles already had their windows;
+what a card drew at random outside them was only a line in the log. It now stands in the card's dice window
+(`CardRollPresenter`, `presentation-card-dice`), read-only, in the middle of the safe area (a draw has no region, so the
+camera stays):
+
+- **Challenge of the King** (`ChallengeDraw`, its three tiles in `Facts.Targets`): the card's name and its rule ("Three
+  Hunt tiles · three Eyes eliminate Strider or Aragorn, else the Eyes leave the game"); after 0.4 s the three printed
+  tiles (`HuntTileFace`, the size of a tile put into play) turn up one by one over 1.5 s, each with the card sound; then
+  the result: "No Eye · the tiles return to the pool", "1 Eye leaves the game", "2 Eyes leave the game", or "Three Eyes ·
+  Aragorn is eliminated" (the King the action takes off the board, from its figure change). The Eyes that leave the game
+  dim (`presentation-card-dice-item-out`).
+- **Lure of the Ring** (`CompanionSelected`, its Companion in `Facts.Targets`): "A Companion of the Fellowship, at
+  random"; the Fellowship's portraits (as its panel lists them) stand in a row and a light runs over them for 1.5 s,
+  stopping on the Companion picked, with the card sound; the others dim and the result names him ("Legolas is picked").
+  The server records the Companion as a fact since UI-565 (`wotr-server` `LureCompanionStep`); a pick recorded before it
+  has no fact and stays a line in the log, as the cues are made only from recorded facts.
+- **The order and who sees it** are UI-541's: the draw plays before what its action causes (the King's elimination);
+  both sides and observers see it, the player who played the card too (`PresentationSelection.OwnRollShows`), with no
+  replay of their own card or cost and no camera move.
+
+Not in this window: a random card discarded from a hand (Worn with Sorrow and Toil) keeps the discard's own scene; the
+Hunt's draws, a replaced Hunt tile and a battle's dice keep their windows.
+
 ## The attack is seen — UI-542 (2026-11-17)
 
 The owner: "if the CPU or the other player attacks, the camera does not centre on the region and nothing shows what

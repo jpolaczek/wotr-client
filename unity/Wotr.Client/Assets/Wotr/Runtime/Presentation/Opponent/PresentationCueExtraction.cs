@@ -28,8 +28,9 @@ namespace Wotr.Client
             ActionMemory memory, Side? you, BoardPresentation data)
         {
             var steps = group.OrderBy(step => step.Order).ToList();
-            // UI-541 (owner, 2026-11-17): the player's own dice-rolling card plays its dice and what they cause.
-            var ownRoll = you.HasValue && steps.Any(step => CardRoll(step) && !shown.Contains(step));
+            // UI-541 (owner, 2026-11-17): the player's own dice-rolling card plays its dice and what they cause; UI-565: so
+            // does the player's own card that draws at random.
+            var ownRoll = you.HasValue && steps.Any(step => (CardRoll(step) || CardDraw(step)) && !shown.Contains(step));
             var figures = FigureCuesByStep(steps, ownRoll ? steps.ToHashSet() : shown, data);
             var revealed = RevealedTiles(steps);
             var corrupted = steps.Any(step => step.Facts.Sovereigns.Any(s => s.Status == SovereignStatus.Corrupted));
@@ -40,6 +41,7 @@ namespace Wotr.Client
                 var cues = Costs(step, memory, you)
                     .Concat(Cards(step, you))
                     .Concat(Rolls(step))
+                    .Concat(Draws(step, steps))
                     .Concat(Movements(step))
                     .Concat(figures.TryGetValue(step, out var anchored) ? anchored : Enumerable.Empty<PresentationCue>())
                     .Concat(Losses(step))
@@ -80,7 +82,7 @@ namespace Wotr.Client
         // 2026-11-17): and before its action's Fellowship change (the Ring on the corruption track), resources and tokens.
         private static List<PresentationCue> RollsBeforeTheirEffects(List<PresentationCue> cues)
         {
-            foreach (var roll in cues.Where(cue => cue.Kind == PresentationCueKind.Roll).ToList())
+            foreach (var roll in cues.Where(cue => cue.Kind is PresentationCueKind.Roll or PresentationCueKind.RandomDraw).ToList())
             {
                 var effect = cues.FindIndex(cue => cue != roll && Caused(cue, roll));
                 if (effect < 0 || effect > cues.IndexOf(roll))
@@ -91,7 +93,10 @@ namespace Wotr.Client
             return cues;
         }
 
+        // UI-565: a draw has no region; what its action changes after the card's reveal is what it caused.
         private static bool Caused(PresentationCue cue, PresentationCue roll) =>
+            roll.Kind == PresentationCueKind.RandomDraw && cue.ActionId == roll.ActionId && (cue.Figures.Count > 0 ||
+                cue.Kind is PresentationCueKind.Fellowship or PresentationCueKind.Removal or PresentationCueKind.Transformation) ||
             cue.Figures.Count > 0 && cue.Regions.Intersect(roll.Regions).Any() ||
             cue.ActionId == roll.ActionId && cue.Kind is PresentationCueKind.Fellowship or PresentationCueKind.Resource;
 
@@ -208,6 +213,39 @@ namespace Wotr.Client
             payload.Regions.AddRange(step.Facts.Targets.Count > 0 ? step.Facts.Targets : step.Context.Regions);
             yield return new PresentationCue(step, PresentationCueKind.Roll, step.Id, payload);
         }
+
+        // UI-565 (owner, 2026-11-22): what a card draws at random that no Hunt or battle window shows: Challenge of the King's
+        // three Hunt tiles (the step's targets) and the Companion Lure of the Ring picks (its target, recorded since UI-565).
+        public const string ChallengeDraw = "ChallengeDraw";
+        public const string CompanionSelected = "CompanionSelected";
+
+        private static bool CardDraw(ActionLogStep step) =>
+            step.Kind is ChallengeDraw or CompanionSelected && step.Facts.Targets.Count > 0 && !InBattle(step);
+
+        private static IEnumerable<PresentationCue> Draws(ActionLogStep step, IReadOnlyList<ActionLogStep> steps)
+        {
+            if (!CardDraw(step))
+                yield break;
+            var payload = new CuePayload
+            {
+                RollKind = step.Kind,
+                Source = step.Facts.SourceId.Length > 0 ? step.Facts.SourceId : step.Context.DefinitionId
+            };
+            if (step.Kind == ChallengeDraw)
+            {
+                payload.Tiles.AddRange(step.Facts.Targets);
+                // Three Eyes eliminate Strider or Aragorn: the figure its action takes off the board names him.
+                payload.Note = steps.Where(other => other.ActionId == step.ActionId).SelectMany(other => other.Facts.Figures)
+                    .Select(change => change.Before?.DefinitionId ?? change.After?.DefinitionId).FirstOrDefault(King) ?? "";
+            }
+            else
+            {
+                payload.Drawn.Add(step.Facts.Targets[0]);
+            }
+            yield return new PresentationCue(step, PresentationCueKind.RandomDraw, step.Id, payload);
+        }
+
+        private static bool King(string id) => id != null && (id.EndsWith(".strider") || id.EndsWith(".aragorn"));
 
         private static IEnumerable<PresentationCue> Movements(ActionLogStep step)
         {
