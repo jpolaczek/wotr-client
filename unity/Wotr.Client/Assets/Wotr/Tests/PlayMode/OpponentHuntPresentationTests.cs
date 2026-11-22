@@ -96,6 +96,9 @@ namespace Wotr.PlayTests
             var window = stage.Board.Hunt.Root.worldBound;
             Assert.IsTrue(window.Contains(start.worldBound.min) && window.Contains(start.worldBound.max), "Inside the Hunt window.");
             Assert.LessOrEqual(start.worldBound.height, 34f, "A small button in the window's row.");
+            // The owner: "the button is uneven" — its right edge is the report's › right edge.
+            var next = stage.Board.Hunt.Root.Query<Button>().ToList().Where(b => b.worldBound.width > 0).OrderBy(b => b.worldBound.xMax).Last();
+            Assert.AreEqual(next.worldBound.xMax, start.worldBound.xMax, 1.5f, "Level with the window's right column.");
             LayoutTests.Save(stage.Texture, "ui570-hunt-start-" + viewer + ".png");
             var gates = 1;
             PointerGestureEvents.ClickAt(start);

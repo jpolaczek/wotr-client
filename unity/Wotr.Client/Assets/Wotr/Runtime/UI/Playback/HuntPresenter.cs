@@ -79,10 +79,11 @@ namespace Wotr.Client
             var row = PresentationTargets.Shown(dice) && dice.worldBound.height > 0 ? dice : dice.parent;
             var line = row.worldBound;
             var bounds = window.worldBound;
-            return UnityEngine.Rect.MinMaxRect(bounds.xMin, line.yMin, bounds.xMax - HuntGateInset, line.yMax);
+            // The owner: "the button is uneven" — its right edge on the window content's right edge, where the report's › and the
+            // Hunt's owner line end.
+            var right = bounds.xMax - window.resolvedStyle.paddingRight - window.resolvedStyle.borderRightWidth;
+            return UnityEngine.Rect.MinMaxRect(bounds.xMin, line.yMin, right, line.yMax);
         }
-
-        private const float HuntGateInset = 8;
 
         private IPresentationBeat Staged(PresentationCue cue, HuntReportEntryView entry, double now)
         {

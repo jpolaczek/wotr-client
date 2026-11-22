@@ -24,7 +24,6 @@ namespace Wotr.Client
         public const string Name = "presentation-draw-gate";
         // A smaller button for a window's row (the Hunt window).
         public const string CompactClass = Name + "-compact";
-        private const float RowInset = 4;
         private readonly PresentationLayer layer;
         private readonly Func<Rect?> place;
         private readonly GateAlign align;
@@ -139,7 +138,7 @@ namespace Wotr.Client
                 {
                     GateAlign.TopLeft => local.position,
                     GateAlign.BottomLeft => new Vector2(local.xMin, local.yMax - size.y),
-                    GateAlign.RightCentre => new Vector2(local.xMax - size.x - RowInset, local.center.y - size.y / 2),
+                    GateAlign.RightCentre => new Vector2(local.xMax - size.x, local.center.y - size.y / 2),
                     _ => local.center - size / 2
                 };
             }
