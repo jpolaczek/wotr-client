@@ -1778,17 +1778,20 @@ pick). The presentation holds while it waits; the click starts the beat as it wo
 | --- | --- | --- |
 | The player's own card's dice (UI-541) | *Roll* | in the card's window, over its dice row (`CardRollPresenter`) |
 | The player's own card's random draw (UI-565) | *Draw tiles* / *Draw* | in the card's window, over its row |
-| The Hunt's roll when the player is the Shadow | *Perform the Hunt* | over the Hunt window's dice (`HuntPresenter`) |
-| A Hunt tile drawn when the player is the Shadow | *Draw a Hunt tile* | over the Hunt window's tile |
+| Every Hunt's start, for both players (owner: "leave it as in the rules, but add a 'start the hunt' button at the beginning for both players") | *Start the Hunt* | from the start of the open Hunt window's dice row (`HuntPresenter`); the Shadow's roll follows the click |
+| A Hunt tile the Shadow draws (by the rules, the Shadow's) | *Draw a Hunt tile* | over the Hunt window's tile, for the Shadow only |
+| A tile drawn again for the Free Peoples (Mithril Coat and Sting, Nenya) | *Draw a Hunt tile* | over the Hunt window's tile, for the Free Peoples only |
 | The player's own force's combat roll or special attack | *Roll* | from the bottom-left of the row its column keeps for its dice, else of the column (`BattlePresenter`) |
 
 The owner's rule, the same day: "after we mark and click Reroll we no longer need the extra Roll … apply it everywhere":
 a draw that follows a click whose only purpose is that draw never waits — a battle's Leader re-roll (the player's own
 *Reroll selected*), a Hunt reroll (the Shadow's own choice of dice) and a Kings corruption attempt's tiles (its own
-*Draw*). Only a draw no such button caused waits: the combat roll after the cards, a card's dice or draw, the Hunt's
-first roll and its tile. Not covered: the action dice of a turn's start
+*Draw*). Only a draw no such button caused waits: the combat roll after the cards, a card's dice or draw, a Hunt tile;
+the Hunt's own roll follows *Start the Hunt*. By the rules (Almanac, the Hunt) the Shadow rolls the Hunt, takes its
+re-rolls and draws its tiles; the Free Peoples draw a tile only for Mithril Coat and Sting (and Challenge of the King,
+UI-565's window). Not covered: the action dice of a turn's start
 (owner), the player's own card draws (they have no presentation of their own) and a Kings corruption attempt (its tiles
-are drawn by the attempt's own click). Tests: PlayMode `OpponentHuntPresentationTests.TheShadowsHuntRollWaitsForPerformTheHunt`,
+are drawn by the attempt's own click). Tests: PlayMode `OpponentHuntPresentationTests.TheHuntWaitsForStartAndEachSideDrawsItsOwnTiles` (both viewers),
 `OpponentBattlePresentationTests.TheViewersOwnRollWaitsForRoll`,
 `OpponentCardRollPresentationTests.OwnAthelasWaitsForRollWhenSettingsAsk` (frames `ui570-*`).
 

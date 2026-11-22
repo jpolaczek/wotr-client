@@ -54,29 +54,50 @@ namespace Wotr.Client
             if (cue.Kind != PresentationCueKind.Hunt || entry == null || cue.HuntChainId.Length == 0)
                 return null;
             plates.End();
-            if (Gated(entry))
-                return entry.Kind == HuntReportKind.TileDrawn
-                    ? new DrawGate(layer, "Draw a Hunt tile", false, () => board.Hunt.Tile.Root, at => Staged(cue, entry, at))
-                    : new DrawGate(layer, "Perform the Hunt", true, () => board.Hunt.Dice.Root, at => Staged(cue, entry, at), GateAlign.TopLeft);
+            if (StartsGated(entry))
+            {
+                // The window opens on the Hunt's start; its steps wait behind Start the Hunt.
+                Stage(cue, entry);
+                return new DrawGate(layer, "Start the Hunt", true, () => board.Hunt.Dice.Root, at => Play(cue, entry, at), GateAlign.TopLeft);
+            }
+            if (DrawGated(entry))
+                return new DrawGate(layer, "Draw a Hunt tile", false, () => board.Hunt.Tile.Root, at => Staged(cue, entry, at));
             return Staged(cue, entry, now);
         }
 
         private IPresentationBeat Staged(PresentationCue cue, HuntReportEntryView entry, double now)
         {
+            Stage(cue, entry);
+            return Play(cue, entry, now);
+        }
+
+        private void Stage(PresentationCue cue, HuntReportEntryView entry)
+        {
             staged.Hunt(cue.HuntChainId, entry);
             board.StageHunt(staged.View);
+        }
+
+        private IPresentationBeat Play(PresentationCue cue, HuntReportEntryView entry, double now)
+        {
             if (entry.Kind == HuntReportKind.GuideChanged && join.Joins(entry.Outcome.GuideId))
                 return join.Begin(entry.Outcome.GuideId, now);
             var steps = Steps(cue, entry);
             return steps.Count == 0 ? null : new StepsBeat(now, EndRing, steps);
         }
 
-        // UI-570 (owner, 2026-11-22): the Shadow rolls the Hunt and draws its tiles, so with Settings' "Roll my own dice and
-        // draws" on, the Shadow's own presentation of them waits behind Perform the Hunt / Draw a Hunt tile (a reroll follows
-        // the Shadow's own choice of dice and never waits).
-        private bool Gated(HuntReportEntryView entry) =>
-            board.ConfirmsOwnDraws && board.View?.You == Side.Shadow &&
-            entry.Kind is HuntReportKind.Rolled or HuntReportKind.TileDrawn;
+        // UI-570 (owner, 2026-11-22: "leave it as in the rules, but add a 'start the hunt' button at the beginning for both
+        // players"): with Settings' "Roll my own dice and draws" on, every Hunt waits behind Start the Hunt for both players.
+        // The Shadow's roll follows that click, as its reroll follows its own Reroll selected ("we already have a button for
+        // that action"), so neither waits again.
+        private bool StartsGated(HuntReportEntryView entry) =>
+            board.ConfirmsOwnDraws && board.View != null && entry.Kind == HuntReportKind.Started;
+
+        // By the rules the Shadow draws the Hunt's tiles, so its own presentation of a tile drawn waits behind Draw a Hunt
+        // tile; a tile drawn again for the Free Peoples (Mithril Coat and Sting, Nenya) is theirs and waits for them.
+        private bool DrawGated(HuntReportEntryView entry) =>
+            board.ConfirmsOwnDraws && board.View != null &&
+            (entry.Kind == HuntReportKind.TileDrawn && board.View.You == Side.Shadow ||
+             entry.Kind == HuntReportKind.TileReplaced && board.View.You == Side.FreePeoples);
 
         public void Released()
         {

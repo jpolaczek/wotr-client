@@ -26,8 +26,8 @@ namespace Wotr.Client
             mordor.tooltip = "Once a game, the first time the Fellowship stands where it may step onto the Mordor track; later its gate glows on the map";
             Root.Add(mordor);
             draws.RegisterValueChangedCallback(e => preferences.SetConfirmOwnDraws(e.newValue));
-            draws.tooltip = "Your combat rolls, your cards' dice and draws, and the Hunt's roll and tiles when you are the Shadow wait for " +
-                "your click before their result shows (not the action dice at a turn's start)";
+            draws.tooltip = "Your combat rolls, your cards' dice and draws and the Hunt tiles you draw wait for your click before their " +
+                "result shows, and every Hunt waits for Start the Hunt (not the action dice at a turn's start)";
             Root.Add(draws);
             Render();
         }

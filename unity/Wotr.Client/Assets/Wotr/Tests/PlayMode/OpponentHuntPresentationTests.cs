@@ -61,31 +61,52 @@ namespace Wotr.PlayTests
             Assert.IsFalse(stage.Board.TracksStaged, "Nothing moves twice at the release.");
         }
 
-        // UI-570 (owner, 2026-11-22: "every draw … needs a confirmation, a button with a die's picture or 'Perform hunt'"): with
-        // Settings' "Roll my own dice and draws" on, the Shadow's Hunt roll waits behind Perform the Hunt: no dice until the
-        // click, the presentation holds; then the roll plays as before. Frame: ui570-hunt-gate.png.
+        // UI-570 (owner, 2026-11-22: "leave it as in the rules, but add a 'start the hunt' button at the beginning for both
+        // players"): with Settings' "Roll my own dice and draws" on, the Hunt waits behind Start the Hunt for the side that
+        // moved and for the Shadow alike: its window is open, no dice until the click; then the Shadow's roll plays without a
+        // second button. By the rules the Shadow draws the tile (Draw a Hunt tile, the Shadow's only); a tile drawn again by
+        // Mithril Coat and Sting is the Free Peoples' (theirs only). Frames: ui570-hunt-start-*.png.
         [UnityTest]
-        public IEnumerator TheShadowsHuntRollWaitsForPerformTheHunt()
+        public IEnumerator TheHuntWaitsForStartAndEachSideDrawsItsOwnTiles([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Watching();
+            using var stage = viewer == Side.Shadow ? Watching() : new PresentedBoardStage(1366, 1f, false, Side.FreePeoples);
             stage.Preferences.SetConfirmOwnDraws(true);
             yield return stage.Ready();
+            var roll = Snapshot("BeforeDraw", 6, 2);
             var script = new Script(stage).Entry(HuntReportKind.Started, Snapshot("BeforeDraw"))
-                .Entry(HuntReportKind.Rolled, Snapshot("BeforeDraw", 3, 2)).Entry(HuntReportKind.HuntCompleted, Snapshot("Done", 3, 2));
-            stage.Play(script.Latest, null, script.Finish());
-            Button gate = null;
-            yield return stage.Until(() => (gate = stage.Board.Root.Q<Button>(DrawGate.Name)) != null);
-            Assert.AreEqual("Perform the Hunt", gate.Q<Label>(className: DrawGate.Name + "-text").text);
-            Assert.IsNotNull(gate.Q<DiePips>(), "A roll's button wears a die.");
+                .Entry(HuntReportKind.Rolled, roll).Entry(HuntReportKind.TileDrawn, Tile(roll, 1))
+                .Entry(HuntReportKind.TileReplaced, Tile(roll, 0)).Entry(HuntReportKind.HuntCompleted, Done(Tile(roll, 0)));
+            var steps = script.Finish();
+            if (viewer == Side.FreePeoples)
+            {
+                steps[0].Actor = Side.FreePeoples;
+                steps[0].Costs.Clear();
+            }
+            stage.Play(script.Latest, null, steps);
+            var start = Gate(stage);
+            yield return stage.Until(() => (start = Gate(stage)) != null);
+            Assert.AreEqual("Start the Hunt", Text(start), viewer + ": the Hunt waits for both players.");
+            Assert.AreEqual(DisplayStyle.Flex, stage.Board.Hunt.Root.style.display.value, "Its window is open.");
             yield return new WaitForSecondsRealtime(1.5f);
             Assert.IsNull(Die(stage, "d0"), "No dice until the click.");
             Assert.IsTrue(stage.Playback.Holding);
-            LayoutTests.Save(stage.Texture, "ui570-hunt-gate.png");
-            PointerGestureEvents.ClickAt(gate);
+            LayoutTests.Save(stage.Texture, "ui570-hunt-start-" + viewer + ".png");
+            PointerGestureEvents.ClickAt(start);
             yield return stage.Until(() => Die(stage, "d0") != null);
-            Assert.IsNull(stage.Board.Root.Q<Button>(DrawGate.Name), "The button goes with its click.");
+            Assert.IsNull(Gate(stage), "The roll follows Start the Hunt.");
+            Button draw = null;
+            yield return stage.Until(() => (draw = Gate(stage)) != null);
+            Assert.AreEqual("Draw a Hunt tile", Text(draw));
+            Assert.IsNull(draw.Q<DiePips>(), "A draw's button wears its words alone.");
+            PointerGestureEvents.ClickAt(draw);
+            yield return new WaitForSecondsRealtime(.5f);
+            Assert.IsNull(Gate(stage), viewer + ": one tile draw is theirs — the Shadow's own draw or the Free Peoples' Mithril.");
             yield return stage.Released();
         }
+
+        private static Button Gate(PresentedBoardStage stage) => stage.Board.Root.Q<Button>(DrawGate.Name);
+
+        private static string Text(Button gate) => gate.Q<Label>(className: DrawGate.Name + "-text").text;
 
         private static Label Result(PresentedBoardStage stage) =>
             stage.Board.Root.Query<Label>(className: PresentationPace.ResultClass).ToList().FirstOrDefault();
