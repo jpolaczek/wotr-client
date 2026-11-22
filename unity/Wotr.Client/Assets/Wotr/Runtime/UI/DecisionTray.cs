@@ -175,7 +175,7 @@ namespace Wotr.Client
                 objectHint = ScoutsShelter.Hint(view, draft, RegionName(view.Battle?.RegionId));
             if (objectHint.Length > 0)
                 return objectHint;
-            var destination = TravelDraft.DestinationHint(view, draft);
+            var destination = TravelDraft.DestinationHint(view, draft, data);
             if (destination.Length > 0)
                 return destination;
             var council = CouncilTravel.Hint(view, draft);

@@ -521,6 +521,17 @@
 .presentation-card-dice-waiting {
     opacity: 0;
 }
+/* UI-568: what the card then leaves out (Faramir's Rangers without an army in Osgiliath), with the result. */
+.presentation-card-dice-note {
+    margin: 4px 0 0 0;
+    padding: 0;
+    max-width: 330px;
+    white-space: normal;
+    font-size: 13px;
+    color: rgb(236, 196, 120);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+    -unity-text-align: middle-center;
+}
 /* UI-565 (owner, 2026-11-22): what a card draws at random, in the same window: Challenge of the King's Hunt tiles turn
    up one by one at the size of a tile put into play, and the Eyes that leave the game dim; for Lure of the Ring a light
    runs over the Fellowship's Companions and stays on the one picked while the others dim. */

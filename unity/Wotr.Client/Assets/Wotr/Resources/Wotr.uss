@@ -915,6 +915,18 @@
     -unity-text-align: middle-center;
 }
 #board-screen .hover-force-header > .hover-select-all.all-selected { color: rgb(247, 213, 120); }
+/* UI-569: why a near region is out of the moving Companions' reach, under the region's name. */
+.region-hover #hover-reach-note { margin: 2px 0 4px 0; color: rgb(236, 196, 120); white-space: normal; }
+/* UI-567 (owner, 2026-11-22): a Shadow force's Move Nazgûl beside its Select all; dark until a Character die is chosen. */
+#board-screen .hover-force-header > .hover-move-nazgul {
+    flex-shrink: 0;
+    min-width: 96px;
+    height: 22px;
+    margin: 0 0 0 6px;
+    padding: 0 8px;
+    font-size: 12px;
+    -unity-text-align: middle-center;
+}
 .hover-unit-row, .hover-portraits { flex-direction: row; flex-wrap: wrap; align-items: center; }
 .hover-unit-row > .unity-label { width: 26px; font-size: 11px; -unity-text-align: middle-center; }
 .region-hover .action { width: 32px; min-width: 32px; height: 32px; min-height: 32px; padding: 0; margin: 1px; font-size: 17px; }

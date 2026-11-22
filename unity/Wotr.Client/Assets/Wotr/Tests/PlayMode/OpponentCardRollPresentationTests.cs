@@ -235,6 +235,30 @@ namespace Wotr.PlayTests
             Assert.AreEqual("1 Eye leaves the game", CardRollPresenter.TilesResult(1, ""));
         }
 
+        // UI-568 (owner, 2026-11-22, after a player's game): Faramir's Rangers with no Free Peoples Army in Osgiliath says, with
+        // its result, that it recruits nothing.
+        [UnityTest]
+        public IEnumerator FaramirsRangersSaysItRecruitsNothingWithoutAnArmyInOsgiliath()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, Side.Shadow);
+            stage.Before.Units.RemoveAll(unit => unit.Location == Region && unit.Side == Side.FreePeoples);
+            stage.Put("sauron", UnitKind.Regular, "north-ithilien", 3);
+            yield return stage.Ready();
+            var latest = stage.Latest();
+            var roll = Roll(stage, 2, new[] { 5, 5, 5 }, 5, "north-ithilien");
+            roll.Facts.SourceId = CardPlayNotes.FaramirsRangers;
+            stage.Play(latest, null, Choice(stage), roll);
+            VisualElement window = null;
+            yield return stage.Until(() => (window = Window(stage)) != null);
+            Assert.AreEqual("Faramir's Rangers", window.Q<Label>(CardRollPresenter.TitleName).text);
+            Assert.IsTrue(Waiting(window, CardRollPresenter.NoteName), "The note waits for the result.");
+            yield return stage.Until(() => !Waiting(window, CardRollPresenter.ResultName));
+            Assert.IsFalse(Waiting(window, CardRollPresenter.NoteName));
+            Assert.AreEqual(CardPlayNotes.AfterRoll, window.Q<Label>(CardRollPresenter.NoteName).text);
+            LayoutTests.Save(stage.Texture, "ui568-faramir.png");
+            yield return stage.Released();
+        }
+
         // A card's automatic step of the given action, as EffectContext.Record makes it.
         private static ActionLogStep Automatic(PresentedBoardStage stage, ActionLogStep played, string kind, string card)
         {

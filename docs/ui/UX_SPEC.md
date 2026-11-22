@@ -5378,3 +5378,46 @@ Playtest:
   Click the glowing Elven Ring, then the Palantír: expect it removed, the Ring given to the Shadow.
 - [ ] Choose a Will of the West die instead. Expect the Palantír lit at once.
 
+
+## The Nazgûl fly from their army — UI-566, UI-567 (2026-11-22)
+
+The owner, on the Shadow's Character die: "unmarking every unit by hand should let the Nazgûl move alone with the
+Character die", and "a Move Nazgûl button in the army window, active when the Shadow has the Character die selected".
+The server already allowed any number of Nazgûl and Minions per die (`MoveShadowCharacters`, one group after another);
+the client hid it behind the region panel.
+
+- **UI-566, the selection becomes their move.** With the Shadow's own Character die (not an ability's), a Shadow army's
+  force is one selection in its region's panel, as the Balrog's is (UI-459). Left with no army unit marked — only Nazgûl,
+  the Witch-king or another Minion — it becomes their move in the same gesture (`ShadowCharacterSelection.Normalize`):
+  the marked figures that travel together (same region, same side of the walls, all flying or all walking, flyers first)
+  form its group, and the next click on a lit region moves them. Marking a unit again turns the group back into the
+  army. A walker (the Mouth of Sauron) marked beside flyers stays behind.
+- **UI-567, Move Nazgûl.** A Shadow force section with Nazgûl or the Witch-king has a "Move Nazgûl" button beside its
+  Select all (`hover-move-nazgul-field|garrison`). The Free Peoples never see it. Without a Character die it stays dark
+  ("Choose a Character die first"); with one it is lit, and its click selects all the force's flyers as one group,
+  whatever was chosen before giving way. The map's lit regions are their destinations; the die's sequence goes on for
+  the next group, as before.
+- Tests: `ShadowCharacterSelectionTests` (EditMode, 5); `MoveNazgulPanelTests` (PlayMode on a board without a server: dark,
+  then lit, the flyers chosen and their destinations lit, the name not cut, hidden for the Free Peoples; frame
+  `ui567-move-nazgul`). The flight the draft sends is the die's existing Move Nazgûl and Minions, covered on the server by
+  `CharacterRosterActionNetworkTests` and `MapClickMoveNetworkTests`.
+
+## The game says what the rules leave out — UI-568, UI-569 (2026-11-22)
+
+After players' games the owner asked for the reason to be shown when a rule takes something away silently.
+
+- **UI-568, Faramir's Rangers.** It recruits a Gondor Regular or Elite and a Gondor Leader in Osgiliath only while a Free
+  Peoples Army stands there (its text; Almanac). Without one (`CardPlayNotes`), the hand's hint adds "No Free Peoples
+  Army in Osgiliath: the roll only, no recruitment" before the play, and the card's dice window shows "No Free Peoples
+  Army in Osgiliath · no recruitment" with its result (`presentation-card-dice-note`), for both sides.
+- **UI-569, a Companion stops in a Shadow Stronghold.** A Companion may enter a region with a Shadow-controlled
+  Stronghold but must stop there (Almanac, p. 24), so a place past it lies out of reach though near: Strider leaving
+  Rivendell with range 9 (Progress 6 + Level 3) reaches Drúadan Forest but not Minas Tirith, 8 regions through Moria and
+  10 around it. While a walking group's destination is chosen (a separation or a Companions' move), the console's hint
+  names the stops that cut its reach before its instruction ("Strider · Moria stops a Companion who enters it · Click a
+  highlighted region to move there."; at most three stops, nearest first), and a
+  click on such a region opens its panel with "Out of reach: Moria stops a Companion who enters it (a Shadow
+  Stronghold) · 10 regions around it, range 9" under its name (`TravelDraft.StopHint`, `ReachNote`). The server's
+  `StopRegions` are the source; nothing changes in what is legal.
+- Tests: `ReachNotesTests` (EditMode, 3); `OpponentCardRollPresentationTests.FaramirsRangersSaysItRecruitsNothingWithoutAnArmyInOsgiliath`
+  (frame `ui568-faramir`).

@@ -125,7 +125,7 @@ namespace Wotr.Client
 
         // UI-375 (owner): once the travelling figures are chosen, the console names them and asks for their region, as the
         // Fellowship panel does; before that (or for another step) it is empty and the console asks for the figures.
-        public static string DestinationHint(PlayerView view, TurnDraft draft)
+        public static string DestinationHint(PlayerView view, TurnDraft draft, BoardPresentation data = null)
         {
             if (view?.Decision == null || draft.Kind is not (CommandKind.SeparateCompanions or CommandKind.MoveCompanions or CommandKind.MoveShadowCharacters))
                 return "";
@@ -133,9 +133,80 @@ namespace Wotr.Client
             var ids = draft.Kind == CommandKind.SeparateCompanions ? draft.Payload.Ids : Group(draft)?.Ids;
             if (option == null || ids == null || ids.Count == 0 || Travel(draft, option) == null)
                 return "";
+            var stops = StopHint(view, draft, data);
             return string.Join(", ", ids.Select(id => CharacterLibrary.Name(view, id)).Distinct()) +
-                " · Click a highlighted region to move there.";
+                (stops.Length > 0 ? " · " + stops : "") + " · Click a highlighted region to move there.";
         }
+
+        // UI-569 (owner, 2026-11-22, after a player's game: Strider leaving Rivendell with range 9 could not reach Minas
+        // Tirith, 8 regions away through Moria): a Companion who enters a Shadow-controlled Stronghold stops there (Almanac,
+        // p. 24), so a place past it lies out of reach though near. The console names the stops that cut the group's reach,
+        // and a click on such a place says why in its region's panel (ReachNote).
+        public static string StopHint(PlayerView view, TurnDraft draft, BoardPresentation data)
+        {
+            var travel = WalkingCompanions(view, draft);
+            if (travel == null || data == null)
+                return "";
+            var reach = Routes(travel, data);
+            var stops = Routes(Unstopped(travel), data).Where(pair => !reach.ContainsKey(pair.Key))
+                .Select(pair => FirstStop(travel, pair.Value)).Where(stop => stop != null).Distinct()
+                .OrderBy(stop => reach.TryGetValue(stop, out var route) ? route.Count : int.MaxValue).Take(3)
+                .Select(stop => RegionName(data, stop)).ToList();
+            if (stops.Count == 0)
+                return "";
+            var names = stops.Count == 1 ? stops[0] : string.Join(", ", stops.Take(stops.Count - 1)) + " and " + stops[^1];
+            return names + (stops.Count == 1 ? " stops a Companion who enters it" : " stop a Companion who enters them");
+        }
+
+        // UI-569: why this near region is out of the group's reach, or "" when it is reachable or simply too far.
+        public static string ReachNote(TurnDraft draft, PlayerView view, BoardPresentation data, string region)
+        {
+            var travel = WalkingCompanions(view, draft);
+            if (travel == null || data == null || travel.Targets.Contains(region) && Routes(travel, data).ContainsKey(region))
+                return "";
+            if (!Routes(Unstopped(travel), data).TryGetValue(region, out var route) || FirstStop(travel, route) is not { } stop)
+                return "";
+            var around = Distance(travel, data, region);
+            return "Out of reach: " + RegionName(data, stop) + " stops a Companion who enters it" + Kind(view, data, stop) +
+                (around > 0 ? " · " + around + " regions around it, range " + travel.Range : "");
+        }
+
+        // The walking group whose destination is being chosen (a separation or a Companions' move), or null.
+        private static TravelOption WalkingCompanions(PlayerView view, TurnDraft draft)
+        {
+            if (view?.Decision == null || draft == null || draft.Kind is not (CommandKind.SeparateCompanions or CommandKind.MoveCompanions))
+                return null;
+            var option = DraftOptions.For(view, draft);
+            var travel = option == null ? null : Travel(draft, option);
+            return travel == null || travel.Flight || travel.StopRegions.Count == 0 || Route(draft) == null ? null : travel;
+        }
+
+        private static TravelOption Unstopped(TravelOption travel) => new TravelOption
+        {
+            Id = travel.Id, Origin = travel.Origin, Range = travel.Range, Targets = travel.Targets,
+            BlockedRegions = travel.BlockedRegions
+        };
+
+        private static string FirstStop(TravelOption travel, IReadOnlyList<string> route) =>
+            route.Skip(1).Take(route.Count - 2).FirstOrDefault(travel.StopRegions.Contains);
+
+        // The length of the shortest way that stops nowhere before the region, whatever the range; 0 when there is none.
+        private static int Distance(TravelOption travel, BoardPresentation data, string region)
+        {
+            var open = new TravelOption
+            {
+                Id = travel.Id, Origin = travel.Origin, Range = int.MaxValue / 2, Targets = travel.Targets,
+                StopRegions = travel.StopRegions, BlockedRegions = travel.BlockedRegions
+            };
+            return Routes(open, data).TryGetValue(region, out var route) ? route.Count - 1 : 0;
+        }
+
+        private static string Kind(PlayerView view, BoardPresentation data, string stop) =>
+            data.Regions.TryGetValue(stop, out var region) && region.Settlement == "Stronghold" &&
+            view.Control.TryGetValue(stop, out var control) && control == Side.Shadow ? " (a Shadow Stronghold)" : "";
+
+        private static string RegionName(BoardPresentation data, string id) =>
+            data.Regions.TryGetValue(id, out var region) ? region.Name : id;
 
         // The destinations the current group can reach with its range, stops and blocked regions.
         public static HashSet<string> Reachable(TurnDraft draft, PlayerView view, BoardPresentation data)

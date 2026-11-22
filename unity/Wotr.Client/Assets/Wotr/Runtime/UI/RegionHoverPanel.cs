@@ -27,6 +27,13 @@ namespace Wotr.Client
         public event Action<string, string> SettlementInspected;
         // UI-140: select or leave behind every figure of a force that can move (region, garrison).
         public event Action<string, bool> SelectAllRequested;
+        // UI-567 (owner, 2026-11-22): a Shadow force's Move Nazgûl: null hides it (not the viewer's force), false shows it
+        // dark (no Character die chosen), true lights it; its click selects the force's flyers as one Nazgûl move.
+        public Func<string, bool, bool?> NazgulMove { get; set; } = (_, _) => null;
+        public event Action<string, bool> NazgulMoveRequested;
+        // UI-569: why a near region is out of the moving Companions' reach ("" for none), under the region's name.
+        public Func<string, string> ReachNote { get; set; } = _ => "";
+        private readonly Label reachNote = new Label { name = "hover-reach-note", pickingMode = PickingMode.Ignore };
         // UI-251: the card choice a force section makes now ("" when none), and its click. UI-431: what its tooltip says.
         public Func<Side, bool, string> ForceChoice { get; set; } = (_, _) => "";
         public Func<string, string> ForceTooltip { get; set; } = _ => "";
@@ -42,6 +49,7 @@ namespace Wotr.Client
         // UI-187: a character's ability lines, after the line that names it and its state.
         private readonly Dictionary<string, string> abilities = new Dictionary<string, string>();
         private readonly List<(Button Toggle, string[] Ids)> forceToggles = new List<(Button, string[])>();
+        private readonly List<(Button Button, bool Garrison)> nazgulButtons = new List<(Button, bool)>();
         private string signature;
         private List<ComponentAction> actions = new List<ComponentAction>();
         private bool actionsEnabled;
@@ -119,6 +127,7 @@ namespace Wotr.Client
                 signature = key;
                 Build(region, control, contents);
             }
+            ShowReachNote(region.Id);
             RefreshSelection();
             var settlement = region.Settlement != null;
             SettlementInspected?.Invoke(settlement ? region.Id : "", settlement ? region.Nation ?? "" : "");
@@ -134,6 +143,7 @@ namespace Wotr.Client
             descriptions.Clear();
             abilities.Clear();
             forceToggles.Clear();
+            nazgulButtons.Clear();
             forceSections.Clear();
             // UI-532: the place's picture beside the name and a line of symbols (RegionHeader).
             Root.Add(RegionHeader.Create(region, control));
@@ -158,6 +168,20 @@ namespace Wotr.Client
             Root.Add(effects);
             Root.Add(Components.Root);
             quiet = figures.Count == 0 && contents.Fellowship == null && !contents.Effects.Any();
+        }
+
+        // UI-569: the note stands under the header, read again each time the panel shows (the draft may have changed).
+        private void ShowReachNote(string region)
+        {
+            var note = ReachNote(region);
+            if (note.Length == 0)
+            {
+                reachNote.RemoveFromHierarchy();
+                return;
+            }
+            reachNote.text = note;
+            if (reachNote.parent != Root)
+                Root.Insert(Math.Min(1, Root.childCount), reachNote);
         }
 
         // UI-532: the Fellowship's icon, its state and its Progress, in one line.
@@ -219,6 +243,9 @@ namespace Wotr.Client
             var spacer = new VisualElement { pickingMode = PickingMode.Ignore };
             spacer.AddToClassList("hover-spacer");
             header.Add(spacer);
+            if (side == Side.Shadow && (units.Any(u => u.Kind == UnitKind.Nazgul) ||
+                characters.Any(c => c.DefinitionId.EndsWith(".witch-king", StringComparison.Ordinal))))
+                header.Add(NazgulButton(garrison));
             header.Add(SelectAllToggle(side, garrison, units.Select(u => u.Id).Concat(characters.Select(c => c.Id)).ToArray()));
             header.AddManipulator(new Clickable(() =>
             {
@@ -256,6 +283,34 @@ namespace Wotr.Client
             Root.Add(force);
         }
 
+        // UI-567: the force's Move Nazgûl, refreshed with the selection (ShowNazgulMoves).
+        private Button NazgulButton(bool garrison)
+        {
+            var region = Region;
+            var button = BoardScreen.Button("Move Nazgûl", () =>
+            {
+                if (NazgulMove(region, garrison) == true)
+                    NazgulMoveRequested?.Invoke(region, garrison);
+            });
+            button.name = "hover-move-nazgul-" + (garrison ? "garrison" : "field");
+            button.AddToClassList("hover-move-nazgul");
+            nazgulButtons.Add((button, garrison));
+            return button;
+        }
+
+        private void ShowNazgulMoves()
+        {
+            foreach (var (button, garrison) in nazgulButtons)
+            {
+                var state = NazgulMove(Region, garrison);
+                button.style.display = state.HasValue ? DisplayStyle.Flex : DisplayStyle.None;
+                button.SetEnabled(state == true);
+                button.tooltip = state == true
+                    ? "Move Nazgûl · Selects this force's Nazgûl and the Witch-king · Click a lit region to fly them"
+                    : "Move Nazgûl · Choose a Character die first";
+            }
+        }
+
         private Button SelectAllToggle(Side side, bool garrison, string[] ids)
         {
             var region = Region;
@@ -291,6 +346,7 @@ namespace Wotr.Client
 
         private void ShowChoices()
         {
+            ShowNazgulMoves();
             foreach (var (toggle, ids) in forceToggles)
                 RefreshToggle(toggle, ids);
             var glowing = false;

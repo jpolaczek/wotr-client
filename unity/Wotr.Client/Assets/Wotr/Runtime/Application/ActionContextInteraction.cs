@@ -23,6 +23,9 @@ namespace Wotr.Client
             // UI-105: figures are chosen in the region's panel on the map; the Characters list only inspects.
             board.Hover.Panel.FigureChosen += ChooseFigure;
             board.Hover.Panel.SelectAllRequested += SelectAll;
+            // UI-567: a Shadow force's Move Nazgûl in its region's panel.
+            board.Hover.Panel.NazgulMoveRequested += MoveNazgul;
+            board.Hover.Panel.NazgulMove = NazgulMove;
         }
 
         public void Refresh(PlayerView latest, TurnDraft selection)
@@ -40,6 +43,8 @@ namespace Wotr.Client
             board.Hover.Panel.Selected = selected.Contains;
             board.Hover.Panel.Moved = moved.Contains;
             board.Hover.Panel.Offer = _ => "";
+            // UI-569: a near region past a Shadow Stronghold says why the moving Companions cannot reach it.
+            board.Hover.Panel.ReachNote = region => TravelDraft.ReachNote(draft, view, board.Presentation, region);
             board.Hover.Panel.RefreshSelection();
             board.Map.ShowMarched(MarchedForces(view, moved));
             var sources = ArmyActive ? ContextArmySelection.Sources(view, board.ActionDie) : Enumerable.Empty<ArmyOption>();
@@ -124,9 +129,21 @@ namespace Wotr.Client
 
         private void SelectAll(string region, bool garrison) => ToggleAll(region, garrison);
 
+        // UI-567: shown to the Shadow for a force with flying figures; lit while the chosen die can fly them.
+        private bool? NazgulMove(string region, bool garrison) => view?.You != Side.Shadow ? null
+            : !busy() && ShadowCharacterSelection.Flyers(view, draft, board.ActionDie, region, garrison).Count > 0;
+
+        private void MoveNazgul(string region, bool garrison)
+        {
+            if (view == null || busy())
+                return;
+            edit(() => draft.Gesture(() => ShadowCharacterSelection.SelectFlyers(draft, view, board.ActionDie, region, garrison)));
+        }
+
         // UI-105: figures chosen in one region move together. An army selection keeps a Nazgûl or a character the
         // player adds to it, and a character group chosen first joins the army as soon as a soldier is added. UI-459: an
-        // army selection of the Balrog die left with only the Balrog becomes his move alone (BalrogSelection).
+        // army selection of the Balrog die left with only the Balrog becomes his move alone (BalrogSelection); UI-566: a
+        // Character die's Shadow selection left with no army unit becomes the Nazgûl's move (ShadowCharacterSelection).
         public bool SelectFigure(string id)
         {
             if (view == null || busy())
@@ -137,7 +154,10 @@ namespace Wotr.Client
                 edit(() => draft.Gesture(() =>
                 {
                     ContextArmySelection.Select(draft, view, board.ActionDie, id);
-                    BalrogSelection.Normalize(draft, view, board.ActionDie);
+                    // UI-459: the Balrog die's selection left with the Balrog alone is his move; UI-566: a Character die's
+                    // Shadow selection left with no army unit is its Nazgûl and Minions' move.
+                    if (!BalrogSelection.Normalize(draft, view, board.ActionDie))
+                        ShadowCharacterSelection.Normalize(draft, view, board.ActionDie);
                 }));
                 return true;
             }
@@ -169,6 +189,9 @@ namespace Wotr.Client
         {
             board.Hover.Panel.FigureChosen -= ChooseFigure;
             board.Hover.Panel.SelectAllRequested -= SelectAll;
+            board.Hover.Panel.NazgulMoveRequested -= MoveNazgul;
+            board.Hover.Panel.NazgulMove = (_, _) => null;
+            board.Hover.Panel.ReachNote = _ => "";
             board.Hover.Panel.Offer = _ => "";
             board.Hover.Panel.Choices.Clear();
             board.Map.SetLanding(null);

@@ -33,6 +33,7 @@ namespace Wotr.Client
         public const string RuleName = "presentation-card-dice-rule";
         public const string DiceName = "presentation-card-dice-row";
         public const string ResultName = "presentation-card-dice-result";
+        public const string NoteName = "presentation-card-dice-note";
         public const string DrawnName = "presentation-card-dice-drawn";
         public const string ItemClass = "presentation-card-dice-item";
         public const string LitClass = "presentation-card-dice-item-lit";
@@ -63,7 +64,7 @@ namespace Wotr.Client
                 return null;
             Close();
             action = cue.ActionId;
-            Window = Build(cue);
+            Window = Build(cue, CardPlayNotes.Roll(board.View, cue.Source));
             var region = cue.Regions.FirstOrDefault(board.Map.Data.Shapes.ContainsKey);
             set = trace.Begin();
             if (region != null)
@@ -75,7 +76,7 @@ namespace Wotr.Client
             {
                 (() => { }, OpenSeconds),
                 (() => ShowDice(window, cue), DiceSeconds),
-                (() => Show(window, ResultName), PresentationPace.ResultSeconds)
+                (() => ShowResult(window), PresentationPace.ResultSeconds)
             });
         }
 
@@ -263,7 +264,14 @@ namespace Wotr.Client
         private static void Show(VisualElement window, string part) =>
             window.Q(part)?.RemoveFromClassList(WindowName + "-waiting");
 
-        private static VisualElement Build(PresentationCue cue)
+        // The result, with the card's note when it has one (UI-568).
+        private static void ShowResult(VisualElement window)
+        {
+            Show(window, ResultName);
+            Show(window, NoteName);
+        }
+
+        private static VisualElement Build(PresentationCue cue, string note)
         {
             var window = new VisualElement { name = WindowName, pickingMode = PickingMode.Ignore };
             window.AddToClassList(WindowName);
@@ -279,6 +287,13 @@ namespace Wotr.Client
             result.AddToClassList(PresentationPace.ResultClass);
             result.AddToClassList(WindowName + "-waiting");
             window.Add(result);
+            // UI-568: what the card then leaves out, read with the result.
+            if (note.Length > 0)
+            {
+                var line = Text(NoteName, note);
+                line.AddToClassList(WindowName + "-waiting");
+                window.Add(line);
+            }
             return window;
         }
 
