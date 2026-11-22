@@ -16,8 +16,13 @@ namespace Wotr.Client
 
         public static string Address => chosen ?? For(Application.isEditor);
 
-        // The https origin update packages may come from, ending with /; empty when the editor has none set.
+        // The https origin update packages may come from, ending with /; empty when none is set.
         public static string Downloads => WithSlash(Current.Downloads);
+
+        // DIST-22 (owner, 2026-11-22: "let the game run without WOTR_DOWNLOADS_URL; we only need, when the version does not
+        // match the required one, a message that downloading and updating the game is impossible"): a build without a
+        // downloads origin neither offers nor downloads updates.
+        public static bool CanUpdate => Downloads.Length > 0;
 
         public static string For(bool editor) => editor ? Current.Editor : Current.Player;
 
@@ -27,8 +32,8 @@ namespace Wotr.Client
         public static Addresses Parse(string json)
         {
             var addresses = JsonConvert.DeserializeObject<Addresses>(json);
-            if (addresses == null || string.IsNullOrWhiteSpace(addresses.Player) || string.IsNullOrWhiteSpace(addresses.Downloads))
-                throw new InvalidOperationException(Resource + ".json needs the server and the downloads address.");
+            if (addresses == null || string.IsNullOrWhiteSpace(addresses.Player))
+                throw new InvalidOperationException(Resource + ".json needs the server address.");
             if (string.IsNullOrWhiteSpace(addresses.Editor))
                 addresses.Editor = ClientEnvironment.LocalServer;
             return addresses;
