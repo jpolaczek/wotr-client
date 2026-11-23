@@ -37,7 +37,7 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DecisionKind.Guide, client.Board.View.Decision.Kind);
                 Assert.AreEqual(DieLocation.Resolving, client.Board.View.Dice.Single(d => d.Id == die).Location);
                 await Reconnect(room, client);
-                FellowshipGestures.Portrait(client, client.Board.View.Fellowship.Guide);
+                await FellowshipGestures.Guide(client, client.Board.View.Fellowship.Guide);
                 await room.At(revision + 2);
                 Assert.AreEqual(DieLocation.Spent, room.Sh.Board.View.Dice.Single(d => d.Id == die).Location);
                 Assert.AreEqual(token ? "dismay" : "free-peoples", room.Sh.Board.View.RulerTokens.Single(t => t.Id.EndsWith("thranduil")).Location);

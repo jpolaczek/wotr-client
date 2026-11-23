@@ -34,7 +34,7 @@ namespace Wotr.PlayTests
             Assert.IsNull(panel.Q<Label>("fellowship-guide-hint"), "UI-241: the glowing portraits carry the step without a caption.");
             Assert.IsTrue(target.ClassListContains(ChoiceGlow.ClassName), "UI-229: the candidate glows.");
             Assert.IsTrue(target.ClassListContains("legal-target"));
-            StringAssert.Contains("ends the Fellowship phase", target.tooltip);
+            StringAssert.Contains("Confirm Guide sends it and ends the Fellowship phase", target.tooltip);
             if (before.Configuration.Council)
             {
                 StringAssert.Contains("Narya", target.tooltip);
@@ -54,7 +54,41 @@ namespace Wotr.PlayTests
             Assert.IsTrue(target.ClassListContains("legal-target"));
 
             room.Boundary.HoldNextCommand = true;
-            PointerGestureEvents.ClickAt(keep ? panel.Q<Button>("fellowship-continue") : target);
+            if (keep)
+                PointerGestureEvents.ClickAt(panel.Q<Button>("fellowship-continue"));
+            else
+            {
+                // UI-575 (owner, 2026-11-23): a portrait's click only chooses the next Guide; another click changes the
+                // choice, and only Confirm Guide sends it.
+                var other = before.Options.Single(o => o.Kind == CommandKind.SelectGuide).EligibleIds
+                    .FirstOrDefault(id => id != before.Fellowship.Guide && id != candidate);
+                PointerGestureEvents.ClickAt(target);
+                await room.Settle();
+                Assert.AreEqual(0, room.Boundary.Commands, "A Guide's portrait only chooses.");
+                StringAssert.Contains(" will be the Guide · Confirm Guide sends it", board.Console.Status.Hint.text);
+                Assert.IsTrue(Portrait(board, candidate).ClassListContains("selected"), "The chosen Guide shows as chosen.");
+                if (other != null)
+                {
+                    PointerGestureEvents.ClickAt(Portrait(board, other));
+                    await room.Settle();
+                    Assert.IsTrue(Portrait(board, other).ClassListContains("selected"), "Another click changes the choice.");
+                    Assert.IsFalse(Portrait(board, candidate).ClassListContains("selected"));
+                    PointerGestureEvents.ClickAt(Portrait(board, candidate));
+                    await room.Settle();
+                    Assert.AreEqual(0, room.Boundary.Commands, "Changing the choice sends nothing.");
+                }
+                // Confirm Guide stands beside Finish phase, glowing; the panel's tray shows no second ✓.
+                var confirm = panel.Q<Button>(FellowshipControls.ConfirmGuideName);
+                Assert.IsNotNull(confirm, "Confirm Guide is offered.");
+                Assert.AreEqual(DisplayStyle.Flex, confirm.resolvedStyle.display);
+                Assert.AreEqual(FellowshipGuideText.ConfirmLabel, confirm.text);
+                Assert.IsTrue(confirm.enabledInHierarchy);
+                Assert.IsTrue(confirm.ClassListContains(ChoiceGlow.ClassName));
+                Assert.AreSame(confirm.parent, panel.Q<Button>("fellowship-continue").parent, "Beside Finish phase.");
+                Assert.AreNotEqual(DisplayStyle.Flex, board.Tray.Q<Button>("confirm-decision")?.resolvedStyle.display ?? DisplayStyle.None);
+                LayoutTests.Save(room.Fp.Viewport, "ui575-confirm-guide.png");
+                PointerGestureEvents.ClickAt(confirm);
+            }
             await room.Until(() => room.Boundary.CommandHeld);
             await room.At(before.Revision + 1);
             Assert.AreEqual(keep ? before.Fellowship.Guide : candidate, board.View.Fellowship.Guide);
@@ -127,6 +161,10 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.AreEqual(1, room.Boundary.Commands);
             PointerGestureEvents.ClickAt(Portrait(board, "base.character.strider"));
+            await room.Settle();
+            Assert.AreEqual(1, room.Boundary.Commands, "The forced Guide's portrait only chooses too.");
+            LayoutTests.Save(room.Fp.Viewport, "ui575-confirm-forced-guide.png");
+            FellowshipGestures.ConfirmGuide(room.Fp);
             await room.At(2);
             Assert.AreEqual(DieLocation.Spent, board.View.Dice.Single(d => d.Id == die).Location);
             Assert.AreEqual(1, board.View.Dice.Count(d => d.Location == DieLocation.Spent));

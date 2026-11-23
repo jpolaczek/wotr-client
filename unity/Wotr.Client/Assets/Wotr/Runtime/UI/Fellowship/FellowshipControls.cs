@@ -27,6 +27,12 @@ namespace Wotr.Client
         // tray's ✓ is enabled).
         private bool declaring, inputEnabled, declareReady;
         private Button Declare => actions[CommandKind.DeclareFellowship];
+        // UI-575 (owner, 2026-11-23): while the next Guide is chosen in this panel, Confirm Guide stands beside Finish phase
+        // and sends the chosen Guide once the tray's ✓ could.
+        public const string ConfirmGuideName = "fellowship-confirm-guide";
+        public Button ConfirmGuide { get; }
+        public event Action GuideConfirmed;
+        private bool choosingGuide, guideReady;
 
         public FellowshipControls()
         {
@@ -36,6 +42,10 @@ namespace Wotr.Client
             // UI-249: a glowing portrait chooses the Guide; no Change guide button.
             Add(Row, CommandKind.DeclareFellowship, "Declare", "fellowship-declare");
             Add(Row, CommandKind.ContinueFellowship, "Finish phase", "fellowship-continue");
+            ConfirmGuide = BoardScreen.Button(FellowshipGuideText.ConfirmLabel, () => GuideConfirmed?.Invoke());
+            ConfirmGuide.name = ConfirmGuideName;
+            ConfirmGuide.style.display = DisplayStyle.None;
+            Row.Add(ConfirmGuide);
             Root.Add(Row);
             Root.Add(hint);
         }
@@ -82,6 +92,10 @@ namespace Wotr.Client
                 RefreshDeclare();
             else
                 ChoiceGlow.Apply(Declare, false);
+            // In the Hunt window (route) the Guide is confirmed in that window's tray instead.
+            choosingGuide = own && !route && draft.Kind == CommandKind.SelectGuide;
+            ConfirmGuide.style.display = choosingGuide ? DisplayStyle.Flex : DisplayStyle.None;
+            RefreshConfirmGuide();
             hint.text = FellowshipActions.ActionHint(view, draft, context);
             hint.style.display = own && !route && inActions && !docked ? DisplayStyle.Flex : DisplayStyle.None;
         }
@@ -107,6 +121,23 @@ namespace Wotr.Client
             declareReady = ready;
             if (declaring)
                 RefreshDeclare();
+        }
+
+        // UI-575: the tray's ✓ can send the chosen Guide now.
+        public void GuideReady(bool ready)
+        {
+            guideReady = ready;
+            RefreshConfirmGuide();
+        }
+
+        private void RefreshConfirmGuide()
+        {
+            var ready = choosingGuide && inputEnabled && guideReady;
+            ConfirmGuide.SetEnabled(ready);
+            ConfirmGuide.EnableInClassList("legal-target", ready);
+            ChoiceGlow.Apply(ConfirmGuide, ready);
+            ConfirmGuide.tooltip = ready ? FellowshipGuideText.ConfirmLabel + " · Make the chosen Companion the Guide"
+                : FellowshipGuideText.ConfirmLabel + " · Click a glowing companion first";
         }
 
         private void RefreshDeclare()

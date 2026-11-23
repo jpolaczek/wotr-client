@@ -99,7 +99,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DecisionKind.Guide, room.Fp.Board.View.Decision.Kind);
             Assert.AreEqual(DieLocation.Resolving, room.Fp.Board.View.Dice.Single(d => d.Id == die).Location);
             Assert.AreEqual("fords-of-bruinen", room.Sh.Board.View.Characters.Single(c => c.Id == "base.character.gimli").Location);
-            FellowshipGestures.Portrait(room.Fp, "base.character.gandalf-grey");
+            await FellowshipGestures.Guide(room.Fp, "base.character.gandalf-grey");
             await room.At(2);
             T22NetworkActions.Spent(room, Side.FreePeoples, die);
         }

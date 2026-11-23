@@ -134,8 +134,6 @@ namespace Wotr.Client
                 draft.Unchoose();
         }
 
-        public static bool Immediate(CommandKind? kind) => kind == CommandKind.SelectGuide;
-
         // UI-420 (owner): one wording of the hide and the move wherever they are offered — the figure on the map, the
         // marker and the symbol on the track, and the console's hint.
         public const string HideEffect = "No progress; this die does not enter the Hunt";

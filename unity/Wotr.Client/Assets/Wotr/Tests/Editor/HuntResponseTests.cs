@@ -18,7 +18,6 @@ namespace Wotr.Tests
             Assert.IsFalse(draft.Ready(view.Options[0]));
             Assert.IsTrue(HuntResponseActions.Select(view, draft, response));
             Assert.IsTrue(draft.Ready(view.Options[0]));
-            Assert.IsFalse(FellowshipActions.Immediate(draft.Kind));
             Assert.AreEqual(response, draft.Command(view).Payload.HuntResponse);
             Assert.IsEmpty(draft.Payload.Ids);
             Assert.IsEmpty(draft.Payload.CharacterId);

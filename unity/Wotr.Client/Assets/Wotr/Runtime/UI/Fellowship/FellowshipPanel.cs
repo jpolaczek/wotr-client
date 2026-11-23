@@ -55,6 +55,7 @@ namespace Wotr.Client
         // UI-448: the declaration is being drawn; Declare then sends it, and Declare before it brings the camera here.
         private bool declaring;
         private readonly Action focus;
+        // Declare (UI-448) or Confirm Guide (UI-575) sends the draft as the tray's ✓ does.
         public event Action DeclareConfirmed;
         private double Now => Time.realtimeSinceStartupAsDouble;
 
@@ -89,6 +90,7 @@ namespace Wotr.Client
             Root.Add(roster.Root);
             Root.Add(controls.Root);
             controls.Selected += Controlled;
+            controls.GuideConfirmed += () => DeclareConfirmed?.Invoke();
             status.MoveRequested += () => ActionSelected?.Invoke(CommandKind.MoveFellowship);
             roster.Selected += Portrait;
             Versions.Changed += roster.Compare;
@@ -111,7 +113,11 @@ namespace Wotr.Client
         }
 
         // UI-448: the tray's ✓ can send the drafted declaration now.
-        public void DeclareReady(bool ready) => controls.DeclareReady(ready);
+        public void DeclareReady(bool ready)
+        {
+            controls.DeclareReady(ready);
+            controls.GuideReady(ready);
+        }
 
         // UI-441: the companions with a skill usable now glow on their portraits, and why (UsableSkills).
         public void LightSkills(IReadOnlyDictionary<string, string> lines) => roster.LightSkills(lines);
@@ -176,6 +182,7 @@ namespace Wotr.Client
             var route = draft.Kind is CommandKind.DeclareFellowship or CommandKind.RevealFellowship;
             declaring = draft.Kind == CommandKind.DeclareFellowship;
             Root.EnableInClassList("fellowship-declaring", declaring);
+            Root.EnableInClassList("fellowship-choosing-guide", draft.Kind == CommandKind.SelectGuide && !HuntActions.UsesPanel(latest, draft));
             var separation = draft.Kind == CommandKind.SeparateCompanions ||
                 latest.Decision?.Kind == DecisionKind.CompanionSeparation;
             Root.EnableInClassList("fellowship-route", route);

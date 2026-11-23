@@ -328,8 +328,9 @@ namespace Wotr.Client
 
         public static string Offer(PlayerView view, string id, CommandKind? kind) => kind switch
         {
-            CommandKind.SelectGuide => "Click to make " + CharacterLibrary.ShortName(view, id) + " the Guide" +
-                (view.Decision?.Kind == DecisionKind.FellowshipPhase ? " · This ends the Fellowship phase" : ""),
+            CommandKind.SelectGuide => "Click to choose " + CharacterLibrary.ShortName(view, id) + " as the Guide · " +
+                FellowshipGuideText.ConfirmLabel + " sends it" +
+                (view.Decision?.Kind == DecisionKind.FellowshipPhase ? " and ends the Fellowship phase" : ""),
             CommandKind.SeparateCompanions => "Click to separate " + CharacterLibrary.ShortName(view, id) + " from the Fellowship",
             // UI-247: the Guide's reaction (Gandalf the Grey's draw).
             CommandKind.RespondEffect => FellowshipActions.RosterReaction(view, id) is { } reaction ? BattleReactions.Offer(reaction) : "",

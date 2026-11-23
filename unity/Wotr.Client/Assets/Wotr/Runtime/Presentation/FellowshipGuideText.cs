@@ -8,6 +8,13 @@ namespace Wotr.Client
     {
         // UI-229: the console's hint while the next Guide is chosen from the glowing portraits.
         public const string ChooseHint = "Click a glowing companion in the Fellowship panel to make it the Guide";
+        // UI-575 (owner, 2026-11-23: "while changing the Fellowship's Guide, a click on a character should not change the Guide
+        // at once; there should be an extra Confirm button, and before pressing it the choice can still be changed"): the
+        // console's button that sends the chosen Guide, and its hint once one is chosen.
+        public const string ConfirmLabel = "Confirm Guide";
+
+        public static string ChosenHint(PlayerView view, string id) => CharacterLibrary.ShortName(view, id) +
+            " will be the Guide · " + ConfirmLabel + " sends it, or click another glowing companion";
 
         public static bool IsGuide(FellowshipView fellowship, string id) => fellowship.Guide == id ||
             CharacterLibrary.Identity(fellowship.Guide) == id;

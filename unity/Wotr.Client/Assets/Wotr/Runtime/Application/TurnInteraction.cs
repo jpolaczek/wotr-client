@@ -967,7 +967,7 @@ namespace Wotr.Client
             session.Edited(view);
             PersistDraft();
             var option = DraftOptions.For(view, draft);
-            if ((complete || draft.Kind == CommandKind.AwakenSovereign || CardActions.SingleEffect(view, draft) || FellowshipActions.Immediate(draft.Kind) ||
+            if ((complete || draft.Kind == CommandKind.AwakenSovereign || CardActions.SingleEffect(view, draft) ||
                 ExpansionActions.Immediate(draft.Kind) || ComponentActions.Immediate(view, draft)) &&
                 online && option != null && draft.Ready(option))
                 SubmitPreparedStep();

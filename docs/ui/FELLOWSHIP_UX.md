@@ -63,7 +63,7 @@ The legal subsequent regions and the selected end are highlighted, without arrow
 <a id="f04--przewodnik-i-towarzysze"></a>
 ## F04 — Guide and Companion
 
-Portrait of Guide has a `Guide` badge, name and access to the ability. Since UI-249 there is no `Change guide` mode: in the Fellowship phase the legal candidates glow at once and their tooltip reads `Click to make … the Guide · This ends the Fellowship phase` before the click; one click on the portrait makes the decision. `Finish phase` leaves the current legal Guide. The mandatory selection after re-synthesis has its own context and continuity. The server solves the forced single kandydat/Golluma. In the Hunt the Guide's own response (Merry's or Pippin's separation, Gollum's reveal) is not used on this portrait but on the Guide's portrait in the Hunt window's response row (UI-360, HUNT_UX).
+Portrait of Guide has a `Guide` badge, name and access to the ability. Since UI-249 there is no `Change guide` mode: in the Fellowship phase the legal candidates glow at once and their tooltip reads `Click to choose … as the Guide · Confirm Guide sends it and ends the Fellowship phase` before the click; since UI-575 the click only chooses and `Confirm Guide` beside `Finish phase` sends the choice. `Finish phase` leaves the current legal Guide. The mandatory selection after re-synthesis has its own context and continuity. The server solves the forced single kandydat/Golluma. In the Hunt the Guide's own response (Merry's or Pippin's separation, Gollum's reveal) is not used on this portrait but on the Guide's portrait in the Hunt window's response row (UI-360, HUNT_UX).
 
 `Separate companions` leads through portraits → common route → `Separate here`. The selected group, range and effects are visible before the final click. Information `Separated companions cannot rejoin` explains the decision durability (UI-456, owner 2026-11-03: in the ✓'s summary only, no longer a line of the panel; the panel states where the move stands and the console gives every instruction — [UX_SPEC](UX_SPEC.md#far-sighted-moves-only-companions-outside--ui-456)). The change of the group converts the legality of draft according to options; it does not select alternate characters. The usual action requires a specific dice, the forced effect retains its own cost and returns to the overriding decision.
 
@@ -839,3 +839,17 @@ region and on the Mordor track alike ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.
 
 A figure carried onto the Fellowship's figure is dropped on the region the Fellowship stands in, as a click there would
 be (UI-428, [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md), "Carrying a figure — UI-405").
+
+## A Guide's portrait chooses; Confirm Guide sends — UI-575 (owner, 2026-11-23)
+
+The owner: "while changing the Fellowship's Guide, a click on a character should not change the Guide at once; there should
+be an extra Confirm button, and before pressing it the choice can still be changed". Wherever the next Guide is chosen — the
+Fellowship phase, the forced choice after a separation or a casualty, the Hunt window's roster — a click on a glowing
+portrait only chooses it: the portrait shows as chosen, the console's hint reads `<Name> will be the Guide · Confirm Guide
+sends it, or click another glowing companion`, and a click on another glowing portrait changes the choice. `Confirm Guide`
+sends it: in the Fellowship panel a glowing button beside `Finish phase` (the panel's tray shows no second ✓, as while
+declaring, UI-448), in the Hunt window that window's ✓ under the same name. In the Fellowship phase it also ends the phase;
+`Finish phase` still keeps the current Guide. Tests: `FellowshipGuideChoiceTests`, `FellowshipGuideNetworkTests` (choose,
+change, nothing sent, Confirm Guide sends; frames `ui575-confirm-guide.png`, `ui575-confirm-forced-guide.png`),
+`HuntAftermathNetworkTests` (`ui575-confirm-hunt-guide.png`).
+
