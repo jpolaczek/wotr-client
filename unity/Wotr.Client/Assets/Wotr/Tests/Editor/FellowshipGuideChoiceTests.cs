@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine.UIElements;
 using Wotr.Client;
@@ -18,7 +19,7 @@ namespace Wotr.EditorTests
             var strider = roster.Root.Q<Button>("fellowship-portrait-base.character.strider");
             var merry = roster.Root.Q<Button>("fellowship-portrait-base.character.merry");
             Assert.IsTrue(strider.ClassListContains(ChoiceGlow.ClassName));
-            StringAssert.StartsWith("Click to make Strider the Guide", strider.tooltip);
+            StringAssert.StartsWith("Click to choose Strider as the Guide · Confirm Guide sends it", strider.tooltip);
             Assert.IsFalse(merry.ClassListContains(ChoiceGlow.ClassName), "Only the server's candidates glow.");
             StringAssert.DoesNotContain("the Guide\n", merry.tooltip);
             var tray = new DecisionTray(new VisualElement()) { ContextualFellowship = true };
@@ -44,12 +45,16 @@ namespace Wotr.EditorTests
             roster.Context(view, new TurnDraft(), new ActionDieContext(), true);
             var strider = roster.Root.Q<Button>("fellowship-portrait-base.character.strider");
             Assert.IsTrue(strider.ClassListContains(ChoiceGlow.ClassName));
-            StringAssert.StartsWith("Click to make Strider the Guide · This ends the Fellowship phase", strider.tooltip);
+            StringAssert.StartsWith("Click to choose Strider as the Guide · Confirm Guide sends it and ends the Fellowship phase", strider.tooltip);
             var draft = new TurnDraft();
             Assert.IsTrue(FellowshipActions.Portrait(view, draft, new ActionDieContext(), "base.character.strider"));
             Assert.AreEqual(CommandKind.SelectGuide, draft.Kind);
             Assert.AreEqual("base.character.strider", draft.Payload.GuideId);
-            Assert.IsTrue(FellowshipActions.Immediate(draft.Kind), "One click sends the choice.");
+            // UI-575 (owner, 2026-11-23): the click only chooses; another click changes the choice until Confirm Guide.
+            view.Options.Single(o => o.Kind == CommandKind.SelectGuide).EligibleIds.Add("base.character.merry");
+            Assert.IsTrue(FellowshipActions.Portrait(view, draft, new ActionDieContext(), "base.character.merry"));
+            Assert.AreEqual("base.character.merry", draft.Payload.GuideId, "Another click changes the choice.");
+            StringAssert.StartsWith("Merry will be the Guide · Confirm Guide sends it", FellowshipGuideText.ChosenHint(view, draft.Payload.GuideId));
             var controls = new FellowshipControls();
             controls.Refresh(view, new TurnDraft(), new ActionDieContext(), true, false);
             Assert.IsNull(controls.Root.Q<Button>("fellowship-change-guide"));
@@ -96,7 +101,6 @@ namespace Wotr.EditorTests
             Assert.IsTrue(FellowshipActions.Portrait(view, draft, context, "base.character.strider"));
             CollectionAssert.AreEqual(new[] { "base.character.strider" }, draft.Payload.Ids, "A limit of one replaces the choice.");
             Assert.IsTrue(CardDraft.Ready(draft, option));
-            Assert.IsFalse(FellowshipActions.Immediate(draft.Kind), "The Companions keep the one confirmation.");
             roster.Context(view, draft, context, true);
             Assert.IsTrue(roster.Root.Q<Button>("fellowship-portrait-base.character.strider").ClassListContains("selected"));
 

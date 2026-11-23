@@ -102,6 +102,28 @@ namespace Wotr.PlayTests
                 Action(client, "fellowship-portrait-" + id);
         }
 
+        // UI-575: a Guide's portrait only chooses; Confirm Guide, once the choice shows, sends it.
+        public static async Task Guide(MountedMatchClient client, string id)
+        {
+            Portrait(client, id);
+            await Task.Delay(120);
+            ConfirmGuide(client);
+        }
+
+        // UI-575: Confirm Guide beside Finish phase in the Fellowship panel, or the ✓ of the tray hosting the choice
+        // (the Hunt window).
+        public static void ConfirmGuide(MountedMatchClient client)
+        {
+            var panel = client.Board.Fellowship.ActionRow.Q<Button>(FellowshipControls.ConfirmGuideName);
+            if (panel != null && panel.style.display.value == DisplayStyle.Flex)
+            {
+                client.Board.Fellowship.Open();
+                CardNetworkTests.Click(panel);
+            }
+            else
+                CardNetworkTests.Click(client.Board.Tray.Q<Button>("confirm-decision"));
+        }
+
         public static void Figure(MountedMatchClient client, string region, string id)
         {
             client.Board.Hover.Open(region);

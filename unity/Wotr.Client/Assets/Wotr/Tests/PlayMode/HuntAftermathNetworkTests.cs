@@ -43,6 +43,13 @@ namespace Wotr.PlayTests
             await Reopen(room, board);
             room.Boundary.ArmCommandLoss();
             PointerGestureEvents.ClickAt(board.Hunt.Guides.Root.Q<Button>("fellowship-portrait-" + Merry));
+            await room.Settle();
+            // UI-575: in the Hunt window too the portrait only chooses; the window's Confirm Guide sends it.
+            var confirm = board.Tray.Q<Button>("confirm-decision");
+            Assert.AreSame(board.Hunt.DecisionHost, board.Tray.parent);
+            Assert.AreEqual(FellowshipGuideText.ConfirmLabel, confirm.text);
+            LayoutTests.Save(room.Fp.Viewport, "ui575-confirm-hunt-guide.png");
+            PointerGestureEvents.ClickAt(confirm);
             await room.Until(() => room.Boundary.CommandHeld);
             await room.At(3);
             Assert.AreEqual("hunt.guide", board.View.Decision.Window);

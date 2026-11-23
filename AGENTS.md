@@ -91,8 +91,9 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
   without arrows. Details: docs/ui/BOARD_INTERACTION_UX.md. Every operation supports
   clicks; a complete final click/drop executes the step without another Confirm.
   Since UI-142 (user decision), the game does not use double-clicks: a click that
-  completes a selection (e.g. a guide, Hunt response, or since UI-194 a card with
-  one payment method) executes it immediately; a fast second click after a
+  completes a selection (e.g. a Hunt response, or since UI-194 a card with
+  one payment method) executes it immediately (owner exception UI-575, 2026-11-23: a Guide's
+  portrait only chooses, and Confirm Guide sends the choice); a fast second click after a
   committed step is ignored. Grouped casualties/rerolls have one confirmation.
   Discard excess hand cards one at a time with a single click and no Confirm;
   since UI-222 every discard from the hand is made by clicking red-marked cards

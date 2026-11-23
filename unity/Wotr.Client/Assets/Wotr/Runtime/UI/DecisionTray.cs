@@ -188,6 +188,8 @@ namespace Wotr.Client
             var figures = TravelDraft.TargetRoute(draft.Kind) ? FellowshipDraft.Hint(draft, view) : "";
             if (figures.Length > 0)
                 return figures;
+            if (draft.Kind == CommandKind.SelectGuide && draft.Payload.GuideId.Length > 0)
+                return FellowshipGuideText.ChosenHint(view, draft.Payload.GuideId);
             if (draft.Kind == CommandKind.SelectGuide && ContextualFellowship)
                 return FellowshipGuideText.ChooseHint;
             if (CompanionSetupPresentation.Versions(view) && draft.Kind == CommandKind.ChooseCompanionVersions)
@@ -301,7 +303,7 @@ namespace Wotr.Client
             if (SkipHost(view) && Skippable(view, draft))
                 footer.Add(SkipEffect(view, draft));
             if (!ContextualHunt && !CompanionSetupPresentation.Setup(view) && !ResourcePresentation.PoolDecision(view) &&
-                !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && !(FellowshipHost && FellowshipActions.SentOnClick(draft.Kind)) &&
+                !FellowshipDraft.SingleRoute(draft.Kind) && draft.Kind != CommandKind.SelectGuide && !(FellowshipHost && FellowshipActions.SentOnClick(draft.Kind)) &&
                 (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
                 view.Decision.Presentation is "DieAndResult" or "Region" || option.EventRecruitment != null || ExpansionDraft.Handles(draft.Kind) || FellowshipDraft.UsesFellowship(draft.Kind)))
             {
@@ -321,7 +323,7 @@ namespace Wotr.Client
                     footer.Add(button);
                 }
             // UI-274: a king's decision is sent by the click on his portrait, attempt button or tile; no Confirm.
-            if (SovereignPresentation.OwnsDecision(view, draft) || draft.Kind == CommandKind.AwakenSovereign || ComponentActions.Immediate(view, draft) || ExpansionActions.Immediate(draft.Kind) || FellowshipActions.Immediate(draft.Kind) || ContextualFellowship && FellowshipDraft.UsesRoute(draft.Kind) &&
+            if (SovereignPresentation.OwnsDecision(view, draft) || draft.Kind == CommandKind.AwakenSovereign || ComponentActions.Immediate(view, draft) || ExpansionActions.Immediate(draft.Kind) || ContextualFellowship && FellowshipDraft.UsesRoute(draft.Kind) &&
                 option.Travel.Count > 0 && !TravelDraft.IsGrouped(draft.Kind) && !FellowshipDraft.LocationRoute(draft.Kind) ||
                 option.Kind is CommandKind.ResolveHuntDamage or CommandKind.CommitCombatCard or CommandKind.AdvanceBattle or CommandKind.RetreatBattle or CommandKind.ExtendSiege || option.Kind == CommandKind.ChooseEffect &&
                 option.Minimum == 1 && option.Maximum == 1 && option.EventRecruitment == null || option.Kind == CommandKind.RespondEffect)
@@ -392,6 +394,9 @@ namespace Wotr.Client
                 return "Apply losses";
             if (option.Kind is CommandKind.RerollBattle or CommandKind.RerollHunt)
                 return "Keep roll";
+            // UI-575 (owner, 2026-11-23): a portrait's click only chooses the next Guide; this button sends it.
+            if (option.Kind == CommandKind.SelectGuide)
+                return FellowshipGuideText.ConfirmLabel;
             if (option.Kind is CommandKind.DiscardCards or CommandKind.ChooseCompanionVersions or CommandKind.ChooseCouncilHomelands)
                 return null;
             if (view.Decision.Kind == DecisionKind.CharacterEvent)

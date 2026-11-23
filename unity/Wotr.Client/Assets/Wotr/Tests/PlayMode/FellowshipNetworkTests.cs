@@ -107,7 +107,7 @@ namespace Wotr.PlayTests
             await room.At(3, token);
             Assert.AreEqual(DecisionKind.Guide, room.Fp.Board.View.Decision.Kind);
             Assert.IsNull(room.Sh.Board.View.Decision);
-            FellowshipGestures.Portrait(room.Fp, "base.character.gandalf-grey");
+            await FellowshipGestures.Guide(room.Fp, "base.character.gandalf-grey");
             await room.At(4, token);
             Assert.AreEqual(5, room.Fp.Board.View.Fellowship.CompanionCount);
             Assert.AreEqual("moria", room.Fp.Board.View.Characters.Single(c => c.Id == "base.character.merry").Location);
@@ -186,7 +186,7 @@ namespace Wotr.PlayTests
             room.Fp.Connection.Reconnect();
             await Until(() => room.Fp.Connected > connected, token);
             Assert.AreEqual(pan, room.Fp.Board.Map.Camera.Pan);
-            FellowshipGestures.Portrait(room.Fp, "base.character.gimli");
+            await FellowshipGestures.Guide(room.Fp, "base.character.gimli");
             await room.At(4, token);
             Assert.AreSame(room.Fp.Board.Fellowship.Root, room.Fp.Board.Tray.parent);
             await Route(room.Fp, token, "dimrill-dale");

@@ -221,8 +221,9 @@ namespace Wotr.Client
             if (busy() || !kind.HasValue || HuntActions.UsesPanel(view, draft))
                 return;
             board.Fellowship.Open();
-            // The Guide and a reaction send with their click; a separation keeps building its group.
-            edit(() => FellowshipActions.Portrait(view, draft, board.ActionDie, id), kind is CommandKind.SelectGuide or CommandKind.RespondEffect);
+            // A reaction sends with its click; a separation keeps building its group. UI-575 (owner, 2026-11-23): the click
+            // only chooses the next Guide, which can still change until the console's Confirm Guide sends it.
+            edit(() => FellowshipActions.Portrait(view, draft, board.ActionDie, id), kind == CommandKind.RespondEffect);
         }
 
         public void Dispose()

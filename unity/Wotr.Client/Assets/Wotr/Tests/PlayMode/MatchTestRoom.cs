@@ -165,7 +165,8 @@ namespace Wotr.PlayTests
             previous.Dispose();
         }
 
-        private sealed class SubmittedChoice { public long Revision; }
+        // Guide (UI-575): the click only chose the Guide; Confirm presses Confirm Guide.
+        private sealed class SubmittedChoice { public long Revision; public bool Guide; }
         private static readonly ConditionalWeakTable<MountedMatchClient, SubmittedChoice> submitted = new();
 
         public static void Click(MountedMatchClient client, string name)
@@ -178,13 +179,15 @@ namespace Wotr.PlayTests
                 return;
             }
             var view = client.Board.View;
-            if (name.StartsWith("companion-") && view.Decision?.Kind == DecisionKind.Guide ||
+            // UI-575: a Guide's portrait only chooses; this helper also presses Confirm Guide, as one step.
+            var guide = name.StartsWith("companion-") && view.Decision?.Kind == DecisionKind.Guide;
+            if (guide ||
                 name.StartsWith("effect-choice-") && view.Options.Any(o => o.Kind == CommandKind.RespondEffect ||
                 o.Kind == CommandKind.ChooseEffect && o.Minimum == 1 && o.Maximum == 1 && o.EventRecruitment == null) ||
                 name.StartsWith("figure-") && view.Battle == null && view.Options.Any(o => o.Kind == CommandKind.RemoveExcess && o.Maximum == 1))
             {
                 submitted.Remove(client);
-                submitted.Add(client, new SubmittedChoice { Revision = view.Revision });
+                submitted.Add(client, new SubmittedChoice { Revision = view.Revision, Guide = guide });
             }
             VisualElement button = TrayOrConsole(client, name) ?? Reinforcement(client, name) ?? PanelFigure(client, name) ??
                 ObjectChoice(client, name) ?? FellowshipControl(client, name);
@@ -374,6 +377,11 @@ namespace Wotr.PlayTests
             if (submitted.TryGetValue(client, out var choice))
             {
                 submitted.Remove(client);
+                if (choice.Guide)
+                {
+                    await Settle();
+                    FellowshipGestures.ConfirmGuide(client);
+                }
                 await At(choice.Revision + 1);
                 return;
             }

@@ -159,8 +159,9 @@ namespace Wotr.Client
             var kind = FellowshipActions.PortraitKind(view, board.ActionDie, id, draft);
             if (busy() || !HuntActions.UsesPanel(view, draft) || kind is not (CommandKind.SelectGuide or CommandKind.ChooseEffect))
                 return;
-            // The Guide sends with its click; the Companions of The Breaking of the Fellowship keep the one confirmation.
-            edit(() => FellowshipActions.Portrait(view, draft, board.ActionDie, id), kind == CommandKind.SelectGuide);
+            // UI-575 (owner, 2026-11-23): the click only chooses the next Guide, as it chooses the Companions of The Breaking
+            // of the Fellowship; the choice can change until Confirm Guide sends it.
+            edit(() => FellowshipActions.Portrait(view, draft, board.ActionDie, id), false);
         }
 
         public void Dispose()

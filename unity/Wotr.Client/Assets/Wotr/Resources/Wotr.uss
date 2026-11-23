@@ -563,6 +563,9 @@
    phase) sends it and the console holds the hint, Back and Cancel. */
 #board-screen .fellowship-panel.fellowship-declaring #confirm-decision,
 #board-screen .fellowship-panel.fellowship-declaring .draft-status { display: none; }
+/* UI-575 (owner, 2026-11-23): so does Confirm Guide beside Finish phase while the next Guide is chosen in the panel. */
+#board-screen .fellowship-panel.fellowship-choosing-guide #confirm-decision,
+#board-screen .fellowship-panel.fellowship-choosing-guide .draft-status { display: none; }
 .fellowship-panel .companion-token {
     width: 68px;
     min-width: 32px;
